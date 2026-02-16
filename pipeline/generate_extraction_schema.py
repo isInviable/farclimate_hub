@@ -71,6 +71,16 @@ Rules:
 - references MUST be a list of {title, url}, one entry per link in #source div p a.
 """
 
+# Fields that are redundant with fulltext (content already in fulltext); exclude from schema.
+FIELDS_REDUNDANT_WITH_FULLTEXT = frozenset({
+    "challenges",
+    "stakeholder_participation",
+    "success_limitations",
+    "cost_benefit",
+    "implementation_time",
+    "lifetime",
+})
+
 # Overlay: exact field definitions for Climate-ADAPT. Applied after LLM generation to fix known selectors.
 CLIMATE_ADAPT_FIELD_OVERLAY = [
     {"name": "subtitle", "selector": ".case-studies-review-image-wrapper + div p:first-of-type", "type": "text"},
@@ -93,11 +103,6 @@ CLIMATE_ADAPT_FIELD_OVERLAY = [
         {"name": "title", "selector": "span", "type": "text"},
         {"name": "url", "type": "attribute", "attribute": "href"},
     ]},
-    {"name": "stakeholder_participation", "selector": "#stake_holder_anchor div", "type": "text"},
-    {"name": "success_limitations", "selector": "#success_limitations_anchor div", "type": "text"},
-    {"name": "cost_benefit", "selector": "#cost_benefit_anchor div", "type": "text"},
-    {"name": "implementation_time", "selector": "#implementation_time_anchor div", "type": "text"},
-    {"name": "lifetime", "selector": "#life_time_anchor div", "type": "text"},
 ]
 
 
@@ -170,19 +175,22 @@ def _schema_to_css(schema: dict) -> dict:
 
 
 def _apply_climate_adapt_overlay(schema: dict) -> dict:
-    """Merge Climate-ADAPT field overlay into schema so key fields use known-good selectors."""
+    """Merge Climate-ADAPT field overlay into schema so key fields use known-good selectors.
+    Drops fields that are redundant with fulltext."""
     if not schema or "fields" not in schema:
         return schema
     overlay_by_name = {f["name"]: f for f in CLIMATE_ADAPT_FIELD_OVERLAY}
     fields_out = []
     for field in schema["fields"]:
         name = field.get("name")
+        if name in FIELDS_REDUNDANT_WITH_FULLTEXT:
+            continue
         if name in overlay_by_name:
             fields_out.append(json.loads(json.dumps(overlay_by_name[name])))
         else:
             fields_out.append(field)
     for name in overlay_by_name:
-        if name not in (f.get("name") for f in schema["fields"]):
+        if name not in (f.get("name") for f in fields_out):
             fields_out.append(json.loads(json.dumps(overlay_by_name[name])))
     schema["fields"] = fields_out
     return schema

@@ -148,11 +148,6 @@
       ]
     },
     {
-      "name": "challenges",
-      "selector": "#challenges_anchor + div",
-      "type": "text"
-    },
-    {
       "name": "policy_legal_background",
       "selector": "#policy_anchor + div",
       "type": "text"
@@ -165,31 +160,6 @@
     {
       "name": "solutions",
       "selector": "#solutions_anchor + div",
-      "type": "text"
-    },
-    {
-      "name": "stakeholder_participation",
-      "selector": "#stake_holder_anchor div",
-      "type": "text"
-    },
-    {
-      "name": "success_limitations",
-      "selector": "#success_limitations_anchor div",
-      "type": "text"
-    },
-    {
-      "name": "cost_benefit",
-      "selector": "#cost_benefit_anchor div",
-      "type": "text"
-    },
-    {
-      "name": "implementation_time",
-      "selector": "#implementation_time_anchor div",
-      "type": "text"
-    },
-    {
-      "name": "lifetime",
-      "selector": "#life_time_anchor div",
       "type": "text"
     },
     {

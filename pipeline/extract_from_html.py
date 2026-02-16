@@ -53,6 +53,33 @@ DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "extracted"
 DEFAULT_SCHEMA = Path(__file__).resolve().parent / "extraction_schema_generated.json"
 URL_MANIFEST_FILENAME = "url_manifest.json"
 
+# Fields extracted as comma-separated text that should be stored as arrays (same list as dataCrawler/combine_json.py).
+FIELDS_AS_ARRAYS = (
+    "climate_impacts",
+    "adaptation_approaches",
+    "keywords",
+    "sub_nationals",
+    "countries",
+    "sectors",
+)
+
+
+def _string_to_array(value):  # noqa: ANN001
+    """Split a string by comma into trimmed strings; return list as-is; empty/None -> []."""
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return []
+    if isinstance(value, list):
+        return value
+    return [s.strip() for s in value.split(",") if s.strip()]
+
+
+def _normalize_array_fields(item: dict) -> None:
+    """In-place: ensure FIELDS_AS_ARRAYS are lists (comma-split if string)."""
+    for key in FIELDS_AS_ARRAYS:
+        if key not in item:
+            continue
+        item[key] = _string_to_array(item[key])
+
 
 def _read_url_manifest(input_dir: Path) -> dict[str, str]:
     """Read stem -> URL from url_manifest.json if present."""
@@ -225,6 +252,7 @@ def main():
             "lang": lang,
             **item,
         }
+        _normalize_array_fields(item)
 
         out_path.write_text(json.dumps(item, indent=2, ensure_ascii=False), encoding="utf-8")
         if args.markdown and fulltext:

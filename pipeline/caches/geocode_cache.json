@@ -1,0 +1,378 @@
+{
+  "Torino, Italy": [
+    45.0703155,
+    7.6868552
+  ],
+  ", Sweden": [
+    60.12816100000001,
+    18.643501
+  ],
+  ", Norway": [
+    60.47202399999999,
+    8.468945999999999
+  ],
+  ", Germany": [
+    51.165691,
+    10.451526
+  ],
+  "Lodz, Poland": [
+    51.7592924,
+    19.4558778
+  ],
+  ", Italy": [
+    41.87194,
+    12.56738
+  ],
+  "Jena, Germany": [
+    50.927054,
+    11.5892372
+  ],
+  ", Spain": [
+    40.46366700000001,
+    -3.74922
+  ],
+  "Enschede and Hengelo, Netherlands": [
+    52.26597109999999,
+    6.795513799999999
+  ],
+  "Amsterdam, Netherlands": [
+    52.3675734,
+    4.9041389
+  ],
+  "Isola Vicentina, Italy": [
+    45.6291776,
+    11.4421875
+  ],
+  "Melque de Cercos, Spain": [
+    41.0518231,
+    -4.4690329
+  ],
+  ", United Kingdom": [
+    55.378051,
+    -3.435973
+  ],
+  "Vecchiano, Pisa, Italy": [
+    43.78230140000001,
+    10.3869921
+  ],
+  "Växjö, Sweden": [
+    56.8790044,
+    14.8058522
+  ],
+  ", Finland": [
+    61.92410999999999,
+    25.748151
+  ],
+  "Vitoria-Gasteiz, Spain": [
+    42.8531869,
+    -2.6732421
+  ],
+  "Rouen, France": [
+    49.4435261,
+    1.0984309
+  ],
+  ", Austria": [
+    47.516231,
+    14.550072
+  ],
+  ", Cyprus": [
+    35.126413,
+    33.429859
+  ],
+  "Stuttgart, Germany": [
+    48.7758459,
+    9.1829321
+  ],
+  "Ober-Grafendorf, Austria": [
+    48.1494994,
+    15.5458673
+  ],
+  "Tyne, Liverpool, Hull and Immingham, United Kingdom": [
+    53.614012,
+    -0.215913
+  ],
+  "Hillerød, Denmark": [
+    55.927909,
+    12.300806
+  ],
+  "Nijemegen, Netherlands": [
+    51.8432807,
+    5.8609313
+  ],
+  "Marano Vicentino and Santorso, Italy": [
+    45.7365818,
+    11.3904761
+  ],
+  "Riba-Roja de Túria, Spain": [
+    39.5444265,
+    -0.5706677
+  ],
+  "Malmö, Sweden": [
+    55.604981,
+    13.003822
+  ],
+  "Berlin, Germany": [
+    52.52000659999999,
+    13.404954
+  ],
+  ", Greece": [
+    39.074208,
+    21.824312
+  ],
+  "Bussoleno, Lambriasco, Pragelato, Villar Pellice, Italy": [
+    44.8083096,
+    7.156002099999999
+  ],
+  ", Slovakia": [
+    48.669026,
+    19.699024
+  ],
+  ", Belgium": [
+    50.503887,
+    4.469936
+  ],
+  "Arles, Saintes-Maries-de-la-Mer, France": [
+    43.453241,
+    4.429074
+  ],
+  "Barcelona, Spain": [
+    41.3873974,
+    2.168568
+  ],
+  ", Hungary": [
+    47.162494,
+    19.503304
+  ],
+  ", Iceland": [
+    64.963051,
+    -19.020835
+  ],
+  "Bremen, Germany": [
+    53.07929619999999,
+    8.8016937
+  ],
+  "Botkyrka, Sweden": [
+    59.2459411,
+    17.8408583
+  ],
+  ", Republic of North Macedonia": [
+    41.608635,
+    21.745275
+  ],
+  "València, Spain": [
+    39.4738338,
+    -0.3756348
+  ],
+  "Viseu Dão Lafões, Portugal": [
+    40.6565861,
+    -7.9124712
+  ],
+  ", Portugal": [
+    39.39987199999999,
+    -8.224454
+  ],
+  ", Switzerland": [
+    46.818188,
+    8.227511999999999
+  ],
+  "Bologna, Italy": [
+    44.494887,
+    11.3426163
+  ],
+  ", Slovenia": [
+    46.151241,
+    14.995463
+  ],
+  "Heathrow, United Kingdom": [
+    51.4679914,
+    -0.455051
+  ],
+  "Sandomierz, Poland": [
+    50.6822405,
+    21.7501781
+  ],
+  "Montpellier, France": [
+    43.6108535,
+    3.8761323
+  ],
+  "Lappeenranta, Finland": [
+    61.05497219999999,
+    28.1896039
+  ],
+  "Breda, Netherlands": [
+    51.5719149,
+    4.768323
+  ],
+  "Madrid, Spain": [
+    40.41672790000001,
+    -3.7032905
+  ],
+  ", France": [
+    46.227638,
+    2.213749
+  ],
+  "Móstoles, Spain": [
+    40.3232129,
+    -3.8676291
+  ],
+  "Antwerp, Belgium": [
+    51.2199302,
+    4.414990299999999
+  ],
+  ", Netherlands": [
+    52.132633,
+    5.291265999999999
+  ],
+  "Carmignano di Brenta, Italy": [
+    45.6290142,
+    11.7023556
+  ],
+  "Innertkirchen, Guttannen, Switzerland": [
+    46.6552082,
+    8.2892297
+  ],
+  "Prague, Czechia": [
+    50.0755381,
+    14.4378005
+  ],
+  ", Czechia": [
+    49.81749199999999,
+    15.472962
+  ],
+  "Paris, France": [
+    48.8575475,
+    2.3513765
+  ],
+  "Zaragoza, Spain": [
+    41.6474339,
+    -0.8861451
+  ],
+  "Dunkerque, France": [
+    51.0343684,
+    2.3767763
+  ],
+  ", Bulgaria": [
+    42.733883,
+    25.48583
+  ],
+  "Bærum, Grue, Kongsvinger, Løten, Nord-Odal, Ringsaker, Stavanger, Tromsø, Trondheim, Norway": [
+    63.4305149,
+    10.3950528
+  ],
+  "Turin, Italy": [
+    45.0703155,
+    7.6868552
+  ],
+  "Maasbommel, Netherlands": [
+    51.8216389,
+    5.534452
+  ],
+  "Nome, Norway": [
+    59.29435509999999,
+    9.0761345
+  ],
+  "Glasgow, United Kingdom": [
+    55.86167039999999,
+    -4.2583345
+  ],
+  "Bratislava, Slovakia": [
+    48.1485965,
+    17.1077477
+  ],
+  "Rotterdam, Netherlands": [
+    51.9244201,
+    4.4777325
+  ],
+  "Sirolo, Numana, Italy": [
+    43.5118923,
+    13.6214094
+  ],
+  "London - Borough of Hammersmith and Fulham, United Kingdom": [
+    51.5000049,
+    -0.2378535
+  ],
+  "Trnava, Košice, Slovakia": [
+    48.3709108,
+    17.5833218
+  ],
+  "Copenhagen, Denmark": [
+    55.6760968,
+    12.5683371
+  ],
+  "Bilbao, Spain": [
+    43.2633799,
+    -2.9348121
+  ],
+  "Eferding, Austria": [
+    48.30878999999999,
+    14.02023
+  ],
+  "Basel, Switzerland": [
+    47.5595986,
+    7.5885761
+  ],
+  "Ghent, Belgium": [
+    51.0499922,
+    3.7303853
+  ],
+  "Wolfsberg, Austria": [
+    46.8401,
+    14.84277
+  ],
+  "Smolyan, Bulgaria": [
+    41.5774233,
+    24.7011138
+  ],
+  "Carlantino, Celenza Valfortore and San Marco la Catola, Italy": [
+    41.5945188,
+    14.9752932
+  ],
+  "Munich, Germany": [
+    48.1351253,
+    11.5819806
+  ],
+  "Kassel, Germany": [
+    51.3118828,
+    9.4915751
+  ],
+  "Tatabánya, Hungary": [
+    47.569246,
+    18.404818
+  ],
+  "Hamburg, Germany": [
+    53.5488282,
+    9.987170299999999
+  ],
+  "Schleiden, Germany": [
+    50.5289601,
+    6.476920499999999
+  ],
+  ", Bosnia and Herzegovina": [
+    43.915886,
+    17.679076
+  ],
+  "Rimini, Italy": [
+    44.0565776,
+    12.5713325
+  ],
+  "Lisbon, Portugal": [
+    38.7222524,
+    -9.1393366
+  ],
+  "no related information available, United States": [
+    38.7945952,
+    -106.5348379
+  ],
+  "no related information available, United Kingdom": [
+    55.378051,
+    -3.435973
+  ],
+  "no related information available, Norway": [
+    60.47202399999999,
+    8.468945999999999
+  ],
+  "South Thomaston, Maine, United States": [
+    44.051497,
+    -69.12772749999999
+  ]
+}
