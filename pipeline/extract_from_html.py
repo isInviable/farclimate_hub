@@ -100,6 +100,22 @@ def _lang_from_html(html: str) -> str:
     return "en"
 
 
+def _title_from_html(html: str) -> str:
+    """Best-effort extraction of the case-study title from the page header <h1>."""
+    # Look for <h1 ... class="...documentFirstHeading...">
+    m = re.search(
+        r"<h1[^>]*class=[\"'][^\"']*documentFirstHeading[^\"']*[\"'][^>]*>(.*?)</h1>",
+        html,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not m:
+        return ""
+    inner = m.group(1)
+    # Strip HTML tags inside the H1
+    text = re.sub(r"<[^>]+>", "", inner)
+    return text.strip()
+
+
 def extract_article_fulltext(html: str, base_url: str = "") -> str:
     """
     Extract article-only full text (no header, nav, footer) using crawl4ai's
@@ -128,7 +144,20 @@ def extract_article_fulltext(html: str, base_url: str = "") -> str:
         citations=False,
     )
     fulltext = (md_result.fit_markdown or md_result.raw_markdown or "").strip()
-    return re.sub(r"\n\s*\n", "\n\n", fulltext) if fulltext else ""
+    if not fulltext:
+        return ""
+
+    # Drop leading copyright line that often comes from the top image wrapper
+    # (e.g. "© Guardian Project"), but keep the image itself via `image_url`.
+    lines = fulltext.splitlines()
+    # Remove leading blank lines
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and lines[0].lstrip().startswith("©"):
+        lines.pop(0)
+    fulltext = "\n".join(lines)
+
+    return re.sub(r"\n\s*\n", "\n\n", fulltext)
 
 
 def main():
@@ -237,6 +266,11 @@ def main():
             item = dict(extracted_list[0])
         else:
             item = {}
+        # Ensure we always have a title: fallback to direct HTML parsing if missing.
+        if not item.get("title"):
+            fallback_title = _title_from_html(html)
+            if fallback_title:
+                item["title"] = fallback_title
         item["fulltext"] = fulltext
 
         # DB-ready metadata: source_url, source_file, lang

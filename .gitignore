@@ -12,3 +12,5 @@ pipeline/extracted/*
 pipeline/source_html/*
 dataCrawler/*
 0_source_datasets/*
+pipeline/augmented/*
+pipeline/caches/*

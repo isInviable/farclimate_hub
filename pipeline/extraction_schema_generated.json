@@ -163,6 +163,16 @@
       "type": "text"
     },
     {
+      "name": "cost_benefit",
+      "selector": "#cost_benefit_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "implementation_time",
+      "selector": "#implementation_time_anchor div",
+      "type": "text"
+    },
+    {
       "name": "case_study_documents",
       "type": "list",
       "selector": ".documents-list .item a",

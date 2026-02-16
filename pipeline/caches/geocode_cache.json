@@ -374,5 +374,37 @@
   "South Thomaston, Maine, United States": [
     44.051497,
     -69.12772749999999
+  ],
+  "Ireland, Atlantic": [
+    53.77975540000001,
+    -7.3055309
+  ],
+  "Mediterranean": [
+    34.5531284,
+    18.0480105
+  ],
+  "France, Atlantic": [
+    46.227638,
+    2.213749
+  ],
+  "Spain, Atlantic": [
+    40.46366700000001,
+    -3.74922
+  ],
+  "Sweden, Continental": [
+    60.12816100000001,
+    18.643501
+  ],
+  "Netherlands, Atlantic": [
+    52.132633,
+    5.291265999999999
+  ],
+  "Hungary, Pannonian": [
+    46.5000004,
+    20.0000002
+  ],
+  "Bulgaria, Continental": [
+    42.733883,
+    25.48583
   ]
 }

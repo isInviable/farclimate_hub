@@ -72,12 +72,12 @@ Rules:
 """
 
 # Fields that are redundant with fulltext (content already in fulltext); exclude from schema.
+# We deliberately keep `implementation_time` and `cost_benefit` as separate fields to support
+# downstream processing, even though their content also appears in fulltext.
 FIELDS_REDUNDANT_WITH_FULLTEXT = frozenset({
     "challenges",
     "stakeholder_participation",
     "success_limitations",
-    "cost_benefit",
-    "implementation_time",
     "lifetime",
 })
 
@@ -99,6 +99,8 @@ CLIMATE_ADAPT_FIELD_OVERLAY = [
         {"name": "url", "type": "attribute", "attribute": "href"},
     ]},
     {"name": "creation_date", "selector": ".content-metadata h5:nth-of-type(1) + p", "type": "text"},
+    {"name": "cost_benefit", "selector": "#cost_benefit_anchor div", "type": "text"},
+    {"name": "implementation_time", "selector": "#implementation_time_anchor div", "type": "text"},
     {"name": "case_study_documents", "type": "list", "selector": ".documents-list .item a", "fields": [
         {"name": "title", "selector": "span", "type": "text"},
         {"name": "url", "type": "attribute", "attribute": "href"},
