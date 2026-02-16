@@ -14,3 +14,8 @@ dataCrawler/*
 0_source_datasets/*
 pipeline/augmented/*
 pipeline/caches/*
+
+# Environment files
+.env
+db/node_modules/
+db/dist/

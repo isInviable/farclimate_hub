@@ -1,0 +1,22 @@
+{
+  "name": "farclimate-db",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:create": "tsx src/create-tables.ts",
+    "db:drop": "tsx src/drop-all.ts",
+    "db:truncate": "tsx src/truncate-all.ts",
+    "db:push": "tsx src/push-climate-adapt.ts",
+    "db:reset": "tsx src/drop-all.ts && tsx src/create-tables.ts && tsx src/push-climate-adapt.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "@types/node": "^22.12.0",
+    "typescript": "^5.7.3"
+  }
+}
