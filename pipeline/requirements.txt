@@ -1,0 +1,4 @@
+crawl4ai>=0.5.0
+asyncio
+python-dotenv
+google-genai 

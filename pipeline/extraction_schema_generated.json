@@ -1,0 +1,213 @@
+{
+  "name": "Climate-ADAPT Case Study",
+  "baseSelector": ".case-study-view",
+  "fields": [
+    {
+      "name": "title",
+      "selector": "h1.documentFirstHeading",
+      "type": "text"
+    },
+    {
+      "name": "subtitle",
+      "selector": ".case-studies-review-image-wrapper + div p:first-of-type",
+      "type": "text"
+    },
+    {
+      "name": "image_url",
+      "selector": ".case-studies-review-image-wrapper img",
+      "type": "attribute",
+      "attribute": "src"
+    },
+    {
+      "name": "images",
+      "type": "list",
+      "selector": ".image-gallery div[role='button'] img",
+      "fields": [
+        {
+          "name": "url",
+          "selector": "self::",
+          "type": "attribute",
+          "attribute": "src"
+        },
+        {
+          "name": "alt",
+          "selector": "self::",
+          "type": "attribute",
+          "attribute": "alt"
+        }
+      ]
+    },
+    {
+      "name": "adapt_options",
+      "type": "list",
+      "selector": "#adapt_options_anchor .item a",
+      "fields": [
+        {
+          "name": "label",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "type": "attribute",
+          "attribute": "href"
+        }
+      ]
+    },
+    {
+      "name": "contact",
+      "selector": "#contact div",
+      "type": "text"
+    },
+    {
+      "name": "websites",
+      "type": "list",
+      "selector": "#websites .item a",
+      "fields": [
+        {
+          "name": "label",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "type": "attribute",
+          "attribute": "href"
+        }
+      ]
+    },
+    {
+      "name": "references",
+      "type": "list",
+      "selector": "#source div p a",
+      "fields": [
+        {
+          "name": "title",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "type": "attribute",
+          "attribute": "href"
+        }
+      ]
+    },
+    {
+      "name": "creation_date",
+      "selector": ".content-metadata h5:nth-of-type(1) + p",
+      "type": "text"
+    },
+    {
+      "name": "keywords",
+      "selector": ".content-metadata h5 + span",
+      "type": "text"
+    },
+    {
+      "name": "climate_impacts",
+      "selector": ".content-metadata h5:nth-of-type(2) + p",
+      "type": "text"
+    },
+    {
+      "name": "adaptation_approaches",
+      "selector": ".content-metadata h5:nth-of-type(3) + p",
+      "type": "text"
+    },
+    {
+      "name": "sectors",
+      "selector": ".content-metadata h5:nth-of-type(4) + p",
+      "type": "text"
+    },
+    {
+      "name": "governance_level",
+      "selector": ".content-metadata h5:nth-of-type(5) + span",
+      "type": "text"
+    },
+    {
+      "name": "geographic_characterisation",
+      "type": "nested",
+      "selector": ".geochar",
+      "fields": [
+        {
+          "name": "continent",
+          "selector": "p:first-of-type",
+          "type": "text"
+        },
+        {
+          "name": "macro_transnational_region",
+          "selector": "h5:nth-of-type(1) + p",
+          "type": "text"
+        },
+        {
+          "name": "countries",
+          "selector": "h5:nth-of-type(2) + p",
+          "type": "text"
+        },
+        {
+          "name": "sub_nationals",
+          "selector": "h5:nth-of-type(3) + p",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "name": "challenges",
+      "selector": "#challenges_anchor + div",
+      "type": "text"
+    },
+    {
+      "name": "policy_legal_background",
+      "selector": "#policy_anchor + div",
+      "type": "text"
+    },
+    {
+      "name": "objectives",
+      "selector": "#objectives_anchor + div",
+      "type": "text"
+    },
+    {
+      "name": "solutions",
+      "selector": "#solutions_anchor + div",
+      "type": "text"
+    },
+    {
+      "name": "stakeholder_participation",
+      "selector": "#stake_holder_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "success_limitations",
+      "selector": "#success_limitations_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "cost_benefit",
+      "selector": "#cost_benefit_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "implementation_time",
+      "selector": "#implementation_time_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "lifetime",
+      "selector": "#life_time_anchor div",
+      "type": "text"
+    },
+    {
+      "name": "case_study_documents",
+      "type": "list",
+      "selector": ".documents-list .item a",
+      "fields": [
+        {
+          "name": "title",
+          "selector": "span",
+          "type": "text"
+        },
+        {
+          "name": "url",
+          "type": "attribute",
+          "attribute": "href"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+# Folder view configuration files
+.DS_Store
+Desktop.ini
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+pipeline/extracted/*
+pipeline/source_html/*
+dataCrawler/*
+0_source_datasets/*
