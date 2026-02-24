@@ -1,0 +1,11 @@
+{
+  "name": "farclimate",
+  "private": true,
+  "scripts": {
+    "db:create": "pnpm --filter @farclimate/db run db:create",
+    "db:drop": "pnpm --filter @farclimate/db run db:drop",
+    "db:truncate": "pnpm --filter @farclimate/db run db:truncate",
+    "db:push": "pnpm --filter @farclimate/db run db:push",
+    "db:reset": "pnpm --filter @farclimate/db run db:reset"
+  }
+}

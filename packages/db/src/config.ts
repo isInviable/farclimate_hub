@@ -1,5 +1,9 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { resolve } from "node:path";
 import postgres from "postgres";
+
+// Load .env from the workspace root (two levels up from packages/db/src/)
+config({ path: resolve(import.meta.dirname, "..", "..", "..", ".env") });
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
