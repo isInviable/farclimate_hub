@@ -1,0 +1,135 @@
+{
+  "common": {
+    "search": "Search",
+    "searching": "Searching...",
+    "results": "results found",
+    "filters": "Filters",
+    "view": "View",
+    "all": "All",
+    "name": "Name",
+    "budget": "Budget",
+    "sortBy": "sort by",
+    "loading": "Loading...",
+    "close": "Close",
+    "documentPreview": "Document Preview",
+    "openFullPage": "Open full page view",
+    "tableOfContents": "Table of Contents"
+  },
+  "header": {
+    "home": "home",
+    "solutions": "solutions",
+    "skills": "skills", 
+    "network": "network",
+    "stories": "stories",
+    "about": "about",
+    "pinsBoard": "Pins Board"
+  },
+  "listActions": {
+    "default": "Default",
+    "topInsights": "Top insights",
+    "chatWithResults": "Chat with these results"
+  },
+  "search": {
+    "title": "Solutions Explorer",
+    "placeholder": "What are you looking for?",
+    "filtersApplied": "filters applied",
+    "activeFilters": "Active Filters",
+    "availableFilters": "Available Filters",
+    "dragInstructions": "Drag filters between sections to activate or deactivate them"
+  },
+  "filters": {
+    "activity": "Activity",
+    "hazards": "Hazards", 
+    "location": "Location",
+    "status": "Status",
+    "time": "Time",
+    "selectBioregion": "Select Bioregion",
+    "allBioregions": "All Bioregions",
+    "searchByLocation": "Search by location",
+    "lowCost": "Low cost",
+    "highCost": "High cost"
+  },
+  "status": {
+    "proposal": "Proposal",
+    "inProgress": "In Progress", 
+    "finished": "Finished"
+  },
+  "timeframes": {
+    "recent": "Last 10 years",
+    "allProjects": "All projects"
+  },
+  "bioregions": {
+    "alpine": "Alpine (Central European Mountains)",
+    "atlantic": "Atlantic (Western European Coastlands)",
+    "boreal": "Boreal (Northern European Forests)", 
+    "continental": "Continental (Central European Plains)",
+    "mediterranean": "Mediterranean (Southern European Coast)",
+    "amazon": "Amazon Rainforest",
+    "andes": "Andean Mountains",
+    "cerrado": "Cerrado Savanna",
+    "pantanal": "Pantanal Wetlands",
+    "patagonian": "Patagonian Steppe"
+  },
+  "hazards": {
+    "drought": "Drought",
+    "heatwave": "Heatwave", 
+    "heavyPrecipitation": "Heavy Precipitation",
+    "wildfire": "Wildfire",
+    "floods": "Floods",
+    "tropicalCyclone": "Tropical Cyclone",
+    "stormSurge": "Storm Surge"
+  },
+  "viewModes": {
+    "list": "List",
+    "grid": "Grid", 
+    "instagram": "Instagram",
+    "map": "Map",
+    "showProperty": "Show property",
+    "summary": "Summary",
+    "costBenefit": "Cost & Benefits",
+    "implementationTime": "Implementation Time", 
+    "lifetime": "Lifetime",
+    "stakeholderParticipation": "Stakeholder Participation",
+    "successLimitations": "Success & Limitations"
+  },
+  "pills": {
+    "forestry": "Forestry",
+    "agriculture": "Agriculture",
+    "fishery": "Fishery", 
+    "mediterranean": "Mediterranean",
+    "atlantic": "Atlantic",
+    "continental": "Continental",
+    "alpine": "Alpine",
+    "boreal": "Boreal",
+    "climateAdaptation": "Climate adaptation",
+    "waterManagement": "Water management",
+    "biodiversity": "Biodiversity"
+  },
+  "tabs": {
+    "summary": "Summary",
+    "structured": "Recipe",
+    "full": "Original Article",
+    "chat": "Chat with this article"
+  },
+  "chat": {
+    "example1": "What are the main challenges addressed in this project?",
+    "example2": "Who are the key stakeholders involved and what are their roles?",
+    "example3": "Can you summarize the economic impact and main costs?",
+    "example4": "What solutions or adaptation measures were implemented?",
+    "example5": "What are the most important lessons learned from this article?"
+  },
+  "summaryHeaders": {
+    "shortDescription": "Short description",
+    "sector": "Sector",
+    "date": "Date",
+    "hazards": "Hazards",
+    "typeOfSolution": "Type of solution",
+    "whoIsInvolved": "Who is involved",
+    "geographicalScope": "Geographical scope",
+    "economicData": "Economic data",
+    "contactPersons": "Contact persons",
+    "websites": "Websites",
+    "scientificReferences": "Scientific references",
+    "keywords": "Keywords"
+  }
+} 

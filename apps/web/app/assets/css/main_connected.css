@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  /* Color palette from Figma design */
+  /* Blue scale (Trust Blue) */
+  --color-blue-lightest: #e8eff6;
+  --color-blue-lighter: #d2e0ec;
+  --color-blue-light: #bbd0e3;
+  --color-blue: #78a1c7;
+  --color-blue-dark: #4b82b5;
+  --color-blue-darkest: #1e63a2;
+  
+  /* Blue gradient scale (for charts) */
+  --color-blue-gradient-1: #dbebff;
+  --color-blue-gradient-2: #c2dffc;
+  --color-blue-gradient-3: #a8d3f8;
+  --color-blue-gradient-4: #8ec6f5;
+  --color-blue-gradient-5: #74baf1;
+  --color-blue-gradient-6: #59aded;
+  --color-blue-gradient-7: #3d9fe9;
+  --color-blue-gradient-8: #1f91e5;
+  --color-blue-gradient-9: #0082e1;
+  
+  /* Green scale (Grounded Green) */
+  --color-green: #cece89;
+  --color-green-dark: #9e9e14;
+  --color-green-darkest: #76760e;
+  
+  /* Accent colors */
+  --color-yellow: #F9B401;
+  --color-gray: #E6E6E6;
+  --color-gray-light: #cfcccd;
+  --color-gray-lighter: #e7e5e6;
+  --color-gray-lightest: #fffbf8;
+  --color-gray-dark: #70666a;
+  --color-gray-darkest: #100007;
+}

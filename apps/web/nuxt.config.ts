@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -12,25 +15,51 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt'
   ],
-
   devtools: {
     enabled: true
   },
-
   css: ['~/assets/css/main.css'],
-
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      mapbox: {
+        accessToken: process.env.NUXT_PUBLIC_MAPBOX_API_KEY || ''
+      }
+    }
+  },
   routeRules: {
     '/': { prerender: true }
   },
-
   compatibilityDate: '2025-01-15',
-
+  vite: {
+    // plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        'venn.js': path.resolve(__dirname, './node_modules/venn.js/build/venn.js')
+      }
+    }
+  },
   eslint: {
     config: {
       stylistic: {
         commaDangle: 'never',
         braceStyle: '1tbs'
       }
+    }
+  },
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'es', name: 'Español', file: 'es.json' }
+    ],
+    langDir: 'locales/',
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
     }
   }
 })

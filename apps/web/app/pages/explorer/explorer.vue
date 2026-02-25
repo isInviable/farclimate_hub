@@ -1,0 +1,594 @@
+<template>
+  <div class="min-h-screen  bg-gray-50 px-8">
+    <!-- Global Header -->
+    <DeliverableHeader />
+    <div class="grid grid-cols-12 gap-4">
+      <!-- Left Sidebar - Filters (20%) -->
+      <aside class="col-span-3 bg-transparent border-r border-gray-200 p-6">
+        <div class="sticky top-8">
+          <!-- Results Counter -->
+          <div class="flex items-center mb-6">
+            <div
+              class="bg-slate-400 border border-slate-400 pl-1 pr-4 py-1 text-xs font-mono rounded-l-full"
+            >
+              <span class="text-white pl-2"
+                >showing {{ filteredPapers.length }}
+              </span>
+            </div>
+            <div
+              class="bg-black border border-black pl-1 pr-4 py-1 text-xs font-mono rounded-r-full"
+            >
+              <span class="text-white pl-2">
+                of {{ searchStore.resultsData?.hits?.length || 0 }} available
+                case studies</span
+              >
+            </div>
+          </div>
+
+          <!-- Filter Manager -->
+          <FilterManager
+            :search-results="searchStore.resultsData?.hits || []"
+            @filters-changed="handleFiltersChanged"
+            @search-results="handleSearchResults"
+            @search-error="handleSearchError"
+          />
+        </div>
+      </aside>
+
+      <!-- Main Content Area (80%) -->
+      <main class="col-span-9">
+        <!-- View Switcher -->
+        <div class="mb-6">
+          
+
+          <!-- View Options -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="col-span-2 flex gap-3">
+              <!-- top menu -->
+              <UButton
+                variant="soft"
+                color="neutral"
+                :class="viewMode === 'list' ? 'opacity-100' : 'opacity-40'"
+                @click="setViewMode('list')"
+                icon="mdi:view-list"
+                size="sm"
+              >
+                list
+              </UButton>
+              <UButton
+                variant="soft"
+                color="neutral"
+                :class="viewMode === 'map' ? 'opacity-100' : 'opacity-40'"
+                @click="setViewMode('map')"
+                icon="mdi:map-outline"
+              >
+                map
+              </UButton>
+
+              <UButton
+                variant="soft"
+                color="neutral"
+                :class="viewMode === 'bubble' ? 'opacity-100' : 'opacity-40'"
+                @click="setViewMode('bubble')"
+                icon="mdi:chart-bubble"
+                size="sm"
+              >
+                by bioRegions
+              </UButton>
+
+              <UButton
+                variant="soft"
+                color="neutral"
+                :class="viewMode === 'grid' ? 'opacity-100' : 'opacity-40'"
+                @click="setViewMode('grid')"
+                icon="mdi:view-grid"
+                size="sm"
+              >
+                Compare
+              </UButton>
+
+              <UButton
+                variant="soft"
+                color="neutral"
+                :class="viewMode === 'instagram' ? 'opacity-100' : 'opacity-40'"
+                @click="setViewMode('instagram')"
+                icon="mdi:instagram"
+                size="sm"
+              >
+                images
+              </UButton>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Display -->
+        <div class="bg-white rounded-md min-h-[600px]">
+          <!-- List View -->
+          <ViewModeListSimple
+            v-if="viewMode === 'list'"
+            :results="filteredPapers"
+            :isSearching="isSearching"
+            @document-selected="handleDocumentSelected"
+          />
+
+          <!-- Grid View -->
+          <ViewModeGrid
+            v-else-if="viewMode === 'grid'"
+            :results="filteredPapers"
+            @document-selected="handleDocumentSelected"
+          />
+
+          <!-- Instagram View -->
+          <ViewModeInstagram
+            v-else-if="viewMode === 'instagram'"
+            :results="filteredPapers"
+            @document-selected="handleDocumentSelected"
+          />
+
+          <!-- Map View -->
+          <ViewModeMap
+            v-else-if="viewMode === 'map'"
+            :results="filteredPapers"
+            @document-selected="handleDocumentSelected"
+          />
+
+          <!-- Bubble View -->
+          <div v-else-if="viewMode === 'bubble'" class="p-6">
+            <wf-dummy-map                
+                :mapData="dummyData"
+                :uniqueBiogeographicalRegions="uniqueBiogeographicalRegions"
+                :viewMode="viewMode"
+                class="w-full h-full"
+                @click.stop="toggleBlock('resultsBox')"
+                @displayThisTitle="(txt: string) => displayTitle = txt"
+            />
+          </div>
+
+          <!-- Gantt View -->
+          <div v-else-if="viewMode === 'gantt'" class="p-6">
+            <h3 class="text-lg font-semibold mb-4">Gantt Chart View</h3>
+            <div
+              class="bg-gray-100 h-96 rounded-lg flex items-center justify-center"
+            >
+              <p class="text-gray-500">
+                Gantt chart visualization will be displayed here
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Article Side Panel -->
+    <ArticleSidePanel
+      :open="isSidePanelOpen"
+      v-if="selectedDocument!=null"
+      :document="selectedDocument"
+      @close="handlePanelClose"
+    />
+
+
+  <ActionBarExplorer
+    context="explorer"
+    @open-chat="handleOpenChat"
+    @open-insights="handleOpenInsights"
+    @open-mindmap="handleOpenMindmap"
+  />
+
+  <!-- Fullscreen Modals -->
+  <UModal v-model:open="isChatOpen" fullscreen>
+    <template #body>
+      <div class="max-w-5xl mx-auto">
+        <WfViewmodesViewModeChat :hits="searchStore.resultsData?.hits || []" />
+      </div>
+    </template>
+  </UModal>
+
+  <UModal v-model:open="isInsightsOpen" fullscreen>
+    <template #body>
+      <div class="max-w-5xl mx-auto">
+        <WfViewmodesViewModeSummaries
+          :hits="searchStore.resultsData?.hits || []"
+          :searchQuery="searchQuery"
+          :selectedTags="searchStore.selectedTags"
+          @article-click="handleArticleClick"
+        />
+      </div>
+    </template>
+  </UModal>
+
+  <UModal v-model:open="isMindmapOpen" fullscreen>
+    <template #body>
+      <div class="max-w-6xl mx-auto py-6 px-4">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Mind map</h2>
+          <div class="flex items-center gap-2">
+            <UButton size="sm" variant="soft" @click="generateMindmap" :loading="isMindmapLoading">
+              Regenerate
+            </UButton>
+            <UButton size="sm" variant="outline" @click="isMindmapOpen = false">Close</UButton>
+          </div>
+        </div>
+        <div class="bg-white rounded-md border border-gray-200 h-[70vh] p-0 overflow-hidden">
+          <div v-if="isMindmapLoading" class="w-full h-full flex items-center justify-center">
+            <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin h-8 w-8 text-gray-500" />
+          </div>
+          <div v-else class="w-full h-full">
+            <div class="w-full h-full min-h-[400px]">
+              <ClientOnly>
+              <MarkmapViewer :markdown="mindmapMarkdown" @article-click="handleArticleClick" />
+              </ClientOnly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </UModal>
+</template>
+
+<script lang="ts" setup>
+import { ref, computed, onMounted, watch } from "vue";
+import { OramaClient } from "@oramacloud/client";
+import { useSearchStore } from "@/stores/search";
+import { useRoute } from "vue-router";
+import ActionBarExplorer from "@/components/wf/ActionBarExplorer.vue";
+import { useSearchSelectionStore } from "@/stores/searchSelection";
+import MarkmapViewer from "~/components/MarkmapViewer.client.vue";
+
+// Import components
+import DeliverableHeader from "@/components/deliverable1/DeliverableHeader.vue";
+import FilterManager from "@/components/deliverable1/FilterManager.vue";
+import ViewModeMap from "@/components/wf/viewmodes/ViewModeMap.vue";
+import ViewModeGrid from "@/components/wf/viewmodes/ViewModeGrid.vue";
+import ViewModeInstagram from "@/components/wf/viewmodes/ViewModeInstagram.vue";
+import ArticleSidePanel from "@/components/ArticleSidePanel.vue";
+import ViewModeListSimple from "~/components/wf/viewmodes/ViewModeListSimple.vue";
+import { WfViewmodesViewModeChat } from "#components";
+
+// i18n composable for language detection
+const { locale, t } = useI18n();
+
+// Page metadata
+definePageMeta({
+  title: "Climate Adaptation Explorer",
+  description:
+    "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
+});
+
+// SEO head
+useHead({
+  title: "Climate Adaptation Explorer - Deliverable 1",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
+    },
+  ],
+});
+
+// Props
+const props = defineProps({
+  title: {
+    type: String,
+    default: "Climate Adaptation Explorer",
+  },
+});
+
+// Reactive state
+const viewMode = ref("list"); // Default to list view
+const searchStore = useSearchStore();
+const route = useRoute();
+const selectedDocument = ref(null);
+const isSidePanelOpen = ref(false);
+const isChatOpen = ref(false);
+const isInsightsOpen = ref(false);
+const isMindmapOpen = ref(false);
+const isMindmapLoading = ref(false);
+const mindmapMarkdown = ref<string>(`# markmap\n\n## Loading...`);
+const selection = useSearchSelectionStore();
+
+// Map demo data for bubble view (from solutionsNakedAlt)
+const dummyData = ref<any[]>([]);
+const uniqueBiogeographicalRegions = ref<string[]>([]);
+const selectedBlock = ref<string>('none');
+const displayTitle = ref<string>('');
+
+// Use search query and search state from store
+const searchQuery = computed({
+  get: () => searchStore.searchQuery,
+  set: (value) => searchStore.setSearchQuery(value),
+});
+
+const isSearching = computed(() => searchStore.isSearching);
+
+// Active filters from FilterManager
+const activeFilters = reactive<Record<string, any>>({});
+
+// Initialize search client
+const client = new OramaClient({
+  endpoint: "https://cloud.orama.run/v1/indexes/test-climateadapt-moif4q",
+  api_key: "REDACTED_ORAMA_API_KEY",
+});
+
+// Methods
+const setViewMode = (mode: string) => {
+  viewMode.value = mode;
+};
+
+// Filter handling methods
+const handleFiltersChanged = (filters: Record<string, any>) => {
+  Object.assign(activeFilters, filters);
+};
+
+const handleSearchResults = (results: any) => {
+  // Handle search results from FilterManager
+  console.log("Search results received:", results);
+};
+
+const handleSearchError = (error: any) => {
+  // Handle search errors from FilterManager
+  console.error("Search error:", error);
+};
+
+const handleArticleClick = (articleId: string) => {
+  const hit = searchStore.resultsData?.hits.find(hit => hit.id === articleId);
+  console.log("Article clicked:", articleId);
+  console.log("Hit:", hit);
+  if (hit?.document) {
+    handleDocumentSelected(hit.document);
+  }
+};
+
+async function search() {
+  if (!searchQuery.value.trim()) return;
+
+  searchStore.setIsSearching(true);
+  let locale1 = locale.value;
+  if (locale1 === "es") {
+    locale1 = "es";
+  } else {
+    locale1 = "en";
+  }
+
+  console.log("locale1", locale1);
+  try {
+    const results = await client.search({
+      term: searchQuery.value,
+      limit: 30,
+      mode: "hybrid",
+      where: {
+        lang: locale1,
+      },
+    });
+    searchStore.setResultsData(results);
+  } catch (error) {
+    console.error("Search error:", error);
+    searchStore.setResultsData(null);
+  } finally {
+    searchStore.setIsSearching(false);
+  }
+}
+
+// Load all articles on mount
+async function loadAllArticles() {
+  searchStore.setIsSearching(true);
+  try {
+    console.log("other search type")
+    const results = await client.search({
+      term: "*", // Empty search to get all results
+      limit: 30,
+      mode: "hybrid",
+      where: {
+        lang: locale.value==="es"?"es":"en"
+          // locale.value === "es" ? { eq: "es" } : { in: ["es", locale.value] },
+          
+      },
+    });
+    searchStore.setResultsData(results);
+  } catch (error) {
+    console.error("Load error:", error);
+    searchStore.setResultsData(null);
+  } finally {
+    searchStore.setIsSearching(false);
+  }
+}
+
+// Document selection handlers
+const handleDocumentSelected = (document: any) => {
+  console.log("handleDocumentSelected", document);
+  selectedDocument.value = document;
+  isSidePanelOpen.value = true;
+};
+
+const handlePanelClose = () => {
+  selectedDocument.value = null;
+  isSidePanelOpen.value = false;
+};
+
+function handleOpenChat() {
+  console.log("[explorer] open chat clicked");
+  isChatOpen.value = true;
+}
+
+function handleOpenInsights() {
+  console.log("[explorer] open insights clicked");
+  isInsightsOpen.value = true;
+}
+
+async function handleOpenMindmap() {
+  isMindmapOpen.value = true;
+  await generateMindmap();
+}
+
+async function generateMindmap() {
+  try {
+    isMindmapLoading.value = true;
+    mindmapMarkdown.value = `# markmap\n\n## Generating...`;
+    const documents = (searchStore.resultsData?.hits || []).slice(0, 20).map((h: any) => {
+      const text = [h.document?.title, h.document?.summary, h.document?.content]
+        .filter(Boolean)
+        .join("\n\n");
+      return `articleId: ${h.id}\n${text}`;
+    });
+    const res = await $fetch('/api/generateMindmap', {
+      method: 'POST',
+      body: {
+        documents,
+      }
+    });
+    mindmapMarkdown.value = (res as any)?.markdown || `# markmap\n\n## No data`;
+  } catch (e) {
+    console.error('Failed to generate mindmap', e);
+    mindmapMarkdown.value = `# markmap\n\n## Failed to generate mindmap`;
+  } finally {
+    isMindmapLoading.value = false;
+  }
+}
+
+function toggleBlock(block: string) {
+  selectedBlock.value = selectedBlock.value === block ? 'none' : block;
+}
+
+// Computed filtered papers (now using search results and active filters)
+const filteredPapers = computed(() => {
+  const searchResults = searchStore.resultsData?.hits || [];
+
+  return searchResults.filter((paper: any) => {
+    // Check sector filter
+    const sectorFilter = activeFilters.sector;
+    const sectorMatch =
+      !sectorFilter ||
+      Object.entries(sectorFilter).some(
+        ([sector, selected]) =>
+          selected && paper.sector?.toLowerCase() === sector
+      );
+
+    // Check hazards filter
+    const hazardsFilter = activeFilters.hazards;
+    const hazardMatch =
+      !hazardsFilter ||
+      Object.entries(hazardsFilter).some(
+        ([hazard, selected]) =>
+          selected &&
+          paper.hazards?.some((h: string) =>
+            h.toLowerCase().includes(hazard.toLowerCase())
+          )
+      );
+
+    // Check phases filter
+    const phasesFilter = activeFilters.phases;
+    const phaseMatch =
+      !phasesFilter ||
+      Object.entries(phasesFilter).some(
+        ([phase, selected]) => selected && paper.phase?.toLowerCase() === phase
+      );
+
+    // Check scales filter
+    const scalesFilter = activeFilters.scales;
+    const scaleMatch =
+      !scalesFilter ||
+      Object.entries(scalesFilter).some(
+        ([scale, selected]) => selected && paper.scale?.toLowerCase() === scale
+      );
+
+    return sectorMatch && hazardMatch && phaseMatch && scaleMatch;
+  });
+});
+
+// Lifecycle
+onMounted(() => {
+  // Check for URL parameters
+  const typeParam = route.query.type;
+  if (typeParam) {
+    const searchTerm = Array.isArray(typeParam) ? typeParam[0] : typeParam;
+    if (searchTerm) {
+      searchQuery.value = searchTerm;
+      search();
+    }
+  } else {
+    // Load all articles by default
+    loadAllArticles();
+  }
+
+  // Fetch demo map data similar to solutionsNakedAlt
+  fetch('/sampledata/combined_data.json')
+    .then(r => r.json())
+    .then((all) => {
+      const onlyEn = (all || []).filter((d: any) => d.lang === 'en');
+      dummyData.value = onlyEn.map((d: any, i: number) => {
+        const raw = d.geographic_characterisation?.biogeographical_regions || '';
+        const regions = raw.split(',').map((r: string) => r.trim());
+        if (!regions[0]) regions[0] = 'none';
+        return {
+          lat: d.location ? d.location.lat : 0,
+          lng: d.location ? d.location.lon : 0,
+          group: i % 3,
+          regions,
+          title: d.title || 'No title',
+          subtitle: d.subtitle || 'No subtitle',
+          sectors: d.sectors || [],
+          adaptation_approaches: d.adaptation_approaches || [],
+          climate_impacts: d.climate_impacts || [],
+          implementation_years: d.implementation_years || {},
+          keywords: d.keywords || []
+        }
+      });
+
+      const biog = dummyData.value
+        .map((d: any) => d.regions)
+        .filter(Boolean)
+        .flat()
+        .map((r: string) => r.split(',').map(s => s.trim()))
+        .flat()
+        .sort((a: string, b: string) => a.localeCompare(b));
+      uniqueBiogeographicalRegions.value = [...new Set(biog)];
+    })
+    .catch((e: unknown) => console.error('Failed to load sample map data', e));
+});
+
+// Watch for language changes and refresh results
+watch(locale, () => {
+  if (searchQuery.value.trim()) {
+    search();
+  } else {
+    loadAllArticles();
+  }
+});
+
+// Select all results by default whenever results change
+watch(
+  () => searchStore.resultsData?.hits,
+  (hits) => {
+    if (!hits || !Array.isArray(hits)) return;
+    selection.clear();
+    selection.selected = hits.map((hit: any) => ({
+      id: hit.id,
+      title: hit.document?.title || "",
+      document: hit.document,
+    }));
+  },
+  { immediate: true }
+);
+</script>
+
+<style scoped>
+button {
+  cursor: pointer;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.side-panel-enter-active,
+.side-panel-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.side-panel-enter-from,
+.side-panel-leave-to {
+  transform: translateX(-100%);
+}
+</style>

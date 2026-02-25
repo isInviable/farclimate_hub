@@ -1,0 +1,278 @@
+<template>
+  <div class="filter-manager">
+    <!-- Active Filters Section -->
+    <div v-if="activeFilters.length > 0" class="mb-6">
+      <div class="flex items-center gap-2 mb-3">
+        <UIcon name="i-heroicons-funnel" class="text-primary-600" size="1.2rem" />
+        <h3 class="font-semibold text-gray-800">Active Filters</h3>
+        <span class="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded-full">
+          {{ activeFilters.length }}
+        </span>
+      </div>
+      
+      <div class="space-y-4">
+        <!-- Search Filter (Active) -->
+        <SearchFilter
+          v-if="isFilterEnabled('search')"
+          :enabled="true"
+          @search-results="handleSearchResults"
+          @search-error="handleSearchError"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <!-- Sector Filter (Active) -->
+        <SectorFilter
+          v-if="isFilterEnabled('sector')"
+          :enabled="true"
+          :data="searchResults"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <HazardsFilter
+          v-if="isFilterEnabled('hazards')"
+          :enabled="true"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <TimeFilter
+          v-if="isFilterEnabled('time')"
+          :enabled="true"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <!-- Add more active filters here -->
+        <!-- <HazardFilter v-if="isFilterEnabled('hazards')" :enabled="true" />
+        <PhaseFilter v-if="isFilterEnabled('phases')" :enabled="true" />
+        <ScaleFilter v-if="isFilterEnabled('scales')" :enabled="true" /> -->
+      </div>
+    </div>
+
+    <!-- Available Filters Section -->
+    <div v-if="availableFilters.length > 0">
+      <div class="flex items-center gap-2 mb-4">
+        <UIcon name="i-heroicons-adjustments-horizontal" class="text-gray-600" size="1.2rem" />
+        <h3 class="font-semibold text-gray-800">Available Filters</h3>
+        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+          {{ availableFilters.length }}
+        </span>
+      </div>
+      
+      <div class="space-y-4">
+        <!-- Search Filter -->
+        <SearchFilter
+          v-if="isFilterAvailable('search')"
+          :enabled="false"
+          @search-results="handleSearchResults"
+          @search-error="handleSearchError"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <!-- Sector Filter -->
+        <SectorFilter
+          v-if="isFilterAvailable('sector')"
+          :enabled="false"
+          :data="searchResults"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <HazardsFilter
+          v-if="isFilterAvailable('hazards')"
+          :enabled="false"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <TimeFilter
+          v-if="isFilterAvailable('time')"
+          :enabled="false"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
+        <!-- Add more filters here -->
+        <!-- <HazardFilter v-if="isFilterAvailable('hazards')" :enabled="false" />
+        <PhaseFilter v-if="isFilterAvailable('phases')" :enabled="false" />
+        <ScaleFilter v-if="isFilterAvailable('scales')" :enabled="false" /> -->
+      </div>
+    </div>
+
+    <!-- No Available Filters Message -->
+    <div v-else class="text-center py-8 text-gray-500">
+      <UIcon name="i-heroicons-check-circle" size="2rem" class="mx-auto mb-2 text-green-500" />
+      <p class="text-sm">All filters are active</p>
+      <p class="text-xs">Remove filters above to make them available again</p>
+    </div>
+
+    <!-- Filter Actions -->
+    <div class="mt-6 pt-4 border-t border-gray-200">
+      <div class="flex gap-2">
+        <UButton
+          variant="outline"
+          color="neutral"
+          size="sm"
+          @click="clearAllFilters"
+          :disabled="activeFilters.length === 0"
+        >
+          Clear All
+        </UButton>
+        <UButton
+          variant="solid"
+          color="primary"
+          size="sm"
+          @click="applyAllFilters"
+          :disabled="activeFilters.length === 0"
+        >
+          Apply Filters
+        </UButton>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, reactive } from 'vue';
+import { useSearchStore } from '@/stores/search';
+import SearchFilter from './SearchFilter.vue';
+import SectorFilter from './SectorFilter.vue';
+import HazardsFilter from './HazardsFilter.vue';
+import TimeFilter from './TimeFilter.vue';
+
+// Props
+const props = defineProps<{
+  searchResults?: any[];
+}>();
+
+// Emits
+const emit = defineEmits<{
+  'filters-changed': [filters: Record<string, any>];
+  'search-results': [results: any];
+  'search-error': [error: any];
+}>();
+
+// Reactive state
+const filters = reactive<Record<string, any>>({});
+const enabledFilters = reactive<Record<string, boolean>>({});
+const searchResults = ref(props.searchResults || []);
+
+// Initialize search filter if there's already a search query
+const searchStore = useSearchStore();
+
+// Check if there's an existing search query and enable search filter
+if (searchStore.searchQuery && searchStore.searchQuery.trim()) {
+  filters.search = searchStore.searchQuery;
+  enabledFilters.search = true;
+}
+
+// Filter metadata
+const filterMetadata = ref([
+  { key: 'search', title: 'Search', icon: 'i-heroicons-magnifying-glass' },
+  { key: 'sector', title: 'Sector', icon: 'i-heroicons-building-office' },
+  { key: 'hazards', title: 'Climate Hazards', icon: 'i-heroicons-exclamation-triangle' },
+  { key: 'phases', title: 'Implementation Phase', icon: 'i-heroicons-clock' },
+  { key: 'scales', title: 'Geographic Scale', icon: 'i-heroicons-map' },
+  { key: 'time', title: 'Time', icon: 'i-heroicons-clock' },
+]);
+
+// Computed
+const activeFilters = computed(() => {
+  return filterMetadata.value
+    .filter(meta => enabledFilters[meta.key])
+    .map(meta => ({
+      ...meta,
+      status: getFilterStatus(meta.key)
+    }));
+});
+
+const availableFilters = computed(() => {
+  return filterMetadata.value
+    .filter(meta => !enabledFilters[meta.key]);
+});
+
+// Methods
+const isFilterEnabled = (key: string): boolean => {
+  return enabledFilters[key] || false;
+};
+
+const isFilterAvailable = (key: string): boolean => {
+  return !enabledFilters[key];
+};
+
+const getFilterStatus = (key: string): string => {
+  const value = filters[key];
+  if (!value) return 'No filter applied';
+  
+  if (typeof value === 'string') {
+    return value;
+  }
+  
+  if (Array.isArray(value)) {
+    return `${value.length} items selected`;
+  }
+  
+  if (typeof value === 'object') {
+    const count = Object.values(value).filter(Boolean).length;
+    return `${count} options selected`;
+  }
+  
+  return 'Filter applied';
+};
+
+const handleFilterChange = (key: string, value: any, enabled: boolean) => {
+  filters[key] = value;
+  enabledFilters[key] = enabled;
+  emit('filters-changed', { ...filters });
+};
+
+const handleFilterClear = (key: string) => {
+  delete filters[key];
+  enabledFilters[key] = false;
+  emit('filters-changed', { ...filters });
+};
+
+const handleFilterApply = (key: string, value: any) => {
+  filters[key] = value;
+  enabledFilters[key] = true;
+  emit('filters-changed', { ...filters });
+};
+
+const handleSearchResults = (results: any) => {
+  searchResults.value = results.hits || [];
+  emit('search-results', results);
+};
+
+const handleSearchError = (error: any) => {
+  emit('search-error', error);
+};
+
+const clearAllFilters = () => {
+  Object.keys(filters).forEach(key => {
+    delete filters[key];
+    enabledFilters[key] = false;
+  });
+  emit('filters-changed', {});
+};
+
+const applyAllFilters = () => {
+  emit('filters-changed', { ...filters });
+};
+</script>
+
+<style scoped>
+.filter-manager {
+  /* Add any specific styles here */
+}
+</style>

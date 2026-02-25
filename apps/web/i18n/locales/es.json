@@ -1,0 +1,135 @@
+{
+  "common": {
+    "search": "Buscar",
+    "searching": "Buscando...",
+    "results": "resultados encontrados",
+    "filters": "Filtros",
+    "view": "Vista",
+    "all": "Todos",
+    "name": "Nombre",
+    "budget": "Presupuesto",
+    "sortBy": "ordenar por",
+    "loading": "Cargando...",
+    "close": "Cerrar",
+    "documentPreview": "Vista Previa del Documento",
+    "openFullPage": "Abrir en vista completa",
+    "tableOfContents": "Tabla de contenidos"
+  },
+  "header": {
+    "home": "inicio",
+    "solutions": "soluciones",
+    "skills": "habilidades",
+    "network": "red",
+    "stories": "historias",
+    "about": "acerca de",
+    "pinsBoard": "Tablero de Marcadores"
+  },
+  "search": {
+    "title": "Explorador de Soluciones",
+    "placeholder": "¿Qué estás buscando?",
+    "filtersApplied": "filtros aplicados",
+    "activeFilters": "Filtros Activos",
+    "availableFilters": "Filtros Disponibles",
+    "dragInstructions": "Arrastra los filtros entre secciones para activarlos o desactivarlos"
+  },
+  "filters": {
+    "activity": "Actividad",
+    "hazards": "Peligros",
+    "location": "Ubicación",
+    "status": "Estado",
+    "time": "Tiempo",
+    "selectBioregion": "Seleccionar Biorregión",
+    "allBioregions": "Todas las Biorregiones",
+    "searchByLocation": "Buscar por ubicación",
+    "lowCost": "Bajo costo",
+    "highCost": "Alto costo"
+  },
+  "status": {
+    "proposal": "Propuesta",
+    "inProgress": "En Progreso",
+    "finished": "Finalizado"
+  },
+  "timeframes": {
+    "recent": "Últimos 10 años",
+    "allProjects": "Todos los proyectos"
+  },
+  "bioregions": {
+    "alpine": "Alpino (Montañas Centroeuropeas)",
+    "atlantic": "Atlántico (Costas de Europa Occidental)",
+    "boreal": "Boreal (Bosques del Norte de Europa)",
+    "continental": "Continental (Llanuras de Europa Central)",
+    "mediterranean": "Mediterráneo (Costa del Sur de Europa)",
+    "amazon": "Selva Amazónica",
+    "andes": "Cordillera de los Andes",
+    "cerrado": "Sabana del Cerrado",
+    "pantanal": "Humedales del Pantanal",
+    "patagonian": "Estepa Patagónica"
+  },
+  "hazards": {
+    "drought": "Sequía",
+    "heatwave": "Ola de Calor",
+    "heavyPrecipitation": "Precipitación Intensa",
+    "wildfire": "Incendio Forestal",
+    "floods": "Inundaciones",
+    "tropicalCyclone": "Ciclón Tropical",
+    "stormSurge": "Marea de Tormenta"
+  },
+  "viewModes": {
+    "list": "Lista",
+    "grid": "Cuadrícula",
+    "instagram": "Instagram",
+    "map": "Mapa",
+    "showProperty": "Mostrar propiedad",
+    "summary": "Resumen",
+    "costBenefit": "Costos y Beneficios",
+    "implementationTime": "Tiempo de Implementación",
+    "lifetime": "Vida Útil",
+    "stakeholderParticipation": "Participación de Interesados",
+    "successLimitations": "Éxitos y Limitaciones"
+  },
+    "listActions": {
+      "default": "Por defecto",
+      "topInsights": "Ideas clave",
+      "chatWithResults": "Pregutar a estos resultados"
+    },
+  "pills": {
+    "forestry": "Silvicultura",
+    "agriculture": "Agricultura",
+    "fishery": "Pesca",
+    "mediterranean": "Mediterráneo",
+    "atlantic": "Atlántico",
+    "continental": "Continental",
+    "alpine": "Alpino",
+    "boreal": "Boreal",
+    "climateAdaptation": "Adaptación climática",
+    "waterManagement": "Gestión del agua",
+    "biodiversity": "Biodiversidad"
+  },
+  "chat": {
+    "example1": "¿Cuáles son los principales desafíos abordados en este proyecto?",
+    "example2": "¿Quiénes son los actores clave involucrados y cuáles son sus roles?",
+    "example3": "¿Puedes resumir el impacto económico y los principales costes?",
+    "example4": "¿Qué soluciones o medidas de adaptación se implementaron?",
+    "example5": "¿Cuáles son las lecciones más importantes aprendidas de este artículo?"
+  },
+  "tabs": {
+    "summary": "Resumen",
+    "structured": "Receta",
+    "full": "Artículo original",
+    "chat": "Chat sobre este artículo"
+  },
+  "summaryHeaders": {
+    "shortDescription": "Descripción corta",
+    "sector": "Sector",
+    "date": "Fecha",
+    "hazards": "Peligros",
+    "typeOfSolution": "Tipo de solución",
+    "whoIsInvolved": "Quién está involucrado",
+    "geographicalScope": "Ámbito geográfico",
+    "economicData": "Datos económicos",
+    "contactPersons": "Personas de contacto",
+    "websites": "Sitios web",
+    "scientificReferences": "Referencias científicas",
+    "keywords": "Palabras clave"
+  }
+} 
