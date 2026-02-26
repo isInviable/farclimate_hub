@@ -159,9 +159,9 @@ const route = useRoute();
 const pinsButtonLink = computed(() => {
   const currentPath = route.path;
   if (currentPath.includes('/board')) {
-    return '/deliverable1/explorer';
+    return '/explorer/explorer';
   }
-  return '/deliverable1/board';
+  return '/explorer/board';
 });
 
 const pinsButtonIcon = computed(() => {
@@ -183,14 +183,14 @@ const pinsButtonLabel = computed(() => {
 // Public share link button visibility
 const showShareButton = computed(() => {
   const p = route.path
-  return p.includes('/deliverable1/board') && !p.includes('/deliverable1/board/public')
+  return p.includes('/explorer/board') && !p.includes('/explorer/board/public')
 })
 
 // Copy public link logic
 const copied = ref(false)
 const publicLink = computed(() => {
   const id = projectsStore.currentProjectId
-  const path = `/deliverable1/board/public/${id ?? ''}`
+  const path = `/explorer/board/public/${id ?? ''}`
   return process.client ? (new URL(path, window.location.origin)).toString() : path
 })
 async function copyPublicLink() {
@@ -219,7 +219,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
     {
       label: 'Projects Dashboard',
       icon: 'material-symbols-light:dashboard',
-      onSelect: () => navigateTo('/deliverable1/projects')
+      onSelect: () => navigateTo('/explorer/projects')
     }
   ]);
 

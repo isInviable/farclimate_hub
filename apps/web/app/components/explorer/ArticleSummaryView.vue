@@ -225,8 +225,8 @@
 </template>
 
 <script setup>
-import SelectableBlock from "~/components/SelectableBlock";
-import MapBase from "~/components/MapBase";
+import SelectableBlock from "./SelectableBlock.vue";
+import MapBase from "./MapBase.vue";
 import MarkdownIt from "markdown-it";
 import { useI18n } from "vue-i18n";
 

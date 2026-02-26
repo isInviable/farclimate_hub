@@ -11,9 +11,8 @@ export default defineNuxtConfig({
     '@nuxt/test-utils',
     '@nuxtjs/google-fonts',
     '@nuxtjs/i18n',
-    '@nuxtjs/supabase',
-    '@pinia/nuxt',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    '@pinia/nuxt'
   ],
   components: [
     {

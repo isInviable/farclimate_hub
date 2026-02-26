@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { computed, watch, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useChat } from "@ai-sdk/vue";
+import { Chat } from "@ai-sdk/vue";
 import MarkdownIt from "markdown-it";
 
 const md = new MarkdownIt();
@@ -89,11 +89,11 @@ const { t } = useI18n();
 const showExamples = ref(true);
 
 const exampleQuestions = computed(() => [
-  t('chat.example1'),
-  t('chat.example2'),
-  t('chat.example3'),
-  t('chat.example4'),
-  t('chat.example5'),
+  t("chat.example1"),
+  t("chat.example2"),
+  t("chat.example3"),
+  t("chat.example4"),
+  t("chat.example5"),
 ]);
 
 const props = defineProps({
@@ -156,9 +156,16 @@ const extractedDocuments = computed(() => {
 
 const chatContainer = ref<HTMLElement | null>(null);
 
-const { messages, input, handleSubmit, status, error } = useChat({
-  api: "/api/chat",
-});
+// Local input state (Chat no longer manages input for us)
+const input = ref("");
+
+// Chat instance using the default HTTP transport (/api/chat)
+const chat = new Chat({});
+
+// Bridge Chat class to Vue reactivity
+const messages = computed(() => chat.messages);
+const status = computed(() => chat.status);
+const error = computed(() => chat.error);
 
 function scrollToBottom() {
   nextTick(() => {
@@ -171,11 +178,20 @@ function scrollToBottom() {
 watch(messages, scrollToBottom, { deep: true });
 
 function onSubmit(event?: Event) {
-  handleSubmit(event, {
-    body: {
-      documents: extractedDocuments.value,
-    },
-  });
+  event?.preventDefault?.();
+  const text = input.value.trim();
+  if (!text) return;
+
+  chat.sendMessage(
+    { text },
+    {
+      body: {
+        documents: extractedDocuments.value,
+      },
+    }
+  );
+
+  input.value = "";
 }
 
 function askExample(question: string) {
