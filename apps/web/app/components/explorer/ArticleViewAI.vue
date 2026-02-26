@@ -26,8 +26,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
-import MapBase from "~/components/MapBase.vue";
-import ViewModeChat from "~/components/wf/viewmodes/ViewModeChat.vue";
 import ArticleStructuredView from './ArticleStructuredView.vue';
 import ArticleSummaryView from './ArticleSummaryView.vue';
 import { useI18n } from 'vue-i18n';

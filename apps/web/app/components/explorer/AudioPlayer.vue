@@ -23,7 +23,7 @@
           class="h-auto w-full bg-gray-50 p-6 rounded-lg flex flex-col items-center"
         >
           <audio
-            src="/media/article_podcast.mp3"
+            :src="audioSrc"
             controls
             autoplay
             class="audio-player w-80"
@@ -48,6 +48,7 @@ const dialogStore = useDialogStore();
 const props = defineProps<{ embedded?: boolean }>();
 
 const isLoading = ref(true);
+const audioSrc = "/media/article_podcast.mp3";
 
 onMounted(() => {
   setTimeout(() => {

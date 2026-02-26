@@ -1,6 +1,6 @@
 <template>
   <div>
-    <beta-connected
+    <Connected
       :projects="projectsWithEntities || []"
       :risks="Array.from(riskCountMap.entries()).map(([risk, count]) => ({ risk, count }))"
       :entities="entitiesWithProjectsTotalCost || []"

@@ -66,7 +66,6 @@
 
 <script setup>
 import { useSearchStore } from "@/stores/search";
-import { Pin } from "@/components/ui/pin";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 
 const searchStore = useSearchStore();

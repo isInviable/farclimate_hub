@@ -15,6 +15,16 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vueuse/nuxt'
   ],
+  components: [
+    {
+      path: '~/components/explorer',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/connected',
+      pathPrefix: false
+    }
+  ],
   devtools: {
     enabled: true
   },
@@ -42,10 +52,12 @@ export default defineNuxtConfig({
   },
   eslint: {
     config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
+      stylistic: false
+      // {
+      // commaDangle: 'never',
+      // braceStyle: '1tbs'
+
+      // }
     }
   },
   i18n: {

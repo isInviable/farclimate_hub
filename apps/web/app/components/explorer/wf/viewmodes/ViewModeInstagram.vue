@@ -63,7 +63,6 @@
 </template>
 
 <script setup>
-import { Pin } from "@/components/ui/pin";
 import { useDocumentStore } from "@/stores/document";
 
 const documentStore = useDocumentStore();

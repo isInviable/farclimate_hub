@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-white px-8">
     <PublicBoardHeader />
 
-    <WfBoardList
+    <BoardList
       :items="pinsStore.pinnedItems"
       :enable-selection="false"
       empty-all-message="The board owner hasn't pinned items yet."
@@ -20,10 +20,6 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useProjectsStore } from '@/stores/projects'
 import { usePinsStore } from '@/stores/pins'
-import PublicBoardHeader from '@/components/wf/PublicBoardHeader.vue'
-import PublicActionBar from '@/components/wf/PublicActionBar.vue'
-import PublicCommentsModal from '@/components/wf/PublicCommentsModal.vue'
-import WfBoardList from '@/components/wf/BoardList.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -52,7 +48,7 @@ onMounted(() => {
 })
 
 const onCloned = (newId: string) => {
-  router.push('/deliverable1/board')
+  router.push('/explorer/board')
 }
 </script>
 

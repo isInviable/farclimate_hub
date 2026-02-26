@@ -97,7 +97,6 @@
 <script setup>
 import { ref, watch, computed } from "vue";
 import MarkdownIt from "markdown-it";
-import { Pin } from "@/components/ui/pin";
 import { useI18n } from "vue-i18n";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 

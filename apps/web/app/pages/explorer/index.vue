@@ -33,7 +33,7 @@
       <!-- Action Buttons -->
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
         <UButton
-          to="/deliverable1/explorer?sector=forestry"
+          :to="{ path: '/explorer/explorer', query: { sector: 'forestry' } }"
           size="lg"
           color="neutral"
           variant="outline"
@@ -47,7 +47,7 @@
         </UButton>
 
         <UButton
-          to="/deliverable1/explorer?sector=fishery"
+          :to="{ path: '/explorer/explorer', query: { sector: 'fishery' } }"
           size="lg"
           color="neutral"
           variant="outline"
@@ -61,7 +61,7 @@
         </UButton>
 
         <UButton
-          to="/deliverable1/explorer?sector=agriculture"
+          :to="{ path: '/explorer/explorer', query: { sector: 'agriculture' } }"
           size="lg"
           color="neutral"
           variant="outline"
@@ -76,7 +76,7 @@
       </div>
       <div class="mt-6 flex justify-center">
           <UButton
-            to="/deliverable1/view-all"
+            :to="{ path: '/explorer/explorer', query: { sector: 'all' } }"
             size="lg"
             color="neutral"
             variant="solid" 
@@ -94,9 +94,21 @@
         <div class="relative">
             You can start with a text search too:
         </div>
-        <div class="flex justify-center">
-          <UInput icon="i-lucide-search" size="md" variant="outline" placeholder="Search..." v-model="searchQuery" />
-          <UButton icon="i-lucide-search" size="md" variant="outline" color="neutral" to="/deliverable1/explorer?query={{ searchQuery }}">
+        <div class="flex justify-center gap-2">
+          <UInput
+            icon="i-lucide-search"
+            size="md"
+            variant="outline"
+            placeholder="Search..."
+            v-model="searchQuery"
+          />
+          <UButton
+            icon="i-lucide-search"
+            size="md"
+            variant="outline"
+            color="neutral"
+            :to="{ path: '/explorer/explorer', query: { query: searchQuery } }"
+          >
             <template #leading>
               <UIcon name="material-symbols-light:search" class="w-6 h-6" />
             </template>
@@ -121,9 +133,6 @@
 </template>
 
 <script lang="ts" setup>
-// Import components
-import DeliverableHeader from "@/components/deliverable1/DeliverableHeader.vue";
-
 const searchQuery = ref("");
 
 // Page metadata

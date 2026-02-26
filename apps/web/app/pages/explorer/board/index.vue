@@ -3,7 +3,7 @@
     <DeliverableHeader />
 
     <!-- Main Content -->
-    <WfBoardList 
+    <BoardList 
       :items="pinsStore.pinnedItems" 
       :enable-selection="true"
       empty-all-message="Start pinning items from the explorer to see them here."
@@ -23,7 +23,7 @@
   <UModal v-model:open="isChatOpen" fullscreen title="Chat about the selected solutions">
     <template #body>
       <div class="max-w-5xl mx-auto">
-        <WfViewmodesViewModeChat :hits="selectedSolutionsHits" />
+        <ViewModeChat :hits="selectedSolutionsHits" />
       </div>
     </template>
   </UModal>
@@ -31,7 +31,7 @@
   <UModal v-model:open="isInsightsOpen" fullscreen title="Top insights about the selected solutions">
     <template #body>
       <div class="max-w-5xl mx-auto">
-        <WfViewmodesViewModeSummaries
+        <ViewModeSummaries
           :hits="selectedSolutionsHits"
         />
       </div>
@@ -74,13 +74,6 @@
 import { ref, computed } from 'vue'
 import { usePinsStore } from '@/stores/pins'
 import { usePinnedSelectionStore } from '@/stores/selection'
-import WfBoardList from '@/components/wf/BoardList.vue'
-import DeliverableHeader from '@/components/deliverable1/DeliverableHeader.vue'
-import ActionBarBoard from '@/components/wf/ActionBarBoard.vue'
-import WfViewmodesViewModeChat from '@/components/wf/viewmodes/ViewModeChat.vue'
-import WfViewmodesViewModeSummaries from '@/components/wf/viewmodes/ViewModeSummaries.vue'
-import VideoPlayer from '@/components/VideoPlayer.vue'
-import AudioPlayer from '@/components/AudioPlayer.vue'
 
 const pinsStore = usePinsStore()
 const selectionStore = usePinnedSelectionStore()

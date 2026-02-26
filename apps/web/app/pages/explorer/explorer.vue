@@ -134,13 +134,13 @@
 
           <!-- Bubble View -->
           <div v-else-if="viewMode === 'bubble'" class="p-6">
-            <wf-dummy-map                
-                :mapData="dummyData"
-                :uniqueBiogeographicalRegions="uniqueBiogeographicalRegions"
-                :viewMode="viewMode"
-                class="w-full h-full"
-                @click.stop="toggleBlock('resultsBox')"
-                @displayThisTitle="(txt: string) => displayTitle = txt"
+            <DummyMap
+              :mapData="dummyData"
+              :uniqueBiogeographicalRegions="uniqueBiogeographicalRegions"
+              :viewMode="viewMode"
+              class="w-full h-full"
+              @click.stop="toggleBlock('resultsBox')"
+              @displayThisTitle="(txt: string) => displayTitle = txt"
             />
           </div>
 
@@ -180,7 +180,7 @@
   <UModal v-model:open="isChatOpen" fullscreen>
     <template #body>
       <div class="max-w-5xl mx-auto">
-        <WfViewmodesViewModeChat :hits="searchStore.resultsData?.hits || []" />
+        <ViewModeChat :hits="searchStore.resultsData?.hits || []" />
       </div>
     </template>
   </UModal>
@@ -188,7 +188,7 @@
   <UModal v-model:open="isInsightsOpen" fullscreen>
     <template #body>
       <div class="max-w-5xl mx-auto">
-        <WfViewmodesViewModeSummaries
+        <ViewModeSummaries
           :hits="searchStore.resultsData?.hits || []"
           :searchQuery="searchQuery"
           :selectedTags="searchStore.selectedTags"
@@ -232,19 +232,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { OramaClient } from "@oramacloud/client";
 import { useSearchStore } from "@/stores/search";
 import { useRoute } from "vue-router";
-import ActionBarExplorer from "@/components/wf/ActionBarExplorer.vue";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
-import MarkmapViewer from "~/components/MarkmapViewer.client.vue";
-
-// Import components
-import DeliverableHeader from "@/components/deliverable1/DeliverableHeader.vue";
-import FilterManager from "@/components/deliverable1/FilterManager.vue";
-import ViewModeMap from "@/components/wf/viewmodes/ViewModeMap.vue";
-import ViewModeGrid from "@/components/wf/viewmodes/ViewModeGrid.vue";
-import ViewModeInstagram from "@/components/wf/viewmodes/ViewModeInstagram.vue";
-import ArticleSidePanel from "@/components/ArticleSidePanel.vue";
-import ViewModeListSimple from "~/components/wf/viewmodes/ViewModeListSimple.vue";
-import { WfViewmodesViewModeChat } from "#components";
 
 // i18n composable for language detection
 const { locale, t } = useI18n();

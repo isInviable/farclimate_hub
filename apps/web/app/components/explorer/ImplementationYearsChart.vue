@@ -2,7 +2,6 @@
 import { VisXYContainer, VisStackedBar, VisAxis, VisTooltip } from "@unovis/vue";
 import { StackedBar } from "@unovis/ts";
 import { ref, computed } from 'vue';
-import { Pin } from '@/components/ui/pin';
 
 import type { SearchResult } from "@/types/search";
 

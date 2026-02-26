@@ -329,7 +329,7 @@ function onNonEuropeanClick(country) {
           :transform="`translate(-${padding.left*3}, ${titleHeight + 96})`"
           class="chart-content"
         >
-          <DashboardMapPathSingle
+          <MapPathSingle
             v-for="geoObj in pathAndData"
             :id="geoObj.id"
             :key="geoObj.id"
@@ -399,7 +399,7 @@ function onNonEuropeanClick(country) {
         <g
           :transform="`translate(${viewBoxWidth / 2}, ${titleHeight + 96})`"
         >
-          <DashboardMiniBarChartMap
+          <MiniBarChartMap
             :data="europeanCountries.sort((a, b) => (b.count || 0) - (a.count || 0))"
             :colors-scale="colorsScale"
             :colors="colors"

@@ -1,0 +1,3106 @@
+{
+  "keywords": [
+    {
+      "name": "green infrastructure",
+      "count": 11
+    },
+    {
+      "name": "green roofs",
+      "count": 7
+    },
+    {
+      "name": "heatwave",
+      "count": 7
+    },
+    {
+      "name": "early warning system",
+      "count": 6
+    },
+    {
+      "name": "water retention",
+      "count": 6
+    },
+    {
+      "name": "water quality",
+      "count": 5
+    },
+    {
+      "name": "elderly people",
+      "count": 5
+    },
+    {
+      "name": "early warning",
+      "count": 5
+    },
+    {
+      "name": "room for the river",
+      "count": 4
+    },
+    {
+      "name": "water saving",
+      "count": 4
+    },
+    {
+      "name": "morbidity",
+      "count": 4
+    },
+    {
+      "name": "mortality",
+      "count": 4
+    },
+    {
+      "name": "wetlands",
+      "count": 4
+    },
+    {
+      "name": "heat island effect",
+      "count": 3
+    },
+    {
+      "name": "Governance",
+      "count": 3
+    },
+    {
+      "name": "green space",
+      "count": 3
+    },
+    {
+      "name": "river restoration",
+      "count": 3
+    },
+    {
+      "name": "mitigation",
+      "count": 3
+    },
+    {
+      "name": "blue-green infrastructure",
+      "count": 3
+    },
+    {
+      "name": "water storage",
+      "count": 3
+    },
+    {
+      "name": "Green infrastructure",
+      "count": 3
+    },
+    {
+      "name": "water drainage",
+      "count": 3
+    },
+    {
+      "name": "crop diversification",
+      "count": 3
+    },
+    {
+      "name": "ecological restoration",
+      "count": 3
+    },
+    {
+      "name": "stormwater management",
+      "count": 3
+    },
+    {
+      "name": "West Nile Virus",
+      "count": 3
+    },
+    {
+      "name": "ecosystem services",
+      "count": 3
+    },
+    {
+      "name": "irrigation",
+      "count": 3
+    },
+    {
+      "name": "permeable surface",
+      "count": 3
+    },
+    {
+      "name": "coastal erosion",
+      "count": 3
+    },
+    {
+      "name": "Health professionals",
+      "count": 3
+    },
+    {
+      "name": "wetland",
+      "count": 3
+    },
+    {
+      "name": "Sigma Plan",
+      "count": 3
+    },
+    {
+      "name": "nature restoration",
+      "count": 3
+    },
+    {
+      "name": "crisis management",
+      "count": 2
+    },
+    {
+      "name": "emergency response",
+      "count": 2
+    },
+    {
+      "name": "first response",
+      "count": 2
+    },
+    {
+      "name": "North Rhine Westphalia",
+      "count": 2
+    },
+    {
+      "name": "bottom-up approach",
+      "count": 2
+    },
+    {
+      "name": "multi-stakeholder approach",
+      "count": 2
+    },
+    {
+      "name": "vulnerable groups",
+      "count": 2
+    },
+    {
+      "name": "quality of life",
+      "count": 2
+    },
+    {
+      "name": "urban planning",
+      "count": 2
+    },
+    {
+      "name": "emergency management",
+      "count": 2
+    },
+    {
+      "name": "mental health",
+      "count": 2
+    },
+    {
+      "name": "mainstreaming",
+      "count": 2
+    },
+    {
+      "name": "Biodiversity conservation",
+      "count": 2
+    },
+    {
+      "name": "habitat restoration",
+      "count": 2
+    },
+    {
+      "name": "surface permeability",
+      "count": 2
+    },
+    {
+      "name": "prevention",
+      "count": 2
+    },
+    {
+      "name": "AgriAdapt",
+      "count": 2
+    },
+    {
+      "name": "organic farming",
+      "count": 2
+    },
+    {
+      "name": "protected area",
+      "count": 2
+    },
+    {
+      "name": "Nature-based solutions",
+      "count": 2
+    },
+    {
+      "name": "co-creation",
+      "count": 2
+    },
+    {
+      "name": "eutrophication",
+      "count": 2
+    },
+    {
+      "name": "hydrogeological risk",
+      "count": 2
+    },
+    {
+      "name": "rainwater retention",
+      "count": 2
+    },
+    {
+      "name": "Dengue",
+      "count": 2
+    },
+    {
+      "name": "Vector-borne diseases",
+      "count": 2
+    },
+    {
+      "name": "invasive species",
+      "count": 2
+    },
+    {
+      "name": "extreme events",
+      "count": 2
+    },
+    {
+      "name": "revegetation",
+      "count": 2
+    },
+    {
+      "name": "Tourism",
+      "count": 2
+    },
+    {
+      "name": "Air quality",
+      "count": 2
+    },
+    {
+      "name": "urban heat island",
+      "count": 2
+    },
+    {
+      "name": "surface runoff",
+      "count": 2
+    },
+    {
+      "name": "Contingency plan",
+      "count": 2
+    },
+    {
+      "name": "sustainable drainage",
+      "count": 2
+    },
+    {
+      "name": "vector-borne disease",
+      "count": 2
+    },
+    {
+      "name": "relocation",
+      "count": 2
+    },
+    {
+      "name": "forest management",
+      "count": 2
+    },
+    {
+      "name": "risk assessment",
+      "count": 2
+    },
+    {
+      "name": "bioclimatic architecture",
+      "count": 2
+    },
+    {
+      "name": "cooling",
+      "count": 2
+    },
+    {
+      "name": "energy efficiency",
+      "count": 2
+    },
+    {
+      "name": "indoor temperature",
+      "count": 2
+    },
+    {
+      "name": "Beach nourishment",
+      "count": 2
+    },
+    {
+      "name": "storm surge",
+      "count": 2
+    },
+    {
+      "name": "nature-based solutions",
+      "count": 2
+    },
+    {
+      "name": "Education",
+      "count": 2
+    },
+    {
+      "name": "flood protection system",
+      "count": 2
+    },
+    {
+      "name": "managed realignment",
+      "count": 2
+    },
+    {
+      "name": "restoration measure",
+      "count": 2
+    },
+    {
+      "name": "saltmarsh",
+      "count": 2
+    },
+    {
+      "name": "soft engineering",
+      "count": 2
+    },
+    {
+      "name": "glacier melt",
+      "count": 2
+    },
+    {
+      "name": "hydropower",
+      "count": 2
+    },
+    {
+      "name": "Cooling",
+      "count": 2
+    },
+    {
+      "name": "NBS",
+      "count": 2
+    },
+    {
+      "name": "green spaces",
+      "count": 2
+    },
+    {
+      "name": "preparedness",
+      "count": 2
+    },
+    {
+      "name": "Habitats Directive",
+      "count": 2
+    },
+    {
+      "name": "public-private partnership",
+      "count": 2
+    },
+    {
+      "name": "embankment",
+      "count": 2
+    },
+    {
+      "name": "Design",
+      "count": 2
+    },
+    {
+      "name": "maintenance",
+      "count": 2
+    },
+    {
+      "name": "operation",
+      "count": 2
+    },
+    {
+      "name": "renaturalisation",
+      "count": 2
+    },
+    {
+      "name": "nature compensation",
+      "count": 2
+    },
+    {
+      "name": "Heat stress",
+      "count": 2
+    },
+    {
+      "name": "protected areas",
+      "count": 2
+    },
+    {
+      "name": "regional development",
+      "count": 2
+    },
+    {
+      "name": "standards",
+      "count": 2
+    },
+    {
+      "name": "green areas",
+      "count": 2
+    },
+    {
+      "name": "incentives",
+      "count": 2
+    },
+    {
+      "name": "Drinking water",
+      "count": 2
+    },
+    {
+      "name": "risk management",
+      "count": 2
+    },
+    {
+      "name": "erosion",
+      "count": 2
+    },
+    {
+      "name": "protection wall",
+      "count": 2
+    },
+    {
+      "name": "Capacity building",
+      "count": 2
+    },
+    {
+      "name": "Bioclimatic architecture",
+      "count": 1
+    },
+    {
+      "name": "sustainable materials",
+      "count": 1
+    },
+    {
+      "name": "thermal insulation",
+      "count": 1
+    },
+    {
+      "name": "Civil Protection",
+      "count": 1
+    },
+    {
+      "name": "Fire danger forecasting",
+      "count": 1
+    },
+    {
+      "name": "Fire risk mapping",
+      "count": 1
+    },
+    {
+      "name": "Wildfires",
+      "count": 1
+    },
+    {
+      "name": "Cell phone",
+      "count": 1
+    },
+    {
+      "name": "avalanche",
+      "count": 1
+    },
+    {
+      "name": "disaster management",
+      "count": 1
+    },
+    {
+      "name": "evacuation",
+      "count": 1
+    },
+    {
+      "name": "location-based",
+      "count": 1
+    },
+    {
+      "name": "mobile phone",
+      "count": 1
+    },
+    {
+      "name": "population-based",
+      "count": 1
+    },
+    {
+      "name": "rock slide",
+      "count": 1
+    },
+    {
+      "name": "collaborative governance",
+      "count": 1
+    },
+    {
+      "name": "communities empowerment",
+      "count": 1
+    },
+    {
+      "name": "multi-level governance",
+      "count": 1
+    },
+    {
+      "name": "regional authorities",
+      "count": 1
+    },
+    {
+      "name": "roadmapping",
+      "count": 1
+    },
+    {
+      "name": "rural areas",
+      "count": 1
+    },
+    {
+      "name": "social innovation",
+      "count": 1
+    },
+    {
+      "name": "vision-driven approach",
+      "count": 1
+    },
+    {
+      "name": "SWITCH project",
+      "count": 1
+    },
+    {
+      "name": "Sokołówka River",
+      "count": 1
+    },
+    {
+      "name": "green and blue network",
+      "count": 1
+    },
+    {
+      "name": "storm-water management",
+      "count": 1
+    },
+    {
+      "name": "emergency psychology",
+      "count": 1
+    },
+    {
+      "name": "Urban planning",
+      "count": 1
+    },
+    {
+      "name": "climate proofing",
+      "count": 1
+    },
+    {
+      "name": "greyfield",
+      "count": 1
+    },
+    {
+      "name": "multi-criteria analysis",
+      "count": 1
+    },
+    {
+      "name": "coastal lagoons",
+      "count": 1
+    },
+    {
+      "name": "sediment management",
+      "count": 1
+    },
+    {
+      "name": "Enschede",
+      "count": 1
+    },
+    {
+      "name": "Hengelo",
+      "count": 1
+    },
+    {
+      "name": "Watermachine",
+      "count": 1
+    },
+    {
+      "name": "multi-functional area",
+      "count": 1
+    },
+    {
+      "name": "water purification",
+      "count": 1
+    },
+    {
+      "name": "Collective garden",
+      "count": 1
+    },
+    {
+      "name": "affordable housing",
+      "count": 1
+    },
+    {
+      "name": "private commissioning",
+      "count": 1
+    },
+    {
+      "name": "rainwater tank",
+      "count": 1
+    },
+    {
+      "name": "prepardness",
+      "count": 1
+    },
+    {
+      "name": "protection",
+      "count": 1
+    },
+    {
+      "name": "Segovia",
+      "count": 1
+    },
+    {
+      "name": "crop rotation",
+      "count": 1
+    },
+    {
+      "name": "local varieties",
+      "count": 1
+    },
+    {
+      "name": "soil management",
+      "count": 1
+    },
+    {
+      "name": "Fire prevention",
+      "count": 1
+    },
+    {
+      "name": "Mediterranean forests",
+      "count": 1
+    },
+    {
+      "name": "Mixed forest",
+      "count": 1
+    },
+    {
+      "name": "Pest management",
+      "count": 1
+    },
+    {
+      "name": "Wood and non-wood forest products",
+      "count": 1
+    },
+    {
+      "name": "Dorset",
+      "count": 1
+    },
+    {
+      "name": "developer fee",
+      "count": 1
+    },
+    {
+      "name": "development",
+      "count": 1
+    },
+    {
+      "name": "funding scheme",
+      "count": 1
+    },
+    {
+      "name": "heathland",
+      "count": 1
+    },
+    {
+      "name": "wildfire",
+      "count": 1
+    },
+    {
+      "name": "living labs",
+      "count": 1
+    },
+    {
+      "name": "participatory approach",
+      "count": 1
+    },
+    {
+      "name": "soil erosion",
+      "count": 1
+    },
+    {
+      "name": "stakeholder involvment",
+      "count": 1
+    },
+    {
+      "name": "transferability",
+      "count": 1
+    },
+    {
+      "name": "Extreme rainfall",
+      "count": 1
+    },
+    {
+      "name": "Linnaeus Canal",
+      "count": 1
+    },
+    {
+      "name": "Växjö lake",
+      "count": 1
+    },
+    {
+      "name": "pollutants",
+      "count": 1
+    },
+    {
+      "name": "sedimentation lagoons",
+      "count": 1
+    },
+    {
+      "name": "water flow",
+      "count": 1
+    },
+    {
+      "name": "Chikungunya",
+      "count": 1
+    },
+    {
+      "name": "citizen science",
+      "count": 1
+    },
+    {
+      "name": "mosquitoes",
+      "count": 1
+    },
+    {
+      "name": "Energy distribution",
+      "count": 1
+    },
+    {
+      "name": "snow load",
+      "count": 1
+    },
+    {
+      "name": "tree fall",
+      "count": 1
+    },
+    {
+      "name": "underground cabling",
+      "count": 1
+    },
+    {
+      "name": "wind storm",
+      "count": 1
+    },
+    {
+      "name": "Ecosystem connectivity",
+      "count": 1
+    },
+    {
+      "name": "green belt",
+      "count": 1
+    },
+    {
+      "name": "urban plantation",
+      "count": 1
+    },
+    {
+      "name": "urban regeneration",
+      "count": 1
+    },
+    {
+      "name": "Ecodistrict",
+      "count": 1
+    },
+    {
+      "name": "energy saving",
+      "count": 1
+    },
+    {
+      "name": "mitigation measures",
+      "count": 1
+    },
+    {
+      "name": "mobility",
+      "count": 1
+    },
+    {
+      "name": "urban sprawl",
+      "count": 1
+    },
+    {
+      "name": "crop production",
+      "count": 1
+    },
+    {
+      "name": "drought risk",
+      "count": 1
+    },
+    {
+      "name": "index-based insurance",
+      "count": 1
+    },
+    {
+      "name": "Lionfish",
+      "count": 1
+    },
+    {
+      "name": "Natura 2000 network",
+      "count": 1
+    },
+    {
+      "name": "diving",
+      "count": 1
+    },
+    {
+      "name": "information portals",
+      "count": 1
+    },
+    {
+      "name": "smart-phone applications",
+      "count": 1
+    },
+    {
+      "name": "stakeholders' involvement",
+      "count": 1
+    },
+    {
+      "name": "blue infrastructure",
+      "count": 1
+    },
+    {
+      "name": "spatial planning",
+      "count": 1
+    },
+    {
+      "name": "Ecosystem-based adaptation",
+      "count": 1
+    },
+    {
+      "name": "drainage",
+      "count": 1
+    },
+    {
+      "name": "heavy precipitation",
+      "count": 1
+    },
+    {
+      "name": "local adaptation",
+      "count": 1
+    },
+    {
+      "name": "rainwater management",
+      "count": 1
+    },
+    {
+      "name": "Biomass",
+      "count": 1
+    },
+    {
+      "name": "Drax",
+      "count": 1
+    },
+    {
+      "name": "Hull",
+      "count": 1
+    },
+    {
+      "name": "Immingham",
+      "count": 1
+    },
+    {
+      "name": "Liverpool",
+      "count": 1
+    },
+    {
+      "name": "Tyne",
+      "count": 1
+    },
+    {
+      "name": "fuel supply",
+      "count": 1
+    },
+    {
+      "name": "harbour infrastructrue",
+      "count": 1
+    },
+    {
+      "name": "ports",
+      "count": 1
+    },
+    {
+      "name": "power station",
+      "count": 1
+    },
+    {
+      "name": "extreme precipitation",
+      "count": 1
+    },
+    {
+      "name": "groundwater modelling",
+      "count": 1
+    },
+    {
+      "name": "health care facilities",
+      "count": 1
+    },
+    {
+      "name": "hospital",
+      "count": 1
+    },
+    {
+      "name": "Nijmegen",
+      "count": 1
+    },
+    {
+      "name": "dike relocation",
+      "count": 1
+    },
+    {
+      "name": "integrated approach",
+      "count": 1
+    },
+    {
+      "name": "urban development",
+      "count": 1
+    },
+    {
+      "name": "NWRM",
+      "count": 1
+    },
+    {
+      "name": "biodiversity monitoring",
+      "count": 1
+    },
+    {
+      "name": "bioretention",
+      "count": 1
+    },
+    {
+      "name": "cost-benefit analysis",
+      "count": 1
+    },
+    {
+      "name": "detention basin",
+      "count": 1
+    },
+    {
+      "name": "hydrological monitoring",
+      "count": 1
+    },
+    {
+      "name": "porous paving",
+      "count": 1
+    },
+    {
+      "name": "rain garden",
+      "count": 1
+    },
+    {
+      "name": "rainwater drainage",
+      "count": 1
+    },
+    {
+      "name": "upscaling of NbS",
+      "count": 1
+    },
+    {
+      "name": "IRRINET",
+      "count": 1
+    },
+    {
+      "name": "decision support system",
+      "count": 1
+    },
+    {
+      "name": "scheduling",
+      "count": 1
+    },
+    {
+      "name": "water balance",
+      "count": 1
+    },
+    {
+      "name": "Land use planning",
+      "count": 1
+    },
+    {
+      "name": "Public Private Partenership",
+      "count": 1
+    },
+    {
+      "name": "stakeholder process",
+      "count": 1
+    },
+    {
+      "name": "sustainable urban development",
+      "count": 1
+    },
+    {
+      "name": "open stormwater system",
+      "count": 1
+    },
+    {
+      "name": "regeneration",
+      "count": 1
+    },
+    {
+      "name": "biodiversity conservation",
+      "count": 1
+    },
+    {
+      "name": "green space measures",
+      "count": 1
+    },
+    {
+      "name": "green walls",
+      "count": 1
+    },
+    {
+      "name": "landscape design",
+      "count": 1
+    },
+    {
+      "name": "landscape planning",
+      "count": 1
+    },
+    {
+      "name": "Infection",
+      "count": 1
+    },
+    {
+      "name": "Surveillance",
+      "count": 1
+    },
+    {
+      "name": "Avalanches",
+      "count": 1
+    },
+    {
+      "name": "economic compensation",
+      "count": 1
+    },
+    {
+      "name": "economic incentives",
+      "count": 1
+    },
+    {
+      "name": "landslides",
+      "count": 1
+    },
+    {
+      "name": "Forest fire",
+      "count": 1
+    },
+    {
+      "name": "information network",
+      "count": 1
+    },
+    {
+      "name": "land use planning",
+      "count": 1
+    },
+    {
+      "name": "monitoring station",
+      "count": 1
+    },
+    {
+      "name": "Regional governance",
+      "count": 1
+    },
+    {
+      "name": "carbon sequestration",
+      "count": 1
+    },
+    {
+      "name": "heat waves",
+      "count": 1
+    },
+    {
+      "name": "natural water retention measures",
+      "count": 1
+    },
+    {
+      "name": "river runoff",
+      "count": 1
+    },
+    {
+      "name": "water retention measures",
+      "count": 1
+    },
+    {
+      "name": "",
+      "count": 1
+    },
+    {
+      "name": "watershed restoration",
+      "count": 1
+    },
+    {
+      "name": "green facades",
+      "count": 1
+    },
+    {
+      "name": "Flanders",
+      "count": 1
+    },
+    {
+      "name": "Master Plan",
+      "count": 1
+    },
+    {
+      "name": "Ostend",
+      "count": 1
+    },
+    {
+      "name": "coastal safety",
+      "count": 1
+    },
+    {
+      "name": "harbour improvement",
+      "count": 1
+    },
+    {
+      "name": "storm events",
+      "count": 1
+    },
+    {
+      "name": "Camargue",
+      "count": 1
+    },
+    {
+      "name": "Rhone",
+      "count": 1
+    },
+    {
+      "name": "coastal wetlands",
+      "count": 1
+    },
+    {
+      "name": "hydrological connectivity",
+      "count": 1
+    },
+    {
+      "name": "saltworks",
+      "count": 1
+    },
+    {
+      "name": "Health",
+      "count": 1
+    },
+    {
+      "name": "climate health literacy",
+      "count": 1
+    },
+    {
+      "name": "professional development",
+      "count": 1
+    },
+    {
+      "name": "Ecological restoration",
+      "count": 1
+    },
+    {
+      "name": "Hesketh Out",
+      "count": 1
+    },
+    {
+      "name": "coastal defence",
+      "count": 1
+    },
+    {
+      "name": "Superblocks",
+      "count": 1
+    },
+    {
+      "name": "fair transition",
+      "count": 1
+    },
+    {
+      "name": "gentrification",
+      "count": 1
+    },
+    {
+      "name": "green urban areas",
+      "count": 1
+    },
+    {
+      "name": "Invasive species",
+      "count": 1
+    },
+    {
+      "name": "management plan",
+      "count": 1
+    },
+    {
+      "name": "marshes",
+      "count": 1
+    },
+    {
+      "name": "nature conservation",
+      "count": 1
+    },
+    {
+      "name": "water regime",
+      "count": 1
+    },
+    {
+      "name": "Aedes",
+      "count": 1
+    },
+    {
+      "name": "Early Warning System",
+      "count": 1
+    },
+    {
+      "name": "Malaria",
+      "count": 1
+    },
+    {
+      "name": "Mosquito-borne disease",
+      "count": 1
+    },
+    {
+      "name": "epidemiological surveillance",
+      "count": 1
+    },
+    {
+      "name": "Asset expansion",
+      "count": 1
+    },
+    {
+      "name": "asset redesign",
+      "count": 1
+    },
+    {
+      "name": "reservoir management",
+      "count": 1
+    },
+    {
+      "name": "Green building",
+      "count": 1
+    },
+    {
+      "name": "fee",
+      "count": 1
+    },
+    {
+      "name": "rainwater",
+      "count": 1
+    },
+    {
+      "name": "soil sealing",
+      "count": 1
+    },
+    {
+      "name": "subsidy",
+      "count": 1
+    },
+    {
+      "name": "Emscher",
+      "count": 1
+    },
+    {
+      "name": "cross-sectoral approach",
+      "count": 1
+    },
+    {
+      "name": "flood control area",
+      "count": 1
+    },
+    {
+      "name": "habitat network",
+      "count": 1
+    },
+    {
+      "name": "nature based solutions",
+      "count": 1
+    },
+    {
+      "name": "wastewater",
+      "count": 1
+    },
+    {
+      "name": "water sensitive urban development",
+      "count": 1
+    },
+    {
+      "name": "Checklist",
+      "count": 1
+    },
+    {
+      "name": "guidance",
+      "count": 1
+    },
+    {
+      "name": "vulnerable social groups",
+      "count": 1
+    },
+    {
+      "name": "Feasibility study",
+      "count": 1
+    },
+    {
+      "name": "infrastructure modernization",
+      "count": 1
+    },
+    {
+      "name": "management measures",
+      "count": 1
+    },
+    {
+      "name": "operation continuity",
+      "count": 1
+    },
+    {
+      "name": "rail alignment",
+      "count": 1
+    },
+    {
+      "name": "rail resilience",
+      "count": 1
+    },
+    {
+      "name": "retaining walls",
+      "count": 1
+    },
+    {
+      "name": "technical measures",
+      "count": 1
+    },
+    {
+      "name": "Alert system",
+      "count": 1
+    },
+    {
+      "name": "North Macedonia",
+      "count": 1
+    },
+    {
+      "name": "health plan",
+      "count": 1
+    },
+    {
+      "name": "EU mission on Adaptation",
+      "count": 1
+    },
+    {
+      "name": "Multi level governance",
+      "count": 1
+    },
+    {
+      "name": "Depoldering",
+      "count": 1
+    },
+    {
+      "name": "Scheldt",
+      "count": 1
+    },
+    {
+      "name": "flood area",
+      "count": 1
+    },
+    {
+      "name": "stakeholder opposition",
+      "count": 1
+    },
+    {
+      "name": "Forest fire prevention",
+      "count": 1
+    },
+    {
+      "name": "Forest fires",
+      "count": 1
+    },
+    {
+      "name": "extensive livestock farming",
+      "count": 1
+    },
+    {
+      "name": "firefighters",
+      "count": 1
+    },
+    {
+      "name": "occupational health",
+      "count": 1
+    },
+    {
+      "name": "pasture",
+      "count": 1
+    },
+    {
+      "name": "prescribed fire",
+      "count": 1
+    },
+    {
+      "name": "smoke exposure",
+      "count": 1
+    },
+    {
+      "name": "Agro-ecology",
+      "count": 1
+    },
+    {
+      "name": "agro-forestry",
+      "count": 1
+    },
+    {
+      "name": "autonomous adaptation",
+      "count": 1
+    },
+    {
+      "name": "community supported agriculture",
+      "count": 1
+    },
+    {
+      "name": "extensive agriculture",
+      "count": 1
+    },
+    {
+      "name": "montado",
+      "count": 1
+    },
+    {
+      "name": "permaculture",
+      "count": 1
+    },
+    {
+      "name": "rain-fed agriculture",
+      "count": 1
+    },
+    {
+      "name": "Biological protective measures",
+      "count": 1
+    },
+    {
+      "name": "forest conservation",
+      "count": 1
+    },
+    {
+      "name": "risk map",
+      "count": 1
+    },
+    {
+      "name": "rockfall",
+      "count": 1
+    },
+    {
+      "name": "GAIA",
+      "count": 1
+    },
+    {
+      "name": "corporate responsibility",
+      "count": 1
+    },
+    {
+      "name": "trees",
+      "count": 1
+    },
+    {
+      "name": "climate change mitigation",
+      "count": 1
+    },
+    {
+      "name": "drainage system",
+      "count": 1
+    },
+    {
+      "name": "ecological status",
+      "count": 1
+    },
+    {
+      "name": "monitoring reporting and evaluation (MRE)",
+      "count": 1
+    },
+    {
+      "name": "Archimede screws",
+      "count": 1
+    },
+    {
+      "name": "Canal",
+      "count": 1
+    },
+    {
+      "name": "biodiversity protection",
+      "count": 1
+    },
+    {
+      "name": "inland shipping",
+      "count": 1
+    },
+    {
+      "name": "inland waterways",
+      "count": 1
+    },
+    {
+      "name": "lock system",
+      "count": 1
+    },
+    {
+      "name": "low discharges",
+      "count": 1
+    },
+    {
+      "name": "navigability",
+      "count": 1
+    },
+    {
+      "name": "water ecosystem",
+      "count": 1
+    },
+    {
+      "name": "Controlled flood area",
+      "count": 1
+    },
+    {
+      "name": "Scheldt estuary",
+      "count": 1
+    },
+    {
+      "name": "depoldering",
+      "count": 1
+    },
+    {
+      "name": "dike",
+      "count": 1
+    },
+    {
+      "name": "Vipava Valley",
+      "count": 1
+    },
+    {
+      "name": "decision support systems",
+      "count": 1
+    },
+    {
+      "name": "airport",
+      "count": 1
+    },
+    {
+      "name": "monitoring",
+      "count": 1
+    },
+    {
+      "name": "wind",
+      "count": 1
+    },
+    {
+      "name": "Action plan",
+      "count": 1
+    },
+    {
+      "name": "cross-sectoral",
+      "count": 1
+    },
+    {
+      "name": "equality assessment",
+      "count": 1
+    },
+    {
+      "name": "heat",
+      "count": 1
+    },
+    {
+      "name": "multi-agency",
+      "count": 1
+    },
+    {
+      "name": "Green measure",
+      "count": 1
+    },
+    {
+      "name": "Sandomierz",
+      "count": 1
+    },
+    {
+      "name": "Vistula",
+      "count": 1
+    },
+    {
+      "name": "reservoir",
+      "count": 1
+    },
+    {
+      "name": "water pump",
+      "count": 1
+    },
+    {
+      "name": "Biodiversity monitoring",
+      "count": 1
+    },
+    {
+      "name": "Forest ecosystem services",
+      "count": 1
+    },
+    {
+      "name": "Forest restoration",
+      "count": 1
+    },
+    {
+      "name": "SUPERB",
+      "count": 1
+    },
+    {
+      "name": "Agroforestry",
+      "count": 1
+    },
+    {
+      "name": "Montpellier",
+      "count": 1
+    },
+    {
+      "name": "food production",
+      "count": 1
+    },
+    {
+      "name": "walnut trees",
+      "count": 1
+    },
+    {
+      "name": "wheat",
+      "count": 1
+    },
+    {
+      "name": "citizen engagement",
+      "count": 1
+    },
+    {
+      "name": "freshwater ecosystems",
+      "count": 1
+    },
+    {
+      "name": "sewage system",
+      "count": 1
+    },
+    {
+      "name": "Coastal defense",
+      "count": 1
+    },
+    {
+      "name": "RSPB",
+      "count": 1
+    },
+    {
+      "name": "biking",
+      "count": 1
+    },
+    {
+      "name": "business diversification",
+      "count": 1
+    },
+    {
+      "name": "highlands",
+      "count": 1
+    },
+    {
+      "name": "hiking",
+      "count": 1
+    },
+    {
+      "name": "winter sport",
+      "count": 1
+    },
+    {
+      "name": "Madrid",
+      "count": 1
+    },
+    {
+      "name": "groundwater recharge",
+      "count": 1
+    },
+    {
+      "name": "sustainable urban drainage systems",
+      "count": 1
+    },
+    {
+      "name": "urban park",
+      "count": 1
+    },
+    {
+      "name": "Biosphere reserve",
+      "count": 1
+    },
+    {
+      "name": "Oka River",
+      "count": 1
+    },
+    {
+      "name": "Urdaibai",
+      "count": 1
+    },
+    {
+      "name": "ecological role",
+      "count": 1
+    },
+    {
+      "name": "estuary",
+      "count": 1
+    },
+    {
+      "name": "marshland",
+      "count": 1
+    },
+    {
+      "name": "Energy generation",
+      "count": 1
+    },
+    {
+      "name": "dam overtopping",
+      "count": 1
+    },
+    {
+      "name": "piano key weir",
+      "count": 1
+    },
+    {
+      "name": "precipitation",
+      "count": 1
+    },
+    {
+      "name": "snow melt",
+      "count": 1
+    },
+    {
+      "name": "Climate anxiety",
+      "count": 1
+    },
+    {
+      "name": "Mental health",
+      "count": 1
+    },
+    {
+      "name": "eco-anxiety",
+      "count": 1
+    },
+    {
+      "name": "ecological emotions",
+      "count": 1
+    },
+    {
+      "name": "IMDEA",
+      "count": 1
+    },
+    {
+      "name": "building orientation",
+      "count": 1
+    },
+    {
+      "name": "energy consumption",
+      "count": 1
+    },
+    {
+      "name": "Urban greening",
+      "count": 1
+    },
+    {
+      "name": "heat forecast system",
+      "count": 1
+    },
+    {
+      "name": "high resolution climate modelling",
+      "count": 1
+    },
+    {
+      "name": "unpaved surface",
+      "count": 1
+    },
+    {
+      "name": "Good practices",
+      "count": 1
+    },
+    {
+      "name": "Nurses",
+      "count": 1
+    },
+    {
+      "name": "education",
+      "count": 1
+    },
+    {
+      "name": "healthcare",
+      "count": 1
+    },
+    {
+      "name": "Integrated approach",
+      "count": 1
+    },
+    {
+      "name": "nature development",
+      "count": 1
+    },
+    {
+      "name": "re-meandering",
+      "count": 1
+    },
+    {
+      "name": "Connectivity",
+      "count": 1
+    },
+    {
+      "name": "green infrastructures",
+      "count": 1
+    },
+    {
+      "name": "wetland action plan",
+      "count": 1
+    },
+    {
+      "name": "wetland adaptation strategy",
+      "count": 1
+    },
+    {
+      "name": "Aquifer recharge",
+      "count": 1
+    },
+    {
+      "name": "forested infiltration area",
+      "count": 1
+    },
+    {
+      "name": "multifunctional forest",
+      "count": 1
+    },
+    {
+      "name": "mountain regions",
+      "count": 1
+    },
+    {
+      "name": "natural hazards",
+      "count": 1
+    },
+    {
+      "name": "socio-economic vulnerability",
+      "count": 1
+    },
+    {
+      "name": "Flood risk management",
+      "count": 1
+    },
+    {
+      "name": "fixed barriers",
+      "count": 1
+    },
+    {
+      "name": "grey measures",
+      "count": 1
+    },
+    {
+      "name": "mobile barriers",
+      "count": 1
+    },
+    {
+      "name": "pumping systems",
+      "count": 1
+    },
+    {
+      "name": "safety valves",
+      "count": 1
+    },
+    {
+      "name": "disease reporting system",
+      "count": 1
+    },
+    {
+      "name": "surveillance",
+      "count": 1
+    },
+    {
+      "name": "tick-borne diseases",
+      "count": 1
+    },
+    {
+      "name": "Ecosystem Services",
+      "count": 1
+    },
+    {
+      "name": "Marine Ecosystem",
+      "count": 1
+    },
+    {
+      "name": "coastal ecosystem",
+      "count": 1
+    },
+    {
+      "name": "coral reefs",
+      "count": 1
+    },
+    {
+      "name": "ecological mooring",
+      "count": 1
+    },
+    {
+      "name": "ecosystem restoration",
+      "count": 1
+    },
+    {
+      "name": "mangroves",
+      "count": 1
+    },
+    {
+      "name": "seagrass meadows",
+      "count": 1
+    },
+    {
+      "name": "Bond",
+      "count": 1
+    },
+    {
+      "name": "credit rating",
+      "count": 1
+    },
+    {
+      "name": "parks",
+      "count": 1
+    },
+    {
+      "name": "private investors",
+      "count": 1
+    },
+    {
+      "name": "tree planting",
+      "count": 1
+    },
+    {
+      "name": "Saimaa lake",
+      "count": 1
+    },
+    {
+      "name": "Saimaa ringed seal",
+      "count": 1
+    },
+    {
+      "name": "conservation method",
+      "count": 1
+    },
+    {
+      "name": "endangered species",
+      "count": 1
+    },
+    {
+      "name": "man-made snowdrift",
+      "count": 1
+    },
+    {
+      "name": "pup mortality",
+      "count": 1
+    },
+    {
+      "name": "sub-nivean lair",
+      "count": 1
+    },
+    {
+      "name": "App BaEm",
+      "count": 1
+    },
+    {
+      "name": "digital knowledge transfer",
+      "count": 1
+    },
+    {
+      "name": "forest drought stress",
+      "count": 1
+    },
+    {
+      "name": "tree species recommendations",
+      "count": 1
+    },
+    {
+      "name": "tree species selection",
+      "count": 1
+    },
+    {
+      "name": "web portal BaEm",
+      "count": 1
+    },
+    {
+      "name": "Behaviour change",
+      "count": 1
+    },
+    {
+      "name": "leakages",
+      "count": 1
+    },
+    {
+      "name": "mixed solutions",
+      "count": 1
+    },
+    {
+      "name": "sustainable consumption",
+      "count": 1
+    },
+    {
+      "name": "tariffs",
+      "count": 1
+    },
+    {
+      "name": "water consumption",
+      "count": 1
+    },
+    {
+      "name": "Eco-social water tariff",
+      "count": 1
+    },
+    {
+      "name": "Social justice",
+      "count": 1
+    },
+    {
+      "name": "Biodiversity enhancement",
+      "count": 1
+    },
+    {
+      "name": "Danube",
+      "count": 1
+    },
+    {
+      "name": "flood management",
+      "count": 1
+    },
+    {
+      "name": "floodplain restoration",
+      "count": 1
+    },
+    {
+      "name": "green corridor",
+      "count": 1
+    },
+    {
+      "name": "Insurance data",
+      "count": 1
+    },
+    {
+      "name": "cloudburst",
+      "count": 1
+    },
+    {
+      "name": "municipality",
+      "count": 1
+    },
+    {
+      "name": "rainfall damages",
+      "count": 1
+    },
+    {
+      "name": "Insurance company",
+      "count": 1
+    },
+    {
+      "name": "SME",
+      "count": 1
+    },
+    {
+      "name": "private sector",
+      "count": 1
+    },
+    {
+      "name": "public private partnership",
+      "count": 1
+    },
+    {
+      "name": "risk awareness",
+      "count": 1
+    },
+    {
+      "name": "desertification",
+      "count": 1
+    },
+    {
+      "name": "water retention landscapes",
+      "count": 1
+    },
+    {
+      "name": "municipal infrastructure",
+      "count": 1
+    },
+    {
+      "name": "sewage treatment plant",
+      "count": 1
+    },
+    {
+      "name": "Amphibious houses",
+      "count": 1
+    },
+    {
+      "name": "building permit",
+      "count": 1
+    },
+    {
+      "name": "floating",
+      "count": 1
+    },
+    {
+      "name": "flood zones",
+      "count": 1
+    },
+    {
+      "name": "safety",
+      "count": 1
+    },
+    {
+      "name": "Holla church",
+      "count": 1
+    },
+    {
+      "name": "building materials",
+      "count": 1
+    },
+    {
+      "name": "frost-twaw cycles",
+      "count": 1
+    },
+    {
+      "name": "ruins",
+      "count": 1
+    },
+    {
+      "name": "Catchment management",
+      "count": 1
+    },
+    {
+      "name": "environmental enhancement",
+      "count": 1
+    },
+    {
+      "name": "flood retention",
+      "count": 1
+    },
+    {
+      "name": "upstream measures",
+      "count": 1
+    },
+    {
+      "name": "urban-rural interface",
+      "count": 1
+    },
+    {
+      "name": "Children",
+      "count": 1
+    },
+    {
+      "name": "EEA grants",
+      "count": 1
+    },
+    {
+      "name": "urban green space",
+      "count": 1
+    },
+    {
+      "name": "River delta",
+      "count": 1
+    },
+    {
+      "name": "Waterproofing",
+      "count": 1
+    },
+    {
+      "name": "port infrastructure",
+      "count": 1
+    },
+    {
+      "name": "port logistics",
+      "count": 1
+    },
+    {
+      "name": "spatial adaptation",
+      "count": 1
+    },
+    {
+      "name": "Numana",
+      "count": 1
+    },
+    {
+      "name": "Sirolo",
+      "count": 1
+    },
+    {
+      "name": "beach nourishment",
+      "count": 1
+    },
+    {
+      "name": "stakeholder consultation",
+      "count": 1
+    },
+    {
+      "name": "tourism",
+      "count": 1
+    },
+    {
+      "name": "Economic Policy Instruments",
+      "count": 1
+    },
+    {
+      "name": "Tisza",
+      "count": 1
+    },
+    {
+      "name": "polders",
+      "count": 1
+    },
+    {
+      "name": "retention ponds",
+      "count": 1
+    },
+    {
+      "name": "temporary storage reservoirs",
+      "count": 1
+    },
+    {
+      "name": "Allgäu region",
+      "count": 1
+    },
+    {
+      "name": "bog",
+      "count": 1
+    },
+    {
+      "name": "conservation",
+      "count": 1
+    },
+    {
+      "name": "moor",
+      "count": 1
+    },
+    {
+      "name": "Climate-proofing",
+      "count": 1
+    },
+    {
+      "name": "West London",
+      "count": 1
+    },
+    {
+      "name": "light-engineering measures",
+      "count": 1
+    },
+    {
+      "name": "local communities",
+      "count": 1
+    },
+    {
+      "name": "retrofit",
+      "count": 1
+    },
+    {
+      "name": "social housing",
+      "count": 1
+    },
+    {
+      "name": "housing",
+      "count": 1
+    },
+    {
+      "name": "participatory budget",
+      "count": 1
+    },
+    {
+      "name": "social vulnerability",
+      "count": 1
+    },
+    {
+      "name": "Cost benefit assessment",
+      "count": 1
+    },
+    {
+      "name": "economics",
+      "count": 1
+    },
+    {
+      "name": "heavy rainfall",
+      "count": 1
+    },
+    {
+      "name": "Elevation of ground level",
+      "count": 1
+    },
+    {
+      "name": "Zorrotzaurre district",
+      "count": 1
+    },
+    {
+      "name": "public-private parternship",
+      "count": 1
+    },
+    {
+      "name": "river expansion",
+      "count": 1
+    },
+    {
+      "name": "stormwater tanks",
+      "count": 1
+    },
+    {
+      "name": "urban redevelopment",
+      "count": 1
+    },
+    {
+      "name": "Community",
+      "count": 1
+    },
+    {
+      "name": "compensation",
+      "count": 1
+    },
+    {
+      "name": "resettlement",
+      "count": 1
+    },
+    {
+      "name": "social",
+      "count": 1
+    },
+    {
+      "name": "Lisbon",
+      "count": 1
+    },
+    {
+      "name": "Asset management",
+      "count": 1
+    },
+    {
+      "name": "railway",
+      "count": 1
+    },
+    {
+      "name": "Heat waves",
+      "count": 1
+    },
+    {
+      "name": "Urban heat island",
+      "count": 1
+    },
+    {
+      "name": "cooling places",
+      "count": 1
+    },
+    {
+      "name": "just adaptation",
+      "count": 1
+    },
+    {
+      "name": "schoolyards",
+      "count": 1
+    },
+    {
+      "name": "social inclusion",
+      "count": 1
+    },
+    {
+      "name": "vulnerable population",
+      "count": 1
+    },
+    {
+      "name": "Basel",
+      "count": 1
+    },
+    {
+      "name": "building regulations",
+      "count": 1
+    },
+    {
+      "name": "cooling indor temperature",
+      "count": 1
+    },
+    {
+      "name": "Kraichgau",
+      "count": 1
+    },
+    {
+      "name": "crop calendar",
+      "count": 1
+    },
+    {
+      "name": "crop mixture",
+      "count": 1
+    },
+    {
+      "name": "soil structure",
+      "count": 1
+    },
+    {
+      "name": "extreme heat",
+      "count": 1
+    },
+    {
+      "name": "labour",
+      "count": 1
+    },
+    {
+      "name": "outdoor activity",
+      "count": 1
+    },
+    {
+      "name": "Crowdfunding",
+      "count": 1
+    },
+    {
+      "name": "citizen involvement",
+      "count": 1
+    },
+    {
+      "name": "edible street",
+      "count": 1
+    },
+    {
+      "name": "sustainable food production",
+      "count": 1
+    },
+    {
+      "name": "urban farming",
+      "count": 1
+    },
+    {
+      "name": "vertical garden",
+      "count": 1
+    },
+    {
+      "name": "water demand",
+      "count": 1
+    },
+    {
+      "name": "water supply",
+      "count": 1
+    },
+    {
+      "name": "ERDF",
+      "count": 1
+    },
+    {
+      "name": "Smolyan",
+      "count": 1
+    },
+    {
+      "name": "flood risk management",
+      "count": 1
+    },
+    {
+      "name": "river bed",
+      "count": 1
+    },
+    {
+      "name": "dunes",
+      "count": 1
+    },
+    {
+      "name": "recreational area",
+      "count": 1
+    },
+    {
+      "name": "Asian tiger mosquito",
+      "count": 1
+    },
+    {
+      "name": "Upper Rhine",
+      "count": 1
+    },
+    {
+      "name": "Bazel",
+      "count": 1
+    },
+    {
+      "name": "Kruibeke",
+      "count": 1
+    },
+    {
+      "name": "Rupelmonde",
+      "count": 1
+    },
+    {
+      "name": "Scheldt Estuary",
+      "count": 1
+    },
+    {
+      "name": "controlled flood areas",
+      "count": 1
+    },
+    {
+      "name": "Natura 2000",
+      "count": 1
+    },
+    {
+      "name": "UNESCO world heritage site",
+      "count": 1
+    },
+    {
+      "name": "dead wood biomass",
+      "count": 1
+    },
+    {
+      "name": "eco-bridge",
+      "count": 1
+    },
+    {
+      "name": "resilient tree species",
+      "count": 1
+    },
+    {
+      "name": "Forest Agreement",
+      "count": 1
+    },
+    {
+      "name": "LiDAR",
+      "count": 1
+    },
+    {
+      "name": "artificial lake",
+      "count": 1
+    },
+    {
+      "name": "community of practice",
+      "count": 1
+    },
+    {
+      "name": "forest fire risk",
+      "count": 1
+    },
+    {
+      "name": "forest planning",
+      "count": 1
+    },
+    {
+      "name": "prescribed burn",
+      "count": 1
+    },
+    {
+      "name": "remote sensing",
+      "count": 1
+    },
+    {
+      "name": "sustainable forest management",
+      "count": 1
+    },
+    {
+      "name": "Isar river",
+      "count": 1
+    },
+    {
+      "name": "Munich",
+      "count": 1
+    },
+    {
+      "name": "flood protection",
+      "count": 1
+    },
+    {
+      "name": "Continuous professional development",
+      "count": 1
+    },
+    {
+      "name": "Lectures",
+      "count": 1
+    },
+    {
+      "name": "Planetary Health",
+      "count": 1
+    },
+    {
+      "name": "De-rating",
+      "count": 1
+    },
+    {
+      "name": "electricity distribution",
+      "count": 1
+    },
+    {
+      "name": "line sagging",
+      "count": 1
+    },
+    {
+      "name": "power lines",
+      "count": 1
+    },
+    {
+      "name": "UV alert system",
+      "count": 1
+    },
+    {
+      "name": "forest fires",
+      "count": 1
+    },
+    {
+      "name": "heat alert system",
+      "count": 1
+    },
+    {
+      "name": "information dissemination",
+      "count": 1
+    },
+    {
+      "name": "participation",
+      "count": 1
+    },
+    {
+      "name": "Green roof",
+      "count": 1
+    },
+    {
+      "name": "financial incentives",
+      "count": 1
+    },
+    {
+      "name": "heat island",
+      "count": 1
+    },
+    {
+      "name": "multifunctional measure",
+      "count": 1
+    },
+    {
+      "name": "open space",
+      "count": 1
+    },
+    {
+      "name": "psychological care",
+      "count": 1
+    },
+    {
+      "name": "psychosocial support",
+      "count": 1
+    },
+    {
+      "name": "trauma support",
+      "count": 1
+    },
+    {
+      "name": "Risk management",
+      "count": 1
+    },
+    {
+      "name": "cascade effect",
+      "count": 1
+    },
+    {
+      "name": "critical infrastructure",
+      "count": 1
+    },
+    {
+      "name": "grid",
+      "count": 1
+    },
+    {
+      "name": "substation",
+      "count": 1
+    },
+    {
+      "name": "Copenhagen",
+      "count": 1
+    },
+    {
+      "name": "design standard",
+      "count": 1
+    },
+    {
+      "name": "metro",
+      "count": 1
+    },
+    {
+      "name": "urban transport",
+      "count": 1
+    },
+    {
+      "name": "Fluvial flooding",
+      "count": 1
+    },
+    {
+      "name": "International waterways",
+      "count": 1
+    },
+    {
+      "name": "River Basins Management Plans",
+      "count": 1
+    },
+    {
+      "name": "Sava River Basin",
+      "count": 1
+    },
+    {
+      "name": "transnational coordination",
+      "count": 1
+    },
+    {
+      "name": "transnational water managment",
+      "count": 1
+    },
+    {
+      "name": "Broadland",
+      "count": 1
+    },
+    {
+      "name": "dikes",
+      "count": 1
+    },
+    {
+      "name": "river banks",
+      "count": 1
+    },
+    {
+      "name": "setback",
+      "count": 1
+    },
+    {
+      "name": "Sewage overflow",
+      "count": 1
+    },
+    {
+      "name": "bathing water",
+      "count": 1
+    },
+    {
+      "name": "stormwater",
+      "count": 1
+    },
+    {
+      "name": "water treatment plants",
+      "count": 1
+    },
+    {
+      "name": "Alpine hazard",
+      "count": 1
+    },
+    {
+      "name": "railway infrastructure",
+      "count": 1
+    },
+    {
+      "name": "structural measures",
+      "count": 1
+    },
+    {
+      "name": "Big data",
+      "count": 1
+    },
+    {
+      "name": "distribution network",
+      "count": 1
+    },
+    {
+      "name": "leakage monitoring",
+      "count": 1
+    },
+    {
+      "name": "non-revenue water",
+      "count": 1
+    },
+    {
+      "name": "water efficiency",
+      "count": 1
+    }
+  ],
+  "adaptation_approaches": [
+    {
+      "name": "Adaptation Measures and Actions",
+      "count": 125
+    },
+    {
+      "name": "Societal aspects",
+      "count": 78
+    },
+    {
+      "name": "Environmental aspects",
+      "count": 72
+    },
+    {
+      "name": "Nature-based solutions",
+      "count": 63
+    },
+    {
+      "name": "Adaptation Plans and Strategies",
+      "count": 36
+    },
+    {
+      "name": "Mitigation aspects",
+      "count": 33
+    },
+    {
+      "name": "MRE",
+      "count": 29
+    },
+    {
+      "name": "Cost-benefit analysis and maintenance costs",
+      "count": 27
+    },
+    {
+      "name": "Economic aspects",
+      "count": 26
+    },
+    {
+      "name": "Replication/upscaling potential",
+      "count": 26
+    },
+    {
+      "name": "Climate services",
+      "count": 17
+    },
+    {
+      "name": "Vulnerability Assessment",
+      "count": 17
+    },
+    {
+      "name": "Just Resilience",
+      "count": 16
+    },
+    {
+      "name": "Observations and Scenarios",
+      "count": 15
+    },
+    {
+      "name": "Sector Policies",
+      "count": 10
+    }
+  ],
+  "climate_impacts": [
+    {
+      "name": "Flooding",
+      "count": 75
+    },
+    {
+      "name": "Extreme Temperatures",
+      "count": 66
+    },
+    {
+      "name": "Droughts",
+      "count": 37
+    },
+    {
+      "name": "Storms",
+      "count": 35
+    },
+    {
+      "name": "Water Scarcity",
+      "count": 30
+    },
+    {
+      "name": "Sea Level Rise",
+      "count": 20
+    },
+    {
+      "name": "Ice and Snow",
+      "count": 13
+    },
+    {
+      "name": "Non specific",
+      "count": 11
+    }
+  ],
+  "implementation_years": [
+    {
+      "year": "1976",
+      "count": 1
+    },
+    {
+      "year": "1977",
+      "count": 3
+    },
+    {
+      "year": "1978",
+      "count": 3
+    },
+    {
+      "year": "1979",
+      "count": 3
+    },
+    {
+      "year": "1980",
+      "count": 3
+    },
+    {
+      "year": "1981",
+      "count": 3
+    },
+    {
+      "year": "1982",
+      "count": 3
+    },
+    {
+      "year": "1983",
+      "count": 3
+    },
+    {
+      "year": "1984",
+      "count": 3
+    },
+    {
+      "year": "1985",
+      "count": 3
+    },
+    {
+      "year": "1986",
+      "count": 3
+    },
+    {
+      "year": "1987",
+      "count": 3
+    },
+    {
+      "year": "1988",
+      "count": 3
+    },
+    {
+      "year": "1989",
+      "count": 3
+    },
+    {
+      "year": "1990",
+      "count": 3
+    },
+    {
+      "year": "1991",
+      "count": 3
+    },
+    {
+      "year": "1992",
+      "count": 4
+    },
+    {
+      "year": "1993",
+      "count": 4
+    },
+    {
+      "year": "1994",
+      "count": 5
+    },
+    {
+      "year": "1995",
+      "count": 4
+    },
+    {
+      "year": "1996",
+      "count": 5
+    },
+    {
+      "year": "1997",
+      "count": 6
+    },
+    {
+      "year": "1998",
+      "count": 8
+    },
+    {
+      "year": "1999",
+      "count": 8
+    },
+    {
+      "year": "2000",
+      "count": 11
+    },
+    {
+      "year": "2001",
+      "count": 13
+    },
+    {
+      "year": "2002",
+      "count": 13
+    },
+    {
+      "year": "2003",
+      "count": 14
+    },
+    {
+      "year": "2004",
+      "count": 16
+    },
+    {
+      "year": "2005",
+      "count": 17
+    },
+    {
+      "year": "2006",
+      "count": 20
+    },
+    {
+      "year": "2007",
+      "count": 20
+    },
+    {
+      "year": "2008",
+      "count": 26
+    },
+    {
+      "year": "2009",
+      "count": 29
+    },
+    {
+      "year": "2010",
+      "count": 39
+    },
+    {
+      "year": "2011",
+      "count": 46
+    },
+    {
+      "year": "2012",
+      "count": 41
+    },
+    {
+      "year": "2013",
+      "count": 44
+    },
+    {
+      "year": "2014",
+      "count": 42
+    },
+    {
+      "year": "2015",
+      "count": 43
+    },
+    {
+      "year": "2016",
+      "count": 46
+    },
+    {
+      "year": "2017",
+      "count": 42
+    },
+    {
+      "year": "2018",
+      "count": 40
+    },
+    {
+      "year": "2019",
+      "count": 41
+    },
+    {
+      "year": "2020",
+      "count": 46
+    },
+    {
+      "year": "2021",
+      "count": 44
+    },
+    {
+      "year": "2022",
+      "count": 39
+    },
+    {
+      "year": "2023",
+      "count": 26
+    },
+    {
+      "year": "2024",
+      "count": 22
+    },
+    {
+      "year": "2025",
+      "count": 10
+    },
+    {
+      "year": "2026",
+      "count": 7
+    },
+    {
+      "year": "2027",
+      "count": 6
+    },
+    {
+      "year": "2028",
+      "count": 6
+    },
+    {
+      "year": "2029",
+      "count": 6
+    },
+    {
+      "year": "2030",
+      "count": 6
+    },
+    {
+      "year": "2031",
+      "count": 2
+    },
+    {
+      "year": "2032",
+      "count": 1
+    },
+    {
+      "year": "2033",
+      "count": 1
+    },
+    {
+      "year": "2034",
+      "count": 1
+    },
+    {
+      "year": "2035",
+      "count": 1
+    },
+    {
+      "year": "2036",
+      "count": 1
+    },
+    {
+      "year": "2037",
+      "count": 1
+    }
+  ],
+  "year_range": {
+    "first_year": 1976,
+    "last_year": 2037
+  }
+}

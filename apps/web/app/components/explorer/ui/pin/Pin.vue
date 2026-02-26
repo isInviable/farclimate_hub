@@ -5,8 +5,8 @@
     :class="{ 'pin-active': isPinned }"
   >
     <slot></slot>
-    <uPopover arrow v-model:open="isPopoverOpen">
-      <uButton
+    <UPopover arrow v-model:open="isPopoverOpen">
+      <UButton
         @click="handlePin"
         icon="mdi:pin"
         variant="ghost"
@@ -14,7 +14,7 @@
         class="cursor-pointer pin-button absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-1 rounded-full shadow-md hover:bg-gray-50"
         :class="{ 'opacity-100': isPinned }"
       >
-      </uButton>
+      </UButton>
       <template #content>
         <div class="flex flex-col gap-2 px-4 py-4">
           <UTextarea
@@ -27,12 +27,11 @@
           <UButton @click="isPopoverOpen = false" class="cursor-pointer" color="neutral">Save</UButton>
         </div>
       </template>
-    </uPopover>
+    </UPopover>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
 import { usePin } from "@/composables/usePin";
 import { usePinsStore } from "@/stores/pins";
 

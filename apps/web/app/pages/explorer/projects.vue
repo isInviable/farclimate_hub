@@ -17,12 +17,12 @@
               items
             </p>
           </div>
-          <UButton
-            @click="createNewProject"
-            icon="i-heroicons-plus"
-            color="primary"
-            size="lg"
-          >
+        <UButton
+          @click="createNewProject"
+          icon="i-heroicons-plus"
+          color="primary"
+          size="lg"
+        >
             Create New Project
           </UButton>
         </div>
@@ -151,12 +151,12 @@
             Create your first project to start organizing your climate
             adaptation research and pinned items.
           </p>
-          <UButton
-            @click="createNewProject"
-            icon="i-heroicons-plus"
-            color="primary"
-            size="lg"
-          >
+        <UButton
+          @click="createNewProject"
+          icon="i-heroicons-plus"
+          color="primary"
+          size="lg"
+        >
             Create Your First Project
           </UButton>
         </div>
@@ -260,8 +260,6 @@ import { useProjectsStore } from "@/stores/projects";
 import { usePinsStore } from "@/stores/pins";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Project } from "@/stores/projects";
-
-import DeliverableHeader from "@/components/deliverable1/DeliverableHeader.vue";
 // Page metadata
 definePageMeta({
   title: "Projects Dashboard",
@@ -337,7 +335,7 @@ const switchToProject = (projectId: string) => {
     projectsStore.saveCurrentProjectPins(); // Save current project's pins
     projectsStore.switchToProject(projectId);
     // Navigate to explorer after switching
-    navigateTo("/deliverable1/explorer");
+    navigateTo("/explorer/explorer");
   }
 };
 

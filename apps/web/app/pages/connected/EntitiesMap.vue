@@ -4,7 +4,7 @@
     <article class="fixed top-2 left-2 w-sm flex flex-col gap-2  z-10">
 
         <!-- panel risks -->
-      <customUiSidePanel
+      <SidePanel
         :title="'Risks'"
         :tot="riskOptions ? riskOptions.length : 0"
         :count_active="activeRisks.size"
@@ -28,10 +28,10 @@
         </ul>
         </template>
 
-      </customUiSidePanel>
+      </SidePanel>
 
         <!-- panel themes -->
-        <customUiSidePanel
+        <SidePanel
         :title="'Themes'"
         :tot="themeOptions ? themeOptions.length : 0"
         :count_active="activeThemes.size"
@@ -55,10 +55,10 @@
         </ul>
         </template>
 
-        </customUiSidePanel>
+        </SidePanel>
 
          <!-- panel projects -->
-        <customUiSidePanel
+        <SidePanel
             :title="'Projects'"
             :tot="projectsWithSimpleEntities.length"
             :count_active="activeProjects.size"
@@ -79,10 +79,10 @@
             </ul>
         </template>
 
-        </customUiSidePanel>
+        </SidePanel>
 
         <!-- panel entities -->
-        <customUiSidePanel
+        <SidePanel
             :title="'Entities'"
             :tot="entitiesWithProjectsTotalCost.length"
             :count_active="activeEntities.size"
@@ -100,7 +100,7 @@
                 </li>
                 </ul>
           </template>
-        </customUiSidePanel>
+        </SidePanel>
      
 
     </article>
@@ -108,7 +108,7 @@
     <!-- nuts panel -->
     <article class="fixed top-2 right-2 w-sm text-xs z-10">
 
-        <customUiSidePanel
+        <SidePanel
             :title="'regions NUTS3'"
             :tot="regions.size"
             :count_active="activeRegions.size"
@@ -126,7 +126,7 @@
            </ul>
         </template>
 
-        </customUiSidePanel>
+        </SidePanel>
 
         <article class="bg-white rounded shadow-lg mt-2 p-2">
 <div class="flex justify-between gap-2">
@@ -153,7 +153,7 @@
 
     </article>
 
-    <beta-entities-map
+    <EntitiesMap
         :entities="entitiesWithProjectsTotalCost || []"
         :overedNutsId="overedNutsId"
         :active-nuts-id="activeNutsId"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <beta-umap-projects-new
+    <UmapProjectsNew
       :projects="projectItems"
       :years="yearsRange"
       :riskCircles="riskItems"

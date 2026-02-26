@@ -32,7 +32,6 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import MapBase from '@/components/MapBase.vue';
 
 const props = defineProps({
   results: {

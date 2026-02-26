@@ -410,7 +410,7 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
         <!-- Row 1: Map (2 cols) | Right Column (1 col) -->
         <!-- Map + Bar Chart (2 columns) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-2">
-          <DashboardMapBarChart
+          <MapBarChart
             :data="dataForEntitiesByCountry"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
@@ -473,13 +473,13 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
           </div>
 
           <!-- Projects BAN -->
-          <DashboardBAN title="Projects" :value="totalProjects" :items="processedData.projects" />
+          <BAN title="Projects" :value="totalProjects" :items="processedData.projects" />
         </div>
 
         <!-- Row 2: Projects by Topic (2 cols) | Institutions + Products BANs (1 col) -->
         <!-- Projects by Topic (2 columns) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white border-gray-50 border-2">
-          <DashboardHorizontalBarChart
+          <HorizontalBarChart
             :global-data="dataForProjectsByTheme"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
@@ -502,14 +502,14 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
 
         <!-- Institutions + Products BANs in right column (Row 2) -->
         <div class="flex flex-col gap-4">
-          <DashboardBAN title="Institutions" :value="totalEntities" :items="processedData.entities" />
-          <DashboardBAN title="Products" :value="totalProducts" :items="processedData.products" />
+          <BAN title="Institutions" :value="totalEntities" :items="processedData.entities" />
+          <BAN title="Products" :value="totalProducts" :items="processedData.products" />
         </div>
 
         <!-- Row 3: Projects by Risk (2 cols) | Empty (1 col) -->
         <!-- Projects by Risk (2 columns) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white border-gray-50 border-2">
-          <DashboardHorizontalBarChart
+          <HorizontalBarChart
             :global-data="dataForProjectsByRisk"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
@@ -539,7 +539,7 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
 
         <!-- Row 5: Projects Evolution by Topic (2 cols) | Empty (1 col) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-2">
-          <DashboardProjectsEvolutionByTopic
+          <ProjectsEvolutionByTopic
             :data="dataForProjectsEvolutionByTopic"
             :has-filtered-data="hasFilteredData"
           />
@@ -547,7 +547,7 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
         <div class="flex flex-col gap-4">
                   <!-- Projects per Year (1 column) -->
         <div class="bg-white border-gray-50 border-2">
-          <DashboardAreaChart
+          <AreaChart
             :global-data="dataForProjectsByYear"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
@@ -559,7 +559,7 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
 
         <!-- Investment per Year (1 column) -->
         <div class="bg-white border-gray-50 border-2">
-          <DashboardAreaChart
+          <AreaChart
             :global-data="dataForInvestmentByYear"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"

@@ -27,7 +27,7 @@
             muted
             loop
           >
-            <source src="/media/test_summary.mp4" type="video/mp4" />
+            <source :src="videoSrc" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -50,6 +50,7 @@ const dialogStore = useDialogStore();
 const props = defineProps<{ embedded?: boolean }>();
 
 const isLoading = ref(true);
+const videoSrc = "/media/test_summary.mp4";
 
 onMounted(() => {
   setTimeout(() => {

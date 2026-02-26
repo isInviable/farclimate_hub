@@ -79,7 +79,6 @@
 <script setup lang="ts">
 import { computed, watch, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { Button } from "@/components/ui/button";
 import { useChat } from "@ai-sdk/vue";
 import MarkdownIt from "markdown-it";
 

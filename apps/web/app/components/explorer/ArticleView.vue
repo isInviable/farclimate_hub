@@ -126,7 +126,6 @@
 <script setup>
 import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
-import MapBase from '~/components/MapBase.vue';
 
 const md = new MarkdownIt({
   html: true,

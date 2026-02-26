@@ -2,8 +2,8 @@
   <div class="bg-gray-100 min-h-screen flex flex-col">
     <div class="bg-neutral">
       <div class="w-11/12 lg:w-10/12 mx-auto py-2">
-        <NuxtLink 
-          to="/deliverable1/explorer"
+        <NuxtLink
+          to="/explorer/board"
           class="text-primary-400 hover:text-primary-300 flex items-center gap-2 text-sm"
         >
           <UIcon name="i-heroicons-arrow-left" />
@@ -112,11 +112,6 @@
 import { ref, computed } from "vue";
 import { useMySpaceStore } from "@/stores/mySpace";
 import { usePinnedSelectionStore } from "@/stores/selection";
-import MapBase from "@/components/MapBase.vue";
-import ImplementationYearsChart from "@/components/ImplementationYearsChart.vue";
-import ArticleView from "@/components/ArticleView.vue";
-import DummyBars from "@/components/wf/filters/dummyBars.vue";
-import DeliverableHeader from "@/components/deliverable1/DeliverableHeader.vue";
 
 const mySpaceStore = useMySpaceStore();
 const selectionStore = usePinnedSelectionStore();
