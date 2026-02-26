@@ -59,6 +59,8 @@ The function SHALL return a table with columns:
 
 Results SHALL be ordered by similarity descending (most similar first) and limited to `match_count` rows.
 
+**Note:** The `hybrid_search` function internally uses the same embeddings table but via its own CTE, not by calling `match_documents`. Both functions coexist independently.
+
 #### Scenario: Basic similarity search
 - **WHEN** a client calls `knowledge.match_documents` with a query embedding
 - **THEN** the function SHALL return up to `match_count` documents ordered by descending cosine similarity

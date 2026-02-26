@@ -12,6 +12,9 @@ async function main() {
     "05_enable_vector.sql",
     "06_create_embeddings.sql",
     "07_match_documents_fn.sql",
+    "08_add_fts_column.sql",
+    "09_keyword_search_fn.sql",
+    "10_hybrid_search_fn.sql",
   ]);
 
   console.log("\nAll tables created successfully.");
