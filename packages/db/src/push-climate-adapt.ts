@@ -1,8 +1,14 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { sql } from "./config.js";
+import {
+  computeEmbedding,
+  composeEmbeddingText,
+  EMBEDDING_MODEL,
+  EMBEDDING_DIMENSIONS,
+} from "./embed.js";
 
-const AUGMENTED_DIR = resolve(import.meta.dirname, "..", "..", "pipeline", "augmented");
+const AUGMENTED_DIR = resolve(import.meta.dirname, "..", "..", "..", "pipeline", "augmented");
 const SOURCE_TYPE = "climate_adapt_case_study";
 
 // ---------------------------------------------------------------------------
@@ -140,6 +146,26 @@ async function upsertFulltext(
   `;
 }
 
+async function upsertEmbedding(
+  documentId: string,
+  lang: string,
+  contentType: string,
+  model: string,
+  dimensions: number,
+  embedding: number[],
+): Promise<void> {
+  const vectorLiteral = `[${embedding.join(",")}]`;
+  await sql.unsafe(
+    `INSERT INTO knowledge.embeddings (document_id, lang, content_type, model, dimensions, embedding)
+     VALUES ($1, $2, $3, $4, $5, $6::knowledge.vector)
+     ON CONFLICT (document_id, lang, content_type) DO UPDATE SET
+       model      = EXCLUDED.model,
+       dimensions = EXCLUDED.dimensions,
+       embedding  = EXCLUDED.embedding`,
+    [documentId, lang, contentType, model, dimensions, vectorLiteral],
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -175,6 +201,31 @@ async function main() {
       summary: doc.summary as string | undefined,
     });
     await upsertFulltext(documentId, "en", (doc.fulltext as string) ?? null);
+
+    const embeddingText = composeEmbeddingText(
+      doc.title as string | undefined,
+      doc.summary as string | undefined,
+      doc.fulltext as string | undefined,
+    );
+    if (embeddingText) {
+      try {
+        const uid = buildDocumentUid(doc.source_url as string, sourceFile);
+        const { embedding, cached } = await computeEmbedding(embeddingText);
+        await upsertEmbedding(
+          documentId,
+          "en",
+          "composed",
+          EMBEDDING_MODEL,
+          EMBEDDING_DIMENSIONS,
+          embedding,
+        );
+        console.log(`  [EMB] ${uid} -> ${cached ? "cached" : "computed"}`);
+      } catch (err) {
+        console.warn(`  [EMB] Failed for ${sourceFile}:`, err);
+      }
+    } else {
+      console.warn(`  [EMB] Skipping ${sourceFile}: no text to embed`);
+    }
   }
 
   // --- Pass 2: Process ES translation files ---
