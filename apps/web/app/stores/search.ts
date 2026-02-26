@@ -1,5 +1,3 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import type { SearchResult } from '@/types/search'
 
 export const useSearchStore = defineStore('search', () => {
@@ -65,4 +63,4 @@ export const useSearchStore = defineStore('search', () => {
     setResultsData,
     setIsSearching
   }
-}) 
+})

@@ -8,7 +8,7 @@ export default withNuxt({
     '@stylistic': 'off',
     // JS/TS indentation (from ESLint Stylistic)
     '@stylistic/js/indent': 'off',
-    '@stylistic/js/quotes': 'off',
+    '@stylistic/js/quotes': ['error', 'double'],
 
     // Vue template/script indentation
     'vue/html-indent': 'off',

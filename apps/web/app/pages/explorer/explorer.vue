@@ -228,14 +228,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from "vue";
-import { OramaClient } from "@oramacloud/client";
 import { useSearchStore } from "@/stores/search";
-import { useRoute } from "vue-router";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
+import { useHybridSearch } from "@/composables/useHybridSearch";
 
 // i18n composable for language detection
-const { locale, t } = useI18n();
+const { locale } = useI18n();
 
 // Page metadata
 definePageMeta({
@@ -265,9 +263,10 @@ const props = defineProps({
 });
 
 // Reactive state
-const viewMode = ref("list"); // Default to list view
+const viewMode = ref("list");
 const searchStore = useSearchStore();
 const route = useRoute();
+const { search: hybridSearch, loadAll, isSearching: _hybridSearching } = useHybridSearch();
 const selectedDocument = ref(null);
 const isSidePanelOpen = ref(false);
 const isChatOpen = ref(false);
@@ -293,12 +292,6 @@ const isSearching = computed(() => searchStore.isSearching);
 
 // Active filters from FilterManager
 const activeFilters = reactive<Record<string, any>>({});
-
-// Initialize search client
-const client = new OramaClient({
-  endpoint: "https://cloud.orama.run/v1/indexes/test-climateadapt-moif4q",
-  api_key: "REDACTED_ORAMA_API_KEY",
-});
 
 // Methods
 const setViewMode = (mode: string) => {
@@ -331,56 +324,11 @@ const handleArticleClick = (articleId: string) => {
 
 async function search() {
   if (!searchQuery.value.trim()) return;
-
-  searchStore.setIsSearching(true);
-  let locale1 = locale.value;
-  if (locale1 === "es") {
-    locale1 = "es";
-  } else {
-    locale1 = "en";
-  }
-
-  console.log("locale1", locale1);
-  try {
-    const results = await client.search({
-      term: searchQuery.value,
-      limit: 30,
-      mode: "hybrid",
-      where: {
-        lang: locale1,
-      },
-    });
-    searchStore.setResultsData(results);
-  } catch (error) {
-    console.error("Search error:", error);
-    searchStore.setResultsData(null);
-  } finally {
-    searchStore.setIsSearching(false);
-  }
+  await hybridSearch(searchQuery.value);
 }
 
-// Load all articles on mount
 async function loadAllArticles() {
-  searchStore.setIsSearching(true);
-  try {
-    console.log("other search type")
-    const results = await client.search({
-      term: "*", // Empty search to get all results
-      limit: 30,
-      mode: "hybrid",
-      where: {
-        lang: locale.value==="es"?"es":"en"
-          // locale.value === "es" ? { eq: "es" } : { in: ["es", locale.value] },
-          
-      },
-    });
-    searchStore.setResultsData(results);
-  } catch (error) {
-    console.error("Load error:", error);
-    searchStore.setResultsData(null);
-  } finally {
-    searchStore.setIsSearching(false);
-  }
+  await loadAll();
 }
 
 // Document selection handlers
@@ -444,41 +392,39 @@ const filteredPapers = computed(() => {
   const searchResults = searchStore.resultsData?.hits || [];
 
   return searchResults.filter((paper: any) => {
-    // Check sector filter
+    const doc = paper.document || paper;
+
     const sectorFilter = activeFilters.sector;
+    const docSectors = Array.isArray(doc.sectors) ? doc.sectors : doc.sectors ? [doc.sectors] : [];
     const sectorMatch =
       !sectorFilter ||
       Object.entries(sectorFilter).some(
         ([sector, selected]) =>
-          selected && paper.sector?.toLowerCase() === sector
+          selected && docSectors.some((s: string) => s.toLowerCase().includes(sector.toLowerCase()))
       );
 
-    // Check hazards filter
     const hazardsFilter = activeFilters.hazards;
+    const docHazards = doc.climate_impacts || [];
     const hazardMatch =
       !hazardsFilter ||
       Object.entries(hazardsFilter).some(
         ([hazard, selected]) =>
           selected &&
-          paper.hazards?.some((h: string) =>
-            h.toLowerCase().includes(hazard.toLowerCase())
-          )
+          docHazards.some((h: string) => h.toLowerCase().includes(hazard.toLowerCase()))
       );
 
-    // Check phases filter
     const phasesFilter = activeFilters.phases;
     const phaseMatch =
       !phasesFilter ||
       Object.entries(phasesFilter).some(
-        ([phase, selected]) => selected && paper.phase?.toLowerCase() === phase
+        ([phase, selected]) => selected && doc.phase?.toLowerCase() === phase
       );
 
-    // Check scales filter
     const scalesFilter = activeFilters.scales;
     const scaleMatch =
       !scalesFilter ||
       Object.entries(scalesFilter).some(
-        ([scale, selected]) => selected && paper.scale?.toLowerCase() === scale
+        ([scale, selected]) => selected && doc.scale?.toLowerCase() === scale
       );
 
     return sectorMatch && hazardMatch && phaseMatch && scaleMatch;

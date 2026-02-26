@@ -59,17 +59,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { OramaClient } from "@oramacloud/client";
 import { useSearchStore } from "@/stores/search";
+import { useHybridSearch } from "@/composables/useHybridSearch";
 import FilterComponent from "./FilterComponent.vue";
 
-// Props
 const props = defineProps<{
   enabled?: boolean;
 }>();
 
-// Emits
 const emit = defineEmits<{
   'search-results': [results: any];
   'search-error': [error: any];
@@ -78,16 +75,14 @@ const emit = defineEmits<{
   'filter-apply': [key: string, value: any];
 }>();
 
-// Composables
-const { locale, t } = useI18n();
+const { t } = useI18n();
 const searchStore = useSearchStore();
+const { search: hybridSearch, isSearching: hybridSearching, error: searchError } = useHybridSearch();
 
-// Reactive state
 const isSearchEnabled = computed(() => props.enabled || false);
-const isSearching = ref(false);
+const isSearching = computed(() => hybridSearching.value);
 const searchQuery = ref('');
 
-// Recommendation pills
 const recommendationPills = ref([
   "forestry",
   "agriculture",
@@ -102,13 +97,6 @@ const recommendationPills = ref([
   "biodiversity",
 ]);
 
-// Initialize search client
-const client = new OramaClient({
-  endpoint: "https://cloud.orama.run/v1/indexes/test-climateadapt-moif4q",
-  api_key: "REDACTED_ORAMA_API_KEY",
-});
-
-// Methods
 const handleFilterChange = (key: string, value: any, enabled: boolean) => {
   if (enabled && value) {
     searchQuery.value = value;
@@ -128,64 +116,29 @@ const handleFilterApply = (key: string, value: any) => {
 
 const handleSearch = async () => {
   if (!searchQuery.value.trim()) return;
-  
-  // Automatically enable the search filter when performing a search
+
   if (!isSearchEnabled.value) {
     emit('filter-change', 'search', searchQuery.value, true);
   }
-  
-  isSearching.value = true;
-  searchStore.setIsSearching(true);
-  
-  let locale1 = locale.value;
-  if (locale1 === "es") {
-    locale1 = "es";
-  } else {
-    locale1 = "en";
-  }
 
-  try {
-    const results = await client.search({
-      term: searchQuery.value,
-      limit: 30,
-      mode: "hybrid",
-      where: {
-        lang: locale1,
-      },
-    });
-    searchStore.setResultsData(results);
-    searchStore.setSearchQuery(searchQuery.value);
-    emit('search-results', results);
-  } catch (error) {
-    console.error("Search error:", error);
-    searchStore.setResultsData(null);
-    emit('search-error', error);
-  } finally {
-    isSearching.value = false;
-    searchStore.setIsSearching(false);
+  await hybridSearch(searchQuery.value);
+
+  if (searchError.value) {
+    emit('search-error', searchError.value);
+  } else {
+    emit('search-results', searchStore.resultsData);
   }
 };
 
 const searchWithPill = (pill: string) => {
-  // Check if the pill is already in the search query to avoid duplicates
   const currentQuery = searchQuery.value.trim();
-  
-  // Get the translated term for the current language
   const translatedTerm = t(`pills.${pill}`);
-  const queryLower = currentQuery.toLowerCase();
-  
-  // Don't add if the pill is already in the query
-  if (queryLower.includes(translatedTerm.toLowerCase())) {
+
+  if (currentQuery.toLowerCase().includes(translatedTerm.toLowerCase())) {
     return;
   }
-  
-  // Add the translated pill term to the existing query
-  if (currentQuery) {
-    searchQuery.value = currentQuery + " " + translatedTerm;
-  } else {
-    searchQuery.value = translatedTerm;
-  }
-  
+
+  searchQuery.value = currentQuery ? `${currentQuery} ${translatedTerm}` : translatedTerm;
   handleSearch();
 };
 </script>

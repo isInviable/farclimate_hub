@@ -15,6 +15,7 @@ async function main() {
     "08_add_fts_column.sql",
     "09_keyword_search_fn.sql",
     "10_hybrid_search_fn.sql",
+    "11_public_search_wrappers.sql",
   ]);
 
   console.log("\nAll tables created successfully.");

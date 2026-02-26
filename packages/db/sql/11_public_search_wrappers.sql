@@ -1,0 +1,169 @@
+-- Public schema wrappers that delegate to knowledge schema functions.
+-- Required because PostgREST only exposes schemas listed in its config
+-- (public, graphql_public by default).
+
+CREATE OR REPLACE FUNCTION public.hybrid_search(
+  query_text text,
+  query_embedding text,
+  match_count int DEFAULT 10,
+  filter_lang text DEFAULT 'en',
+  filter_content_type text DEFAULT 'composed',
+  full_text_weight float DEFAULT 1,
+  semantic_weight float DEFAULT 1,
+  rrf_k int DEFAULT 50
+)
+RETURNS TABLE (
+  id uuid,
+  document_uid text,
+  title text,
+  score float,
+  keyword_rank int,
+  semantic_rank int
+)
+LANGUAGE sql STABLE
+SET search_path = knowledge, public, extensions
+AS $$
+  SELECT * FROM knowledge.hybrid_search(
+    query_text,
+    query_embedding::vector(768),
+    match_count,
+    filter_lang,
+    filter_content_type,
+    full_text_weight,
+    semantic_weight,
+    rrf_k
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.keyword_search(
+  query_text text,
+  match_count int DEFAULT 10,
+  filter_lang text DEFAULT 'en'
+)
+RETURNS TABLE (
+  id uuid,
+  document_uid text,
+  title text,
+  rank float
+)
+LANGUAGE sql STABLE
+SET search_path = knowledge, public, extensions
+AS $$
+  SELECT * FROM knowledge.keyword_search(query_text, match_count, filter_lang);
+$$;
+
+CREATE OR REPLACE FUNCTION public.get_all_documents(
+  filter_lang text DEFAULT 'en'
+)
+RETURNS TABLE (
+  id uuid,
+  document_uid text,
+  title text,
+  source_url text,
+  image_url text,
+  summary text,
+  subtitle text,
+  fulltext text,
+  keywords text[],
+  climate_impacts text[],
+  adaptation_approaches text[],
+  sectors text[],
+  geographic_characterisation jsonb,
+  location_lat double precision,
+  location_lon double precision,
+  implementation_years_start text,
+  implementation_years_end text,
+  contact_preprocessed text,
+  references_preprocessed text,
+  websites jsonb
+)
+LANGUAGE sql STABLE
+AS $$
+  SELECT
+    d.id,
+    d.document_uid,
+    COALESCE(ml.title, d.title) AS title,
+    d.source_url,
+    d.image_url,
+    ml.summary,
+    ml.subtitle,
+    f.fulltext,
+    s.keywords,
+    s.climate_impacts,
+    s.adaptation_approaches,
+    s.sectors,
+    s.geographic_characterisation,
+    s.location_lat,
+    s.location_lon,
+    s.implementation_years_start,
+    s.implementation_years_end,
+    s.contact_preprocessed,
+    s.references_preprocessed,
+    s.websites
+  FROM knowledge.documents d
+  LEFT JOIN knowledge.summary s ON s.document_id = d.id
+  LEFT JOIN knowledge.summary_multilang ml ON ml.document_id = d.id AND ml.lang = filter_lang
+  LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
+  ORDER BY d.title;
+$$;
+
+CREATE OR REPLACE FUNCTION public.get_documents_by_ids(
+  doc_ids uuid[],
+  filter_lang text DEFAULT 'en'
+)
+RETURNS TABLE (
+  id uuid,
+  document_uid text,
+  title text,
+  source_url text,
+  image_url text,
+  summary text,
+  subtitle text,
+  fulltext text,
+  keywords text[],
+  climate_impacts text[],
+  adaptation_approaches text[],
+  sectors text[],
+  geographic_characterisation jsonb,
+  location_lat double precision,
+  location_lon double precision,
+  implementation_years_start text,
+  implementation_years_end text,
+  contact_preprocessed text,
+  references_preprocessed text,
+  websites jsonb
+)
+LANGUAGE sql STABLE
+AS $$
+  SELECT
+    d.id,
+    d.document_uid,
+    COALESCE(ml.title, d.title) AS title,
+    d.source_url,
+    d.image_url,
+    ml.summary,
+    ml.subtitle,
+    f.fulltext,
+    s.keywords,
+    s.climate_impacts,
+    s.adaptation_approaches,
+    s.sectors,
+    s.geographic_characterisation,
+    s.location_lat,
+    s.location_lon,
+    s.implementation_years_start,
+    s.implementation_years_end,
+    s.contact_preprocessed,
+    s.references_preprocessed,
+    s.websites
+  FROM knowledge.documents d
+  LEFT JOIN knowledge.summary s ON s.document_id = d.id
+  LEFT JOIN knowledge.summary_multilang ml ON ml.document_id = d.id AND ml.lang = filter_lang
+  LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
+  WHERE d.id = ANY(doc_ids);
+$$;
+
+-- Grant knowledge schema access to PostgREST roles
+GRANT USAGE ON SCHEMA knowledge TO anon, authenticated;
+GRANT SELECT ON ALL TABLES IN SCHEMA knowledge TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA knowledge GRANT SELECT ON TABLES TO anon, authenticated;
