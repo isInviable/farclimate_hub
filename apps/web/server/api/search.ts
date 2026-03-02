@@ -59,6 +59,7 @@ function buildHit(row: Record<string, any>, score: number) {
     document_uid: row.document_uid,
     score,
     document: {
+      id: row.id,
       title: row.title || '',
       subtitle: row.subtitle || '',
       summary: row.summary || '',

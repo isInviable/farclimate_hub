@@ -1,10 +1,10 @@
 <template>
-  <USlideover :open="open" class=" max-w-5xl" >
+  <USlideover :open="open" class="max-w-5xl">
     <template #header>
       
       <div class="flex gap-2 items-center">
         <UButton
-          :to="`/wireframes/article/${documentIdNoLang}`"
+          :to="`/wireframes/article/${documentSlug}`"
           target="_blank"
           variant="ghost"
           :title="$t('common.openFullPage')"
@@ -12,35 +12,40 @@
         >
          
         </UButton>
-        <h2 class=" font-semibold">{{ document.title }}</h2>
-        <uButton @click="handleClose" icon="mdi:close" variant="ghost" ></uButton>
+        <h2 class="font-semibold">{{ document.title }}</h2>
+        <UButton @click="handleClose" icon="mdi:close" variant="ghost" />
       </div>
     </template>
     <template #body>
-        <ArticleViewAI :document="document" :show-sidebar="false" />
-
+      <ArticleViewAI :document="document" :show-sidebar="false" />
     </template>
   </USlideover>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import type { ArticleDetail } from "@/types/search";
 import ArticleViewAI from "./ArticleViewAI.vue";
 
-const props = defineProps({
-  document: {
-    type: Object,
-    required: true,
-  },
-  open: {
-    type: Boolean,
-    required: true,
-  },
+const { t: $t } = useI18n();
+
+const props = defineProps<{
+  document: ArticleDetail;
+  open: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: "close"): void;
+}>();
+
+const documentSlug = computed(() => {
+  const uid = props.document.document_uid || String(props.document.id);
+  // Example uid shape: "climateadapt::some-slug"
+  const parts = uid.split("::");
+  return parts.length > 1 ? parts[1] : parts[0];
 });
-const documentIdNoLang = props.document.local_id.split("_")[0];
 
-const emit = defineEmits(["close"]);
-
-// Handle scroll blocking
 function disableScroll() {
   document.body.style.overflow = "hidden";
   document.body.style.paddingRight = "15px"; // Prevent layout shift

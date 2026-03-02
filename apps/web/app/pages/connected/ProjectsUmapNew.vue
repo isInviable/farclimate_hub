@@ -10,9 +10,10 @@
 </template>
 
 <script lang="ts" setup>
-import { supabase } from "~/utils/supabase";
 import type { EntityRow, ProjectRow, AuxClimateRisk, AuxTheme } from "~/types/cordis";
 import * as d3 from "d3";
+
+  const supabase = useSupabaseClient();
 
   const padding = 48;
 

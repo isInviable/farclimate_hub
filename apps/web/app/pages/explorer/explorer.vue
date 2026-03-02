@@ -267,7 +267,9 @@ const viewMode = ref("list");
 const searchStore = useSearchStore();
 const route = useRoute();
 const { search: hybridSearch, loadAll, isSearching: _hybridSearching } = useHybridSearch();
-const selectedDocument = ref(null);
+import type { ArticleDetail } from "@/types/search";
+
+const selectedDocument = ref<ArticleDetail | null>(null);
 const isSidePanelOpen = ref(false);
 const isChatOpen = ref(false);
 const isInsightsOpen = ref(false);
@@ -314,11 +316,11 @@ const handleSearchError = (error: any) => {
 };
 
 const handleArticleClick = (articleId: string) => {
-  const hit = searchStore.resultsData?.hits.find(hit => hit.id === articleId);
+  const hit = searchStore.resultsData?.hits.find((hit) => hit.id === articleId);
   console.log("Article clicked:", articleId);
   console.log("Hit:", hit);
   if (hit?.document) {
-    handleDocumentSelected(hit.document);
+    handleDocumentSelected(hit.document as ArticleDetail);
   }
 };
 
@@ -332,7 +334,7 @@ async function loadAllArticles() {
 }
 
 // Document selection handlers
-const handleDocumentSelected = (document: any) => {
+const handleDocumentSelected = (document: ArticleDetail) => {
   console.log("handleDocumentSelected", document);
   selectedDocument.value = document;
   isSidePanelOpen.value = true;

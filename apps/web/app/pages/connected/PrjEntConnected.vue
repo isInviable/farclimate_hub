@@ -9,8 +9,9 @@
 </template>
 
 <script lang="ts" setup>
-import { supabase } from "~/utils/supabase";
 import type { EntityRow, ProjectRow, AuxClimateRisk } from "~/types/cordis";
+
+  const supabase = useSupabaseClient();
 
   // ProjectEntityRow type (matches database schema)
   type ProjectEntityRow = {

@@ -3,7 +3,6 @@ definePageMeta({
   layout: "admin",
 });
 
-import { supabase } from "~/utils/supabase";
 import type {
   ProductBase,
   ProductCustom,
@@ -13,6 +12,8 @@ import type {
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { handleAuthError } from "~/utils/authErrorHandler";
+
+const supabase = useSupabaseClient();
 
 const { isAuthenticated } = useAuth();
 const router = useRouter();

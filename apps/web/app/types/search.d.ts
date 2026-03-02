@@ -48,3 +48,11 @@ export interface SearchResult {
   stakeholder_participation?: string;
   success_limitations?: string;
 }
+
+export interface ArticleDetail extends SearchResult {
+  /**
+   * Stable UUID of the document (knowledge.documents.id).
+   * Required for side-panel views and downstream AI helpers.
+   */
+  id: string;
+}

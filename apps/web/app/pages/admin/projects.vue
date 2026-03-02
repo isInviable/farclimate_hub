@@ -3,9 +3,10 @@ definePageMeta({
   layout: "admin",
 });
 
-import { supabase } from "~/utils/supabase";
 import type { ProjectRow } from "~/types/cordis";
 import { handleAuthError } from "~/utils/authErrorHandler";
+
+const supabase = useSupabaseClient();
 
 const { isAuthenticated } = useAuth();
 const router = useRouter();

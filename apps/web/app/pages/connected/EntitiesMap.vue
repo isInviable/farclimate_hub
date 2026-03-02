@@ -251,9 +251,10 @@
 </template>
 
 <script lang="ts" setup>
-import { supabase } from "~/utils/supabase";
 import type { EntityRow, ProjectRow, AuxClimateRisk, AuxTheme } from "~/types/cordis";
 import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
+
+  const supabase = useSupabaseClient();
 
   // ProjectEntityRow type (matches database schema)
   type ProjectEntityRow = {

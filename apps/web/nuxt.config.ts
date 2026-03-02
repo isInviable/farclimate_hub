@@ -60,6 +60,9 @@ export default defineNuxtConfig({
       // }
     }
   },
+   ui: {
+    colorMode: false
+  },
   i18n: {
     defaultLocale: 'en',
     locales: [

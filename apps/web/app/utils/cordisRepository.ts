@@ -1,8 +1,11 @@
-import { supabase } from "~/utils/supabase";
+import { useSupabaseClient } from "~/composables/useSupabaseClient";
 
 // Core table fetchers (mirror of legacy /api/tables.* endpoints)
 
+const getSupabaseClient = () => useSupabaseClient();
+
 export async function fetchProjectsTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("projects_cordis")
     .select("*")
@@ -13,6 +16,7 @@ export async function fetchProjectsTable() {
 }
 
 export async function fetchEntitiesTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("entities_cordis")
     .select("*")
@@ -23,6 +27,7 @@ export async function fetchEntitiesTable() {
 }
 
 export async function fetchProductsTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("products_cordis")
     .select("*")
@@ -34,6 +39,7 @@ export async function fetchProductsTable() {
 }
 
 export async function fetchProjectEntitiesTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("project_entities")
     .select(
@@ -70,6 +76,7 @@ export async function fetchProjectEntitiesTable() {
 }
 
 export async function fetchProjectRisksTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("project_risks")
     .select("project_id,risk_id")
@@ -86,6 +93,7 @@ export async function fetchProjectRisksTable() {
 }
 
 export async function fetchProjectThemesTable() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("project_themes")
     .select("project_id,theme_id")
@@ -102,6 +110,7 @@ export async function fetchProjectThemesTable() {
 }
 
 export async function fetchAuxClimateRisks() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("aux_climate_risks")
     .select("id, name")
@@ -112,6 +121,7 @@ export async function fetchAuxClimateRisks() {
 }
 
 export async function fetchAuxThemes() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("aux_themes")
     .select("id, name")
@@ -122,6 +132,7 @@ export async function fetchAuxThemes() {
 }
 
 export async function fetchAuxEntityTypes() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("aux_entity_types")
     .select("id, name")
@@ -132,6 +143,7 @@ export async function fetchAuxEntityTypes() {
 }
 
 export async function fetchAuxProductTypes() {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("aux_product_types")
     .select("id, name")
@@ -183,6 +195,7 @@ export async function fetchTablesOverview() {
 }
 
 export async function fetchTagSummary() {
+  const supabase = getSupabaseClient();
   const [risks, themes, projectRisks, projectThemes, projects] = await Promise.all([
     fetchAuxClimateRisks(),
     fetchAuxThemes(),
@@ -265,6 +278,7 @@ export async function fetchTagSummary() {
 }
 
 export async function fetchProjectsByRisk(riskId: number) {
+  const supabase = getSupabaseClient();
   // Get project ids for this risk
   const { data: links, error: linkError } = await supabase
     .from("project_risks")
@@ -321,6 +335,7 @@ export async function fetchProjectsByRisk(riskId: number) {
 }
 
 export async function fetchProjectEntities(projectId: string) {
+  const supabase = getSupabaseClient();
   const { data: links, error: linkError } = await supabase
     .from("project_entities")
     .select(
@@ -388,6 +403,7 @@ export async function fetchProjectEntities(projectId: string) {
 }
 
 export async function fetchProjectProducts(projectId: string) {
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("products_cordis")
     .select(
@@ -445,6 +461,7 @@ export async function fetchProjectProducts(projectId: string) {
 }
 
 export async function fetchEntityDetail(id: string) {
+  const supabase = getSupabaseClient();
   const { data: entityRow, error: entityError } = await supabase
     .from("entities_cordis")
     .select(
@@ -569,6 +586,7 @@ export async function fetchEntityDetail(id: string) {
 }
 
 export async function fetchProjectDetail(id: string) {
+  const supabase = getSupabaseClient();
   const { data: projectRow, error: projectError } = await supabase
     .from("projects_cordis")
     .select(
