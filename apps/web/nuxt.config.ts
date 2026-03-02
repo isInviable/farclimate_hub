@@ -30,6 +30,10 @@ export default defineNuxtConfig({
     {
       path: '~/components/home',
       pathPrefix: false
+    },
+    {
+      path: '~/components/skills',
+      pathPrefix: false
     }
   ],
   devtools: {

@@ -15,8 +15,12 @@
             to="/"
             class="font-display font-bold text-xl"
           >
-            <img src="/img/logo.svg" alt="Logo" class="h-6"
-          /></NuxtLink>
+            <img src="/img/logo.svg" alt="Logo" class="h-6" v-if="mode"
+          />
+          <div class="font-display font-bold text-xs " v-else>FarClimate <br/> Transformation Hub</div>
+          
+        
+        </NuxtLink>
         </div>
         <nav
           class="hidden md:flex items-center gap-10 text-[13px] font-mono"
@@ -25,7 +29,7 @@
           <NuxtLink to="#about">About</NuxtLink>
           <NuxtLink to="/explorer/explorer">Solutions</NuxtLink>
           <NuxtLink to="#stories">Stories</NuxtLink>
-          <NuxtLink to="#skills">Skills</NuxtLink>
+          <NuxtLink to="/skills">Skills</NuxtLink>
           <NuxtLink to="/connected/dashboard">Connected Action</NuxtLink>
         </nav>
       </UContainer>
