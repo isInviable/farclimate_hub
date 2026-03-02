@@ -22,6 +22,14 @@ export default defineNuxtConfig({
     {
       path: '~/components/connected',
       pathPrefix: false
+    },
+    {
+      path: '~/components/global',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/home',
+      pathPrefix: false
     }
   ],
   devtools: {

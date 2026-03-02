@@ -1,5 +1,7 @@
+
 <template>
-  <div class="bg-gray-800">
+
+  <div class="relative">
 
     <article class="fixed top-2 left-2 w-sm flex flex-col gap-2  z-10">
 
@@ -251,6 +253,7 @@
 </template>
 
 <script lang="ts" setup>
+definePageMeta({ layout: 'connected' });
 import type { EntityRow, ProjectRow, AuxClimateRisk, AuxTheme } from "~/types/cordis";
 import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
 
@@ -868,7 +871,3 @@ onMounted(() => {
 });
 
 </script>
-
-<style>
-
-</style>

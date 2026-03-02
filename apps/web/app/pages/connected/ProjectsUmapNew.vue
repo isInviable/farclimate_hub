@@ -9,7 +9,9 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+
+<script setup lang="ts">
+definePageMeta({ layout: 'connected' });
 import type { EntityRow, ProjectRow, AuxClimateRisk, AuxTheme } from "~/types/cordis";
 import * as d3 from "d3";
 

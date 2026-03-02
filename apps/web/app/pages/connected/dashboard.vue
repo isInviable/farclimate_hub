@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ layout: 'connected' });
+
 import {
   fetchProjectsTable,
   fetchEntitiesTable,
@@ -394,19 +396,11 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
 </script>
 
 <template>
-  <div class="bg-gray-50 pb-8 pt-2">
+  <div class="pb-8 pt-2">
     <!-- Dashboard container -->
     <div class="mx-auto w-full max-w-[1440px] my-8 mb-32">
       <!-- Dashboard grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
-        <div class="bg-blue-darkest col-span-2 text-white text-center py-4 uppercase">
-          <div class="text-4xl font-bold px-8 py-4">The climate adaptation network in Europe
-            </div>
-        </div>
-        <div >
-          <UButton variant="ghost" color="secondary" size="lg" class="text-4xl uppercase"> Dashboard</UButton>
-          <UButton variant="link" color="neutral" size="lg" class="text-4xl uppercase"> Network</UButton>
-        </div>
         <!-- Row 1: Map (2 cols) | Right Column (1 col) -->
         <!-- Map + Bar Chart (2 columns) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-2">

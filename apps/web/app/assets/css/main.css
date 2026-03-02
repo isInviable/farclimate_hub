@@ -1,10 +1,21 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-@theme static {
-  --font-sans: 'Public Sans', sans-serif;
+:root {
+  /* COLLECTION 1 */
 
-  --color-green-50: #EFFDF5;
+  --ui-container: 62rem;
+  --ui-primary: var(--color-trust-blue-darkest);
+  --ui-secondary: var(--color-grounded-green);
+  --ui-warning: var(--color-resilient-yellow);
+  --ui-error: var(--color-community-pink);
+
+   --ui-radius: 0rem;
+}
+
+@theme {
+
+    --color-green-50: #EFFDF5;
   --color-green-100: #D9FBE8;
   --color-green-200: #B3F5D1;
   --color-green-300: #75EDAE;
@@ -15,4 +26,387 @@
   --color-green-800: #016538;
   --color-green-900: #0A5331;
   --color-green-950: #052E16;
+/* de aqui para abajo es lo que usé en la home **/
+
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Martian Mono", monospace;
+  --font-display: "Outfit", sans-serif;
+  /* Colors from Figma */
+
+  --color-neutral-white: #ffffff;
+  --color-neutral-lightest: #fffbf8;
+  --color-neutral-lighter: #e7e5e6;
+  --color-neutral-light: #cfcccd;
+  --color-neutral: #9f999c;
+  --color-neutral-dark: #70666a;
+  --color-neutral-darker: #403339;
+  --color-neutral-darkest: #100007;
+  --color-trust-blue-lightest: #e8eff6;
+  --colortrust-blue-lighter: #d2e0ec;
+  --color-trust-blue-light: #bbd0e3;
+  --color-trust-blue: #78a1c7;
+  --color-trust-blue-dark: #4b82b5;
+  --color-trust-blue-darkest: #1e63a2;
+  --color--grounded-green-lightest: #f5f5e7;
+  --color--grounded-green-lighter: #ececd0;
+  --color--grounded-green-light: #e2e2b8;
+  --color--grounded-green: #cece89;
+  --color--grounded-green-dark: #9e9e14;
+  --color--grounded-green-darkest: #76760e;
+  --color--resilient-yellow-lightest: #fffee6;
+  --color--resilient-yellow-lighter: #fffdcd;
+  --color--resilient-yellow-light: #fffc9b;
+  --color--resilient-yellow: #fff837;
+  --color--resilient-yellow-dark: #fff705;
+  --color--resilient-yellow-darkest: #dabd03;
+  --color--community-pink-lightest: #ffe6f2;
+  --color--community-pink-lighter: #ffcde4;
+  --color--community-pink-light: #ff9cc9;
+  --color--community-pink: #ff6aae;
+  --color--community-pink-dark: #ff0777;
+  --color--community-pink-darkest: #ca1768;
 }
+
+@layer base {
+  html,
+  body {
+    @apply font-mono text-base text-neutral-900;
+  }
+}
+
+@layer utilities {
+  /* Display for hero headings (approx 72px => 7xl) */
+  .typo-display {
+    @apply font-display font-bold text-7xl leading-[0.95] tracking-tight;
+  }
+
+  /* H1 responsive utility: 40→56→72 ≈ 4xl→6xl→7xl */
+  .typo-h1 {
+    @apply font-display font-bold text-4xl leading-tight md:text-6xl lg:text-7xl lg:leading-[0.95] lg:tracking-tight;
+  }
+  .typo-h4 {
+    @apply font-display text-4xl leading-tight font-bold;
+  }
+  .typo-body {
+    @apply font-mono text-base leading-relaxed;
+  }
+
+  /* CTA button style that can be reused */
+  .btn-cta {
+    @apply inline-flex items-center gap-2 bg-white text-neutral-900 font-mono text-sm tracking-wide px-5 py-3 shadow-md rounded-md hover:bg-neutral-100 transition;
+  }
+  .btn-cta-accent {
+    @apply inline-flex items-center justify-center w-9 h-9 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition;
+  }
+
+  /* Radial ticks around a circle using a repeating conic gradient */
+  .radial-ticks {
+    position: relative;
+  }
+  .radial-ticks::before {
+    content: "";
+    position: absolute;
+    inset: -10px; /* extend out of the circle */
+    border-radius: 9999px;
+    background: repeating-conic-gradient(
+      from 0deg,
+      currentColor 0 6deg,
+      transparent 6deg 18deg
+    );
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .radial-circle {
+    @apply rounded-full bg-neutral-darkest text-neutral-lightest flex items-center justify-center;
+  }
+
+  .font-headingh1 {
+    @apply font-display text-7xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh2 {
+    @apply font-display text-5xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh3 {
+    @apply font-display text-5xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh4 {
+    @apply font-display text-4xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh5 {
+    @apply font-display text-3xl font-bold leading-10 tracking-normal;
+  }
+
+  .font-headingh6 {
+    @apply font-display text-xl font-bold leading-8 tracking-normal;
+  }
+
+  .font-headingh1-mobile {
+    @apply font-display text-7xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh2-mobile {
+    @apply font-display text-5xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh3-mobile {
+    @apply font-display text-5xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh4-mobile {
+    @apply font-display text-4xl font-bold leading-tight tracking-normal;
+  }
+
+  .font-headingh5-mobile {
+    @apply font-display text-3xl font-bold leading-10 tracking-normal;
+  }
+
+  .font-headingh6-mobile {
+    @apply font-display text-xl font-bold leading-8 tracking-normal;
+  }
+
+  .font-textlargeextra-bold {
+    @apply font-mono text-xl font-bold leading-8;
+  }
+
+  .font-textlargebold {
+    @apply font-mono text-xl font-bold leading-8;
+  }
+
+  .font-textlargesemi-bold {
+    @apply font-mono text-xl font-semibold leading-8;
+  }
+
+  .font-textlargemedium {
+    @apply font-mono text-xl font-medium leading-8;
+  }
+
+  .font-textlargenormal {
+    @apply font-mono text-xl font-normal leading-8;
+  }
+
+  .font-textlargelight {
+    @apply font-mono text-xl font-light leading-8;
+  }
+
+  .font-textmediumextra-bold {
+    @apply font-mono text-lg font-bold leading-7;
+  }
+
+  .font-textmediumbold {
+    @apply font-mono text-lg font-bold leading-7;
+  }
+
+  .font-textmediumsemi-bold {
+    @apply font-mono text-lg font-semibold leading-7;
+  }
+
+  .font-textmediummedium {
+    @apply font-mono text-lg font-medium leading-7;
+  }
+
+  .font-textmediumnormal {
+    @apply font-mono text-lg font-normal leading-7;
+  }
+
+  .font-textmediumlight {
+    @apply font-mono text-lg font-light leading-7;
+  }
+
+  .font-textregularextra-bold {
+    @apply font-mono text-base font-bold leading-6;
+  }
+
+  .font-textregularbold {
+    @apply font-mono text-base font-bold leading-6;
+  }
+
+  .font-textregularsemi-bold {
+    @apply font-mono text-base font-semibold leading-6;
+  }
+
+  .font-textregularmedium {
+    @apply font-mono text-base font-medium leading-6;
+  }
+
+  .font-textregularnormal {
+    @apply font-mono text-base font-normal leading-6;
+  }
+
+  .font-textregularlight {
+    @apply font-mono text-base font-light leading-6;
+  }
+
+  .font-textsmallextra-bold {
+    @apply font-mono text-xs font-bold leading-5;
+  }
+
+  .font-textsmallbold {
+    @apply font-mono text-xs font-bold leading-5;
+  }
+
+  .font-textsmallsemi-bold {
+    @apply font-mono text-xs font-semibold leading-5;
+  }
+
+  .font-textsmallmedium {
+    @apply font-mono text-xs font-medium leading-5;
+  }
+
+  .font-textsmallnormal {
+    @apply font-mono text-xs font-normal leading-5;
+  }
+
+  .font-textsmalllight {
+    @apply font-mono text-xs font-light leading-5;
+  }
+
+  .font-texttinyextra-bold {
+    @apply font-mono text-xs font-bold leading-4;
+  }
+
+  .font-texttinybold {
+    @apply font-mono text-xs font-bold leading-4;
+  }
+
+  .font-texttinysemi-bold {
+    @apply font-mono text-xs font-semibold leading-4;
+  }
+
+  .font-texttinymedium {
+    @apply font-mono text-xs font-medium leading-4;
+  }
+
+  .font-texttinynormal {
+    @apply font-mono text-xs font-normal leading-4;
+  }
+
+  .font-texttinylight {
+    @apply font-mono text-xs font-light leading-4;
+  }
+
+  .font-textsecondarylargeextra-bold {
+    @apply font-sans text-xl font-bold leading-8;
+  }
+
+  .font-textsecondarylargebold {
+    @apply font-sans text-xl font-bold leading-8;
+  }
+
+  .font-textsecondarylargemedium {
+    @apply font-sans text-xl font-medium leading-8;
+  }
+
+  .font-textsecondarylargenormal {
+    @apply font-sans text-xl font-normal leading-8;
+  }
+
+  .font-textsecondarylargelight {
+    @apply font-sans text-xl font-light leading-8;
+  }
+
+  .font-textsecondarylargesemi-bold {
+    @apply font-sans text-xl font-semibold leading-8;
+  }
+
+  .font-textsecondarymediumextra-bold {
+    @apply font-sans text-lg font-bold leading-7;
+  }
+
+  .font-textsecondarymediumbold {
+    @apply font-sans text-lg font-bold leading-7;
+  }
+
+  .font-textsecondarymediumsemi-bold {
+    @apply font-sans text-lg font-semibold leading-7;
+  }
+
+  .font-textsecondarymediummedium {
+    @apply font-sans text-lg font-medium leading-7;
+  }
+
+  .font-textsecondarymediumnormal {
+    @apply font-sans text-lg font-normal leading-7;
+  }
+
+  .font-textsecondarymediumlight {
+    @apply font-sans text-lg font-light leading-7;
+  }
+
+  .font-textsecondaryregularextra-bold {
+    @apply font-sans text-base font-bold leading-6;
+  }
+
+  .font-textsecondaryregularbold {
+    @apply font-sans text-base font-bold leading-6;
+  }
+
+  .font-textsecondaryregularsemi-bold {
+    @apply font-sans text-base font-semibold leading-6;
+  }
+
+  .font-textsecondaryregularmedium {
+    @apply font-sans text-base font-medium leading-6;
+  }
+
+  .font-textsecondaryregularnormal {
+    @apply font-sans text-base font-normal leading-6;
+  }
+
+  .font-textsecondaryregularlight {
+    @apply font-sans text-base font-light leading-6;
+  }
+
+  .font-textsecondarysmallextra-bold {
+    @apply font-sans text-sm font-bold leading-5;
+  }
+
+  .font-textsecondarysmallbold {
+    @apply font-sans text-sm font-bold leading-5;
+  }
+
+  .font-textsecondarysmallsemi-bold {
+    @apply font-sans text-sm font-semibold leading-5;
+  }
+
+  .font-textsecondarysmallmedium {
+    @apply font-sans text-sm font-medium leading-5;
+  }
+
+  .font-textsecondarysmallnormal {
+    @apply font-sans text-sm font-normal leading-5;
+  }
+
+  .font-textsecondarysmalllight {
+    @apply font-sans text-sm font-light leading-5;
+  }
+
+  .font-textsecondarytinyextra-bold {
+    @apply font-sans text-xs font-bold leading-4;
+  }
+
+  .font-textsecondarytinybold {
+    @apply font-sans text-xs font-bold leading-4;
+  }
+
+  .font-textsecondarytinysemi-bold {
+    @apply font-sans text-xs font-semibold leading-4;
+  }
+
+  .font-textsecondarytinymedium {
+    @apply font-sans text-xs font-medium leading-4;
+  }
+
+  .font-textsecondarytinynormal {
+    @apply font-sans text-xs font-normal leading-4;
+  }
+
+  .font-textsecondarytinylight {
+    @apply font-sans text-xs font-light leading-4;
+  }
+}
+
+/* Responsive handled via Tailwind variants in @apply above */

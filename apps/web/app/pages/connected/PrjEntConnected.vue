@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <Connected
       :projects="projectsWithEntities || []"
@@ -9,6 +10,7 @@
 </template>
 
 <script lang="ts" setup>
+definePageMeta({ layout: 'connected' });
 import type { EntityRow, ProjectRow, AuxClimateRisk } from "~/types/cordis";
 
   const supabase = useSupabaseClient();
