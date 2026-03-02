@@ -235,11 +235,13 @@ import { useHybridSearch } from "@/composables/useHybridSearch";
 // i18n composable for language detection
 const { locale } = useI18n();
 
+
 // Page metadata
 definePageMeta({
   title: "Climate Adaptation Explorer",
   description:
     "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
+  layout: 'explorer'
 });
 
 // SEO head

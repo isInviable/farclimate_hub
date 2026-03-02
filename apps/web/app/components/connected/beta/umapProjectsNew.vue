@@ -1,7 +1,7 @@
 <template>
   <div ref="el" class="w-screen h-screen bg-white">
     <svg :width="width" :height="height" :viewBox="viewBox">
-      <rect width="100%" height="100%" fill="#fff" />
+      <rect width="100%" height="100%" class="fill-neutral-lightest"/>
 
       <!-- shadows -->
       <rect

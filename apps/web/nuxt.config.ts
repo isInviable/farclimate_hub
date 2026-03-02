@@ -47,7 +47,8 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true },
+    '/connected/**': { ssr: false, }
   },
   compatibilityDate: '2025-01-15',
   vite: {

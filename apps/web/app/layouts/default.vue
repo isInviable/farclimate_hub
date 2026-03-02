@@ -4,17 +4,12 @@ interface NavLink {
   to: string
 }
 
-const links: NavLink[] = [
-  { label: 'Home', to: '/' },
-  { label: 'Explorer', to: '/explorer' },
-  { label: 'Connected', to: '/connected/dashboard' },
-  { label: 'Admin', to: '/admin' }
-]
+
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col bg-neutral-lightest">
-   <SiteHeader />
+   <SiteHeader :mode="true" />
     
 
     <main class="flex-1">

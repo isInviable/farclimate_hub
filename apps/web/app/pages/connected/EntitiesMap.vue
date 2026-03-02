@@ -1,9 +1,9 @@
 
 <template>
 
-  <div class="relative">
-
-    <article class="fixed top-2 left-2 w-sm flex flex-col gap-2  z-10">
+  <div class="relative flex-1 min-h-0 flex flex-col">
+    <!-- Left panels: positioned relative to this page (below headers) -->
+    <article class="absolute top-2 left-2 w-sm flex flex-col gap-2 z-10">
 
         <!-- panel risks -->
       <SidePanel
@@ -107,8 +107,8 @@
 
     </article>
 
-    <!-- nuts panel -->
-    <article class="fixed top-2 right-2 w-sm text-xs z-10">
+    <!-- NUTS panel: positioned relative to this page (below headers) -->
+    <article class="absolute top-2 right-2 w-sm text-xs z-10">
 
         <SidePanel
             :title="'regions NUTS3'"
@@ -155,7 +155,8 @@
 
     </article>
 
-    <EntitiesMap
+    <div class="flex-1 min-h-0 relative">
+      <EntitiesMap
         :entities="entitiesWithProjectsTotalCost || []"
         :overedNutsId="overedNutsId"
         :active-nuts-id="activeNutsId"
@@ -174,15 +175,16 @@
                 }
             }
         }"
-    />
+      />
+    </div>
 
-    <!-- Floating info button -->
+    <!-- Info button: relative to this page (below headers) -->
     <UButton
       icon="i-heroicons-information-circle"
       color="primary"
       size="lg"
       square
-      class="fixed bottom-4 right-4 z-50 shadow-lg"
+      class="absolute bottom-4 right-4 z-50 shadow-lg"
       @click="showNoGeolocationModal = true"
     >
       <span class="sr-only">Entities without geolocation</span>
@@ -274,7 +276,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
 
   // Fetch entities from Supabase (using shared EntityRow type)
   const { data: entityRows, pending: loadingEntities, error: entitiesError } = await useAsyncData(
-    'relationship-entities',
+    'entities-map-relationship-entities',
     async () => {
       const { data, error } = await supabase
         .from('entities_cordis')
@@ -291,7 +293,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     data: projectEntitiesRows,
     pending: loadingProjectEntities,
     error: projectEntitiesError
-  } = await useAsyncData('relationship-project-entities', async () => {
+  } = await useAsyncData('entities-map-relationship-project-entities', async () => {
     const { data, error } = await supabase
       .from('project_entities')
       .select('project_id, entity_id, type, entity_order, total_cost, ec_contribution, net_ec_contribution, sme, terminated')
@@ -306,7 +308,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     data: projectOptions,
     pending: loadingProjects,
     error: projectsError
-  } = await useAsyncData('project-options', async () => {
+  } = await useAsyncData('entities-map-project-options', async () => {
     // Fetch projects
     const { data: projectsData, error: projectsError } = await supabase
       .from('projects_cordis')
@@ -401,7 +403,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
 
   // Fetch risk options from Supabase (using shared type AuxClimateRisk)
   const { data: riskOptions, pending: loadingRisks, error: riskError } = await useAsyncData(
-    'risk-options',
+    'entities-map-risk-options',
     async () => {
       const { data, error } = await supabase
         .from('aux_climate_risks')
@@ -415,7 +417,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
 
   // Fetch theme options from Supabase (using shared type AuxTheme)
   const { data: themeOptions, pending: loadingThemes, error: themeError } = await useAsyncData(
-    'theme-options',
+    'entities-map-theme-options',
     async () => {
       const { data, error } = await supabase
         .from('aux_themes')
@@ -500,21 +502,24 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     return Array.from(projectMap.values());
   });
 
+  function toRiskOrThemeList(value: string | string[] | null | undefined): string[] {
+    if (value == null) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    return value.split('|').map((s) => s.trim()).filter(Boolean);
+  }
 
     // DATA INDEXES
     // Forward indexes (from single item to collections)
     const projectsByRisk = computed(() => {
         const index = new Map<string, Set<string>>();
         (projectsWithSimpleEntities.value ?? []).forEach((project) => {
-            if (project.risks) {
-                const risks = project.risks.split('|').map(r => r.trim());
-                risks.forEach((riskName) => {
-                    if (!index.has(riskName)) {
-                        index.set(riskName, new Set<string>());
-                    }
-                    index.get(riskName)!.add(project.id);
-                });
-            }
+            const risks = toRiskOrThemeList(project.risks);
+            risks.forEach((riskName) => {
+                if (!index.has(riskName)) {
+                    index.set(riskName, new Set<string>());
+                }
+                index.get(riskName)!.add(project.id);
+            });
         });
         return index;
     });
@@ -522,15 +527,13 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     const projectsByTheme = computed(() => {
         const index = new Map<string, Set<string>>();
         (projectsWithSimpleEntities.value ?? []).forEach((project) => {
-            if (project.themes) {
-                const themes = project.themes.split('|').map(t => t.trim());
-                themes.forEach((themeName) => {
-                    if (!index.has(themeName)) {
-                        index.set(themeName, new Set<string>());
-                    }
-                    index.get(themeName)!.add(project.id);
-                });
-            }
+            const themes = toRiskOrThemeList(project.themes);
+            themes.forEach((themeName) => {
+                if (!index.has(themeName)) {
+                    index.set(themeName, new Set<string>());
+                }
+                index.get(themeName)!.add(project.id);
+            });
         });
         return index;
     });
@@ -577,13 +580,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     const risksByProject = computed(() => {
         const index = new Map<string, Set<string>>();
         (projectsWithSimpleEntities.value ?? []).forEach((project) => {
-            const riskNames = new Set<string>();
-            if (project.risks) {
-                const risks = project.risks.split('|').map(r => r.trim());
-                risks.forEach((riskName) => {
-                    riskNames.add(riskName);
-                });
-            }
+            const riskNames = new Set<string>(toRiskOrThemeList(project.risks));
             index.set(project.id, riskNames);
         });
         return index;
@@ -592,13 +589,7 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
     const themesByProject = computed(() => {
         const index = new Map<string, Set<string>>();
         (projectsWithSimpleEntities.value ?? []).forEach((project) => {
-            const themeNames = new Set<string>();
-            if (project.themes) {
-                const themes = project.themes.split('|').map(t => t.trim());
-                themes.forEach((themeName) => {
-                    themeNames.add(themeName);
-                });
-            }
+            const themeNames = new Set<string>(toRiskOrThemeList(project.themes));
             index.set(project.id, themeNames);
         });
         return index;

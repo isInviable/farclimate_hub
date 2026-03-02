@@ -1,6 +1,6 @@
 <template>
   <header class="text-white w-full">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-0">
       <!-- Title row -->
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-8 min-w-0 bg-trust-blue-darkest px-8 py-4" >

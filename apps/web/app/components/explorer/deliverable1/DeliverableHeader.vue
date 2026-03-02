@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-neutral">
+  <header class="">
     <div class="w-11/12 lg:w-10/12 mx-auto">
       <div class="flex justify-between items-center py-0">
         
