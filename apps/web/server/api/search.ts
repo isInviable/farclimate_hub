@@ -44,12 +44,18 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
     value: query,
     providerOptions: {
       google: {
-        // Reduce to match database vector(768) column
+        // Must match knowledge.embeddings (vector(768)) and packages/db embed.ts (RETRIEVAL_DOCUMENT)
         outputDimensionality: EMBEDDING_DIMS,
-        taskType: 'SEMANTIC_SIMILARITY',
+        taskType: 'RETRIEVAL_QUERY',
       },
     },
   })
+  if (!embedding || embedding.length !== EMBEDDING_DIMS) {
+    throw new Error(
+      `[search] Embedding dimension mismatch: expected ${EMBEDDING_DIMS}, got ${embedding?.length ?? 0}. ` +
+      'Ensure Gemini API returns outputDimensionality 768 (AI SDK may ignore it in some versions).'
+    )
+  }
   return embedding
 }
 
@@ -89,6 +95,18 @@ export default defineEventHandler(async (event) => {
   const query = (body?.query || '').trim()
   const lang = body?.lang || 'en'
   const limit = body?.limit || 30
+  const debug = Boolean(body?.debug)
+  const requestedMode = body?.mode === 'keyword' ? 'keyword' : 'hybrid'
+  // Tuning: higher full_text_weight favors exact keyword matches (see https://www.adarsha.dev/blog/rag-supabase-hybrid-search-ai-sdk)
+  const fullTextWeight = typeof body?.full_text_weight === 'number' ? body.full_text_weight : 2
+  const semanticWeight = typeof body?.semantic_weight === 'number' ? body.semantic_weight : 1
+  const rrfK = typeof body?.rrf_k === 'number' ? body.rrf_k : 50
+  // Cosine similarity threshold for the semantic CTE (0.0–1.0). Filters at the DB level
+  // following Supabase match_documents pattern (see https://supabase.com/docs/guides/ai/semantic-search).
+  // 0.0 = no filtering. Values like 0.3 filter out semantically unrelated documents.
+  const matchThreshold = typeof body?.match_threshold === 'number' ? body.match_threshold : 0.0
+  // Server-side RRF score floor. Kept as a secondary safety net.
+  const minScore = typeof body?.min_score === 'number' ? body.min_score : 0.02
 
   const supabase = getSupabaseClient()
 
@@ -104,9 +122,9 @@ export default defineEventHandler(async (event) => {
     }
 
     let embedding: number[] | null = getCachedEmbedding(query, lang)
-    let useHybrid = true
+    let useHybrid = requestedMode === 'hybrid'
 
-    if (!embedding) {
+    if (useHybrid && !embedding) {
       try {
         embedding = await generateQueryEmbedding(query)
         setCachedEmbedding(query, lang, embedding)
@@ -119,6 +137,12 @@ export default defineEventHandler(async (event) => {
     let searchResults: any[] | undefined
 
     if (useHybrid && embedding) {
+      if (embedding.length !== EMBEDDING_DIMS) {
+        console.warn(`[search] Cached embedding has wrong length ${embedding.length}, expected ${EMBEDDING_DIMS}; skipping hybrid`)
+        useHybrid = false
+      }
+    }
+    if (useHybrid && embedding) {
       const vectorLiteral = `[${embedding.join(',')}]`
       const { data, error } = await supabase.rpc('hybrid_search', {
         query_text: query,
@@ -126,9 +150,10 @@ export default defineEventHandler(async (event) => {
         match_count: limit,
         filter_lang: lang,
         filter_content_type: 'composed',
-        full_text_weight: 1,
-        semantic_weight: 1,
-        rrf_k: 50,
+        full_text_weight: fullTextWeight,
+        semantic_weight: semanticWeight,
+        rrf_k: rrfK,
+        match_threshold: matchThreshold,
       })
 
       if (error) {
@@ -136,6 +161,20 @@ export default defineEventHandler(async (event) => {
         useHybrid = false
       } else {
         searchResults = data || []
+        if (debug) {
+          console.info('[search] hybrid_search results (top 3)', {
+            query,
+            lang,
+            mode: 'hybrid',
+            sample: (searchResults || []).slice(0, 3).map((r: any) => ({
+              id: r.id,
+              title: r.title,
+              score: r.score,
+              keyword_rank: r.keyword_rank ?? null,
+              semantic_rank: r.semantic_rank ?? null,
+            })),
+          })
+        }
       }
     }
 
@@ -147,11 +186,28 @@ export default defineEventHandler(async (event) => {
       })
       if (error) throw error
       searchResults = (data || []).map((r: any) => ({ ...r, score: r.rank }))
+      if (debug) {
+        console.info('[search] keyword_search results (top 3)', {
+          query,
+          lang,
+          mode: 'keyword',
+          sample: (searchResults || []).slice(0, 3).map((r: any) => ({
+            id: r.id,
+            title: r.title,
+            score: r.score,
+            keyword_rank: (r as any).rank ?? null,
+            semantic_rank: null,
+          })),
+        })
+      }
     }
 
     if (!searchResults || searchResults.length === 0) return { count: 0, hits: [] }
 
-    const docIds = searchResults.map((r: any) => r.id)
+    const filteredResults = searchResults.filter((r: any) => (r.score ?? 0) >= minScore)
+    if (filteredResults.length === 0) return { count: 0, hits: [] }
+
+    const docIds = filteredResults.map((r: any) => r.id)
     const { data: fullDocs, error: docsError } = await supabase.rpc('get_documents_by_ids', {
       doc_ids: docIds,
       filter_lang: lang,
@@ -160,11 +216,37 @@ export default defineEventHandler(async (event) => {
 
     const docsMap = new Map((fullDocs || []).map((d: any) => [d.id, d]))
 
-    const hits = searchResults.map((r: any) => {
+    const hits = filteredResults.map((r: any) => {
       const doc = docsMap.get(r.id)
       if (doc) return buildHit(doc, r.score)
       return buildHit({ id: r.id, document_uid: r.document_uid, title: r.title }, r.score)
     })
+
+    if (debug) {
+      return {
+        count: hits.length,
+        hits,
+        debug: {
+          mode: useHybrid ? 'hybrid' : 'keyword',
+          min_score: minScore,
+          match_threshold: matchThreshold,
+          filtered_count: filteredResults.length,
+          total_before_filter: searchResults.length,
+          ...(useHybrid && {
+            full_text_weight: fullTextWeight,
+            semantic_weight: semanticWeight,
+            rrf_k: rrfK,
+          }),
+          raw: filteredResults.map((r: any) => ({
+            id: r.id,
+            title: r.title,
+            score: r.score,
+            keyword_rank: (r as any).keyword_rank ?? (r as any).rank ?? null,
+            semantic_rank: (r as any).semantic_rank ?? null,
+          })),
+        },
+      }
+    }
 
     return { count: hits.length, hits }
   } catch (error) {

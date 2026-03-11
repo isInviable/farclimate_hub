@@ -8,7 +8,8 @@ CREATE OR REPLACE FUNCTION knowledge.hybrid_search(
   filter_content_type text DEFAULT 'composed',
   full_text_weight float DEFAULT 1,
   semantic_weight float DEFAULT 1,
-  rrf_k int DEFAULT 50
+  rrf_k int DEFAULT 50,
+  match_threshold float DEFAULT 0.0
 )
 RETURNS TABLE (
   id uuid,
@@ -52,6 +53,7 @@ BEGIN
     FROM knowledge.embeddings e
     WHERE e.lang = filter_lang
       AND e.content_type = filter_content_type
+      AND (match_threshold <= 0.0 OR e.embedding <=> query_embedding < 1.0 - match_threshold)
     ORDER BY rank_ix
     LIMIT least(match_count, 30) * 2
   )
@@ -73,4 +75,4 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION knowledge.hybrid_search IS 'Hybrid search combining keyword (tsvector) and semantic (pgvector) results via Reciprocal Ranked Fusion.';
+COMMENT ON FUNCTION knowledge.hybrid_search IS 'Hybrid search combining keyword (tsvector) and semantic (pgvector) results via Reciprocal Ranked Fusion. match_threshold (0.0–1.0) filters the semantic CTE by cosine similarity (same pattern as Supabase match_documents).';
