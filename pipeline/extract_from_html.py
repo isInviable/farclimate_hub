@@ -3,8 +3,7 @@
 Extract structured JSON from local HTML files (source of truth).
 
 Reads HTML from pipeline/source_html/ (or --input), runs the extraction schema
-(CSS or XPath), adds fulltext as article-only text (same strategy as
-dataCrawler/url_to_markdown.py: target_elements + PruningContentFilter), and
+(CSS or XPath), adds fulltext as article-only text (target_elements + PruningContentFilter), and
 writes one JSON per HTML to pipeline/extracted/. Optionally writes markdown.
 
 Output JSON shape (per page): fulltext + all fields defined in the schema.
@@ -23,7 +22,7 @@ from crawl4ai.extraction_strategy import JsonCssExtractionStrategy, JsonXPathExt
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# Same article-targeting config as dataCrawler/url_to_markdown.py (Climate-ADAPT)
+# Climate-ADAPT article targeting (main content only)
 ARTICLE_TARGET_ELEMENTS = [".db-item-view", "#page-header"]
 ARTICLE_EXCLUDED_TAGS = ["nav", "footer", "header", "script", "style", "iframe", "noscript"]
 ARTICLE_WORD_COUNT_THRESHOLD = 10
@@ -53,7 +52,7 @@ DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent / "extracted"
 DEFAULT_SCHEMA = Path(__file__).resolve().parent / "extraction_schema_generated.json"
 URL_MANIFEST_FILENAME = "url_manifest.json"
 
-# Fields extracted as comma-separated text that should be stored as arrays (same list as dataCrawler/combine_json.py).
+# Fields extracted as comma-separated text that should be stored as arrays
 FIELDS_AS_ARRAYS = (
     "climate_impacts",
     "adaptation_approaches",
@@ -116,11 +115,103 @@ def _title_from_html(html: str) -> str:
     return text.strip()
 
 
+# Map h5 label text (normalized: strip trailing colon) to geographic_characterisation key.
+_GEOCHAR_H5_TO_KEY = {
+    "macro-transnational region": "macro_transnational_region",
+    "biogeographical regions": "biogeographical_regions",
+    "countries": "countries",
+    "sub nationals": "sub_nationals",
+    "city": "city",
+}
+
+
+def _extract_geochar_block(html: str) -> str:
+    """Extract the inner HTML of the first <div class="geochar">. Returns empty string if not found."""
+    start_marker = '<div class="geochar">'
+    idx = html.find(start_marker)
+    if idx == -1:
+        return ""
+    start = idx + len(start_marker)
+    depth = 1
+    pos = start
+    while pos < len(html) and depth > 0:
+        next_open = html.find("<div", pos)
+        next_close = html.find("</div>", pos)
+        if next_close == -1:
+            break
+        if next_open != -1 and next_open < next_close:
+            depth += 1
+            pos = next_open + 4
+        else:
+            depth -= 1
+            if depth == 0:
+                return html[start:next_close].strip()
+            pos = next_close + 6
+    return ""
+
+
+def parse_geochar_from_html(html: str) -> tuple[dict, str | None]:
+    """
+    Parse the .geochar block from Climate-ADAPT HTML.
+    Returns (geographic_characterisation dict, health_impact or None).
+    geographic_characterisation has keys: continent, macro_transnational_region,
+    biogeographical_regions, countries, sub_nationals, city (values are strings or null).
+    """
+    block = _extract_geochar_block(html)
+    if not block:
+        return {}, None
+
+    geo = {
+        "continent": None,
+        "macro_transnational_region": None,
+        "biogeographical_regions": None,
+        "countries": None,
+        "sub_nationals": None,
+        "city": None,
+    }
+    health_impact = None
+
+    # First <p> in block = continent
+    first_p = re.search(r"<p>(.*?)</p>", block, re.DOTALL)
+    if first_p:
+        continent_text = re.sub(r"<[^>]+>", "", first_p.group(1)).strip()
+        if continent_text:
+            geo["continent"] = continent_text
+
+    # Pairs: <h5>Label:</h5> followed by <p>...</p> or <span>...</span>
+    # Match h5 then next p or span (possibly with whitespace)
+    pattern = re.compile(
+        r"<h5[^>]*>([^<]+)</h5>\s*<(p|span)[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</\2>",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for m in pattern.finditer(block):
+        label = m.group(1).strip().rstrip(":").lower().strip()
+        value = re.sub(r"<[^>]+>", "", m.group(3)).strip()
+        if not value:
+            continue
+        if label in _GEOCHAR_H5_TO_KEY:
+            key = _GEOCHAR_H5_TO_KEY[label]
+            geo[key] = value
+        elif label == "health impact":
+            health_impact = value
+
+    # If not inside .geochar, try .content-metadata (Health impact appears there on some pages)
+    if not health_impact:
+        m = re.search(
+            r'<h5[^>]*>\s*Health impact:\s*</h5>\s*<p>([^<]*(?:<[^/][^>]*>[^<]*)*)</p>',
+            html,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if m:
+            health_impact = re.sub(r"<[^>]+>", "", m.group(1)).strip()
+
+    return geo, health_impact if health_impact else None
+
+
 def extract_article_fulltext(html: str, base_url: str = "") -> str:
     """
     Extract article-only full text (no header, nav, footer) using crawl4ai's
-    same strategy as dataCrawler/url_to_markdown.py: target_elements + excluded_tags
-    then PruningContentFilter + DefaultMarkdownGenerator for fit_markdown.
+    target_elements + excluded_tags then PruningContentFilter + DefaultMarkdownGenerator for fit_markdown.
     """
     strategy = WebScrapingStrategy()
     result = strategy.scrap(
@@ -138,8 +229,9 @@ def extract_article_fulltext(html: str, base_url: str = "") -> str:
         content_filter=PruningContentFilter(threshold=0.45, threshold_type="dynamic"),
         options={"ignore_links": True, "skip_internal_links": True},
     )
+    # crawl4ai API: first positional is input_html (was cleaned_html= keyword)
     md_result = md_generator.generate_markdown(
-        cleaned_html=cleaned_html,
+        cleaned_html,
         base_url=base_url,
         citations=False,
     )
@@ -287,6 +379,12 @@ def main():
             **item,
         }
         _normalize_array_fields(item)
+
+        # Overwrite geographic_characterisation and set health_impact from .geochar (label-based parsing)
+        geo_obj, health_impact_val = parse_geochar_from_html(html)
+        item["geographic_characterisation"] = geo_obj
+        if health_impact_val is not None:
+            item["health_impact"] = health_impact_val
 
         out_path.write_text(json.dumps(item, indent=2, ensure_ascii=False), encoding="utf-8")
         if args.markdown and fulltext:

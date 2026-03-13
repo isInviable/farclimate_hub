@@ -71,13 +71,17 @@ async function upsertSummary(documentId: string, doc: Record<string, unknown>): 
   const loc = doc.location as { lat?: number; lon?: number } | undefined;
   const years = doc.implementation_years as { start_year?: string; end_year?: string } | undefined;
 
+  const healthImpact = (doc.health_impact as string) ?? null;
+
+  const costEstimation = (doc.cost_estimation as number | null) ?? null;
+
   await sql`
     INSERT INTO knowledge.summary (
       document_id, keywords, climate_impacts, adaptation_approaches, sectors,
-      adapt_options, geographic_characterisation,
+      adapt_options, geographic_characterisation, health_impact,
       location_lat, location_lon,
       implementation_years_start, implementation_years_end,
-      contact_preprocessed, references_preprocessed, websites
+      contact_preprocessed, references_preprocessed, cost_estimation, websites
     )
     VALUES (
       ${documentId},
@@ -87,12 +91,14 @@ async function upsertSummary(documentId: string, doc: Record<string, unknown>): 
       ${(doc.sectors as string[]) ?? null},
       ${adaptOptions ? sql.json(adaptOptions) : null},
       ${geo ? sql.json(geo) : null},
+      ${healthImpact},
       ${loc?.lat ?? null},
       ${loc?.lon ?? null},
       ${years?.start_year ?? null},
       ${years?.end_year ?? null},
       ${(doc.contact_preprocessed as string) ?? null},
       ${(doc.references_preprocessed as string) ?? null},
+      ${costEstimation},
       ${doc.websites ? sql.json(doc.websites) : null}
     )
     ON CONFLICT (document_id) DO UPDATE SET
@@ -102,12 +108,14 @@ async function upsertSummary(documentId: string, doc: Record<string, unknown>): 
       sectors                     = EXCLUDED.sectors,
       adapt_options               = EXCLUDED.adapt_options,
       geographic_characterisation = EXCLUDED.geographic_characterisation,
+      health_impact               = EXCLUDED.health_impact,
       location_lat                = EXCLUDED.location_lat,
       location_lon                = EXCLUDED.location_lon,
       implementation_years_start  = EXCLUDED.implementation_years_start,
       implementation_years_end    = EXCLUDED.implementation_years_end,
       contact_preprocessed        = EXCLUDED.contact_preprocessed,
       references_preprocessed     = EXCLUDED.references_preprocessed,
+      cost_estimation             = EXCLUDED.cost_estimation,
       websites                    = EXCLUDED.websites
   `;
 }
@@ -157,7 +165,7 @@ async function upsertEmbedding(
   const vectorLiteral = `[${embedding.join(",")}]`;
   await sql.unsafe(
     `INSERT INTO knowledge.embeddings (document_id, lang, content_type, model, dimensions, embedding)
-     VALUES ($1, $2, $3, $4, $5, $6::knowledge.vector)
+     VALUES ($1, $2, $3, $4, $5, $6::vector)
      ON CONFLICT (document_id, lang, content_type) DO UPDATE SET
        model      = EXCLUDED.model,
        dimensions = EXCLUDED.dimensions,

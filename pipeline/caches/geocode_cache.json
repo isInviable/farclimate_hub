@@ -406,5 +406,209 @@
   "Bulgaria, Continental": [
     42.733883,
     25.48583
+  ],
+  "Europe": [
+    54.5259614,
+    15.2551187
+  ],
+  "Kerry County, Ireland": [
+    52.15446069999999,
+    -9.5668632
+  ],
+  "Arnsberg (DE), Germany": [
+    51.4073375,
+    8.052771
+  ],
+  "East Anglia (UK), United Kingdom": [
+    52.83816401015793,
+    -2.327480843616569
+  ],
+  "Belgium": [
+    50.503887,
+    4.469936
+  ],
+  "Vestlandet (NO), Norway": [
+    60.47202399999999,
+    8.468945999999999
+  ],
+  "Prov. Antwerpen (BE), Belgium": [
+    51.1663636,
+    4.7639649
+  ],
+  "Emilia-Romagna (IT), Italy": [
+    44.5967607,
+    11.2186396
+  ],
+  "France": [
+    46.227638,
+    2.213749
+  ],
+  "Dorset and Somerset (UK), United Kingdom": [
+    51.0634565,
+    -2.7546704
+  ],
+  "Aττική (Attiki) (GR), Greece": [
+    38.0457568,
+    23.8584737
+  ],
+  "United Kingdom": [
+    55.378051,
+    -3.435973
+  ],
+  "Bulgaria": [
+    42.733883,
+    25.48583
+  ],
+  "Sweden": [
+    60.12816100000001,
+    18.643501
+  ],
+  "Lancashire (UK), United Kingdom": [
+    53.9690089,
+    -2.6276908
+  ],
+  "Netherlands": [
+    52.132633,
+    5.291265999999999
+  ],
+  "Alentejo (PT), Portugal": [
+    38.2003808,
+    -7.800084999999998
+  ],
+  "Cataluña (ES), Spain": [
+    41.5911589,
+    1.5208624
+  ],
+  "Republic of North Macedonia": [
+    41.608635,
+    21.745275
+  ],
+  "Prov. West-Vlaanderen (BE), Belgium": [
+    51.0536024,
+    3.1457942
+  ],
+  "Sirolo, Italy": [
+    43.5181981,
+    13.6207004
+  ],
+  "Cyprus": [
+    35.126413,
+    33.429859
+  ],
+  "Dél-Alföld (HU), Hungary": [
+    46.4922893,
+    19.8418592
+  ],
+  "Germany": [
+    51.165691,
+    10.451526
+  ],
+  "Sydsverige (SE), Sweden": [
+    56.1615894,
+    13.7630614
+  ],
+  "Guadeloupe (FR), France": [
+    16.265,
+    -61.55099999999999
+  ],
+  "Bosnia and Herzegovina": [
+    43.915886,
+    17.679076
+  ],
+  "Greece": [
+    39.074208,
+    21.824312
+  ],
+  "IJsselstein, Netherlands": [
+    52.0177649,
+    5.0403003
+  ],
+  "Norway": [
+    60.47202399999999,
+    8.468945999999999
+  ],
+  "Hungary": [
+    47.162494,
+    19.503304
+  ],
+  "Východné Slovensko (SK), Slovakia": [
+    48.669026,
+    19.699024
+  ],
+  "Finland": [
+    61.92410999999999,
+    25.748151
+  ],
+  "Köln (DE), Germany": [
+    50.937531,
+    6.9602786
+  ],
+  "Bussoleno, Italy": [
+    45.1386814,
+    7.1503654
+  ],
+  "Haute-Normandie (FR), France": [
+    49.524641,
+    0.8828328999999999
+  ],
+  "Canarias (ES), Spain": [
+    28.2915637,
+    -16.6291304
+  ],
+  "Puglia (IT), Italy": [
+    40.7928393,
+    17.1011931
+  ],
+  "Carlantino, Italy": [
+    41.5945188,
+    14.9752932
+  ],
+  "Castilla y León (ES), Spain": [
+    41.83568210000001,
+    -4.397635699999999
+  ],
+  "Extremadura (ES), Spain": [
+    39.4937392,
+    -6.0679194
+  ],
+  "Prov. Brabant Wallon (BE), Belgium": [
+    50.633241,
+    4.524315
+  ],
+  "Kassel (DE), Germany": [
+    51.3118828,
+    9.4915751
+  ],
+  "Toscana (IT), Italy": [
+    43.5671153,
+    10.9807003
+  ],
+  "Austria": [
+    47.516231,
+    14.550072
+  ],
+  "Κύπρος (Kýpros) (CY), Cyprus": [
+    35.126413,
+    33.429859
+  ],
+  "Vecchiano, Italy": [
+    43.78230140000001,
+    10.3869921
+  ],
+  "Waidhofen a.d. Ybbs, Austria": [
+    47.9617126,
+    14.7726968
+  ],
+  "Detmold (DE), Germany": [
+    51.9384783,
+    8.868637999999999
+  ],
+  "Czechia": [
+    49.81749199999999,
+    15.472962
+  ],
+  "Bærum, Norway": [
+    59.95742329999999,
+    10.4786126
   ]
 }

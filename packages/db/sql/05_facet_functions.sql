@@ -1,11 +1,5 @@
--- Filter facets: unique values + counts for sectors, climate_impacts, adaptation_approaches, keywords.
--- Returns JSONB with "global" (whole table) and "for_result_set" (when doc_ids provided).
--- Idempotent: CREATE OR REPLACE.
-
-SET search_path TO knowledge, public, extensions;
-
--- Helper: build facet array for one array column from a given base (table or filtered).
--- We use inline subqueries per category to keep SQL readable.
+-- Facet functions in knowledge schema only (consolidated from 13, 14). Public wrappers are in 06_public_api.
+SET search_path TO knowledge, public;
 
 CREATE OR REPLACE FUNCTION knowledge.get_filter_facets(doc_ids uuid[] DEFAULT NULL)
 RETURNS jsonb
@@ -64,14 +58,21 @@ $$;
 
 COMMENT ON FUNCTION knowledge.get_filter_facets(uuid[]) IS 'Returns filter facets (value + count) for sectors, climate_impacts, adaptation_approaches, keywords. global=whole table; for_result_set=when doc_ids provided.';
 
--- Public wrapper for PostgREST/Supabase
-CREATE OR REPLACE FUNCTION public.get_filter_facets(doc_ids uuid[] DEFAULT NULL)
-RETURNS jsonb
+CREATE OR REPLACE FUNCTION knowledge.get_summary_facet_arrays(doc_ids uuid[])
+RETURNS TABLE (
+  document_id uuid,
+  sectors text[],
+  climate_impacts text[],
+  adaptation_approaches text[],
+  keywords text[]
+)
 LANGUAGE sql
 STABLE
-SET search_path = knowledge, public, extensions
+SET search_path = knowledge, public
 AS $$
-  SELECT knowledge.get_filter_facets(doc_ids);
+  SELECT s.document_id, s.sectors, s.climate_impacts, s.adaptation_approaches, s.keywords
+  FROM knowledge.summary s
+  WHERE s.document_id = ANY(doc_ids);
 $$;
 
-COMMENT ON FUNCTION public.get_filter_facets(uuid[]) IS 'Public wrapper for filter facets; delegates to knowledge.get_filter_facets.';
+COMMENT ON FUNCTION knowledge.get_summary_facet_arrays(uuid[]) IS 'Returns facet arrays per document for the given ids; used by search API to apply facet filters.';

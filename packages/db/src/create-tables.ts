@@ -4,20 +4,12 @@ async function main() {
   console.log("Creating knowledge schema and tables...\n");
 
   await runSqlFiles([
-    "00_create_schema.sql",
-    "01_create_documents.sql",
-    "02_create_summary.sql",
-    "03_create_summary_multilang.sql",
-    "04_create_fulltext.sql",
-    "05_enable_vector.sql",
-    "06_create_embeddings.sql",
-    "07_match_documents_fn.sql",
-    "08_add_fts_column.sql",
-    "09_keyword_search_fn.sql",
-    "10_hybrid_search_fn.sql",
-    "11_public_search_wrappers.sql",
-    "12_add_gin_indexes.sql",
-    "13_get_filter_facets.sql",
+    "01_schema_and_extensions.sql",
+    "02_tables.sql",
+    "03_triggers.sql",
+    "04_search_functions.sql",
+    "05_facet_functions.sql",
+    "06_public_api.sql",
   ]);
 
   console.log("\nAll tables created successfully.");

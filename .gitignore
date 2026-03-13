@@ -11,7 +11,6 @@ Thumbs.db
 # Pipeline data (large/generated)
 pipeline/extracted/*
 pipeline/source_html/*
-dataCrawler/*
 0_source_datasets/*
 pipeline/augmented/*
 pipeline/caches/*
@@ -23,3 +22,4 @@ node_modules/
 dist/
 .nuxt/
 .output/
+old/*

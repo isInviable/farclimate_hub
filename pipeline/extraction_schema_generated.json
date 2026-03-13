@@ -92,60 +92,33 @@
     },
     {
       "name": "creation_date",
-      "selector": ".content-metadata h5:nth-of-type(1) + p",
+      "selector": ".content-metadata > h5:nth-of-type(1) + p",
       "type": "text"
     },
     {
       "name": "keywords",
-      "selector": ".content-metadata h5 + span",
+      "selector": ".content-metadata > h5 + span",
       "type": "text"
     },
     {
       "name": "climate_impacts",
-      "selector": ".content-metadata h5:nth-of-type(2) + p",
+      "selector": ".content-metadata > h5:nth-of-type(3) + p",
       "type": "text"
     },
     {
       "name": "adaptation_approaches",
-      "selector": ".content-metadata h5:nth-of-type(3) + p",
+      "selector": ".content-metadata > h5:nth-of-type(4) + p",
       "type": "text"
     },
     {
       "name": "sectors",
-      "selector": ".content-metadata h5:nth-of-type(4) + p",
+      "selector": ".content-metadata > h5:nth-of-type(5) + p",
       "type": "text"
     },
     {
       "name": "governance_level",
-      "selector": ".content-metadata h5:nth-of-type(5) + span",
+      "selector": ".content-metadata > h5:nth-of-type(6) + span",
       "type": "text"
-    },
-    {
-      "name": "geographic_characterisation",
-      "type": "nested",
-      "selector": ".geochar",
-      "fields": [
-        {
-          "name": "continent",
-          "selector": "p:first-of-type",
-          "type": "text"
-        },
-        {
-          "name": "macro_transnational_region",
-          "selector": "h5:nth-of-type(1) + p",
-          "type": "text"
-        },
-        {
-          "name": "countries",
-          "selector": "h5:nth-of-type(2) + p",
-          "type": "text"
-        },
-        {
-          "name": "sub_nationals",
-          "selector": "h5:nth-of-type(3) + p",
-          "type": "text"
-        }
-      ]
     },
     {
       "name": "policy_legal_background",
@@ -159,7 +132,7 @@
     },
     {
       "name": "solutions",
-      "selector": "#solutions_anchor + div",
+      "selector": "#solutions_anchor div",
       "type": "text"
     },
     {

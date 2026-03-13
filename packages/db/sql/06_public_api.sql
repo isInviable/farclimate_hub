@@ -1,6 +1,12 @@
--- Public schema wrappers that delegate to knowledge schema functions.
--- Required because PostgREST only exposes schemas listed in its config
--- (public, graphql_public by default).
+-- Public schema wrappers and grants (consolidated from 11 + public wrappers from 13, 14).
+-- PostgREST exposes public schema by default; these delegate to knowledge schema.
+-- Drop existing functions so return types can change across migrations (e.g. adding health_impact).
+DROP FUNCTION IF EXISTS public.hybrid_search(text, text, int, text, text, float, float, int);
+DROP FUNCTION IF EXISTS public.keyword_search(text, int, text);
+DROP FUNCTION IF EXISTS public.get_all_documents(text);
+DROP FUNCTION IF EXISTS public.get_documents_by_ids(uuid[], text);
+DROP FUNCTION IF EXISTS public.get_filter_facets(uuid[]);
+DROP FUNCTION IF EXISTS public.get_summary_facet_arrays(uuid[]);
 
 CREATE OR REPLACE FUNCTION public.hybrid_search(
   query_text text,
@@ -69,6 +75,7 @@ RETURNS TABLE (
   adaptation_approaches text[],
   sectors text[],
   geographic_characterisation jsonb,
+  health_impact text,
   location_lat double precision,
   location_lon double precision,
   implementation_years_start text,
@@ -93,6 +100,7 @@ AS $$
     s.adaptation_approaches,
     s.sectors,
     s.geographic_characterisation,
+    s.health_impact,
     s.location_lat,
     s.location_lon,
     s.implementation_years_start,
@@ -125,6 +133,7 @@ RETURNS TABLE (
   adaptation_approaches text[],
   sectors text[],
   geographic_characterisation jsonb,
+  health_impact text,
   location_lat double precision,
   location_lon double precision,
   implementation_years_start text,
@@ -149,6 +158,7 @@ AS $$
     s.adaptation_approaches,
     s.sectors,
     s.geographic_characterisation,
+    s.health_impact,
     s.location_lat,
     s.location_lon,
     s.implementation_years_start,
@@ -162,6 +172,34 @@ AS $$
   LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
   WHERE d.id = ANY(doc_ids);
 $$;
+
+CREATE OR REPLACE FUNCTION public.get_filter_facets(doc_ids uuid[] DEFAULT NULL)
+RETURNS jsonb
+LANGUAGE sql
+STABLE
+SET search_path = knowledge, public, extensions
+AS $$
+  SELECT knowledge.get_filter_facets(doc_ids);
+$$;
+
+COMMENT ON FUNCTION public.get_filter_facets(uuid[]) IS 'Public wrapper for filter facets; delegates to knowledge.get_filter_facets.';
+
+CREATE OR REPLACE FUNCTION public.get_summary_facet_arrays(doc_ids uuid[])
+RETURNS TABLE (
+  document_id uuid,
+  sectors text[],
+  climate_impacts text[],
+  adaptation_approaches text[],
+  keywords text[]
+)
+LANGUAGE sql
+STABLE
+SET search_path = knowledge, public
+AS $$
+  SELECT * FROM knowledge.get_summary_facet_arrays(doc_ids);
+$$;
+
+COMMENT ON FUNCTION public.get_summary_facet_arrays(uuid[]) IS 'Public wrapper for get_summary_facet_arrays.';
 
 -- Grant knowledge schema access to PostgREST roles
 GRANT USAGE ON SCHEMA knowledge TO anon, authenticated;

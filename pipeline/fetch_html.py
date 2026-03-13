@@ -13,7 +13,7 @@ Usage:
     python fetch_html.py
 
   With options:
-    python pipeline/fetch_html.py --csv dataCrawler/data_all.csv --output pipeline/source_html --start 0 --end 10
+    python pipeline/fetch_html.py --csv pipeline/data-5.csv --output pipeline/source_html --start 0 --end 10
 """
 
 import asyncio
@@ -29,7 +29,7 @@ MANIFEST_FILENAME = "url_manifest.json"
 
 # Default paths relative to repository root
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_CSV = REPO_ROOT / "dataCrawler" / "data_all.csv"
+DEFAULT_CSV = REPO_ROOT / "pipeline" / "data-5.csv"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "pipeline" / "source_html"
 
 

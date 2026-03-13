@@ -1,8 +1,4 @@
--- Add tsvector column for full-text search
-ALTER TABLE knowledge.fulltext
-  ADD COLUMN IF NOT EXISTS fts tsvector;
-
--- Trigger function: compute tsvector from fulltext using language-aware config
+-- Trigger: compute tsvector from fulltext on insert/update (from former migration 08, no backfill).
 CREATE OR REPLACE FUNCTION knowledge.fulltext_fts_trigger()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -26,16 +22,8 @@ BEGIN
 END;
 $$;
 
--- Trigger: fire before insert or update
 DROP TRIGGER IF EXISTS fulltext_fts_update ON knowledge.fulltext;
 CREATE TRIGGER fulltext_fts_update
   BEFORE INSERT OR UPDATE ON knowledge.fulltext
   FOR EACH ROW
   EXECUTE FUNCTION knowledge.fulltext_fts_trigger();
-
--- GIN index for fast full-text search
-CREATE INDEX IF NOT EXISTS fulltext_fts_idx
-  ON knowledge.fulltext USING gin(fts);
-
--- Backfill: touch all existing rows so the trigger populates fts
-UPDATE knowledge.fulltext SET fulltext = fulltext;

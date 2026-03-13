@@ -62,6 +62,7 @@ GEOCODE_CACHE_FILE = CACHE_DIR / "geocode_cache.json"
 YEARS_CACHE_FILE = CACHE_DIR / "years_cache.json"
 PREPROCESS_CACHE_FILE = CACHE_DIR / "preprocess_cache.json"
 SUMMARY_CACHE_FILE = CACHE_DIR / "summary_cache.json"
+COST_ESTIMATION_CACHE_FILE = CACHE_DIR / "cost_estimation_cache.json"
 
 
 def _load_json_cache(path: Path) -> dict:
@@ -85,30 +86,77 @@ global_geocode_cache = _load_json_cache(GEOCODE_CACHE_FILE)
 global_years_cache = _load_json_cache(YEARS_CACHE_FILE)
 global_preprocess_cache = _load_json_cache(PREPROCESS_CACHE_FILE)
 global_summary_cache = _load_json_cache(SUMMARY_CACHE_FILE)
+global_cost_estimation_cache = _load_json_cache(COST_ESTIMATION_CACHE_FILE)
+
+
+def _normalize_geo_value(value: str | None) -> str:
+    """Return first segment if comma-separated, trimmed; empty string if missing."""
+    if not value or not isinstance(value, str):
+        return ""
+    return value.split(",")[0].strip()
+
+
+def _build_geocode_queries(geo: dict) -> list[str]:
+    """
+    Build an ordered list of geocode query strings from geographic_characterisation.
+    Order: most specific (city) to least specific (continent). Empty queries are omitted.
+    """
+    city = _normalize_geo_value(geo.get("city"))
+    sub_national = _normalize_geo_value(geo.get("sub_nationals"))
+    country = _normalize_geo_value(geo.get("countries"))
+    macro_region = _normalize_geo_value(geo.get("macro_transnational_region"))
+    continent = _normalize_geo_value(geo.get("continent"))
+
+    queries = []
+    seen = set()
+
+    def add(q: str) -> None:
+        if q and q not in seen:
+            seen.add(q)
+            queries.append(q)
+
+    # 1. City + country (best precision)
+    if city and country:
+        add(f"{city}, {country}")
+    # 2. City + sub_national + country (e.g. "Kerry County, Southern and Eastern, Ireland")
+    if city and sub_national and country:
+        add(f"{city}, {sub_national}, {country}")
+    # 3. City alone
+    if city:
+        add(city)
+    # 4. Sub nationals + country (first segment to keep query focused)
+    if sub_national and country:
+        add(f"{sub_national}, {country}")
+    # 5. Sub nationals alone (often includes region name)
+    if sub_national:
+        add(sub_national)
+    # 6. Country alone
+    if country:
+        add(country)
+    # 7. Macro-transnational region (e.g. Atlantic Area)
+    if macro_region:
+        add(macro_region)
+    # 8. Continent (last resort, coarse)
+    if continent:
+        add(continent)
+
+    return queries
 
 
 def get_coordinates(location_info: dict) -> tuple[float | None, float | None]:
     """
     Get coordinates for a location using geocoding, with caching.
-    Expects a geographic_characterisation-like dict with optional
-    'city', 'countries', 'sub_nationals' keys.
+    Expects geographic_characterisation dict with optional keys: city, sub_nationals,
+    countries, macro_transnational_region, continent. Tries queries from most specific
+    (city + country) to least specific (continent) and returns the first successful result.
     Returns (lat, lon) or (None, None) if nothing found.
     """
-    city = location_info.get("city", "") or ""
-    countries = location_info.get("countries", "") or ""
-    sub_nationals = location_info.get("sub_nationals", "") or ""
+    location_queries = _build_geocode_queries(location_info)
+    if not location_queries:
+        print("No geographic data available for geocoding.")
+        return None, None
 
-    country = countries.split(",")[0].strip() if countries else ""
-    sub_national = sub_nationals.split(",")[0].strip() if sub_nationals else ""
-
-    location_queries = [
-        f"{city}, {country}".strip(", "),
-        city,
-        country,
-        f"{sub_national}, {country}".strip(", "),
-    ]
-
-    print(f"\nTrying to geocode location with info: {location_info}")
+    print(f"\nGeocoding (most specific → least): {location_queries}")
     global global_geocode_cache
 
     for query in location_queries:
@@ -317,6 +365,102 @@ def summarize_fulltext(fulltext: str) -> str:
         return ""
 
 
+def extract_cost_estimation(cost_benefit_text: str | None) -> float | None:
+    """
+    Use Gemini to extract a numeric cost estimation (EUR) from the cost_benefit text.
+    Returns a float or None if no clear cost is found. Cached with versioned key.
+    """
+    global global_cost_estimation_cache
+    if not cost_benefit_text or not isinstance(cost_benefit_text, str):
+        return None
+
+    text = cost_benefit_text.strip()
+    if not text:
+        return None
+
+    if len(text) > 8000:
+        text = text[:8000]
+
+    cache_version = "v1"
+    cache_key = f"{cache_version}:{text}"
+    if cache_key in global_cost_estimation_cache:
+        cached = global_cost_estimation_cache[cache_key]
+        print("Found cost estimation in cache.")
+        return cached
+
+    try:
+        prompt = (
+            "You are analysing the costs and benefits section of a climate-change adaptation case study.\n\n"
+            "Task:\n"
+            "- Read the text below and extract the total or most representative project cost in EUR.\n"
+            "- Return ONLY a JSON object in one of these two forms:\n"
+            '  {\"cost_estimation\": 14000}   (a number, no currency symbol)\n'
+            '  {\"cost_estimation\": null}     (if no clear numeric cost is present)\n'
+            "- If the text mentions multiple amounts, pick the one that best represents the overall project cost.\n"
+            "- If only unit costs are mentioned (e.g. €20 per meter) without a total, return null.\n"
+            "- Do NOT invent or calculate numbers that are not explicitly stated.\n\n"
+            "Text:\n"
+            f"{text}"
+        )
+        print("Calling Gemini API for cost estimation extraction...")
+        response = genai_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(max_output_tokens=100),
+        )
+
+        result_text: str | None = None
+        if hasattr(response, "text") and response.text:
+            result_text = response.text
+        elif hasattr(response, "candidates") and response.candidates:
+            candidate = response.candidates[0]
+            if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
+                if isinstance(candidate.content.parts, list):
+                    result_text = "".join(
+                        [p.get("text", "") if isinstance(p, dict) else str(p) for p in candidate.content.parts]
+                    )
+                else:
+                    result_text = str(candidate.content.parts)
+            elif hasattr(candidate.content, "text"):
+                result_text = candidate.content.text
+
+        print("Extracted result_text for cost estimation:", result_text)
+        if not result_text:
+            global_cost_estimation_cache[cache_key] = None
+            _save_json_cache(COST_ESTIMATION_CACHE_FILE, global_cost_estimation_cache)
+            return None
+
+        cleaned_text = (
+            result_text.strip()
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+        try:
+            result = json.loads(cleaned_text)
+            if not isinstance(result, dict):
+                raise ValueError("Cost estimation result is not a dict")
+            raw_value = result.get("cost_estimation")
+            if raw_value is None:
+                global_cost_estimation_cache[cache_key] = None
+                _save_json_cache(COST_ESTIMATION_CACHE_FILE, global_cost_estimation_cache)
+                return None
+            cost = float(raw_value)
+            global_cost_estimation_cache[cache_key] = cost
+            _save_json_cache(COST_ESTIMATION_CACHE_FILE, global_cost_estimation_cache)
+            return cost
+        except Exception:  # noqa: BLE001
+            print("Cost estimation response is not valid JSON:", cleaned_text, file=sys.stderr)
+            global_cost_estimation_cache[cache_key] = None
+            _save_json_cache(COST_ESTIMATION_CACHE_FILE, global_cost_estimation_cache)
+            return None
+    except Exception as e:  # noqa: BLE001
+        print(f"Error extracting cost estimation: {e}", file=sys.stderr)
+        global_cost_estimation_cache[cache_key] = None
+        _save_json_cache(COST_ESTIMATION_CACHE_FILE, global_cost_estimation_cache)
+        return None
+
+
 def preprocess_text_field(field_value, field_type: str):  # noqa: ANN001
     """
     Preprocess a text field (e.g. references or contact) using Gemini and cache the result.
@@ -417,6 +561,7 @@ def augment_record(data: dict) -> dict:
     - Geocoding from geographic_characterisation -> location.lat/lon
     - Years from fulltext -> implementation_years
     - Preprocess references/contact -> references_preprocessed/contact_preprocessed
+    - Cost estimation from cost_benefit -> cost_estimation
     """
     # Geocoding
     geo_info = data.get("geographic_characterisation")
@@ -444,6 +589,10 @@ def augment_record(data: dict) -> dict:
         summary = summarize_fulltext(fulltext)
         if summary:
             data["summary"] = summary
+
+    # Cost estimation from cost_benefit text
+    cost_benefit_text = data.get("cost_benefit")
+    data["cost_estimation"] = extract_cost_estimation(cost_benefit_text)
 
     return data
 

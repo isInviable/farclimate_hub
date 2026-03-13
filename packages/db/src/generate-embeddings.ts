@@ -50,7 +50,7 @@ async function main() {
 
       await sql.unsafe(
         `INSERT INTO knowledge.embeddings (document_id, lang, content_type, model, dimensions, embedding)
-         VALUES ($1, $2, $3, $4, $5, $6::knowledge.vector)
+         VALUES ($1, $2, $3, $4, $5, $6::vector)
          ON CONFLICT (document_id, lang, content_type) DO UPDATE SET
            model      = EXCLUDED.model,
            dimensions = EXCLUDED.dimensions,
