@@ -1,6 +1,9 @@
 import type { SearchResult } from '@/types/search'
+import type { FilterFacetsResponse } from '@/types/facets'
 
 export const useSearchStore = defineStore('search', () => {
+  const facetsData = ref<FilterFacetsResponse | null>(null)
+
   const selectedTags = ref<{
     keywords: string[]
     adaptation_approaches: string[]
@@ -48,19 +51,25 @@ export const useSearchStore = defineStore('search', () => {
     resultsData.value = data
   }
 
+  const setFacetsData = (data: FilterFacetsResponse | null) => {
+    facetsData.value = data
+  }
+
   const setIsSearching = (value: boolean) => {
     isSearching.value = value
   }
 
   return {
+    facetsData,
     selectedTags,
     searchQuery,
     hasAnySelectedTags,
     isSearching,
     resultsData,
+    setFacetsData,
     setSelectedTags,
     setSearchQuery,
     setResultsData,
-    setIsSearching
+    setIsSearching,
   }
 })

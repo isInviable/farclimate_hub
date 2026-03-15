@@ -11,6 +11,7 @@ The function SHALL accept:
 - `full_text_weight` (float, default 1) — weight multiplier for the keyword search rank
 - `semantic_weight` (float, default 1) — weight multiplier for the semantic search rank
 - `rrf_k` (int, default 50) — RRF smoothing constant added to the denominator
+- `match_threshold` (float, default 0.0) — minimum cosine similarity for the semantic branch; when > 0, the semantic CTE SHALL exclude rows where `embedding <=> query_embedding >= 1.0 - match_threshold` (same pattern as [Supabase match_documents](https://supabase.com/docs/guides/ai/semantic-search))
 
 The function SHALL return a table with columns:
 - `id` (UUID) — the document id
@@ -49,6 +50,14 @@ Results SHALL be ordered by `score` descending (highest score first) and limited
 #### Scenario: Supabase RPC invocation
 - **WHEN** the web app calls `supabase.rpc('hybrid_search', { query_text: 'flood', query_embedding: [...], match_count: 10 })`
 - **THEN** the function SHALL be accessible and return correctly typed results
+
+#### Scenario: Semantic similarity threshold (match_threshold > 0)
+- **WHEN** `match_threshold` is set to a value in (0, 1] (e.g. 0.3)
+- **THEN** the semantic CTE SHALL include only embeddings whose cosine distance to the query embedding is less than `1.0 - match_threshold` (i.e. cosine similarity ≥ match_threshold); documents excluded by this filter SHALL NOT appear in the semantic result set and thus contribute only via keyword rank if present
+
+#### Scenario: No semantic threshold (match_threshold <= 0)
+- **WHEN** `match_threshold` is 0 or negative
+- **THEN** the semantic CTE SHALL NOT filter by distance; all documents matching `filter_lang` and `filter_content_type` SHALL be considered, ordered by distance, up to the CTE limit
 
 ### Requirement: RRF scoring formula
 

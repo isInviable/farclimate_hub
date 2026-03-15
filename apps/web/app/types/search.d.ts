@@ -1,3 +1,11 @@
+/** Optional facet filter params for POST /api/search. AND across categories, OR within each. */
+export interface SearchFacetParams {
+  sectors?: string[];
+  climate_impacts?: string[];
+  adaptation_approaches?: string[];
+  keywords?: string[];
+}
+
 export interface GeographicCharacterisation {
   biogeographical_regions?: string;
   city?: string;

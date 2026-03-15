@@ -26,7 +26,8 @@
         <SectorFilter
           v-if="isFilterEnabled('sector')"
           :enabled="true"
-          :data="searchResults"
+          :sectors="facetsData?.global?.sectors"
+          :for-result-set-counts="sectorCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -35,6 +36,8 @@
         <HazardsFilter
           v-if="isFilterEnabled('hazards')"
           :enabled="true"
+          :climate-impacts="facetsData?.global?.climate_impacts"
+          :for-result-set-counts="climateImpactsCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -81,7 +84,8 @@
         <SectorFilter
           v-if="isFilterAvailable('sector')"
           :enabled="false"
-          :data="searchResults"
+          :sectors="facetsData?.global?.sectors"
+          :for-result-set-counts="sectorCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -90,6 +94,8 @@
         <HazardsFilter
           v-if="isFilterAvailable('hazards')"
           :enabled="false"
+          :climate-impacts="facetsData?.global?.climate_impacts"
+          :for-result-set-counts="climateImpactsCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -144,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive } from "vue";
 import { useSearchStore } from '@/stores/search';
 import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
@@ -154,6 +160,11 @@ import TimeFilter from './TimeFilter.vue';
 // Props
 const props = defineProps<{
   searchResults?: any[];
+  /** From search store facetsData (POST /api/facets response). When set, Sector and Hazards filters use real data. */
+  facetsData?: {
+    global: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[] };
+    for_result_set: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[] };
+  } | null;
 }>();
 
 // Emits
@@ -167,6 +178,16 @@ const emit = defineEmits<{
 const filters = reactive<Record<string, any>>({});
 const enabledFilters = reactive<Record<string, boolean>>({});
 const searchResults = ref(props.searchResults || []);
+
+// Derive for_result_set counts as Record<value, count> for BarChartFilter
+const sectorCountsFromResultSet = computed(() => {
+  const arr = props.facetsData?.for_result_set?.sectors ?? [];
+  return Object.fromEntries(arr.map((e) => [e.value, e.count]));
+});
+const climateImpactsCountsFromResultSet = computed(() => {
+  const arr = props.facetsData?.for_result_set?.climate_impacts ?? [];
+  return Object.fromEntries(arr.map((e) => [e.value, e.count]));
+});
 
 // Initialize search filter if there's already a search query
 const searchStore = useSearchStore();
@@ -231,22 +252,29 @@ const getFilterStatus = (key: string): string => {
   return 'Filter applied';
 };
 
+/** Emit only filters that are currently enabled, so parent does not send inactive filter values in the query/facets. */
+function getEffectiveFilters() {
+  return Object.fromEntries(
+    Object.entries(filters).filter(([k]) => enabledFilters[k])
+  );
+}
+
 const handleFilterChange = (key: string, value: any, enabled: boolean) => {
   filters[key] = value;
   enabledFilters[key] = enabled;
-  emit('filters-changed', { ...filters });
+  emit('filters-changed', getEffectiveFilters());
 };
 
 const handleFilterClear = (key: string) => {
   delete filters[key];
   enabledFilters[key] = false;
-  emit('filters-changed', { ...filters });
+  emit('filters-changed', getEffectiveFilters());
 };
 
 const handleFilterApply = (key: string, value: any) => {
   filters[key] = value;
   enabledFilters[key] = true;
-  emit('filters-changed', { ...filters });
+  emit('filters-changed', getEffectiveFilters());
 };
 
 const handleSearchResults = (results: any) => {
@@ -267,12 +295,12 @@ const clearAllFilters = () => {
 };
 
 const applyAllFilters = () => {
-  emit('filters-changed', { ...filters });
+  emit('filters-changed', getEffectiveFilters());
 };
 </script>
 
 <style scoped>
 .filter-manager {
-  /* Add any specific styles here */
+  min-width: 0;
 }
 </style>

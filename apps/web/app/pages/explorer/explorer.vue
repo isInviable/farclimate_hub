@@ -28,6 +28,7 @@
           <!-- Filter Manager -->
           <FilterManager
             :search-results="searchStore.resultsData?.hits || []"
+            :facets-data="searchStore.facetsData"
             @filters-changed="handleFiltersChanged"
             @search-results="handleSearchResults"
             @search-error="handleSearchError"
@@ -268,7 +269,7 @@ const props = defineProps({
 const viewMode = ref("list");
 const searchStore = useSearchStore();
 const route = useRoute();
-const { search: hybridSearch, loadAll, isSearching: _hybridSearching } = useHybridSearch();
+const { search: hybridSearch, loadAll, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
 import type { ArticleDetail } from "@/types/search";
 
 const selectedDocument = ref<ArticleDetail | null>(null);
@@ -305,6 +306,23 @@ const setViewMode = (mode: string) => {
 // Filter handling methods
 const handleFiltersChanged = (filters: Record<string, any>) => {
   Object.assign(activeFilters, filters);
+  // Sync facet params and re-run search so API returns filtered results
+  const sectorSel = filters.sector;
+  const sectors = typeof sectorSel === "object" && sectorSel !== null
+    ? Object.entries(sectorSel).filter(([, v]) => v).map(([k]) => k)
+    : [];
+  const hazardsSel = filters.hazards;
+  const climate_impacts = typeof hazardsSel === "object" && hazardsSel !== null
+    ? Object.entries(hazardsSel).filter(([, v]) => v).map(([k]) => k)
+    : [];
+  if (facetFilters) {
+    facetFilters.value = { sectors, climate_impacts, adaptation_approaches: [], keywords: [] };
+  }
+  if (searchStore.searchQuery.trim()) {
+    hybridSearch(searchStore.searchQuery);
+  } else {
+    loadAll();
+  }
 };
 
 const handleSearchResults = (results: any) => {

@@ -59,6 +59,40 @@ async function generateQueryEmbedding(query: string): Promise<number[]> {
   return embedding
 }
 
+/** Normalize body array to string[]; empty if omitted or invalid */
+function parseFacetArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.filter((v): v is string => typeof v === 'string').map((s) => s.trim()).filter(Boolean)
+}
+
+/** AND across categories, OR within. Returns ids that have at least one match in each non-empty filter array. */
+function filterIdsByFacets(
+  docIds: string[],
+  summaryRows: { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[],
+  filters: { sectors: string[]; climate_impacts: string[]; adaptation_approaches: string[]; keywords: string[] }
+): string[] {
+  const hasSectors = filters.sectors.length > 0
+  const hasClimate = filters.climate_impacts.length > 0
+  const hasAdaptation = filters.adaptation_approaches.length > 0
+  const hasKeywords = filters.keywords.length > 0
+  if (!hasSectors && !hasClimate && !hasAdaptation && !hasKeywords) return docIds
+
+  const byId = new Map(summaryRows.map((r) => [r.document_id, r]))
+  return docIds.filter((id) => {
+    const row = byId.get(id)
+    if (!row) return false
+    const s = row.sectors ?? []
+    const c = row.climate_impacts ?? []
+    const a = row.adaptation_approaches ?? []
+    const k = row.keywords ?? []
+    if (hasSectors && !filters.sectors.some((v) => s.includes(v))) return false
+    if (hasClimate && !filters.climate_impacts.some((v) => c.includes(v))) return false
+    if (hasAdaptation && !filters.adaptation_approaches.some((v) => a.includes(v))) return false
+    if (hasKeywords && !filters.keywords.some((v) => k.includes(v))) return false
+    return true
+  })
+}
+
 function buildHit(row: Record<string, any>, score: number) {
   return {
     id: row.id,
@@ -107,6 +141,13 @@ export default defineEventHandler(async (event) => {
   const matchThreshold = typeof body?.match_threshold === 'number' ? body.match_threshold : 0.0
   // Server-side RRF score floor. Kept as a secondary safety net.
   const minScore = typeof body?.min_score === 'number' ? body.min_score : 0.02
+  // Facet filters: AND across categories, OR within (see filterIdsByFacets).
+  const sectors = parseFacetArray(body?.sectors)
+  const climate_impacts = parseFacetArray(body?.climate_impacts)
+  const adaptation_approaches = parseFacetArray(body?.adaptation_approaches)
+  const keywords = parseFacetArray(body?.keywords)
+  const hasFacetFilters = sectors.length > 0 || climate_impacts.length > 0 || adaptation_approaches.length > 0 || keywords.length > 0
+  const facetFilters = { sectors, climate_impacts, adaptation_approaches, keywords }
 
   const supabase = getSupabaseClient()
 
@@ -117,7 +158,16 @@ export default defineEventHandler(async (event) => {
       })
       if (error) throw error
 
-      const hits = (data || []).map((row: any) => buildHit(row, 1))
+      let rows = (data || []) as any[]
+      if (hasFacetFilters && rows.length > 0) {
+        const docIds = rows.map((r: any) => r.id)
+        const { data: summaryData, error: summaryErr } = await supabase.rpc('get_summary_facet_arrays', { doc_ids: docIds })
+        if (summaryErr) throw summaryErr
+        const summaryRows = (summaryData || []) as { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[]
+        const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
+        rows = rows.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
+      }
+      const hits = rows.map((row: any) => buildHit(row, 1))
       return { count: hits.length, hits }
     }
 
@@ -144,10 +194,11 @@ export default defineEventHandler(async (event) => {
     }
     if (useHybrid && embedding) {
       const vectorLiteral = `[${embedding.join(',')}]`
+      const matchCount = hasFacetFilters ? Math.min(Math.max(limit * 3, limit), 90) : limit
       const { data, error } = await supabase.rpc('hybrid_search', {
         query_text: query,
         query_embedding: vectorLiteral,
-        match_count: limit,
+        match_count: matchCount,
         filter_lang: lang,
         filter_content_type: 'composed',
         full_text_weight: fullTextWeight,
@@ -179,9 +230,10 @@ export default defineEventHandler(async (event) => {
     }
 
     if (!useHybrid) {
+      const matchCount = hasFacetFilters ? Math.min(Math.max(limit * 3, limit), 90) : limit
       const { data, error } = await supabase.rpc('keyword_search', {
         query_text: query,
-        match_count: limit,
+        match_count: matchCount,
         filter_lang: lang,
       })
       if (error) throw error
@@ -204,8 +256,18 @@ export default defineEventHandler(async (event) => {
 
     if (!searchResults || searchResults.length === 0) return { count: 0, hits: [] }
 
-    const filteredResults = searchResults.filter((r: any) => (r.score ?? 0) >= minScore)
+    let filteredResults = searchResults.filter((r: any) => (r.score ?? 0) >= minScore)
     if (filteredResults.length === 0) return { count: 0, hits: [] }
+
+    if (hasFacetFilters) {
+      const docIds = filteredResults.map((r: any) => r.id)
+      const { data: summaryData, error: summaryErr } = await supabase.rpc('get_summary_facet_arrays', { doc_ids: docIds })
+      if (summaryErr) throw summaryErr
+      const summaryRows = (summaryData || []) as { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[]
+      const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
+      filteredResults = filteredResults.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
+      if (filteredResults.length === 0) return { count: 0, hits: [] }
+    }
 
     const docIds = filteredResults.map((r: any) => r.id)
     const { data: fullDocs, error: docsError } = await supabase.rpc('get_documents_by_ids', {
