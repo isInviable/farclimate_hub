@@ -8,6 +8,12 @@
         <span class="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded-full">
           {{ activeFilters.length }}
         </span>
+        <SavedSearchMenu
+          :filters="filters"
+          :enabled-filters="enabledFilters"
+          :search-query="searchStore.searchQuery"
+          @load-search="handleLoadSavedSearch"
+        />
       </div>
       
       <div class="space-y-4">
@@ -76,6 +82,13 @@
         <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
           {{ availableFilters.length }}
         </span>
+        <SavedSearchMenu
+          v-if="activeFilters.length === 0"
+          :filters="filters"
+          :enabled-filters="enabledFilters"
+          :search-query="searchStore.searchQuery"
+          @load-search="handleLoadSavedSearch"
+        />
       </div>
       
       <div class="space-y-4">
@@ -172,11 +185,13 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from "vue";
 import { useSearchStore } from '@/stores/search';
+import type { SavedSearchFilters } from "~/types/savedSearches";
 import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
 import HazardsFilter from './HazardsFilter.vue';
 import TimeFilter from './TimeFilter.vue';
 import BiogeographicalRegionsFilter from './BiogeographicalRegionsFilter.vue';
+import SavedSearchMenu from './SavedSearchMenu.vue';
 
 // Props
 const props = defineProps<{
@@ -316,6 +331,30 @@ const handleSearchResults = (results: any) => {
 
 const handleSearchError = (error: any) => {
   emit('search-error', error);
+};
+
+const handleLoadSavedSearch = (state: SavedSearchFilters) => {
+  Object.keys(filters).forEach((k) => delete filters[k]);
+  Object.keys(enabledFilters).forEach((k) => delete enabledFilters[k]);
+
+  if (state.filters) {
+    Object.entries(state.filters).forEach(([k, v]) => {
+      filters[k] = v;
+    });
+  }
+  if (state.enabledFilters) {
+    Object.entries(state.enabledFilters).forEach(([k, v]) => {
+      enabledFilters[k] = v;
+    });
+  }
+  if (state.searchQuery !== undefined) {
+    searchStore.setSearchQuery(state.searchQuery);
+    if (state.searchQuery.trim()) {
+      filters.search = state.searchQuery;
+      enabledFilters.search = true;
+    }
+  }
+  emit('filters-changed', getEffectiveFilters());
 };
 
 const clearAllFilters = () => {

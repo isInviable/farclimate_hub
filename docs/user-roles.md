@@ -84,5 +84,14 @@ This role setup only establishes elevated authorization for `connected_admin`.
 It does not yet:
 
 - create custom roles for normal platform users
-- replace ownership-based access for the future human domain
+- replace ownership-based access for the human domain (`human.profiles` uses `auth.uid()` + RLS)
 - implement all future RLS policies for Connected Action content
+
+## Human Domain Ownership Bootstrap
+
+Persistent human-domain structures are bootstrapped through `packages/supabase-setup`:
+
+- **`human.profiles`** — Created in bootstrap SQL and mapped one-to-one to `auth.users.id`. Authenticated users can only read/update their own profile row (`id = auth.uid()`). New auth users get a profile row from an auth insert trigger (idempotent).
+- **`human.projects`** — Root workspace container for user-owned curation. Ownership is direct: `owner_user_id` references `auth.users(id)`. Authenticated users can create, list, update, and delete only their own projects (`owner_user_id = auth.uid()`). This is the first workspace entity in the human domain; pins, annotations, and other workspace structures will reference projects.
+
+`anon` has no access to profiles or projects. Baseline user ownership is enforced with standard Supabase RLS; custom JWT roles are reserved for elevated capabilities only.

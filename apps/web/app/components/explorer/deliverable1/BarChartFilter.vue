@@ -11,43 +11,50 @@
     @filter-apply="handleFilterApply"
   >
     <template #controls="{ value, isEnabled }">
-      <div class="space-y-3">
+      <div class="space-y-2">
         <label
           v-for="item in items"
           :key="item.key"
-          class="relative flex items-center gap-3 py-1.5 rounded cursor-pointer overflow-hidden"
-          :class="{ 'opacity-50': !isEnabled }"
+          class="group block rounded-md border px-2 py-2 cursor-pointer transition-all duration-150"
+          :class="[
+            !isEnabled ? 'opacity-50' : '',
+            isSelected(item.key)
+              ? 'border-slate-300 bg-slate-50'
+              : 'border-transparent hover:border-slate-200 hover:bg-slate-50/70'
+          ]"
           @click="toggle(item.key)"
         >
+          <div class="mb-1.5 flex items-center justify-between gap-3">
+            <span
+              class="text-xs ml-0.5 underline-offset-2"
+              :class="isSelected(item.key) ? 'text-black font-medium' : 'text-slate-700 group-hover:underline'"
+            >
+              {{ item.label }}
+            </span>
+
+            <span
+              class="text-xs font-medium tabular-nums"
+              :class="isSelected(item.key) ? 'text-black' : 'text-slate-700'"
+            >
+              {{ getCurrentCount(item.label) }}{{ hasGlobalCounts ? ` / ${getGlobalCount(item.label)}` : '' }}
+            </span>
+          </div>
+
           <!-- Stacked bars: background = total (max), foreground = current result set -->
-          <div class="absolute left-0 inset-y-0 w-full rounded-r overflow-hidden">
+          <div class="relative h-2 w-full rounded-sm overflow-hidden ">
             <!-- Bar 1: total count (never changes); only when countsGlobal is provided -->
             <div
               v-if="hasGlobalCounts"
-              class="absolute left-0 inset-y-0 rounded-l bg-slate-200"
+              class="absolute left-0 top-0 h-full rounded-sm bg-slate-200"
               :style="{ width: `${getGlobalPercent(item.label)}%` }"
             />
             <!-- Bar 2: current search result count (same scale, overlays) -->
             <div
-              class="absolute left-0 inset-y-0 rounded-r"
+              class="absolute left-0 top-0 h-full rounded-sm"
               :class="isSelected(item.key) ? 'bg-slate-800' : 'bg-slate-500'"
               :style="{ width: `${getCurrentPercent(item.label)}%` }"
             />
           </div>
-
-          <span
-            class="relative z-10 text-xs ml-3"
-            :class="isSelected(item.key) ? 'text-slate-100' : 'text-slate-700'"
-          >
-            {{ item.label }}
-          </span>
-
-          <span
-            class="ml-auto text-xs font-medium relative z-10 mr-2 tabular-nums"
-            :class="isSelected(item.key) ? 'text-slate-100' : 'text-slate-600'"
-          >
-            {{ getCurrentCount(item.label) }}{{ hasGlobalCounts ? ` / ${getGlobalCount(item.label)}` : '' }}
-          </span>
         </label>
       </div>
     </template>

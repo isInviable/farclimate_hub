@@ -5,7 +5,7 @@ One-time bootstrap pipeline for a brand-new Supabase environment.
 This package is intentionally separate from `packages/db`:
 
 - `packages/db` manages the regenerable `knowledge` domain and can be dropped/recreated repeatedly.
-- `packages/supabase-setup` manages durable platform setup that should exist once per fresh Supabase project, such as auth/RBAC bootstrap for `connected_admin`.
+- `packages/supabase-setup` manages durable platform setup that should exist once per fresh Supabase project, such as auth/RBAC bootstrap and `human` domain ownership scaffolding.
 
 ## What it applies
 
@@ -22,6 +22,21 @@ Current setup includes:
    - Creates `public.is_connected_admin(uuid)`.
    - Creates `public.custom_access_token_hook(jsonb)`.
    - Creates `public.assign_connected_admin(...)` and `public.revoke_connected_admin(...)`.
+
+3. `03_human_profiles.sql`
+   - Creates durable schema `human`.
+   - Creates `human.profiles` with one-to-one identity mapping to `auth.users(id)`.
+   - Enables owner-only RLS (`id = auth.uid()`) for `select` and `update` to `authenticated`.
+   - Creates an auth trigger/function so new auth users automatically get a profile row.
+   - Includes validation checks to prevent `anon` access and broad cross-user policy mistakes.
+
+4. `04_human_projects.sql`
+   - Creates `human.projects` as the root workspace container with direct ownership (`owner_user_id` → `auth.users(id)`).
+   - Enables owner-only RLS for `insert`, `select`, `update`, and `delete` so authenticated users can CRUD only their own projects.
+   - Ensures `anon` has no project access; includes validation checks for policy shape.
+
+5. `05_expose_human_schema.sql`
+   - Exposes the `human` schema to the Supabase REST API (PostgREST). Without this, requests to `human.projects` or `human.profiles` return **406 Not Acceptable**. Run bootstrap at least once so list/create/update/delete from the frontend work.
 
 ## Usage
 
@@ -51,6 +66,8 @@ The SQL creates the Postgres function used by Supabase Auth, but the hosted proj
 3. Set the Custom Access Token Hook to `public.custom_access_token_hook`.
 
 Without that dashboard step, new JWTs will not include the `connected_admin` claim even though the function exists in the database.
+
+At the same time, the bootstrap SQL provisions `human.profiles` and `human.projects`: authenticated users can persist profile metadata and preferences, and create/list/update/delete only their own projects, with ownership enforced by RLS.
 
 ## Managing elevated users
 

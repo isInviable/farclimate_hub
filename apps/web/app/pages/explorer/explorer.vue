@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen  bg-gray-50 px-8">
+  <div class="min-h-screen  bg-neutral-lightest px-8">
     <!-- Global Header -->
     <DeliverableHeader />
     <div class="grid grid-cols-12 gap-4">
@@ -9,17 +9,17 @@
           <!-- Results Counter -->
           <div class="flex items-center mb-6">
             <div
-              class="bg-slate-400 border border-slate-400 pl-1 pr-4 py-1 text-xs font-mono rounded-l-full"
+              class="bg-slate-400 border border-slate-400 px-1 py-1 text-xs font-mono"
             >
               <span class="text-white pl-2"
-                >showing {{ filteredPapers.length }}
+                > <span class="font-medium">{{ filteredPapers.length }}</span>
               </span>
             </div>
             <div
-              class="bg-black border border-black pl-1 pr-4 py-1 text-xs font-mono rounded-r-full"
+              class="bg-black border border-black px-2 py-1 text-xs font-mono"
             >
-              <span class="text-white pl-2">
-                of {{ searchStore.resultsData?.hits?.length || 0 }} available
+              <span class="text-white ">
+                / <span class="font-medium">{{ searchStore.resultsData?.hits?.length || 0 }}</span>
                 case studies</span
               >
             </div>

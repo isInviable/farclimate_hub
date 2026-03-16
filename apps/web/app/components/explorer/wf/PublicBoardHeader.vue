@@ -8,7 +8,7 @@
             alt="Project Logo"
             class="h-8 w-8 mr-3"
           />
-          <h1 class="font-[bourton-hand-base] text-primary-400 text-md">
+          <h1 class="font-mono text-primary-400 text-md">
             {{ projectName }}
           </h1>
         </div>

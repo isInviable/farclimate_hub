@@ -15,12 +15,12 @@
                 class="text-primary-400 hover:text-primary-300"
               />
             </UDropdownMenu>
-            <h1 
-              class="font-[bourton-hand-base] text-primary-400 text-md cursor-pointer hover:text-primary-300 transition-colors group"
-              @click="startEditingProject"
+            <h1
+              class="font-mono text-primary-400 text-md cursor-pointer hover:text-primary-300 transition-colors group"
+              @click="isDemoMode ? navigateTo(explorerLoginLink) : startEditingProject()"
             >
-              {{ projectsStore.currentProject?.name || 'Unnamed Project' }}
-              <UIcon name="mdi:pencil" class="w-4 h-4 group-hover:opacity-100 opacity-0 transition-opacity duration-500" />
+              {{ isDemoMode ? 'Sign in to use projects' : (projectsStore.currentProject?.name || 'Unnamed Project') }}
+              <UIcon v-if="!isDemoMode" name="mdi:pencil" class="w-4 h-4 group-hover:opacity-100 opacity-0 transition-opacity duration-500" />
             </h1>
            
           </div>
@@ -31,20 +31,12 @@
               @blur="finishEditingProject"
               @keyup.enter="finishEditingProject"
               @keyup.escape="cancelEditingProject"
-              class="font-[bourton-hand-base] text-primary-400 text-md bg-transparent border-b border-primary-400 focus:outline-none focus:border-primary-300"
+              class="font-mono text-primary-400 text-md bg-transparent border-b border-primary-400 focus:outline-none focus:border-primary-300"
             />
           </div>
         </div>
         <!-- Left side: Logo -->
 
-        <div class="flex items-center">
-          <img
-            src="~/assets/img/farclimate_q.png"
-            alt="Project Logo"
-            class="h-8 w-8 mr-3"
-          />
-          <span class="font-sans text-primary-400 text-xs font-bold">FarClimate <br/> Knowledge Hub</span>
-        </div>
 
         <!-- Right side: Language Switcher, Pins Board, and User Menu -->
         <div class="flex items-center space-x-4">
@@ -146,11 +138,12 @@
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { usePinsStore } from "@/stores/pins";
 import { useProjectsStore } from "@/stores/projects";
+import type { Project } from "~/types/projects";
 import { useAccess } from "~/composables/useAccess";
 
 const pinsStore = usePinsStore();
 const projectsStore = useProjectsStore();
-const { isDemoMode, user, signOut } = useAccess();
+const { isDemoMode, user, signOut, requireAuthForPersistence } = useAccess();
 const route = useRoute();
 const router = useRouter();
 
@@ -246,7 +239,7 @@ function selectAll(ev: Event) {
 // Project menu items for UDropdownMenu
 const projectMenuItems = computed((): DropdownMenuItem[][] => {
   const items: DropdownMenuItem[][] = [];
-  
+
   items.push([
     {
       label: 'Projects Dashboard',
@@ -255,29 +248,37 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
     }
   ]);
 
-  // Current project info section
+  if (isDemoMode.value) {
+    items.push([
+      { label: 'Sign in to create and manage projects', type: 'label' }
+    ]);
+    items.push([
+      {
+        label: 'Sign in',
+        icon: 'i-heroicons-arrow-right-on-rectangle',
+        onSelect: () => navigateTo(explorerLoginLink.value)
+      }
+    ]);
+    return items;
+  }
+
   items.push([
     {
       label: projectsStore.currentProject?.name || 'Unnamed Project',
       type: 'label'
     }
   ]);
-  
-  // Recent projects section (if there are other projects)
-  const otherProjects = projectsStore.recentProjects.filter(p => p.id !== projectsStore.currentProjectId);
+
+  const otherProjects = projectsStore.recentProjects.filter((p: Project) => p.id !== projectsStore.currentProjectId);
   if (otherProjects.length > 0) {
-    const recentProjectItems: DropdownMenuItem[] = otherProjects.slice(0, 5).map(project => ({
+    const recentProjectItems: DropdownMenuItem[] = otherProjects.slice(0, 5).map((project: Project) => ({
       label: project.name,
       icon: 'i-heroicons-folder',
       onSelect: () => switchToProject(project.id)
     }));
-    
-    if (recentProjectItems.length > 0) {
-      items.push(recentProjectItems);
-    }
+    items.push(recentProjectItems);
   }
-  
-  // Actions section
+
   items.push([
     {
       label: 'Create New Project',
@@ -285,8 +286,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
       onSelect: () => createNewProject()
     }
   ]);
-  
-  
+
   return items;
 });
 
@@ -300,9 +300,9 @@ function startEditingProject() {
   });
 }
 
-function finishEditingProject() {
-  if (editingProjectName.value.trim() && projectsStore.currentProject) {
-    projectsStore.updateProjectName(projectsStore.currentProject.id, editingProjectName.value.trim());
+async function finishEditingProject() {
+  if (editingProjectName.value.trim() && projectsStore.currentProject && requireAuthForPersistence()) {
+    await projectsStore.updateProjectName(projectsStore.currentProject.id, editingProjectName.value.trim());
   }
   isEditingProject.value = false;
 }
@@ -318,14 +318,13 @@ function switchToProject(projectId: string) {
   projectsStore.switchToProject(projectId);
 }
 
-function createNewProject() {
-  // Save current project's pins before creating new one
+async function createNewProject() {
+  if (!requireAuthForPersistence()) return;
   projectsStore.saveCurrentProjectPins();
-  const newProject = projectsStore.createProject('New Project');
-  // Start editing the new project name
-  nextTick(() => {
-    startEditingProject();
-  });
+  const newProject = await projectsStore.createProject('New Project');
+  if (newProject) {
+    nextTick(() => startEditingProject());
+  }
 }
 
 // Switch language function

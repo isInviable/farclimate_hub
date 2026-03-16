@@ -39,13 +39,12 @@ const emit = defineEmits<{ (e: 'cloned', projectId: string): void; (e: 'open-com
 const projectsStore = useProjectsStore()
 const pinsStore = usePinsStore()
 
-const handleClone = () => {
-  const source = projectsStore.currentProject
-  const sourceName = source?.name || 'Unnamed Project'
-  const newProject = projectsStore.createProject(`Copy of ${sourceName}`)
-  // copy pins into the new project
+const handleClone = async () => {
+  if (!projectsStore.currentProject) return
+  const sourceName = projectsStore.currentProject.name || 'Unnamed Project'
+  const newProject = await projectsStore.createProject(`Copy of ${sourceName}`)
   if (newProject) {
-    pinsStore.setPinnedItems?.(source?.pinnedItems || pinsStore.pinnedItems || [])
+    pinsStore.setPinnedItems?.(pinsStore.pinnedItems || [])
     projectsStore.saveCurrentProjectPins()
     emit('cloned', newProject.id)
   }

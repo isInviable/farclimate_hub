@@ -37,13 +37,12 @@ const getTypeLabel = (t: string) => {
   return 'Other'
 }
 
-onMounted(() => {
-  projectsStore.loadProjects()
+onMounted(async () => {
+  await projectsStore.initialize()
   const id = route.params.id as string
   if (!id) return
   const project = projectsStore.getAllProjects().find(p => p.id === id)
   if (!project) return
-  // switch current context to this project so header + pins reflect it
   projectsStore.switchToProject(id, { readOnly: true })
 })
 
