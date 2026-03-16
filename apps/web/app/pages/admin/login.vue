@@ -3,7 +3,8 @@ definePageMeta({
   layout: false,
 });
 
-const { signIn, loading } = useAuth();
+const { signIn, signOut, initAuth, refreshSession, loading, isAuthenticated, isConnectedAdmin } =
+  useAccess();
 const route = useRoute();
 const router = useRouter();
 
@@ -11,11 +12,60 @@ const email = ref("");
 const password = ref("");
 const error = ref("");
 const isSubmitting = ref(false);
+const isRefreshingAccess = ref(false);
 
 const returnTo = computed(() => {
   const returnToParam = route.query.returnTo;
   return typeof returnToParam === "string" ? returnToParam : "/admin";
 });
+
+const reason = computed(() => {
+  const reasonParam = route.query.reason;
+  return typeof reasonParam === "string" ? reasonParam : "";
+});
+
+const roleMessage = computed(() =>
+  reason.value === "connected-admin-required"
+    ? "This account is signed in, but it does not have Connected Action admin access."
+    : ""
+);
+
+onMounted(async () => {
+  if (loading.value) {
+    await initAuth();
+  }
+
+  if (isAuthenticated.value && isConnectedAdmin.value) {
+    await router.replace(returnTo.value);
+  }
+});
+
+const refreshAdminAccess = async () => {
+  error.value = "";
+  isRefreshingAccess.value = true;
+
+  try {
+    const { error: refreshError } = await refreshSession();
+    if (refreshError) {
+      error.value = refreshError.message || "Unable to refresh admin access right now.";
+      return;
+    }
+
+    if (isConnectedAdmin.value) {
+      await router.push(returnTo.value);
+      return;
+    }
+
+    error.value =
+      "This session still does not include connected admin access. If access was just granted, sign out and sign back in.";
+  } finally {
+    isRefreshingAccess.value = false;
+  }
+};
+
+const handleSignOut = async () => {
+  await signOut();
+};
 
 const handleLogin = async () => {
   error.value = "";
@@ -38,8 +88,13 @@ const handleLogin = async () => {
       return;
     }
 
+    if (!isConnectedAdmin.value) {
+      error.value =
+        "This account can sign in, but it does not have Connected Action admin access.";
+      return;
+    }
+
     if (data) {
-      // Successfully logged in, redirect to intended page or admin
       await router.push(returnTo.value);
     }
   } catch (err: any) {
@@ -72,6 +127,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
       <UCard>
         <form @submit.prevent="handleLogin" @keypress="handleKeyPress">
           <div class="space-y-4">
+            <UAlert
+              v-if="roleMessage"
+              color="warning"
+              variant="soft"
+              :title="roleMessage"
+              description="Only connected_admin users can enter this area."
+            />
+
             <UFormField label="Email" name="email" required>
               <UInput
                 v-model="email"
@@ -111,6 +174,31 @@ const handleKeyPress = (event: KeyboardEvent) => {
               class="mt-6"
             >
               Sign In
+            </UButton>
+
+            <UButton
+              v-if="isAuthenticated && !isConnectedAdmin"
+              type="button"
+              block
+              variant="soft"
+              color="neutral"
+              :loading="isRefreshingAccess"
+              :disabled="isSubmitting || isRefreshingAccess"
+              @click="refreshAdminAccess"
+            >
+              Refresh admin access
+            </UButton>
+
+            <UButton
+              v-if="isAuthenticated && !isConnectedAdmin"
+              type="button"
+              block
+              variant="ghost"
+              color="neutral"
+              :disabled="isSubmitting || isRefreshingAccess"
+              @click="handleSignOut"
+            >
+              Sign out and switch account
             </UButton>
           </div>
         </form>

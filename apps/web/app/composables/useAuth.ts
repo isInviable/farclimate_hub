@@ -7,7 +7,16 @@ export const useAuth = () => {
   const session = useState<Session | null>("auth_session", () => null);
   const loading = useState<boolean>("auth_loading", () => true);
 
-  // Initialize auth state
+  // On client, sync session from localStorage when a component using auth mounts.
+  // This fixes the case where SSR sent null and the plugin ran before hydration
+  // so the UI showed "demo mode" until state was updated.
+  if (import.meta.client) {
+    onMounted(async () => {
+      await initAuth();
+    });
+  }
+
+  // Initialize auth state (reads from Supabase client, which uses localStorage in the browser)
   const initAuth = async () => {
     try {
       loading.value = true;
@@ -76,6 +85,28 @@ export const useAuth = () => {
     }
   };
 
+  // Refresh the active session so new JWT claims become visible to the app.
+  const refreshSession = async () => {
+    try {
+      loading.value = true;
+      const {
+        data: { session: refreshedSession, user: refreshedUser },
+        error,
+      } = await supabase.auth.refreshSession();
+
+      if (error) throw error;
+
+      session.value = refreshedSession;
+      user.value = refreshedUser ?? refreshedSession?.user ?? null;
+
+      return { data: { session: refreshedSession, user: refreshedUser }, error: null };
+    } catch (error: any) {
+      return { data: null, error };
+    } finally {
+      loading.value = false;
+    }
+  };
+
   // Check if user is authenticated
   const isAuthenticated = computed(() => !!user.value);
 
@@ -87,5 +118,6 @@ export const useAuth = () => {
     initAuth,
     signIn,
     signOut,
+    refreshSession,
   };
 };

@@ -1,6 +1,8 @@
 # @farclimate/db
 
-Schema, migrations and load scripts for the knowledge base (Supabase/Postgres). For the full data-load flow see the [repo root README](../../README.md).
+Schema, migrations and load scripts for the regenerable `knowledge` domain (Supabase/Postgres). For the full data-load flow see the [repo root README](../../README.md).
+
+For one-time Supabase environment bootstrap work such as auth/RBAC setup, use the separate `packages/supabase-setup` pipeline instead of this package.
 
 ## Scripts
 

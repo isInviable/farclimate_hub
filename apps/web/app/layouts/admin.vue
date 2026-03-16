@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
-const { user, signOut, isAuthenticated } = useAuth();
+const { user, signOut, isAuthenticated, isConnectedAdmin } = useAccess();
 const router = useRouter();
 
 const items: NavigationMenuItem[] = [
@@ -68,15 +68,15 @@ const userEmail = computed(() => user.value?.email || "User");
         </div>
         <div v-if="!collapsed" class="mt-2">
           <UBadge
-            :color="isAuthenticated ? 'green' : 'gray'"
+            :color="isConnectedAdmin ? 'success' : 'neutral'"
             variant="soft"
             size="xs"
           >
             <UIcon
-              :name="isAuthenticated ? 'i-heroicons-check-circle' : 'i-heroicons-eye'"
+              :name="isConnectedAdmin ? 'i-heroicons-shield-check' : 'i-heroicons-eye'"
               class="w-3 h-3 mr-1"
             />
-            {{ isAuthenticated ? 'Edit Mode' : 'View Only' }}
+            {{ isConnectedAdmin ? 'Connected Admin' : 'View Only' }}
           </UBadge>
         </div>
       </template>
@@ -99,7 +99,7 @@ const userEmail = computed(() => user.value?.email || "User");
             v-if="isAuthenticated"
             block
             variant="ghost"
-            color="red"
+            color="error"
             @click="handleLogout"
             :class="{ 'justify-center': collapsed }"
           >

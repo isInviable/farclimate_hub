@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, _from) => {
-  const { isAuthenticated, initAuth, loading } = useAuth();
+  const { isAuthenticated, isConnectedAdmin, initAuth, loading } = useAccess();
 
   // Initialize auth if not already done
   if (loading.value) {
@@ -22,6 +22,13 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
   if (!isAuthenticated.value) {
     // Store the intended destination
     const returnTo = to.fullPath;
-    return navigateTo(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+    return navigateTo(`/admin/login?returnTo=${encodeURIComponent(returnTo)}`);
+  }
+
+  if (!isConnectedAdmin.value) {
+    const returnTo = to.fullPath;
+    return navigateTo(
+      `/admin/login?returnTo=${encodeURIComponent(returnTo)}&reason=connected-admin-required`
+    );
   }
 });

@@ -2,6 +2,7 @@
   "name": "farclimate",
   "private": true,
   "scripts": {
+    "supabase:bootstrap": "pnpm --filter @farclimate/supabase-setup run bootstrap",
     "db:create": "pnpm --filter @farclimate/db run db:create",
     "db:drop": "pnpm --filter @farclimate/db run db:drop",
     "db:truncate": "pnpm --filter @farclimate/db run db:truncate",

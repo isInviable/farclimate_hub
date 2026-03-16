@@ -104,17 +104,38 @@
             </button>
           </div>
 
-         
-          <!-- User Avatar with Dropdown -->
-          <UDropdownMenu :items="userMenuItems" :ui="{ content: 'w-48' }">
-            <UButton variant="ghost">
-              <UAvatar
-                icon="i-heroicons-user"
-                size="sm"
-                class="cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all"
-              />
+          <!-- Demo mode / Sign in or user + Log out (explorer header) -->
+          <template v-if="isDemoMode">
+            <UBadge color="neutral" variant="soft" size="xs" class="hidden sm:inline-flex">
+              Demo mode
+            </UBadge>
+            <UButton
+              :to="explorerLoginLink"
+              variant="outline"
+              color="primary"
+              size="sm"
+              icon="i-heroicons-arrow-right-on-rectangle"
+            >
+              Sign in
             </UButton>
-          </UDropdownMenu>
+          </template>
+          <template v-else>
+            <span
+              class="text-xs text-primary-400 truncate max-w-[140px]"
+              :title="user?.email"
+            >
+              {{ user?.email }}
+            </span>
+            <UButton
+              variant="ghost"
+              size="sm"
+              color="primary"
+              icon="i-heroicons-arrow-left-on-rectangle"
+              @click="handleLogout"
+            >
+              Log out
+            </UButton>
+          </template>
         </div>
       </div>
     </div>
@@ -125,11 +146,23 @@
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { usePinsStore } from "@/stores/pins";
 import { useProjectsStore } from "@/stores/projects";
-
-
+import { useAccess } from "~/composables/useAccess";
 
 const pinsStore = usePinsStore();
 const projectsStore = useProjectsStore();
+const { isDemoMode, user, signOut } = useAccess();
+const route = useRoute();
+const router = useRouter();
+
+const explorerLoginLink = computed(() => {
+  const returnTo = route?.fullPath && route.fullPath !== "/login" ? route.fullPath : "/explorer/explorer";
+  return `/login?returnTo=${encodeURIComponent(returnTo)}`;
+});
+
+async function handleLogout() {
+  await signOut();
+  await router.push("/explorer/explorer");
+}
 
 // Project editing state
 const isEditingProject = ref(false);
@@ -155,7 +188,6 @@ const currentLocale = computed(() => locale.value);
 const availableLocales = computed(() => locales.value);
 
 // Dynamic pins button based on current route
-const route = useRoute();
 const pinsButtonLink = computed(() => {
   const currentPath = route.path;
   if (currentPath.includes('/board')) {
@@ -257,30 +289,6 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
   
   return items;
 });
-
-// User menu items
-const userMenuItems: DropdownMenuItem[][] = [
-  [
-    {
-      label: "Log In",
-      icon: "i-heroicons-arrow-right-on-rectangle",
-      onSelect: () => {
-        // Handle log in action
-        console.log("Log in clicked");
-      },
-    },
-  ],
-  [
-    {
-      label: "Sign Up",
-      icon: "i-heroicons-user-plus",
-      onSelect: () => {
-        // Handle sign up action
-        console.log("Sign up clicked");
-      },
-    },
-  ],
-];
 
 // Project management functions
 function startEditingProject() {
