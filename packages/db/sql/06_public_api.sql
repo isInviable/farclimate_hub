@@ -190,7 +190,8 @@ RETURNS TABLE (
   sectors text[],
   climate_impacts text[],
   adaptation_approaches text[],
-  keywords text[]
+  keywords text[],
+  biogeographical_regions text[]
 )
 LANGUAGE sql
 STABLE

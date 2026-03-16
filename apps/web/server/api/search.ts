@@ -65,17 +65,27 @@ function parseFacetArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === 'string').map((s) => s.trim()).filter(Boolean)
 }
 
+type SummaryFacetRow = {
+  document_id: string
+  sectors: string[] | null
+  climate_impacts: string[] | null
+  adaptation_approaches: string[] | null
+  keywords: string[] | null
+  biogeographical_regions: string[] | null
+}
+
 /** AND across categories, OR within. Returns ids that have at least one match in each non-empty filter array. */
 function filterIdsByFacets(
   docIds: string[],
-  summaryRows: { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[],
-  filters: { sectors: string[]; climate_impacts: string[]; adaptation_approaches: string[]; keywords: string[] }
+  summaryRows: SummaryFacetRow[],
+  filters: { sectors: string[]; climate_impacts: string[]; adaptation_approaches: string[]; keywords: string[]; biogeographical_regions: string[] }
 ): string[] {
   const hasSectors = filters.sectors.length > 0
   const hasClimate = filters.climate_impacts.length > 0
   const hasAdaptation = filters.adaptation_approaches.length > 0
   const hasKeywords = filters.keywords.length > 0
-  if (!hasSectors && !hasClimate && !hasAdaptation && !hasKeywords) return docIds
+  const hasRegions = filters.biogeographical_regions.length > 0
+  if (!hasSectors && !hasClimate && !hasAdaptation && !hasKeywords && !hasRegions) return docIds
 
   const byId = new Map(summaryRows.map((r) => [r.document_id, r]))
   return docIds.filter((id) => {
@@ -85,10 +95,12 @@ function filterIdsByFacets(
     const c = row.climate_impacts ?? []
     const a = row.adaptation_approaches ?? []
     const k = row.keywords ?? []
+    const r = row.biogeographical_regions ?? []
     if (hasSectors && !filters.sectors.some((v) => s.includes(v))) return false
     if (hasClimate && !filters.climate_impacts.some((v) => c.includes(v))) return false
     if (hasAdaptation && !filters.adaptation_approaches.some((v) => a.includes(v))) return false
     if (hasKeywords && !filters.keywords.some((v) => k.includes(v))) return false
+    if (hasRegions && !filters.biogeographical_regions.some((v) => r.includes(v))) return false
     return true
   })
 }
@@ -146,8 +158,9 @@ export default defineEventHandler(async (event) => {
   const climate_impacts = parseFacetArray(body?.climate_impacts)
   const adaptation_approaches = parseFacetArray(body?.adaptation_approaches)
   const keywords = parseFacetArray(body?.keywords)
-  const hasFacetFilters = sectors.length > 0 || climate_impacts.length > 0 || adaptation_approaches.length > 0 || keywords.length > 0
-  const facetFilters = { sectors, climate_impacts, adaptation_approaches, keywords }
+  const biogeographical_regions = parseFacetArray(body?.biogeographical_regions)
+  const hasFacetFilters = sectors.length > 0 || climate_impacts.length > 0 || adaptation_approaches.length > 0 || keywords.length > 0 || biogeographical_regions.length > 0
+  const facetFilters = { sectors, climate_impacts, adaptation_approaches, keywords, biogeographical_regions }
 
   const supabase = getSupabaseClient()
 
@@ -163,7 +176,7 @@ export default defineEventHandler(async (event) => {
         const docIds = rows.map((r: any) => r.id)
         const { data: summaryData, error: summaryErr } = await supabase.rpc('get_summary_facet_arrays', { doc_ids: docIds })
         if (summaryErr) throw summaryErr
-        const summaryRows = (summaryData || []) as { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[]
+        const summaryRows = (summaryData || []) as SummaryFacetRow[]
         const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
         rows = rows.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
       }
@@ -263,7 +276,7 @@ export default defineEventHandler(async (event) => {
       const docIds = filteredResults.map((r: any) => r.id)
       const { data: summaryData, error: summaryErr } = await supabase.rpc('get_summary_facet_arrays', { doc_ids: docIds })
       if (summaryErr) throw summaryErr
-      const summaryRows = (summaryData || []) as { document_id: string; sectors: string[] | null; climate_impacts: string[] | null; adaptation_approaches: string[] | null; keywords: string[] | null }[]
+      const summaryRows = (summaryData || []) as SummaryFacetRow[]
       const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
       filteredResults = filteredResults.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
       if (filteredResults.length === 0) return { count: 0, hits: [] }

@@ -4,6 +4,7 @@ export interface SearchFacetParams {
   climate_impacts?: string[];
   adaptation_approaches?: string[];
   keywords?: string[];
+  biogeographical_regions?: string[];
 }
 
 export interface GeographicCharacterisation {

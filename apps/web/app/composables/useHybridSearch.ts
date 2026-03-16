@@ -38,6 +38,7 @@ export function useHybridSearch() {
     if (facetFilters.value.climate_impacts?.length) body.climate_impacts = facetFilters.value.climate_impacts;
     if (facetFilters.value.adaptation_approaches?.length) body.adaptation_approaches = facetFilters.value.adaptation_approaches;
     if (facetFilters.value.keywords?.length) body.keywords = facetFilters.value.keywords;
+    if (facetFilters.value.biogeographical_regions?.length) body.biogeographical_regions = facetFilters.value.biogeographical_regions;
     return body;
   }
 

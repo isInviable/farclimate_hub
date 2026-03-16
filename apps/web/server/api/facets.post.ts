@@ -39,8 +39,8 @@ function getSupabaseClient() {
 }
 
 const emptyFacets: FilterFacetsResponse = {
-  global: { sectors: [], climate_impacts: [], adaptation_approaches: [], keywords: [] },
-  for_result_set: { sectors: [], climate_impacts: [], adaptation_approaches: [], keywords: [] },
+  global: { sectors: [], climate_impacts: [], adaptation_approaches: [], keywords: [], biogeographical_regions: [] },
+  for_result_set: { sectors: [], climate_impacts: [], adaptation_approaches: [], keywords: [], biogeographical_regions: [] },
 }
 
 export default defineEventHandler(async (event): Promise<FilterFacetsResponse> => {

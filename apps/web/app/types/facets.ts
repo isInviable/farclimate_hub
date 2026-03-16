@@ -9,12 +9,13 @@ export interface FacetEntry {
   count: number
 }
 
-/** Facet lists for the four filterable array fields (ordered by count descending) */
+/** Facet lists for the filterable array fields (ordered by count descending) */
 export interface FacetCategory {
   sectors: FacetEntry[]
   climate_impacts: FacetEntry[]
   adaptation_approaches: FacetEntry[]
   keywords: FacetEntry[]
+  biogeographical_regions: FacetEntry[]
 }
 
 /**

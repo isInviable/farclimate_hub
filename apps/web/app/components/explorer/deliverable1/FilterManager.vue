@@ -51,6 +51,16 @@
           @filter-apply="handleFilterApply"
         />
 
+        <BiogeographicalRegionsFilter
+          v-if="isFilterEnabled('biogeographical_regions')"
+          :enabled="true"
+          :biogeographical-regions="facetsData?.global?.biogeographical_regions"
+          :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
         <!-- Add more active filters here -->
         <!-- <HazardFilter v-if="isFilterEnabled('hazards')" :enabled="true" />
         <PhaseFilter v-if="isFilterEnabled('phases')" :enabled="true" />
@@ -109,6 +119,16 @@
           @filter-apply="handleFilterApply"
         />
 
+        <BiogeographicalRegionsFilter
+          v-if="isFilterAvailable('biogeographical_regions')"
+          :enabled="false"
+          :biogeographical-regions="facetsData?.global?.biogeographical_regions"
+          :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
+        />
+
         <!-- Add more filters here -->
         <!-- <HazardFilter v-if="isFilterAvailable('hazards')" :enabled="false" />
         <PhaseFilter v-if="isFilterAvailable('phases')" :enabled="false" />
@@ -156,14 +176,15 @@ import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
 import HazardsFilter from './HazardsFilter.vue';
 import TimeFilter from './TimeFilter.vue';
+import BiogeographicalRegionsFilter from './BiogeographicalRegionsFilter.vue';
 
 // Props
 const props = defineProps<{
   searchResults?: any[];
-  /** From search store facetsData (POST /api/facets response). When set, Sector and Hazards filters use real data. */
+  /** From search store facetsData (POST /api/facets response). When set, Sector, Hazards and Biogeographical regions filters use real data. */
   facetsData?: {
-    global: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[] };
-    for_result_set: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[] };
+    global: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[]; biogeographical_regions: { value: string; count: number }[] };
+    for_result_set: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[]; biogeographical_regions: { value: string; count: number }[] };
   } | null;
 }>();
 
@@ -188,6 +209,10 @@ const climateImpactsCountsFromResultSet = computed(() => {
   const arr = props.facetsData?.for_result_set?.climate_impacts ?? [];
   return Object.fromEntries(arr.map((e) => [e.value, e.count]));
 });
+const biogeographicalRegionsCountsFromResultSet = computed(() => {
+  const arr = props.facetsData?.for_result_set?.biogeographical_regions ?? [];
+  return Object.fromEntries(arr.map((e) => [e.value, e.count]));
+});
 
 // Initialize search filter if there's already a search query
 const searchStore = useSearchStore();
@@ -198,15 +223,22 @@ if (searchStore.searchQuery && searchStore.searchQuery.trim()) {
   enabledFilters.search = true;
 }
 
-// Filter metadata
-const filterMetadata = ref([
+// Filter metadata: show biogeographical_regions only when the API returns that category (after DB migration)
+const allFilterMetadata = [
   { key: 'search', title: 'Search', icon: 'i-heroicons-magnifying-glass' },
   { key: 'sector', title: 'Sector', icon: 'i-heroicons-building-office' },
   { key: 'hazards', title: 'Climate Hazards', icon: 'i-heroicons-exclamation-triangle' },
+  { key: 'biogeographical_regions', title: 'Biogeographical region', icon: 'i-heroicons-map' },
   { key: 'phases', title: 'Implementation Phase', icon: 'i-heroicons-clock' },
   { key: 'scales', title: 'Geographic Scale', icon: 'i-heroicons-map' },
   { key: 'time', title: 'Time', icon: 'i-heroicons-clock' },
-]);
+];
+const filterMetadata = computed(() => {
+  const hasBiogeographicalRegions = props.facetsData?.global?.biogeographical_regions !== undefined;
+  return hasBiogeographicalRegions
+    ? allFilterMetadata
+    : allFilterMetadata.filter((m) => m.key !== 'biogeographical_regions');
+});
 
 // Computed
 const activeFilters = computed(() => {

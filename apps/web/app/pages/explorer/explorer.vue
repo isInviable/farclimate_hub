@@ -315,8 +315,12 @@ const handleFiltersChanged = (filters: Record<string, any>) => {
   const climate_impacts = typeof hazardsSel === "object" && hazardsSel !== null
     ? Object.entries(hazardsSel).filter(([, v]) => v).map(([k]) => k)
     : [];
+  const regionsSel = filters.biogeographical_regions;
+  const biogeographical_regions = typeof regionsSel === "object" && regionsSel !== null && !Array.isArray(regionsSel)
+    ? Object.entries(regionsSel).filter(([, v]) => v).map(([k]) => k)
+    : Array.isArray(regionsSel) ? regionsSel.filter((v): v is string => typeof v === "string") : [];
   if (facetFilters) {
-    facetFilters.value = { sectors, climate_impacts, adaptation_approaches: [], keywords: [] };
+    facetFilters.value = { sectors, climate_impacts, adaptation_approaches: [], keywords: [], biogeographical_regions };
   }
   if (searchStore.searchQuery.trim()) {
     hybridSearch(searchStore.searchQuery);
