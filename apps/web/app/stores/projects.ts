@@ -5,6 +5,7 @@ export type { Project };
 
 export const useProjectsStore = defineStore("projects", () => {
   const supabase = useProjectsSupabase();
+  const profilePrefs = useProfilePreferences();
   const { isAuthenticated } = useAccess();
 
   const currentProjectId = ref<string | null>(null);
@@ -30,17 +31,29 @@ export const useProjectsStore = defineStore("projects", () => {
       return;
     }
     await supabase.fetchProjects();
+
+    // Tier 1: localStorage (sync, fast)
     const stored = supabase.getStoredCurrentProjectId();
-    const validated = supabase.validateCurrentProjectId(stored);
-    currentProjectId.value = validated;
-    if (validated) supabase.setStoredCurrentProjectId(validated);
-    else {
+    let resolved = supabase.validateCurrentProjectId(stored);
+
+    // Tier 2: profile preferences (async, cross-device)
+    if (!resolved) {
+      const remoteId = await profilePrefs.getLastProjectId();
+      resolved = supabase.validateCurrentProjectId(remoteId);
+      if (resolved) supabase.setStoredCurrentProjectId(resolved);
+    }
+
+    // Tier 3: most recently updated project
+    if (!resolved) {
       const first = supabase.projects.value[0];
       if (first) {
-        currentProjectId.value = first.id;
-        supabase.setStoredCurrentProjectId(first.id);
+        resolved = first.id;
+        supabase.setStoredCurrentProjectId(resolved);
+        profilePrefs.setLastProjectId(resolved);
       }
     }
+
+    currentProjectId.value = resolved;
   }
 
   async function createProject(name: string = "Unnamed Project"): Promise<Project | null> {
@@ -48,6 +61,7 @@ export const useProjectsStore = defineStore("projects", () => {
     if (created) {
       currentProjectId.value = created.id;
       supabase.setStoredCurrentProjectId(created.id);
+      profilePrefs.setLastProjectId(created.id);
       return created;
     }
     return null;
@@ -58,6 +72,7 @@ export const useProjectsStore = defineStore("projects", () => {
     if (project) {
       currentProjectId.value = projectId;
       supabase.setStoredCurrentProjectId(projectId);
+      profilePrefs.setLastProjectId(projectId);
       return project;
     }
     return null;
@@ -79,6 +94,15 @@ export const useProjectsStore = defineStore("projects", () => {
   function getAllProjects(): Project[] {
     return [...supabase.projects.value];
   }
+
+  // Re-run initialization when auth state changes (handles async session load on refresh)
+  watch(isAuthenticated, (authed) => {
+    if (authed && !currentProjectId.value) {
+      initialize();
+    } else if (!authed) {
+      currentProjectId.value = null;
+    }
+  });
 
   function saveCurrentProjectPins() {
     // Pins are not persisted to project in DB in this change; no-op.

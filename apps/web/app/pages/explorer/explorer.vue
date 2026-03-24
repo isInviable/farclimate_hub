@@ -103,7 +103,7 @@
         </div>
 
         <!-- Results Display -->
-        <div class="bg-white rounded-md min-h-[600px]">
+        <div class="rounded-md min-h-[600px]">
           <!-- List View -->
           <ViewModeListSimple
             v-if="viewMode === 'list'"
@@ -135,14 +135,15 @@
 
           <!-- Bubble View -->
           <div v-else-if="viewMode === 'bubble'" class="p-6">
-            <DummyMap
+            <!-- <DummyMap
               :mapData="dummyData"
               :uniqueBiogeographicalRegions="uniqueBiogeographicalRegions"
               :viewMode="viewMode"
               class="w-full h-full"
               @click.stop="toggleBlock('resultsBox')"
               @displayThisTitle="(txt: string) => displayTitle = txt"
-            />
+            /> -->
+            TBD
           </div>
 
           <!-- Gantt View -->
@@ -283,7 +284,7 @@ const selection = useSearchSelectionStore();
 
 // Map demo data for bubble view (from solutionsNakedAlt)
 const dummyData = ref<any[]>([]);
-const uniqueBiogeographicalRegions = ref<string[]>([]);
+// const uniqueBiogeographicalRegions = ref<string[]>([]);
 const selectedBlock = ref<string>('none');
 const displayTitle = ref<string>('');
 
@@ -473,39 +474,39 @@ onMounted(() => {
   }
 
   // Fetch demo map data similar to solutionsNakedAlt
-  fetch('/sampledata/combined_data.json')
-    .then(r => r.json())
-    .then((all) => {
-      const onlyEn = (all || []).filter((d: any) => d.lang === 'en');
-      dummyData.value = onlyEn.map((d: any, i: number) => {
-        const raw = d.geographic_characterisation?.biogeographical_regions || '';
-        const regions = raw.split(',').map((r: string) => r.trim());
-        if (!regions[0]) regions[0] = 'none';
-        return {
-          lat: d.location ? d.location.lat : 0,
-          lng: d.location ? d.location.lon : 0,
-          group: i % 3,
-          regions,
-          title: d.title || 'No title',
-          subtitle: d.subtitle || 'No subtitle',
-          sectors: d.sectors || [],
-          adaptation_approaches: d.adaptation_approaches || [],
-          climate_impacts: d.climate_impacts || [],
-          implementation_years: d.implementation_years || {},
-          keywords: d.keywords || []
-        }
-      });
+//   fetch('/sampledata/combined_data.json')
+//     .then(r => r.json())
+//     .then((all) => {
+//       const onlyEn = (all || []).filter((d: any) => d.lang === 'en');
+//       dummyData.value = onlyEn.map((d: any, i: number) => {
+//         const raw = d.geographic_characterisation?.biogeographical_regions || '';
+//         const regions = raw.split(',').map((r: string) => r.trim());
+//         if (!regions[0]) regions[0] = 'none';
+//         return {
+//           lat: d.location ? d.location.lat : 0,
+//           lng: d.location ? d.location.lon : 0,
+//           group: i % 3,
+//           regions,
+//           title: d.title || 'No title',
+//           subtitle: d.subtitle || 'No subtitle',
+//           sectors: d.sectors || [],
+//           adaptation_approaches: d.adaptation_approaches || [],
+//           climate_impacts: d.climate_impacts || [],
+//           implementation_years: d.implementation_years || {},
+//           keywords: d.keywords || []
+//         }
+//       });
 
-      const biog = dummyData.value
-        .map((d: any) => d.regions)
-        .filter(Boolean)
-        .flat()
-        .map((r: string) => r.split(',').map(s => s.trim()))
-        .flat()
-        .sort((a: string, b: string) => a.localeCompare(b));
-      uniqueBiogeographicalRegions.value = [...new Set(biog)];
-    })
-    .catch((e: unknown) => console.error('Failed to load sample map data', e));
+//       const biog = dummyData.value
+//         .map((d: any) => d.regions)
+//         .filter(Boolean)
+//         .flat()
+//         .map((r: string) => r.split(',').map(s => s.trim()))
+//         .flat()
+//         .sort((a: string, b: string) => a.localeCompare(b));
+//       uniqueBiogeographicalRegions.value = [...new Set(biog)];
+//     })
+//     .catch((e: unknown) => console.error('Failed to load sample map data', e));
 });
 
 // Watch for language changes and refresh results

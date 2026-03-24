@@ -97,7 +97,7 @@
             class="flex items-start gap-2"
           >
             <div
-              class="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0 mt-2"
+              class="w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0 mt-2"
             ></div>
             <div>
               <span class="font-medium text-sm text-gray-900"
@@ -152,7 +152,7 @@
             class="flex items-start gap-2"
           >
             <div
-              class="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0 mt-2"
+              class="w-1.5 h-1.5 bg-green-500 rounded-full shrink-0 mt-2"
             ></div>
             <div>
               <span class="font-medium text-sm text-gray-900"
@@ -220,6 +220,39 @@
           </span>
         </div>
       </SelectableBlock>
+
+      <SelectableBlock
+        v-if="geographicEntries.length > 0"
+        label="Geographic characterisation"
+        icon="mdi:map-marker-multiple-outline"
+      >
+        <div class="space-y-3">
+          <div
+            v-for="entry in geographicEntries"
+            :key="entry.key"
+            class="rounded-md border border-gray-200 p-3 bg-gray-50/40"
+          >
+            <div class="text-[11px] uppercase tracking-wide text-gray-500 mb-1">
+              {{ entry.label }}
+            </div>
+
+            <pre
+              v-if="entry.isComplex"
+              class="text-xs font-mono text-gray-700 whitespace-pre-wrap wrap-break-word"
+            >{{ entry.values[0] }}</pre>
+
+            <div v-else class="flex flex-wrap gap-2">
+              <span
+                v-for="value in entry.values"
+                :key="`${entry.key}-${value}`"
+                class="bg-white border border-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full"
+              >
+                {{ value }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </SelectableBlock>
     </div>
   </div>
 </template>
@@ -240,5 +273,78 @@ const props = defineProps({
   getSectionSummary: { type: Function, required: true },
   isLoadingSection: { type: Function, required: true },
   mapPoints: { type: Array, required: true },
+});
+
+const preferredGeoKeyOrder = [
+  "city",
+  "sub_nationals",
+  "countries",
+  "continent",
+  "biogeographical_regions",
+  "macro_transnational_region",
+];
+
+const formatGeoLabel = (key) =>
+  key
+    .replace(/_/g, " ")
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const normalizeGeoValues = (value) => {
+  if (value === null || value === undefined) return [];
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+    const split = trimmed.split(",").map((item) => item.trim()).filter(Boolean);
+    return split.length ? [...new Set(split)] : [];
+  }
+
+  if (Array.isArray(value)) {
+    const flattened = value
+      .flatMap((item) => {
+        if (item === null || item === undefined) return [];
+        if (typeof item === "string") {
+          return item.split(",").map((part) => part.trim()).filter(Boolean);
+        }
+        return String(item).trim();
+      })
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+    return flattened.length ? [...new Set(flattened)] : [];
+  }
+
+  if (typeof value === "object") {
+    if (Object.keys(value).length === 0) return [];
+    return [JSON.stringify(value, null, 2)];
+  }
+
+  const normalized = String(value).trim();
+  return normalized ? [normalized] : [];
+};
+
+const geographicEntries = computed(() => {
+  const geo = props.document?.geographic_characterisation;
+  if (!geo || typeof geo !== "object" || Array.isArray(geo)) return [];
+
+  return Object.entries(geo)
+    .map(([key, value]) => {
+      const values = normalizeGeoValues(value);
+      return {
+        key,
+        label: formatGeoLabel(key),
+        values,
+        isComplex: typeof value === "object" && value !== null && !Array.isArray(value),
+      };
+    })
+    .filter((entry) => entry.values.length > 0)
+    .sort((a, b) => {
+      const aIndex = preferredGeoKeyOrder.indexOf(a.key);
+      const bIndex = preferredGeoKeyOrder.indexOf(b.key);
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+      return a.label.localeCompare(b.label);
+    });
 });
 </script>

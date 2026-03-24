@@ -52,7 +52,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { prerender: true },
-    '/connected/**': { ssr: false, }
+    '/connected/**': { ssr: false, },
+    '/explorer/**': { ssr: false, }
   },
   compatibilityDate: '2025-01-15',
   vite: {
@@ -74,7 +75,8 @@ export default defineNuxtConfig({
     }
   },
    ui: {
-    colorMode: false
+    colorMode: false,
+    
   },
   i18n: {
     defaultLocale: 'en',

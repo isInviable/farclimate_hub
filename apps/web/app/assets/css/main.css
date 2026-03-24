@@ -1,19 +1,14 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
-
-:root {
-  /* COLLECTION 1 */
-
-  --ui-container: 62rem;
-  --ui-primary: var(--color-trust-blue-darkest);
-  --ui-secondary: var(--color-grounded-green);
-  --ui-warning: var(--color-resilient-yellow);
-  --ui-error: var(--color-community-pink);
-
-   --ui-radius: 0rem;
+@plugin "@tailwindcss/typography";
+@plugin 'tailwind-scrollbar' {
+    nocompatible: true;
 }
 
-@theme {
+
+
+
+@theme static{
 
     --color-green-50: #EFFDF5;
   --color-green-100: #D9FBE8;
@@ -41,12 +36,23 @@
   --color-neutral-dark: #70666a;
   --color-neutral-darker: #403339;
   --color-neutral-darkest: #100007;
-  --color-trust-blue-lightest: #e8eff6;
-  --colortrust-blue-lighter: #d2e0ec;
+
+  /*** repetidos ***/
+    --color-trust-blue-lightest: #e8eff6;
+  --color-trust-blue-lighter: #d2e0ec;
   --color-trust-blue-light: #bbd0e3;
   --color-trust-blue: #78a1c7;
   --color-trust-blue-dark: #4b82b5;
   --color-trust-blue-darkest: #1e63a2;
+
+  --color-trust-blue-50: #e8eff6;
+  --color-trust-blue-100: #d2e0ec;
+  --color-trust-blue-200: #bbd0e3;
+  --color-trust-blue-300: #78a1c7;
+  --color-trust-blue-400: #4b82b5;
+  --color-trust-blue-500: #1e63a2;
+
+  
   --color--grounded-green-lightest: #f5f5e7;
   --color--grounded-green-lighter: #ececd0;
   --color--grounded-green-light: #e2e2b8;
@@ -65,6 +71,18 @@
   --color--community-pink: #ff6aae;
   --color--community-pink-dark: #ff0777;
   --color--community-pink-darkest: #ca1768;
+}
+
+:root {
+  /* COLLECTION 1 */
+
+  --ui-container: 62rem;
+  --ui-primary: var(--color-trust-blue-darkest);
+  --ui-secondary: var(--color-grounded-green);
+  --ui-warning: var(--color-resilient-yellow);
+  --ui-error: var(--color-community-pink);
+
+   --ui-radius: 0rem;
 }
 
 @layer base {

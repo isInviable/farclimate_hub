@@ -39,7 +39,7 @@
                   :model-value="isSelected(hit.id)"
                   @update:model-value="() => toggleSelection(hit)"
                   color="primary"
-                  size="xs"
+                  size="md"
                 />
                 <Pin
                   class="mr-1 mb-2"
@@ -49,7 +49,7 @@
                   :pin-data="hit.document"
                 >
                   <div
-                    class="flex justify-between grow cursor-pointer"
+                    class="flex justify-between grow cursor-pointer text-sm font-mono"
                     @click="handleDocumentClick(hit.document)"
                   >
                     <span>{{ hit.document.title }}</span>
