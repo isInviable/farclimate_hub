@@ -1,161 +1,245 @@
 <template>
   <div class="flex gap-8">
-    <!-- Main content -->
     <div :class="showIndex ? 'flex-1' : 'flex-1 max-w-4xl mx-auto'">
-      <!-- Top Table of Contents for sidebar mode -->
-      <div v-if="!showIndex && parsedSections.length > 0" class="mb-6">
-        <div class="bg-white rounded-lg shadow border border-gray-100 p-4">
-          <p class="font-bold text-xs px-2 py-2 mb-4">{{ $t('common.tableOfContents') || 'Table of Contents' }}</p>
-          <ul class="space-y-2">
-            <li v-for="(section, idx) in parsedSections" :key="'toc-top-' + idx">
-              <a :href="'#' + getSectionId(section.title)" class="flex items-center gap-2 text-gray-700 hover:text-sky-600 transition-colors">
-                <Icon v-if="section.icon" :name="section.icon" class="text-lg text-sky-500" />
-                <span class="truncate">{{ section.title }}</span>
-              </a>
-            </li>
-          </ul>
+      <div v-if="loadError" class="mb-4 space-y-2">
+        <UAlert
+          color="error"
+          variant="subtle"
+          :title="t('recipe.loadErrorTitle')"
+          :description="t('recipe.loadErrorDescription')"
+        />
+        <UButton size="sm" color="neutral" variant="soft" @click="loadRecipe">
+          {{ t("recipe.retry") }}
+        </UButton>
+      </div>
+
+      <div v-else-if="isLoading" class="space-y-4">
+        <USkeleton class="h-24 w-full rounded-lg" />
+        <USkeleton class="h-40 w-full rounded-lg" />
+        <USkeleton class="h-32 w-full rounded-lg" />
+      </div>
+
+      <template v-else>
+        <div v-if="!showIndex && visibleSections.length > 0" class="mb-6">
+          <UCard>
+            <template #header>
+              <p class="font-bold text-xs text-muted">
+                {{ t("common.tableOfContents") }}
+              </p>
+            </template>
+            <ul class="space-y-2 text-xs px-1">
+              <li v-for="section in visibleSections" :key="'toc-top-' + section.key">
+                <a
+                  :href="'#' + section.anchor"
+                  class="flex items-center gap-2 text-muted hover:text-primary transition-colors"
+                >
+                  <UIcon :name="section.icon" class="size-4 shrink-0 text-primary" />
+                  <span class="truncate">{{ section.title }}</span>
+                </a>
+              </li>
+            </ul>
+          </UCard>
         </div>
-      </div>
-      <div v-if="loading" class="flex items-center gap-2 text-sky-600">
-        <span class="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-500"></span>
-        <span>{{ $t('common.loading') }}</span>
-      </div>
-      <div v-else-if="error" class="text-red-500">
-        <div>{{ error }}</div>
-        <button @click="fetchStructured" class="mt-2 px-3 py-1 bg-sky-100 text-sky-700 rounded hover:bg-sky-200">{{ $t('common.retry') }}</button>
-      </div>
-      <div v-else-if="markdown">
-        <template v-if="parsedSections.length > 0">
-          <div v-for="(section, idx) in parsedSections" :key="idx" :id="getSectionId(section.title)" class="mb-8">
-            <div class="bg-white rounded-lg border border-gray-200 shadow p-6 flex flex-col gap-2">
-              <div class="flex items-center gap-3 mb-2">
-                <Icon v-if="section.icon" :name="section.icon" class="text-3xl text-sky-600" />
-                <h2 class="text-2xl font-bold text-gray-900">{{ section.title }}</h2>
-              </div>
-              <div class="prose prose-md max-w-none text-gray-800" v-html="md.render(section.content)" />
-            </div>
-          </div>
-        </template>
+
+        <UAlert
+          v-if="visibleSections.length === 0"
+          color="neutral"
+          variant="subtle"
+          class="mb-4"
+          :title="t('recipe.emptyTitle')"
+          :description="t('recipe.emptyDescription')"
+        />
+
         <template v-else>
-          <div class="bg-white rounded-lg border border-gray-200 shadow p-6 flex flex-col gap-2">
-            <div class="prose prose-md max-w-none text-gray-800" v-html="md.render(markdown)" />
+          <div
+            v-for="section in visibleSections"
+            :key="section.key"
+            :id="section.anchor"
+            class="mb-6"
+          >
+            <UCard class="overflow-hidden">
+              <div class="p-6">
+                <div class="flex items-center gap-3 mb-4 border-b border-default pb-3">
+                  <UIcon :name="section.icon" class="size-8 shrink-0 text-primary" />
+                  <h2 class="text-xl font-bold text-highlighted">
+                    {{ section.title }}
+                  </h2>
+                </div>
+                <div
+                  class="prose prose-sm md:prose-md max-w-none text-default"
+                  v-html="md.render(section.content)"
+                />
+              </div>
+            </UCard>
           </div>
         </template>
-      </div>
-      <div v-else class="text-gray-500 italic">{{ $t('common.noData') }}</div>
+      </template>
     </div>
-    <!-- Section Index -->
+
     <aside v-if="showIndex" class="w-64 hidden lg:block">
-      <div class="sticky top-8">
-        <div class="bg-white p-4 rounded-lg shadow-lg border border-gray-100 text-xs">
-          <p class="font-bold text-xs px-2 py-2 mb-4">{{ $t('common.tableOfContents') || 'Table of Contents' }}</p>
-          <ul class="space-y-2">
-            <li v-for="(section, idx) in parsedSections" :key="'toc-' + idx">
-              <a :href="'#' + getSectionId(section.title)" class="flex items-center gap-2 text-gray-700 hover:text-sky-600 transition-colors">
-                <Icon v-if="section.icon" :name="section.icon" class="text-lg text-sky-500" />
-                <span class="truncate">{{ section.title }}</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <UCard v-if="!loadError && !isLoading && visibleSections.length > 0" class="sticky top-8">
+        <template #header>
+          <p class="font-bold text-xs text-muted">
+            {{ t("common.tableOfContents") }}
+          </p>
+        </template>
+        <ul class="space-y-2 text-xs px-1">
+          <li v-for="section in visibleSections" :key="'toc-' + section.key">
+            <a
+              :href="'#' + section.anchor"
+              class="flex items-center gap-2 text-muted hover:text-primary transition-colors"
+            >
+              <UIcon :name="section.icon" class="size-4 shrink-0 text-primary" />
+              <span class="truncate">{{ section.title }}</span>
+            </a>
+          </li>
+        </ul>
+      </UCard>
     </aside>
   </div>
 </template>
 
-<script setup>
-import { ref, watch, onMounted, computed } from 'vue';
-import MarkdownIt from 'markdown-it';
+<script setup lang="ts">
+import MarkdownIt from "markdown-it";
 
-const props = defineProps({
-  fulltext: { type: String, required: true },
-  language: { type: String, required: true },
-  documentId: { type: [String, Number], required: true },
-  showIndex: { type: Boolean, default: true },
-});
+const RECIPE_SECTION_KEYS = [
+  "context_summary",
+  "challenges",
+  "policy_context",
+  "legal_aspects",
+  "who_is_involved",
+  "economic_data",
+  "objectives",
+  "solutions_implemented",
+  "implementation_phases",
+  "success_and_limiting",
+  "benefits",
+  "lessons_learnt",
+  "transferability",
+] as const;
 
-const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
-const loading = ref(false);
-const error = ref('');
-const markdown = ref('');
+type RecipeSectionKey = (typeof RECIPE_SECTION_KEYS)[number];
 
-const sectionIcons = {
-  'Context': 'mdi:earth',
-  'Challenges': 'mdi:alert-circle-outline',
-  'Policy context': 'mdi:scale-balance',
-  'Legal aspects': 'mdi:gavel',
-  'Objectives': 'mdi:target',
-  'Solution(s) implemented': 'mdi:lightbulb-on-outline',
-  'Implementation phases and timeline': 'mdi:timeline-clock-outline',
-  'Success and limiting factors': 'mdi:star-check-outline',
-  'Benefits': 'mdi:hand-coin-outline',
-  'Lessons learnt': 'mdi:book-open-outline',
-  'Transferability': 'mdi:swap-horizontal',
-  'SDGs': 'mdi:earth-box',
+const SECTION_ICONS: Record<RecipeSectionKey, string> = {
+  context_summary: "i-lucide-file-text",
+  challenges: "i-lucide-alert-circle",
+  policy_context: "i-lucide-scale",
+  legal_aspects: "i-lucide-gavel",
+  who_is_involved: "i-lucide-users",
+  economic_data: "i-lucide-coins",
+  objectives: "i-lucide-target",
+  solutions_implemented: "i-lucide-lightbulb",
+  implementation_phases: "i-lucide-clock",
+  success_and_limiting: "i-lucide-star",
+  benefits: "i-lucide-circle-dollar-sign",
+  lessons_learnt: "i-lucide-book-open",
+  transferability: "i-lucide-arrow-left-right",
 };
 
-// Improved markdown section parsing
-const parsedSections = computed(() => {
-  if (!markdown.value) return [];
-  // Match both ## and ### headers, but treat ## as main sections
-  const regex = /^##\s+(.+)$/gm;
-  const matches = [...markdown.value.matchAll(regex)];
-  if (!matches.length) return [];
-  const sections = [];
-  let lastIndex = 0;
-  for (let i = 0; i < matches.length; i++) {
-    const match = matches[i];
-    const title = match[1].trim();
-    const start = match.index;
-    const end = i + 1 < matches.length ? matches[i + 1].index : markdown.value.length;
-    const content = markdown.value.slice(start + match[0].length, end).trim();
-    const icon = sectionIcons[title] || null;
-    sections.push({ title, content, icon });
-    lastIndex = end;
-  }
-  return sections;
+interface Props {
+  /** Document UUID (knowledge.documents.id) — used to load recipe when search payload omits it. */
+  documentId: string;
+  /** Optional cache from search `hit.document.recipe_ingredients` (skips fetch when non-empty). */
+  recipeIngredients?: Record<string, string> | null;
+  showIndex?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  recipeIngredients: null,
+  showIndex: true,
 });
 
-function getSectionId(title) {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const { t, locale } = useI18n();
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+});
+
+const resolvedIngredients = ref<Record<string, string> | null>(null);
+const isLoading = ref(false);
+const loadError = ref(false);
+
+function hasRenderableRecipe(ing: unknown): boolean {
+  if (!ing || typeof ing !== "object" || Array.isArray(ing)) return false;
+  return Object.values(ing as Record<string, unknown>).some(
+    (v) => typeof v === "string" && v.trim().length > 0,
+  );
 }
 
-async function fetchStructured() {
-  if (!props.fulltext) return;
-  loading.value = true;
-  error.value = '';
-  markdown.value = '';
+function normalizeIngredients(raw: unknown): Record<string, string> | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === "string") out[k] = v;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+async function loadRecipe() {
+  loadError.value = false;
+
+  if (!props.documentId) {
+    resolvedIngredients.value = null;
+    return;
+  }
+
+  if (hasRenderableRecipe(props.recipeIngredients)) {
+    resolvedIngredients.value = normalizeIngredients(props.recipeIngredients);
+    return;
+  }
+
+  isLoading.value = true;
+  resolvedIngredients.value = null;
+
   try {
-    const res = await $fetch('/api/structureArticle', {
-      method: 'POST',
-      body: { fulltext: props.fulltext, language: props.language, documentId: props.documentId },
+    const lang = locale.value === "es" ? "es" : "en";
+    const res = await $fetch<{ recipe_ingredients: unknown }>("/api/document-recipe", {
+      query: { documentId: props.documentId, lang },
     });
-    markdown.value = res.markdown;
+    resolvedIngredients.value = normalizeIngredients(res.recipe_ingredients);
   } catch (e) {
-    error.value = e?.message || 'Failed to structure article.';
+    console.error("[ArticleStructuredView] /api/document-recipe failed:", e);
+    loadError.value = true;
+    resolvedIngredients.value = null;
   } finally {
-    loading.value = false;
+    isLoading.value = false;
   }
 }
 
-onMounted(fetchStructured);
-watch(() => [props.fulltext, props.language, props.documentId], fetchStructured);
-</script>
+watch(
+  () => [props.documentId, props.recipeIngredients] as const,
+  () => {
+    void loadRecipe();
+  },
+  { immediate: true },
+);
 
-<style scoped>
-.prose-lg h2 {
-  font-size: 2rem;
-  margin-top: 2.5rem;
-  margin-bottom: 1.25rem;
-  color: #0f172a;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-}
-.prose-lg ul, .prose-lg ol {
-  margin-bottom: 1.5rem;
-}
-.mb-10 {
-  margin-bottom: 2.5rem;
-}
-</style> 
+const visibleSections = computed(() => {
+  const ing = resolvedIngredients.value;
+  if (!ing) return [];
+
+  const list: {
+    key: RecipeSectionKey;
+    title: string;
+    content: string;
+    icon: string;
+    anchor: string;
+  }[] = [];
+
+  for (const key of RECIPE_SECTION_KEYS) {
+    const raw = ing[key];
+    const content = typeof raw === "string" ? raw.trim() : "";
+    if (!content) continue;
+    list.push({
+      key,
+      title: t(`recipe.sections.${key}`),
+      content,
+      icon: SECTION_ICONS[key],
+      anchor: key.replace(/_/g, "-"),
+    });
+  }
+  return list;
+});
+</script>

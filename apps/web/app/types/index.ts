@@ -40,4 +40,6 @@ export interface SearchResult {
     end_year: number
   }
   fulltext: string
+  /** Optional; present when loaded via search RPC with recipe join */
+  recipe_ingredients?: Record<string, string> | null
 }

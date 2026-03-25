@@ -13,7 +13,9 @@
     "close": "Close",
     "documentPreview": "Document Preview",
     "openFullPage": "Open full page view",
-    "tableOfContents": "Table of Contents"
+    "tableOfContents": "Table of Contents",
+    "noData": "No data available",
+    "articleNoFulltext": "No full text available for this article."
   },
   "header": {
     "home": "home",
@@ -110,6 +112,28 @@
     "structured": "Recipe",
     "full": "Original Article",
     "chat": "Chat with this article"
+  },
+  "recipe": {
+    "emptyTitle": "No recipe content",
+    "emptyDescription": "There is no structured recipe in the database for this case study in the current language. If you expect data here, apply the latest SQL for get_documents_by_ids (recipe_ingredients) and ensure the pipeline has pushed knowledge.recipe rows.",
+    "loadErrorTitle": "Could not load recipe",
+    "loadErrorDescription": "The request to load recipe data failed. Check the browser network tab for /api/document-recipe and verify Supabase credentials.",
+    "retry": "Retry",
+    "sections": {
+      "context_summary": "Context summary",
+      "challenges": "Challenges",
+      "policy_context": "Policy context",
+      "legal_aspects": "Legal aspects",
+      "who_is_involved": "Who is involved",
+      "economic_data": "Economic data",
+      "objectives": "Objectives",
+      "solutions_implemented": "Solution(s) implemented",
+      "implementation_phases": "Implementation phases and timeline",
+      "success_and_limiting": "Success and limiting factors",
+      "benefits": "Benefits",
+      "lessons_learnt": "Lessons learnt",
+      "transferability": "Transferability"
+    }
   },
   "chat": {
     "example1": "What are the main challenges addressed in this project?",

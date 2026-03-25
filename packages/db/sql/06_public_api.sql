@@ -82,7 +82,8 @@ RETURNS TABLE (
   implementation_years_end text,
   contact_preprocessed text,
   references_preprocessed text,
-  websites jsonb
+  websites jsonb,
+  recipe_ingredients jsonb
 )
 LANGUAGE sql STABLE
 AS $$
@@ -107,11 +108,13 @@ AS $$
     s.implementation_years_end,
     s.contact_preprocessed,
     s.references_preprocessed,
-    s.websites
+    s.websites,
+    r.ingredients AS recipe_ingredients
   FROM knowledge.documents d
   LEFT JOIN knowledge.summary s ON s.document_id = d.id
   LEFT JOIN knowledge.summary_multilang ml ON ml.document_id = d.id AND ml.lang = filter_lang
   LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
+  LEFT JOIN knowledge.recipe r ON r.document_id = d.id AND r.lang = filter_lang
   ORDER BY d.title;
 $$;
 
@@ -140,7 +143,8 @@ RETURNS TABLE (
   implementation_years_end text,
   contact_preprocessed text,
   references_preprocessed text,
-  websites jsonb
+  websites jsonb,
+  recipe_ingredients jsonb
 )
 LANGUAGE sql STABLE
 AS $$
@@ -165,11 +169,13 @@ AS $$
     s.implementation_years_end,
     s.contact_preprocessed,
     s.references_preprocessed,
-    s.websites
+    s.websites,
+    r.ingredients AS recipe_ingredients
   FROM knowledge.documents d
   LEFT JOIN knowledge.summary s ON s.document_id = d.id
   LEFT JOIN knowledge.summary_multilang ml ON ml.document_id = d.id AND ml.lang = filter_lang
   LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
+  LEFT JOIN knowledge.recipe r ON r.document_id = d.id AND r.lang = filter_lang
   WHERE d.id = ANY(doc_ids);
 $$;
 

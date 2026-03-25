@@ -105,6 +105,15 @@ function filterIdsByFacets(
   })
 }
 
+function normalizeRecipeIngredients(raw: unknown): Record<string, string> | null {
+  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const out: Record<string, string> = {}
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v === 'string') out[k] = v
+  }
+  return out
+}
+
 function buildHit(row: Record<string, any>, score: number) {
   return {
     id: row.id,
@@ -132,6 +141,7 @@ function buildHit(row: Record<string, any>, score: number) {
       contact: row.contact_preprocessed || '',
       references: row.references_preprocessed || '',
       websites: row.websites || {},
+      recipe_ingredients: normalizeRecipeIngredients(row.recipe_ingredients),
     },
   }
 }

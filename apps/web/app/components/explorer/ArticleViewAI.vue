@@ -6,14 +6,29 @@
       </template>
 
       <template #structured>
-        <ArticleStructuredView :fulltext="document.fulltext" :language="locale" :document-id="document.id" :show-index="showSidebar !== false" />
+        <ArticleStructuredView
+          :document-id="document.id"
+          :recipe-ingredients="document.recipe_ingredients ?? null"
+          :show-index="showSidebar !== false"
+        />
       </template>
 
       <template #full>
-        <div class="bg-white rounded-lg shadow p-6 prose prose-sm max-w-none">
-          <div v-if="document.fulltext" v-html="md.render(document.fulltext)" />
-          <div v-else class="text-gray-500 italic">No full text available for this article.</div>
-        </div>
+        <UCard>
+          <div class="p-6">
+            <div
+              v-if="document.fulltext"
+              class="prose prose-sm max-w-none"
+              v-html="md.render(document.fulltext)"
+            />
+            <UAlert
+              v-else
+              color="neutral"
+              variant="subtle"
+              :title="t('common.articleNoFulltext')"
+            />
+          </div>
+        </UCard>
       </template>
 
       <template #chat>

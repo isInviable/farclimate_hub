@@ -42,6 +42,9 @@ export interface SearchResult {
   references?: string;
   websites?: { url?: string } | Record<string, any>;
 
+  /** Pipeline recipe sections (markdown strings), from `knowledge.recipe.ingredients`; null if no row. */
+  recipe_ingredients?: Record<string, string> | null;
+
   // Legacy fields — kept optional for backward compat
   id?: string;
   case_study_documents?: any[];
