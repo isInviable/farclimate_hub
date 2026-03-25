@@ -10,6 +10,7 @@ Augmentations:
 - Geocoding: infer coordinates from geographic_characterisation (with cache).
 - Implementation years: extract start/end years from fulltext (with cache).
 - Text preprocessing for selected fields: 'references' and 'contact' (with cache).
+- Recipe: structured sections from fulltext (with cache); output under recipe.lang / recipe.ingredients.
 
 Notes:
 - Uses Google Gemini via google-genai SDK.
@@ -17,6 +18,7 @@ Notes:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -63,6 +65,10 @@ YEARS_CACHE_FILE = CACHE_DIR / "years_cache.json"
 PREPROCESS_CACHE_FILE = CACHE_DIR / "preprocess_cache.json"
 SUMMARY_CACHE_FILE = CACHE_DIR / "summary_cache.json"
 COST_ESTIMATION_CACHE_FILE = CACHE_DIR / "cost_estimation_cache.json"
+RECIPE_EXTRACTION_CACHE_FILE = CACHE_DIR / "recipe_extraction_cache.json"
+
+# Bump when the recipe prompt or canonical ingredients shape changes (invalidates cache file entries).
+RECIPE_EXTRACTION_CACHE_VERSION = "v1"
 
 
 def _load_json_cache(path: Path) -> dict:
@@ -87,6 +93,41 @@ global_years_cache = _load_json_cache(YEARS_CACHE_FILE)
 global_preprocess_cache = _load_json_cache(PREPROCESS_CACHE_FILE)
 global_summary_cache = _load_json_cache(SUMMARY_CACHE_FILE)
 global_cost_estimation_cache = _load_json_cache(COST_ESTIMATION_CACHE_FILE)
+global_recipe_extraction_cache = _load_json_cache(RECIPE_EXTRACTION_CACHE_FILE)
+
+# Canonical keys stored in DB / augmented JSON (order stable for dumps).
+RECIPE_CANONICAL_KEYS: tuple[str, ...] = (
+    "who_is_involved",
+    "economic_data",
+    "context_summary",
+    "challenges",
+    "policy_context",
+    "legal_aspects",
+    "objectives",
+    "solutions_implemented",
+    "implementation_phases",
+    "success_and_limiting",
+    "benefits",
+    "lessons_learnt",
+    "transferability",
+)
+
+# Map JSON keys from the model to canonical ingredient keys.
+RECIPE_MODEL_TO_CANONICAL: dict[str, str] = {
+    "who_is_involved": "who_is_involved",
+    "economic_data": "economic_data",
+    "context_summary": "context_summary",
+    "context_challenges": "challenges",
+    "context_policy": "policy_context",
+    "context_legal_aspects": "legal_aspects",
+    "objectives": "objectives",
+    "solutions_implemented": "solutions_implemented",
+    "implementation_phases": "implementation_phases",
+    "success_and_limiting_factors": "success_and_limiting",
+    "benefits": "benefits",
+    "lessons_learnt": "lessons_learnt",
+    "transferability": "transferability",
+}
 
 
 def _normalize_geo_value(value: str | None) -> str:
@@ -461,6 +502,229 @@ def extract_cost_estimation(cost_benefit_text: str | None) -> float | None:
         return None
 
 
+def empty_recipe_ingredients() -> dict[str, str]:
+    """All canonical keys as empty strings (no LLM / DB write ambiguity)."""
+    return {k: "" for k in RECIPE_CANONICAL_KEYS}
+
+
+def _coerce_recipe_section_value(val) -> str:  # noqa: ANN001
+    if val is None:
+        return ""
+    if isinstance(val, str):
+        return val.strip()
+    if isinstance(val, (dict, list)):
+        return json.dumps(val, ensure_ascii=False)
+    return str(val).strip()
+
+
+def normalize_recipe_ingredients(raw: dict) -> dict[str, str]:
+    """Map model JSON keys to canonical keys; drop title, short_description, sdgs, and unknown keys."""
+    out = empty_recipe_ingredients()
+    if not isinstance(raw, dict):
+        return out
+    for model_key, canon in RECIPE_MODEL_TO_CANONICAL.items():
+        if model_key not in raw:
+            continue
+        out[canon] = _coerce_recipe_section_value(raw.get(model_key))
+    return out
+
+
+_RECIPE_PROMPT_TEMPLATE = """You are a specialist in summarizing climate adaptation case studies.
+You will receive the raw text of a case study. Your task is to extract
+and rewrite the content into standardized sections and return them as a
+single JSON object.
+
+CRITICAL RULES:
+- Only use information explicitly present in the source text.
+- If a section has no corresponding content in the source, return an
+  empty string "" for that key.
+- Do not infer, estimate, or expand beyond what is stated.
+- Do not merge content between sections.
+- Return only the JSON object. No preamble, no explanation, no markdown
+  code blocks.
+- Do NOT include keys for title, short_description, or SDGs.
+
+**Formatting instructions:**
+The json object values must be formatted in markdown.
+- Each key should have only text as the single value, no arrays or any other complex data types.
+- Use **bold** for important concepts, numbers, and names.
+- Do not use arrays for list of items, use bullet points or numbered lists instead.
+- Use bullet points or numbered lists where appropriate.
+- Add extra line breaks between sections for clarity.
+- Make the markdown visually attractive and easy to scan.
+
+Voice  type:
+ - Professional
+ - concise
+ - factual
+ - kind
+
+
+The JSON object must have exactly these keys:
+
+{
+  "who_is_involved":
+    Identify the main organizations, institutions, or groups that
+    participated. For each, briefly state their role or responsibility.
+    Mention any participatory processes (surveys, consultations,
+    workshops) and their effect on the project. Write as flowing prose,
+    2-4 sentences. Do not include individual names or contact details.,
+
+  "economic_data":
+    All financial and cost-related information: total project cost and
+    what it covered, whether tools are free or paid, any variable costs.
+    Include references to other resources for cost details if mentioned.
+    Factual only — do not estimate or infer costs not explicitly stated.,
+
+  "context_summary":
+    3-5 sentences capturing the essence: what problem it addresses, what
+    solution was developed, where it was implemented, and who led it.
+    Standalone introduction for someone unfamiliar with the case.,
+
+  "context_challenges":
+    The specific environmental, technical, or operational problems that
+    motivated the project. Include climate-related risks, knowledge gaps,
+    or urgency factors mentioned. Do not add challenges not explicitly
+    stated.,
+
+  "context_policy":
+    The policy framework within which the project was developed. Include
+    specific plans, programmes, or government strategies explicitly named
+    in the source. Only include what is explicitly mentioned.,
+
+  "context_legal_aspects":
+    Laws, regulations, directives, or legal obligations mentioned.
+    Include article or paragraph references if provided. Do not interpret
+    or infer legal implications beyond what is stated.,
+
+  "objectives":
+    The stated goals of the project as a numbered list. Keep original
+    intent but rephrase for clarity. Do not add objectives not explicitly
+    mentioned.,
+
+  "solutions_implemented":
+    Concrete actions, tools, systems, or measures put in place. Preserve
+    any numbered structure from the source. Include specific outputs and
+    quantitative details only if explicitly stated.,
+
+  "implementation_phases":
+    Dates, durations, milestones, or sequencing information in
+    chronological order. Only what is explicitly stated in the source.,
+
+  "success_and_limiting_factors":
+    Two clearly labelled subsections: (1) success factors and (2)
+    limiting factors. Only include factors explicitly discussed — do not
+    generalise or add assumed factors.,
+
+  "benefits":
+    Environmental, social, economic, or institutional benefits mentioned.
+    Reflect whether benefits are confirmed or expected/unquantified. Do not
+    attribute numbers or outcomes not explicitly stated.,
+
+  "lessons_learnt":
+    Key takeaways explicitly stated by the project authors. May relate to
+    process, stakeholder engagement, tool design, or knowledge transfer. Do not derive lessons from other sections.,
+
+  "transferability":
+    What the source says about replicating or adapting this approach
+    elsewhere. Include conditions, required adaptations, or existing
+    replications mentioned. Only what is explicitly stated.
+}
+
+Case study text:
+"""
+
+
+def _gemini_result_text(response) -> str | None:  # noqa: ANN001
+    result_text: str | None = None
+    if hasattr(response, "text") and response.text:
+        result_text = response.text
+    elif hasattr(response, "candidates") and response.candidates:
+        candidate = response.candidates[0]
+        if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
+            if isinstance(candidate.content.parts, list):
+                result_text = "".join(
+                    [p.get("text", "") if isinstance(p, dict) else str(p) for p in candidate.content.parts]
+                )
+            else:
+                result_text = str(candidate.content.parts)
+        elif hasattr(candidate.content, "text"):
+            result_text = candidate.content.text
+    return result_text
+
+
+def extract_recipe(source_text: str) -> dict[str, str]:
+    """
+    Extract recipe sections from case-study body text (uses `fulltext` in practice).
+    Cached under pipeline/caches/recipe_extraction_cache.json (versioned SHA256 key).
+    """
+    global global_recipe_extraction_cache
+    if not source_text or not isinstance(source_text, str):
+        return empty_recipe_ingredients()
+
+    text = source_text.strip()
+    if not text:
+        return empty_recipe_ingredients()
+
+    if len(text) > 48000:
+        text = text[:48000]
+
+    cache_key = f"{RECIPE_EXTRACTION_CACHE_VERSION}:{hashlib.sha256(text.encode('utf-8')).hexdigest()}"
+    if cache_key in global_recipe_extraction_cache:
+        cached = global_recipe_extraction_cache[cache_key]
+        if isinstance(cached, dict):
+            print("Found recipe extraction in cache.")
+            merged = empty_recipe_ingredients()
+            for k in RECIPE_CANONICAL_KEYS:
+                v = cached.get(k)
+                merged[k] = v if isinstance(v, str) else ""
+            return merged
+
+    prompt = _RECIPE_PROMPT_TEMPLATE + text
+
+    def call_and_parse() -> dict[str, str] | None:
+        print("Calling Gemini API for recipe extraction...")
+        response = genai_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(max_output_tokens=8192),
+        )
+        result_text = _gemini_result_text(response)
+        if not result_text:
+            return None
+        cleaned = (
+            result_text.strip()
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+        try:
+            parsed = json.loads(cleaned)
+        except json.JSONDecodeError:
+            print("Recipe extraction response is not valid JSON:", cleaned[:500], file=sys.stderr)
+            return None
+        if not isinstance(parsed, dict):
+            print("Recipe extraction JSON is not an object.", file=sys.stderr)
+            return None
+        return normalize_recipe_ingredients(parsed)
+
+    try:
+        normalized = call_and_parse()
+        if normalized is None:
+            normalized = call_and_parse()
+        if normalized is None:
+            normalized = empty_recipe_ingredients()
+        global_recipe_extraction_cache[cache_key] = normalized
+        _save_json_cache(RECIPE_EXTRACTION_CACHE_FILE, global_recipe_extraction_cache)
+        return normalized
+    except Exception as e:  # noqa: BLE001
+        print(f"Error extracting recipe: {e}", file=sys.stderr)
+        fallback = empty_recipe_ingredients()
+        global_recipe_extraction_cache[cache_key] = fallback
+        _save_json_cache(RECIPE_EXTRACTION_CACHE_FILE, global_recipe_extraction_cache)
+        return fallback
+
+
 def preprocess_text_field(field_value, field_type: str):  # noqa: ANN001
     """
     Preprocess a text field (e.g. references or contact) using Gemini and cache the result.
@@ -562,6 +826,7 @@ def augment_record(data: dict) -> dict:
     - Years from fulltext -> implementation_years
     - Preprocess references/contact -> references_preprocessed/contact_preprocessed
     - Cost estimation from cost_benefit -> cost_estimation
+    - Recipe sections from fulltext -> recipe.lang + recipe.ingredients
     """
     # Geocoding
     geo_info = data.get("geographic_characterisation")
@@ -593,6 +858,12 @@ def augment_record(data: dict) -> dict:
     # Cost estimation from cost_benefit text
     cost_benefit_text = data.get("cost_benefit")
     data["cost_estimation"] = extract_cost_estimation(cost_benefit_text)
+
+    # Recipe (standardized sections; title/summary live in summary_multilang when pushed)
+    data["recipe"] = {
+        "lang": "en",
+        "ingredients": extract_recipe(fulltext),
+    }
 
     return data
 

@@ -136,3 +136,19 @@ COMMENT ON TABLE  knowledge.embeddings IS 'Vector embeddings for semantic search
 COMMENT ON COLUMN knowledge.embeddings.content_type IS 'What text was embedded, e.g. composed (title+summary+fulltext), summary_only';
 COMMENT ON COLUMN knowledge.embeddings.model IS 'Embedding model used, e.g. gemini-embedding-001';
 COMMENT ON COLUMN knowledge.embeddings.dimensions IS 'Dimensionality of the embedding vector';
+
+-- ---------------------------------------------------------------------------
+-- recipe (standardized sections per document+language, LLM-extracted)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS knowledge.recipe (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  document_id   UUID NOT NULL REFERENCES knowledge.documents(id) ON DELETE CASCADE,
+  lang          TEXT NOT NULL,
+  ingredients   JSONB NOT NULL,
+
+  UNIQUE (document_id, lang)
+);
+
+COMMENT ON TABLE knowledge.recipe IS 'Recipe-style standardized sections (ingredients) from case-study text; regenerable; one row per (document, lang).';
+COMMENT ON COLUMN knowledge.recipe.lang IS 'Language of extraction, e.g. en from English augmentation pass.';
+COMMENT ON COLUMN knowledge.recipe.ingredients IS 'JSON object with canonical string keys: who_is_involved, economic_data, context_summary, challenges, policy_context, legal_aspects, objectives, solutions_implemented, implementation_phases, success_and_limiting, benefits, lessons_learnt, transferability.';

@@ -154,6 +154,24 @@ async function upsertFulltext(
   `;
 }
 
+async function upsertRecipe(
+  documentId: string,
+  lang: string,
+  ingredients: Record<string, unknown>,
+): Promise<void> {
+  const payload: Record<string, string> = {};
+  for (const [k, v] of Object.entries(ingredients)) {
+    if (typeof v === "string") payload[k] = v;
+    else if (v != null) payload[k] = JSON.stringify(v);
+  }
+  await sql`
+    INSERT INTO knowledge.recipe (document_id, lang, ingredients)
+    VALUES (${documentId}, ${lang}, ${sql.json(payload)})
+    ON CONFLICT (document_id, lang) DO UPDATE SET
+      ingredients = EXCLUDED.ingredients
+  `;
+}
+
 async function upsertEmbedding(
   documentId: string,
   lang: string,
@@ -209,6 +227,12 @@ async function main() {
       summary: doc.summary as string | undefined,
     });
     await upsertFulltext(documentId, "en", (doc.fulltext as string) ?? null);
+
+    const recipe = doc.recipe as { lang?: string; ingredients?: Record<string, unknown> } | undefined;
+    if (recipe?.ingredients && typeof recipe.ingredients === "object" && !Array.isArray(recipe.ingredients)) {
+      const recipeLang = typeof recipe.lang === "string" && recipe.lang ? recipe.lang : "en";
+      await upsertRecipe(documentId, recipeLang, recipe.ingredients);
+    }
 
     const embeddingText = composeEmbeddingText(
       doc.title as string | undefined,
