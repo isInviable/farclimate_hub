@@ -1,46 +1,111 @@
 <template>
   <section class="relative p-4">
-    <!-- Property selector and pagination -->
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center gap-3">
-        <label class="text-sm font-medium text-neutral-700">{{ $t('viewModes.showProperty') }}:</label>
-        <USelect
-          v-model="selectedProperty"
-          :items="selectItems"
-          class="w-64"
-        />
+    <UAlert
+      v-if="isOverAiArticleLimit"
+      color="warning"
+      variant="subtle"
+      class="mb-4"
+      :title="$t('viewModes.tooManyForAiTitle')"
+    >
+      {{
+        $t("viewModes.tooManyForAiDescription", {
+          max: GRID_AI_SUMMARY_MAX_ARTICLES,
+          current: hitsForAiSummary.length,
+          scope: anyCheckboxSelected
+            ? $t("viewModes.tooManyForAiScopeSelected")
+            : $t("viewModes.tooManyForAiScopeGrid"),
+        })
+      }}
+    </UAlert>
+
+    <div class="flex flex-col gap-4 mb-6">
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <div class="flex flex-wrap items-end gap-3">
+          <UFormField :label="$t('viewModes.showProperty')" class="w-64 min-w-48">
+            <USelectMenu
+              v-model="selectedProperty"
+              :items="selectItems"
+              value-key="value"
+              class="w-full"
+            />
+          </UFormField>
+        </div>
+        <UButton
+          variant="outline"
+          size="sm"
+          class="shrink-0"
+          @click="toggleSelectAll"
+        >
+          {{
+            sel.isAllSelected(resultsAsSelectionItems)
+              ? $t("viewModes.unselectAll")
+              : $t("viewModes.selectAll")
+          }}
+        </UButton>
+        <div class="flex items-center gap-2 text-sm text-neutral-600">
+          <UButton
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            disabled
+            :aria-label="$t('viewModes.previousPage')"
+          >
+            <Icon name="mdi:chevron-left" class="w-5 h-5" />
+          </UButton>
+          <span class="tabular-nums min-w-12 text-center">{{ $t('viewModes.paginationStub') }}</span>
+          <UButton
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            disabled
+            :aria-label="$t('viewModes.nextPage')"
+          >
+            <Icon name="mdi:chevron-right" class="w-5 h-5" />
+          </UButton>
+        </div>
       </div>
-      <UButton
-        variant="outline"
-        size="sm"
-        label="Select all"
-        @click="toggleSelectAll(results)"
-        class="flex items-center gap-2"
+
+      <div
+        v-if="selectedProperty === 'custom'"
+        class="flex flex-col gap-3 w-full max-w-2xl"
       >
-        {{ sel.isAllSelected(results) ? "Unselect all" : "Select all" }}
-      </UButton>
-      
-      <div class="flex items-center gap-2 text-sm text-neutral-600">
-        <button class="p-1 hover:bg-neutral-100 rounded">
-          <Icon name="mdi:chevron-left" class="w-5 h-5" />
-        </button>
-        <span>1 / 5</span>
-        <button class="p-1 hover:bg-neutral-100 rounded">
-          <Icon name="mdi:chevron-right" class="w-5 h-5" />
-        </button>
+        <UFormField :label="$t('viewModes.customCompareLabel')">
+          <UTextarea
+            v-model="customComparePrompt"
+            :placeholder="$t('viewModes.customComparePlaceholder')"
+            :rows="3"
+            autoresize
+            class="w-full"
+            @keydown.meta.enter.prevent="submitCustomCompare"
+            @keydown.ctrl.enter.prevent="submitCustomCompare"
+          />
+        </UFormField>
+        <div class="flex flex-wrap items-center gap-2">
+          <UButton
+            color="primary"
+            size="sm"
+            :loading="isCustomCompareRunning"
+            :disabled="!customComparePrompt.trim() || isOverAiArticleLimit"
+            @click="submitCustomCompare"
+          >
+            {{ $t("viewModes.customCompareSubmit") }}
+          </UButton>
+          <p v-if="customComparePrompt.trim() && !customCompareHasSubmitted" class="text-xs text-neutral-500">
+            {{ $t("viewModes.customCompareSubmitHint") }}
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- Grid display -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="hit in results"
         :key="hit.id"
         :class="[
           'bg-white rounded-md shadow-sm hover:shadow-lg transition-shadow overflow-hidden',
-          isSelected(hit.id) 
-            ? 'ring-2 ring-primary-500 border-primary-200' 
-            : 'border border-neutral-200'
+          isSelected(hit.id)
+            ? 'ring-2 ring-primary-500 border-primary-200'
+            : 'border border-neutral-200',
         ]"
       >
         <Pin
@@ -51,38 +116,43 @@
             <div class="flex justify-start items-start gap-2 mb-2">
               <UCheckbox
                 :model-value="isSelected(hit.id)"
-                @update:model-value="() => toggleSelection(hit)"
                 color="primary"
                 size="xs"
+                @update:model-value="() => toggleSelection(hit)"
                 @click.stop
               />
-              <div 
-                @click="handleDocumentClick(hit.document)" 
+              <div
                 class="cursor-pointer flex-1"
+                role="button"
+                tabindex="0"
+                @click="handleDocumentClick(hit.document)"
+                @keydown.enter.prevent="handleDocumentClick(hit.document)"
               >
                 <h3 class="font-semibold text-neutral-900 leading-tight text-sm mb-2">
                   {{ hit.document.title }}
                 </h3>
-                
+
                 <div class="text-sm text-neutral-600">
                   <div
                     v-if="isLoading(hit.id)"
                     class="flex items-center justify-center py-8"
                   >
-                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-500"></div>
+                    <UIcon name="i-lucide-loader-2" class="size-6 animate-spin text-sky-500" />
                   </div>
                   <template v-else>
                     <div v-if="getSummary(hit.id)" class="space-y-2">
                       <p
                         class="text-sm text-neutral-800 font-medium"
-                        v-html="renderMarkdown(getSummary(hit.id).data)"
-                      ></p>
+                        v-html="renderMarkdown(getSummary(hit.id)?.data ?? '')"
+                      />
                       <div
                         class="prose prose-sm max-w-none"
-                        v-html="renderMarkdown(getSummary(hit.id).summary)"
-                      ></div>
+                        v-html="renderMarkdown(getSummary(hit.id)?.summary ?? '')"
+                      />
                     </div>
-                    <p v-else class="line-clamp-4">{{ hit.document[selectedProperty] }}</p>
+                    <p v-else class="line-clamp-4 whitespace-pre-line">
+                      {{ bodyFallback(hit) }}
+                    </p>
                   </template>
                 </div>
               </div>
@@ -94,135 +164,274 @@
   </section>
 </template>
 
-<script setup>
-import { ref, watch, computed } from "vue";
-import MarkdownIt from "markdown-it";
-import { useI18n } from "vue-i18n";
-import { useSearchSelectionStore } from "@/stores/searchSelection";
+<script setup lang="ts">
+import MarkdownIt from 'markdown-it'
+import { useI18n } from 'vue-i18n'
+import { useSearchSelectionStore } from '@/stores/searchSelection'
+import {
+  buildCustomCompareContext,
+  fallbackSnippetForProperty,
+  GRID_AI_SUMMARY_MAX_ARTICLES,
+  hashPrompt,
+  resolvePropertySourceText,
+  type GridCompareDocument,
+  type GridCompareSelectValue,
+} from '@/composables/gridCompareSource'
+import type {
+  SummarizePropertyBatchResponseBody,
+  SummarizePropertyResponseBody,
+} from "~/types/summarize"
+import type { ArticleDetail } from "~/types/search"
+import type { SearchSelectedItem } from "@/stores/searchSelection"
 
-const md = new MarkdownIt();
-const selectedProperty = ref("subtitle");
-const summaryCache = ref(new Map());
-const loadingStates = ref(new Set());
-const { t } = useI18n();
+const md = new MarkdownIt()
 
-// Selection functionality
-const sel = useSearchSelectionStore();
-const isSelected = (id) => sel.isSelected(id);
-const toggleSelection = (hit) =>
-  sel.toggle({
-    id: hit.id,
-    title: hit.document?.title || "",
-    document: hit.document,
-  });
+interface SearchHit {
+  id: string
+  document: GridCompareDocument & { id?: string; title?: string }
+}
+
+const props = withDefaults(
+  defineProps<{
+    results?: SearchHit[]
+  }>(),
+  { results: () => [] }
+)
+
+const emit = defineEmits<{
+  "document-selected": [doc: ArticleDetail]
+}>()
+
+const { t } = useI18n()
+const sel = useSearchSelectionStore()
+
+const selectedProperty = ref<GridCompareSelectValue>('subtitle')
+const customComparePrompt = ref('')
+/** True after user clicked Compare with the current prompt (hash); reset when prompt text changes. */
+const customCompareSubmittedHash = ref<string | null>(null)
+const isCustomCompareRunning = ref(false)
+const summaryCache = ref(
+  new Map<string, SummarizePropertyResponseBody["response"]>()
+)
+const loadingStates = ref(new Set<string>())
+
+const customCompareHasSubmitted = computed(() => {
+  const p = customComparePrompt.value.trim()
+  if (!p) return false
+  return customCompareSubmittedHash.value === hashPrompt(p)
+})
+
+/** If any row is checked, AI runs only on those; otherwise on all visible results. */
+const anyCheckboxSelected = computed(() => sel.selected.length > 0)
+
+const hitsForAiSummary = computed(() => {
+  if (anyCheckboxSelected.value) {
+    const idSet = new Set(sel.selected.map((i) => i.id))
+    return props.results.filter((h) => idSet.has(h.id))
+  }
+  return props.results
+})
+
+const isOverAiArticleLimit = computed(
+  () => hitsForAiSummary.value.length > GRID_AI_SUMMARY_MAX_ARTICLES
+)
+
+const resultsAsSelectionItems = computed<SearchSelectedItem[]>(() =>
+  props.results.map((h) => ({
+    id: h.id,
+    title: h.document?.title ?? "",
+    document: h.document,
+  }))
+)
 
 const selectItems = computed(() => [
-  { label: t('viewModes.summary'), value: 'subtitle' },
-  { label: t('viewModes.costBenefit'), value: 'cost_benefit' },
-  { label: t('viewModes.implementationTime'), value: 'implementation_time' },
-  { label: t('viewModes.lifetime'), value: 'lifetime' },
-  { label: t('viewModes.stakeholderParticipation'), value: 'stakeholder_participation' },
-  { label: t('viewModes.successLimitations'), value: 'success_limitations' }
-]);
+  { label: t('viewModes.summary'), value: 'subtitle' as const },
+  { label: t('viewModes.costBenefit'), value: 'cost_benefit' as const },
+  { label: t('viewModes.implementationTime'), value: 'implementation_time' as const },
+  { label: t('viewModes.lifetime'), value: 'lifetime' as const },
+  { label: t('viewModes.stakeholderParticipation'), value: 'stakeholder_participation' as const },
+  { label: t('viewModes.successLimitations'), value: 'success_limitations' as const },
+  { label: t('viewModes.customCompare'), value: 'custom' as const },
+])
 
-const props = defineProps({
-  results: {
-    type: Array,
-    default: () => [],
-  },
-});
+const isSelected = (id: string) => sel.isSelected(id)
 
-const emit = defineEmits(['document-selected']);
-
-function handleDocumentClick(doc) {
-  console.log("Document clicked:", doc);
-  emit('document-selected', doc);
+function toggleSelection(hit: SearchHit) {
+  sel.toggle({
+    id: hit.id,
+    title: hit.document?.title || '',
+    document: hit.document,
+  })
 }
 
-function renderMarkdown(text) {
-  return md.render(text);
+function handleDocumentClick(doc: GridCompareDocument & { id?: string }) {
+  emit("document-selected", doc as ArticleDetail)
 }
 
-function isLoading(id) {
-  return loadingStates.value.has(id);
+function renderMarkdown(text: string) {
+  return md.render(text)
 }
 
-function getSummary(id) {
-  return summaryCache.value.get(`${id}-${selectedProperty.value}`);
+function cacheKeyForHit(hitId: string): string {
+  if (selectedProperty.value === 'custom') {
+    const p = customComparePrompt.value.trim()
+    return `custom|${hitId}|${hashPrompt(p)}`
+  }
+  return `property|${hitId}|${selectedProperty.value}`
 }
 
-const handlePinned = (hit) => {
-  console.log("Pinned:", hit.document.title);
-};
+function isLoading(id: string) {
+  return loadingStates.value.has(id)
+}
 
-const handleUnpinned = (hit) => {
-  console.log("Unpinned:", hit.document.title);
-};
+function getSummary(id: string) {
+  return summaryCache.value.get(cacheKeyForHit(id)) ?? null
+}
 
-async function fetchSummary(hit) {
-  const cacheKey = `${hit.id}-${selectedProperty.value}`;
+function bodyFallback(hit: SearchHit): string {
+  const doc = hit.document
+  if (selectedProperty.value === 'subtitle') {
+    return (doc.subtitle ?? '').trim() || t('viewModes.sectionEmpty')
+  }
+  if (selectedProperty.value === 'custom') {
+    if (!customComparePrompt.value.trim()) {
+      return t('viewModes.customCompareEmptyHint')
+    }
+    if (!customCompareHasSubmitted.value) {
+      return t('viewModes.customCompareSubmitHint')
+    }
+    return fallbackSnippetForProperty(doc) || t('viewModes.sectionEmpty')
+  }
+  const raw = resolvePropertySourceText(doc, selectedProperty.value)
+  if (raw) return raw
+  return fallbackSnippetForProperty(doc) || t('viewModes.sectionEmpty')
+}
 
-  // Skip if we already have this summary
-  if (summaryCache.value.has(cacheKey)) {
-    return;
+function handlePinned(hit: SearchHit) {
+  console.log('Pinned:', hit.document.title)
+}
+
+function handleUnpinned(hit: SearchHit) {
+  console.log('Unpinned:', hit.document.title)
+}
+
+function sourceTextForSummarize(hit: SearchHit): string | null {
+  if (selectedProperty.value === 'subtitle') return null
+  if (selectedProperty.value === 'custom') {
+    if (!customComparePrompt.value.trim()) return null
+    return buildCustomCompareContext(hit.document)
+  }
+  const text = resolvePropertySourceText(hit.document, selectedProperty.value)
+  return text.trim() ? text : null
+}
+
+/** One HTTP request; server runs parallel LLM calls per item. */
+async function fetchSummariesBatch(hits: SearchHit[]) {
+  if (selectedProperty.value === 'subtitle') return
+  if (hits.length > GRID_AI_SUMMARY_MAX_ARTICLES) return
+
+  const mode = selectedProperty.value === 'custom' ? 'custom' : 'property'
+  if (mode === 'custom' && !customComparePrompt.value.trim()) return
+
+  const items: { id: string; text: string; cacheId: string }[] = []
+  const loadingIds: string[] = []
+
+  for (const hit of hits) {
+    const key = cacheKeyForHit(hit.id)
+    if (summaryCache.value.has(key)) continue
+    const text = sourceTextForSummarize(hit)
+    if (!text) continue
+    items.push({ id: hit.id, text, cacheId: key })
+    loadingIds.push(hit.id)
   }
 
-  // Skip for subtitle as it's already concise
-  if (selectedProperty.value === "subtitle") {
-    return;
-  }
+  if (items.length === 0) return
 
-  const text = hit.document[selectedProperty.value];
-  if (!text) return;
-
-  loadingStates.value.add(hit.id);
-
+  for (const id of loadingIds) loadingStates.value.add(id)
   try {
-    const response = await $fetch("/api/summarizeProperty", {
-      method: "POST",
-      body: {
-        text,
-        property: selectedProperty.value,
-        cacheId: cacheKey,
-      },
-    });
+    const userPrompt = customComparePrompt.value.trim()
+    const property =
+      selectedProperty.value === 'custom'
+        ? undefined
+        : selectedProperty.value
 
-    summaryCache.value.set(cacheKey, response.response);
+    const body =
+      mode === 'custom'
+        ? { mode: 'custom' as const, userPrompt, items }
+        : { mode: 'property' as const, property: property!, items }
+
+    const res = await $fetch<SummarizePropertyBatchResponseBody>(
+      '/api/summarizePropertyBatch',
+      { method: 'POST', body }
+    )
+
+    for (const r of res.results) {
+      if (r.ok) summaryCache.value.set(r.cacheId, r.response)
+      else console.error('[summarizePropertyBatch]', r.id, r.error)
+    }
   } catch (error) {
-    console.error("Error fetching summary:", error);
+    console.error('Error fetching summary batch:', error)
   } finally {
-    loadingStates.value.delete(hit.id);
+    for (const id of loadingIds) loadingStates.value.delete(id)
   }
 }
 
-// Watch for changes in results or selectedProperty
+function clearCustomSummaryCache() {
+  for (const k of [...summaryCache.value.keys()]) {
+    if (k.startsWith('custom|')) summaryCache.value.delete(k)
+  }
+}
+
+/** Property / recipe modes only; custom compare uses `submitCustomCompare`. */
+async function runPropertyGridSummaries() {
+  if (selectedProperty.value === 'subtitle') return
+  if (selectedProperty.value === 'custom') return
+  if (isOverAiArticleLimit.value) return
+  await fetchSummariesBatch(hitsForAiSummary.value)
+}
+
+async function submitCustomCompare() {
+  const p = customComparePrompt.value.trim()
+  if (!p) return
+  if (isOverAiArticleLimit.value) return
+
+  clearCustomSummaryCache()
+  customCompareSubmittedHash.value = hashPrompt(p)
+
+  isCustomCompareRunning.value = true
+  try {
+    await fetchSummariesBatch(hitsForAiSummary.value)
+  } finally {
+    isCustomCompareRunning.value = false
+  }
+}
+
 watch(
-  [() => props.results, selectedProperty],
-  async ([newResults]) => {
-    if (selectedProperty.value === "subtitle") {
-      return;
-    }
-
-    // Process each result sequentially to avoid overwhelming the API
-    for (const hit of newResults) {
-      await fetchSummary(hit);
-    }
+  () =>
+    [
+      props.results,
+      selectedProperty.value,
+      sel.selected.length,
+      sel.selected.map((s) => s.id).join(','),
+    ] as const,
+  () => {
+    void runPropertyGridSummaries()
   },
-  { immediate: true }
-);
-const toggleSelectAll = () => {
-  if (sel.isAllSelected(props.results)) {
-    console.log("Unselecting all");
-    sel.clear();
+  { immediate: true, deep: true }
+)
+
+watch(customComparePrompt, () => {
+  customCompareSubmittedHash.value = null
+  clearCustomSummaryCache()
+})
+
+function toggleSelectAll() {
+  if (sel.isAllSelected(resultsAsSelectionItems.value)) {
+    sel.clear()
   } else {
-    console.log("Selecting all");
-    sel.selectAll(props.results);
+    sel.selectAll(resultsAsSelectionItems.value)
   }
 }
-
-
-
-
 </script>
 
 <style scoped>

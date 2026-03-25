@@ -1,88 +1,69 @@
-import { google } from "@ai-sdk/google";
-import { generateObject } from "ai";
-import { z } from "zod";
-
-// Simple in-memory cache
-const responseCache = new Map<string, { response: any; timestamp: string }>();
+import { runSummarizePropertyItem } from '../utils/propertySummaryLlm'
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event);
-    const { text, property, cacheId } = body;
+    const body = await readBody(event)
+    const mode: 'property' | 'custom' =
+      body?.mode === 'custom' ? 'custom' : 'property'
+    const textRaw = typeof body?.text === 'string' ? body.text : ''
+    const property = typeof body?.property === 'string' ? body.property : ''
+    const userPrompt =
+      typeof body?.userPrompt === 'string' ? body.userPrompt.trim() : ''
+    const cacheId = typeof body?.cacheId === 'string' ? body.cacheId : ''
 
-    if (!text || !property) {
+    if (!textRaw.trim()) {
       throw createError({
         statusCode: 400,
-        message: "Missing required fields: text and property",
-      });
+        message: 'Missing or empty required field: text',
+      })
     }
 
-    // Check if we have a cached response
-    if (cacheId && responseCache.has(cacheId)) {
-      console.log("Returning cached response");
-      return responseCache.get(cacheId);
+    if (mode === 'property' && !property) {
+      throw createError({
+        statusCode: 400,
+        message: 'Missing required field: property (for mode property)',
+      })
     }
 
-    const fullPrompt = `Context:\n${text}\n\n
-    You are a research assistant specializing in climate change adaptation.
-    Your task is to analyze the provided ${property} text and create a concise summary.
-    The summary should:
-    1. Be no longer than 2 sentences
-    2. Capture the most important points
-    3. Be written in a clear, professional style
-    4. Avoid redundant information
-    5. In case there is any type of data, make it bold.
-
-    Evaluate if it makes sense to include a data text. In case there is a low probability of the data being relevant, do not include it.
-
-    if the property is cost_benefit, the data should be the cost and benefit.
-    if the property is implementation_time, the data should be the implementation time.
-    if the property is lifetime, the data should be the lifetime.
-    if the property is stakeholder_participation or success_limitations, 
-    make a decision about the most important data figure and make it bold. 
-
-    
-    The summary should be in the same language as the text.
-
-    Include markdown formatting.
-    
-    Add bold typography to the most important points.
-
-    Please provide the summary in a structured format with:
-    - A short title (3-5 words)
-    - A concise summary text
-    - A data text containing the single most important data figure in the property if it exists.
-    `;
-
-    const { object } = await generateObject({
-      model: google("gemini-3-flash-preview"),
-      prompt: fullPrompt,
-      schema: z.object({
-        title: z.string(),
-        summary: z.string(),
-        data: z.string(),
-      }),
-    });
-
-    const response = {
-      response: object,
-      timestamp: new Date().toISOString(),
-    };
-
-    // Cache the response if we have a cacheId
-    if (cacheId) {
-      responseCache.set(cacheId, response);
+    if (mode === 'custom' && !userPrompt) {
+      throw createError({
+        statusCode: 400,
+        message: 'Missing or empty required field: userPrompt (for mode custom)',
+      })
     }
 
-    return response;
+    try {
+      return await runSummarizePropertyItem({
+        mode,
+        text: textRaw,
+        property: mode === 'property' ? property : undefined,
+        userPrompt: mode === 'custom' ? userPrompt : undefined,
+        cacheId,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to generate summary'
+      if (
+        msg.includes('Missing') ||
+        msg.includes('empty required')
+      ) {
+        throw createError({ statusCode: 400, message: msg })
+      }
+      if (msg.includes('Model did not return')) {
+        throw createError({ statusCode: 500, message: msg })
+      }
+      throw err
+    }
   } catch (error) {
-    console.error("Error in AI response:", error);
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      throw error
+    }
+    console.error('Error in AI response:', error)
     throw createError({
       statusCode: 500,
       message:
         error instanceof Error
           ? error.message
-          : "Failed to generate property summary",
-    });
+          : 'Failed to generate property summary',
+    })
   }
-}); 
+})
