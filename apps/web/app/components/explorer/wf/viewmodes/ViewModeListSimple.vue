@@ -1,23 +1,21 @@
 <template>
   <section class="relative">
-    <!-- list management options / pagination -->
-    <div class="flex justify-between items-right px-4 py-2 mb-2">
-      <div class="flex items-end gap-4">
-        <div class="flex gap-1 flex-col items-start">
-          <p class="text-xs opacity-50">{{ $t("common.sortBy") }}</p>
-          <USelect
-            name="sortby"
-            id="sortby"
-            class="text-sm rounded-md px-2 py-1"
-          >
-            <option value="name">{{ $t("common.name") }}</option>
-            <option value="budget">{{ $t("common.budget") }}</option>
-          </USelect>
-        </div>
-      </div>
+    <div v-if="!isSearching && results.length > 0" class="px-4 py-2 mb-2">
+      <ExplorerResultsToolbar
+        v-model:page="page"
+        v-model:sort-key="sortKey"
+        :total-count="totalCount"
+        :range-start="rangeStart"
+        :range-end="rangeEnd"
+        :page-size="pageSize"
+        show-pagination
+        show-sort
+        show-bulk-select
+        :all-on-page-selected="sel.isAllSelected(pageSelectionItems)"
+        @bulk-toggle="toggleSelectAllOnPage"
+      />
     </div>
     <div class="flex">
-      <!-- Main content -->
       <div class="flex-1">
         <ul v-if="isSearching">
           <li class="p-4 text-center">{{ $t("common.searching") }}</li>
@@ -25,7 +23,7 @@
         <template v-else-if="results && results.length > 0">
           <ul v-if="activeTab === 'default'" class="space-y-2">
             <li
-              v-for="hit in results"
+              v-for="hit in pagedItems"
               :key="hit.id"
               :class="[
                 'cursor-pointer px-4 py-2 border-b-4 border-neutral-50',
@@ -52,7 +50,7 @@
                     class="flex justify-between grow cursor-pointer text-sm font-mono"
                     @click="handleDocumentClick(hit.document)"
                   >
-                    <span>{{ hit.document.title }}</span>
+                    <span>{{ hit.document?.title }}</span>
                   </div>
                 </Pin>
               </div>
@@ -64,41 +62,73 @@
   </section>
 </template>
 
-<script setup>
-import { useSearchStore } from "@/stores/search";
-import { useSearchSelectionStore } from "@/stores/searchSelection";
+<script setup lang="ts">
+import { useSearchSelectionStore } from '@/stores/searchSelection'
+import type { SearchSelectedItem } from '@/stores/searchSelection'
+import {
+  useExplorerResultsPaging,
+  type ExplorerSortKey,
+} from '@/composables/useExplorerResultsPaging'
+import type { ArticleDetail } from '~/types/search'
 
-const searchStore = useSearchStore();
+interface ListHit {
+  id: string
+  document: ArticleDetail
+}
 
-const props = defineProps({
-  results: {
-    type: Array,
-    default: () => [],
-  },
-  isSearching: Boolean,
-});
+const props = withDefaults(
+  defineProps<{
+    results?: ListHit[]
+    isSearching?: boolean
+  }>(),
+  { results: () => [] }
+)
 
-const emit = defineEmits(["document-selected"]);
+const emit = defineEmits<{
+  'document-selected': [document: ArticleDetail]
+}>()
 
-const activeTab = ref("default");
+const activeTab = ref('default')
+const sortKey = ref<ExplorerSortKey>('name')
 
-const sel = useSearchSelectionStore();
-const isSelected = (id) => sel.isSelected(id);
-const toggleSelection = (hit) =>
+const { page, pageSize, totalCount, pagedItems, rangeStart, rangeEnd } =
+  useExplorerResultsPaging(toRef(props, 'results'), {
+    pageSize: 20,
+    sortKey,
+  })
+
+const sel = useSearchSelectionStore()
+const isSelected = (id: string) => sel.isSelected(id)
+
+const pageSelectionItems = computed<SearchSelectedItem[]>(() =>
+  pagedItems.value.map((h) => ({
+    id: h.id,
+    title: h.document?.title ?? '',
+    document: h.document,
+  }))
+)
+
+function toggleSelectAllOnPage() {
+  const items = pageSelectionItems.value
+  if (items.length === 0) return
+  if (sel.isAllSelected(items)) sel.removeByIds(items.map((i) => i.id))
+  else sel.mergeAdd(items)
+}
+
+const toggleSelection = (hit: ListHit) =>
   sel.toggle({
     id: hit.id,
-    title: hit.document?.title || "",
+    title: hit.document?.title || '',
     document: hit.document,
-  });
+  })
 
-// Derive pinned status from store; Pin component handles pin/unpin internally
-const pinsStore = usePinsStore();
-const isPinned = (hit) => pinsStore.pinnedItems?.some((i) => i.id === hit.id);
+const pinsStore = usePinsStore()
+const isPinned = (hit: ListHit) =>
+  pinsStore.pinnedItems?.some((i: { id: string }) => i.id === hit.id)
 
-function handleDocumentClick(document) {
-  emit("document-selected", document);
-} 
-
+function handleDocumentClick(document: ArticleDetail) {
+  emit('document-selected', document)
+}
 </script>
 
 <style scoped>

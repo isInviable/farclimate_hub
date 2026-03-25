@@ -90,6 +90,10 @@
     "successLimitations": "Éxitos y Limitaciones",
     "selectAll": "Seleccionar todo",
     "unselectAll": "Quitar selección",
+    "selectAllOnPage": "Seleccionar todo en esta página",
+    "unselectOnPage": "Quitar selección en esta página",
+    "resultsTotal": "{count} resultados",
+    "resultsRange": "Mostrando {start}–{end} de {total}",
     "customCompare": "Pregunta personalizada",
     "customCompareLabel": "Qué comparar entre artículos",
     "customComparePlaceholder": "p. ej. ¿Cuál fue el principal factor de coste? ¿Quién financió el proyecto?",
@@ -102,7 +106,7 @@
     "nextPage": "Página siguiente",
     "tooManyForAiTitle": "Demasiados artículos para resúmenes con IA",
     "tooManyForAiDescription": "Cada artículo dispara una llamada al modelo. Para limitar el gasto en tokens, como máximo {max} artículos a la vez. Ahora tienes {current} ({scope}). Reduce resultados o selecciona hasta {max} artículos con las casillas.",
-    "tooManyForAiScopeGrid": "todos los artículos visibles en la cuadrícula",
+    "tooManyForAiScopeGrid": "todos los artículos de esta página en la cuadrícula",
     "tooManyForAiScopeSelected": "artículos seleccionados"
   },
     "listActions": {

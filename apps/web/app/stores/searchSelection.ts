@@ -17,9 +17,27 @@ export const useSearchSelectionStore = defineStore('searchSelection', () => {
   }
 
   const clear = () => { selected.value = [] }
-  const selectAll = (items: SearchSelectedItem[]) => { selected.value = items }
+  /** Replaces the entire selection (legacy / bulk replace). */
+  const selectAll = (items: SearchSelectedItem[]) => { selected.value = [...items] }
+
+  /** Adds any items not already selected (e.g. select-all on current page). */
+  const mergeAdd = (items: SearchSelectedItem[]) => {
+    for (const item of items) {
+      if (!selected.value.some(s => s.id === item.id)) selected.value.push({ ...item })
+    }
+  }
+
+  /** Removes only the given ids; leaves other selections unchanged. */
+  const removeByIds = (ids: string[]) => {
+    if (ids.length === 0) return
+    const drop = new Set(ids)
+    selected.value = selected.value.filter(s => !drop.has(s.id))
+  }
+
   const isSelected = (id: string) => selected.value.some(i => i.id === id)
-  const isAllSelected = (items: SearchSelectedItem[]) => selected.value.length === items.length
+  /** True when every item in `items` is selected (typical: current page slice). */
+  const isAllSelected = (items: SearchSelectedItem[]) =>
+    items.length > 0 && items.every(i => selected.value.some(s => s.id === i.id))
   const count = computed(() => selected.value.length)
 
   return {
@@ -28,6 +46,8 @@ export const useSearchSelectionStore = defineStore('searchSelection', () => {
     clear,
     isSelected,
     selectAll,
+    mergeAdd,
+    removeByIds,
     count,
     isAllSelected,
   };

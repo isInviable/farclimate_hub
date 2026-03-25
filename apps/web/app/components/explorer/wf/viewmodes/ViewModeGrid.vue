@@ -19,8 +19,18 @@
     </UAlert>
 
     <div class="flex flex-col gap-4 mb-6">
-      <div class="flex flex-wrap justify-between items-center gap-4">
-        <div class="flex flex-wrap items-end gap-3">
+      <ExplorerResultsToolbar
+        v-model:page="page"
+        :total-count="totalCount"
+        :range-start="rangeStart"
+        :range-end="rangeEnd"
+        :page-size="pageSize"
+        show-pagination
+        show-bulk-select
+        :all-on-page-selected="sel.isAllSelected(pageSelectionItems)"
+        @bulk-toggle="toggleSelectAllOnPage"
+      >
+        <template #leading>
           <UFormField :label="$t('viewModes.showProperty')" class="w-64 min-w-48">
             <USelectMenu
               v-model="selectedProperty"
@@ -29,41 +39,8 @@
               class="w-full"
             />
           </UFormField>
-        </div>
-        <UButton
-          variant="outline"
-          size="sm"
-          class="shrink-0"
-          @click="toggleSelectAll"
-        >
-          {{
-            sel.isAllSelected(resultsAsSelectionItems)
-              ? $t("viewModes.unselectAll")
-              : $t("viewModes.selectAll")
-          }}
-        </UButton>
-        <div class="flex items-center gap-2 text-sm text-neutral-600">
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            disabled
-            :aria-label="$t('viewModes.previousPage')"
-          >
-            <Icon name="mdi:chevron-left" class="w-5 h-5" />
-          </UButton>
-          <span class="tabular-nums min-w-12 text-center">{{ $t('viewModes.paginationStub') }}</span>
-          <UButton
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            disabled
-            :aria-label="$t('viewModes.nextPage')"
-          >
-            <Icon name="mdi:chevron-right" class="w-5 h-5" />
-          </UButton>
-        </div>
-      </div>
+        </template>
+      </ExplorerResultsToolbar>
 
       <div
         v-if="selectedProperty === 'custom'"
@@ -99,7 +76,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        v-for="hit in results"
+        v-for="hit in pagedItems"
         :key="hit.id"
         :class="[
           'bg-white rounded-md shadow-sm hover:shadow-lg transition-shadow overflow-hidden',
@@ -177,6 +154,7 @@ import {
   type GridCompareDocument,
   type GridCompareSelectValue,
 } from '@/composables/gridCompareSource'
+import { useExplorerResultsPaging } from '@/composables/useExplorerResultsPaging'
 import type {
   SummarizePropertyBatchResponseBody,
   SummarizePropertyResponseBody,
@@ -224,22 +202,25 @@ const customCompareHasSubmitted = computed(() => {
 /** If any row is checked, AI runs only on those; otherwise on all visible results. */
 const anyCheckboxSelected = computed(() => sel.selected.length > 0)
 
+const { page, pageSize, totalCount, pagedItems, rangeStart, rangeEnd } =
+  useExplorerResultsPaging(toRef(props, 'results'), { pageSize: 12 })
+
 const hitsForAiSummary = computed(() => {
   if (anyCheckboxSelected.value) {
     const idSet = new Set(sel.selected.map((i) => i.id))
-    return props.results.filter((h) => idSet.has(h.id))
+    return pagedItems.value.filter((h) => idSet.has(h.id))
   }
-  return props.results
+  return pagedItems.value
 })
 
 const isOverAiArticleLimit = computed(
   () => hitsForAiSummary.value.length > GRID_AI_SUMMARY_MAX_ARTICLES
 )
 
-const resultsAsSelectionItems = computed<SearchSelectedItem[]>(() =>
-  props.results.map((h) => ({
+const pageSelectionItems = computed<SearchSelectedItem[]>(() =>
+  pagedItems.value.map((h) => ({
     id: h.id,
-    title: h.document?.title ?? "",
+    title: h.document?.title ?? '',
     document: h.document,
   }))
 )
@@ -409,7 +390,7 @@ async function submitCustomCompare() {
 watch(
   () =>
     [
-      props.results,
+      pagedItems.value,
       selectedProperty.value,
       sel.selected.length,
       sel.selected.map((s) => s.id).join(','),
@@ -425,12 +406,11 @@ watch(customComparePrompt, () => {
   clearCustomSummaryCache()
 })
 
-function toggleSelectAll() {
-  if (sel.isAllSelected(resultsAsSelectionItems.value)) {
-    sel.clear()
-  } else {
-    sel.selectAll(resultsAsSelectionItems.value)
-  }
+function toggleSelectAllOnPage() {
+  const items = pageSelectionItems.value
+  if (items.length === 0) return
+  if (sel.isAllSelected(items)) sel.removeByIds(items.map((i) => i.id))
+  else sel.mergeAdd(items)
 }
 </script>
 
