@@ -1,5 +1,10 @@
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import {
+  convertToModelMessages,
+  smoothStream,
+  streamText,
+  type UIMessage,
+} from "ai";
 import { defineEventHandler, readBody } from "h3";
 
 export default defineEventHandler(async (event) => {
@@ -13,14 +18,11 @@ export default defineEventHandler(async (event) => {
     return { status: 400, body: "Missing or invalid 'messages' array" };
   }
 
-  // Compose the context from documents, if provided
-  let context = '';
+  let context = "";
   if (documents && Array.isArray(documents) && documents.length > 0) {
-    context = documents.join('\n');
+    context = documents.join("\n");
   }
-  
 
-  // Compose the system prompt for the assistant
   let system =
     "You are a helpful assistant specialized in climate change adaptation.\
     Your responses should be in the same language as the question.\
@@ -33,13 +35,22 @@ export default defineEventHandler(async (event) => {
     system = `Context:\n${context}\n\n${system}`;
   }
 
-  // Stream the response from Gemini
+  const modelMessages = await convertToModelMessages(messages as UIMessage[]);
+
   const result = streamText({
     model: google("gemini-3-flash-preview"),
     system,
-    messages,
+    messages: modelMessages,
+    // Re-chunk provider output so the UI updates in smaller steps (word ≈ ChatGPT-like; use "line" for newline-based chunks).
+    experimental_transform: smoothStream({ chunking: "word" }),
   });
 
-  // Return the streamed response as a data stream
-  return result.toDataStreamResponse();
-}); 
+  return result.toUIMessageStreamResponse({
+    onError: (err) => {
+      if (err == null) return "An error occurred.";
+      if (typeof err === "string") return err;
+      if (err instanceof Error) return err.message;
+      return "An error occurred.";
+    },
+  });
+});
