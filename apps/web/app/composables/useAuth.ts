@@ -85,6 +85,49 @@ export const useAuth = () => {
     }
   };
 
+  const sendOtp = async (email: string, name?: string) => {
+    try {
+      loading.value = true;
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true,
+          ...(name ? { data: { name } } : {}),
+        },
+      });
+
+      if (error) throw error;
+
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const verifyOtp = async (email: string, token: string) => {
+    try {
+      loading.value = true;
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "email",
+      });
+
+      if (error) throw error;
+
+      session.value = data.session;
+      user.value = data.user;
+
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error };
+    } finally {
+      loading.value = false;
+    }
+  };
+
   // Refresh the active session so new JWT claims become visible to the app.
   const refreshSession = async () => {
     try {
@@ -117,6 +160,8 @@ export const useAuth = () => {
     isAuthenticated,
     initAuth,
     signIn,
+    sendOtp,
+    verifyOtp,
     signOut,
     refreshSession,
   };
