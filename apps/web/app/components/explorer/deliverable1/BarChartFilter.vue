@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import FilterComponent from './FilterComponent.vue';
 
 type Item = { key: string; label: string };
@@ -77,6 +77,11 @@ const props = defineProps<{
   /** Total/max counts per facet (never changes). When set, two stacked bars are shown. */
   countsGlobal?: Record<string, number>;
   enabled?: boolean;
+  /**
+   * Selection map from parent FilterManager (e.g. after saved-search load).
+   * Keys are item.key; keeps UI in sync with `filters[filterKey]`.
+   */
+  selection?: Record<string, boolean> | null;
 }>();
 
 const emit = defineEmits<{
@@ -87,10 +92,39 @@ const emit = defineEmits<{
 
 const isEnabled = ref(props.enabled || false);
 
+watch(
+  () => props.enabled,
+  (v) => {
+    isEnabled.value = Boolean(v)
+  },
+  { immediate: true }
+)
+
 // selection state keyed by item.key
 const selectedByKey = ref<Record<string, boolean>>(
   Object.fromEntries(props.items.map(i => [i.key, false]))
 );
+
+function rebuildSelectionFromProps() {
+  const base = Object.fromEntries(
+    props.items.map((i) => [i.key, false])
+  ) as Record<string, boolean>
+  const sel = props.selection
+  if (sel && typeof sel === 'object' && !Array.isArray(sel)) {
+    for (const i of props.items) {
+      if (Object.prototype.hasOwnProperty.call(sel, i.key)) {
+        base[i.key] = Boolean(sel[i.key])
+      }
+    }
+  }
+  selectedByKey.value = base
+}
+
+watch(
+  () => [props.items, props.selection] as const,
+  () => rebuildSelectionFromProps(),
+  { deep: true, immediate: true }
+)
 
 const hasGlobalCounts = computed(() => {
   const g = props.countsGlobal;

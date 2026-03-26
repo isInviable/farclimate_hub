@@ -1,8 +1,16 @@
 import type { SearchResult } from '@/types/search'
 import type { FilterFacetsResponse } from '@/types/facets'
+import type { ExplorerEffectiveFilters } from '@/types/explorerFilters'
 
 export const useSearchStore = defineStore('search', () => {
   const facetsData = ref<FilterFacetsResponse | null>(null)
+
+  /** Last effective sidebar filters (JSON-serializable); mirrors `FilterManager` emit payload. */
+  const explorerEffectiveFilters = ref<ExplorerEffectiveFilters>({})
+
+  const setExplorerEffectiveFilters = (payload: ExplorerEffectiveFilters) => {
+    explorerEffectiveFilters.value = JSON.parse(JSON.stringify(payload)) as ExplorerEffectiveFilters
+  }
 
   const selectedTags = ref<{
     keywords: string[]
@@ -61,12 +69,14 @@ export const useSearchStore = defineStore('search', () => {
 
   return {
     facetsData,
+    explorerEffectiveFilters,
     selectedTags,
     searchQuery,
     hasAnySelectedTags,
     isSearching,
     resultsData,
     setFacetsData,
+    setExplorerEffectiveFilters,
     setSelectedTags,
     setSearchQuery,
     setResultsData,

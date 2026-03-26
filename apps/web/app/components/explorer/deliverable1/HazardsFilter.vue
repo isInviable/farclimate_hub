@@ -8,6 +8,7 @@
     :counts="counts"
     :counts-global="countsGlobal"
     :enabled="isEnabled"
+    :selection="selection"
     @filter-change="(...args) => emit('filter-change', ...args)"
     @filter-clear="(k) => emit('filter-clear', k)"
     @filter-apply="(...args) => emit('filter-apply', ...args)"
@@ -16,12 +17,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import BarChartFilter from './BarChartFilter.vue';
 import type { FacetEntry } from '@/types/facets';
 
 const props = defineProps<{
   enabled?: boolean;
+  /** From FilterManager `filters.hazards` */
+  selection?: Record<string, boolean> | null;
   /** From facets API: global.climate_impacts */
   climateImpacts?: FacetEntry[];
   /** From facets API: for_result_set.climate_impacts (value -> count) */
@@ -34,6 +37,14 @@ const emit = defineEmits<{
 }>();
 
 const isEnabled = ref(props.enabled ?? false);
+
+watch(
+  () => props.enabled,
+  (v) => {
+    isEnabled.value = v ?? false
+  },
+  { immediate: true }
+)
 
 const items = computed(() =>
   (props.climateImpacts ?? []).map((e) => ({ key: e.value, label: e.value }))

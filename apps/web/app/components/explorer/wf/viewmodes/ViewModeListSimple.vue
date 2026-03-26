@@ -23,7 +23,7 @@
         <template v-else-if="results && results.length > 0">
           <ul v-if="activeTab === 'default'" class="space-y-2">
             <li
-              v-for="hit in pagedItems"
+              v-for="{ hit, badgeVisible, badgeOverflow } in rowsWithBadges"
               :key="hit.id"
               :class="[
                 'cursor-pointer px-4 py-2 border-b-4 border-neutral-50',
@@ -32,27 +32,63 @@
                   : 'bg-white hover:bg-neutral-100',
               ]"
             >
-              <div class="flex justify-start items-center gap-2">
-                <UCheckbox
-                  :model-value="isSelected(hit.id)"
-                  @update:model-value="() => toggleSelection(hit)"
-                  color="primary"
-                  size="md"
-                />
-                <Pin
-                  class="mr-1 mb-2"
-                  :pin-id="hit.id"
-                  :pin-title="hit.document?.title || ''"
-                  pin-type="result"
-                  :pin-data="hit.document"
-                >
-                  <div
-                    class="flex justify-between grow cursor-pointer text-sm font-mono"
-                    @click="handleDocumentClick(hit.document)"
+              <div
+                class="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3"
+              >
+                <div class="flex min-w-0 flex-1 items-start gap-2">
+                  <UCheckbox
+                    :model-value="isSelected(hit.id)"
+                    @update:model-value="() => toggleSelection(hit)"
+                    color="primary"
+                    size="md"
+                    class="shrink-0 mt-0.5"
+                  />
+                  <Pin
+                    class="mr-1 mb-2 min-w-0 flex-1"
+                    :pin-id="hit.id"
+                    :pin-title="hit.document?.title || ''"
+                    pin-type="result"
+                    :pin-data="hit.document"
                   >
-                    <span>{{ hit.document?.title }}</span>
-                  </div>
-                </Pin>
+                    <div
+                      class="min-w-0 cursor-pointer text-sm font-mono"
+                      @click="handleDocumentClick(hit.document)"
+                    >
+                      <span class="line-clamp-2 sm:line-clamp-1">{{
+                        hit.document?.title
+                      }}</span>
+                    </div>
+                  </Pin>
+                </div>
+                <div
+                  v-if="badgeVisible.length > 0"
+                  class="flex flex-wrap gap-1 sm:basis-[20%] sm:max-w-[min(20vw,12rem)] sm:shrink-0 sm:justify-end"
+                  role="group"
+                  :aria-label="$t('viewModes.matchingFiltersAria')"
+                >
+                  <UBadge
+                    v-for="(b, i) in badgeVisible"
+                    :key="`${hit.id}-${b.kind}-${i}`"
+                    :color="b.color ?? 'neutral'"
+                    variant="subtle"
+                    size="xs"
+                    class="max-w-full truncate"
+                  >
+                    {{ b.label }}
+                  </UBadge>
+                  <UBadge
+                    v-if="badgeOverflow > 0"
+                    color="neutral"
+                    variant="outline"
+                    size="xs"
+                  >
+                    {{
+                      $t('viewModes.matchingFiltersMore', {
+                        count: badgeOverflow,
+                      })
+                    }}
+                  </UBadge>
+                </div>
               </div>
             </li>
           </ul>
@@ -70,6 +106,11 @@ import {
   type ExplorerSortKey,
 } from '@/composables/useExplorerResultsPaging'
 import type { ArticleDetail } from '~/types/search'
+import { useSearchStore } from '@/stores/search'
+import {
+  listMatchBadgesForDocument,
+  visibleListMatchBadges,
+} from '@/utils/listMatchBadges'
 
 interface ListHit {
   id: string
@@ -98,7 +139,19 @@ const { page, pageSize, totalCount, pagedItems, rangeStart, rangeEnd } =
   })
 
 const sel = useSearchSelectionStore()
+const searchStore = useSearchStore()
 const isSelected = (id: string) => sel.isSelected(id)
+
+const rowsWithBadges = computed(() =>
+  pagedItems.value.map((hit) => {
+    const all = listMatchBadgesForDocument(
+      hit.document,
+      searchStore.explorerEffectiveFilters
+    )
+    const { visible, overflow } = visibleListMatchBadges(all)
+    return { hit, badgeVisible: visible, badgeOverflow: overflow }
+  })
+)
 
 const pageSelectionItems = computed<SearchSelectedItem[]>(() =>
   pagedItems.value.map((h) => ({

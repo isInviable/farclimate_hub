@@ -112,7 +112,9 @@
     "tooManyForAiTitle": "Too many articles for AI summaries",
     "tooManyForAiDescription": "Each article triggers a separate model call. To avoid high token use, you can run this on at most {max} articles at once. You currently have {current} ({scope}). Narrow your search, or use the checkboxes to select up to {max} articles.",
     "tooManyForAiScopeGrid": "all articles on this page in the grid",
-    "tooManyForAiScopeSelected": "articles selected"
+    "tooManyForAiScopeSelected": "articles selected",
+    "matchingFiltersAria": "Matches active search filters",
+    "matchingFiltersMore": "+{count} more"
   },
   "pills": {
     "forestry": "Forestry",

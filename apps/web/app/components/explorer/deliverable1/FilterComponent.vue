@@ -182,9 +182,13 @@ watch(() => props.enabled, (newVal) => {
   isEnabled.value = newVal;
 });
 
-watch(() => props.initialValue, (newVal) => {
-  filterValue.value = newVal;
-});
+watch(
+  () => props.initialValue,
+  (newVal) => {
+    filterValue.value = newVal
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>

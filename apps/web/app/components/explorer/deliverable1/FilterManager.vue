@@ -32,6 +32,7 @@
         <SectorFilter
           v-if="isFilterEnabled('sector')"
           :enabled="true"
+          :selection="filters.sector"
           :sectors="facetsData?.global?.sectors"
           :for-result-set-counts="sectorCountsFromResultSet"
           @filter-change="handleFilterChange"
@@ -42,6 +43,7 @@
         <HazardsFilter
           v-if="isFilterEnabled('hazards')"
           :enabled="true"
+          :selection="filters.hazards"
           :climate-impacts="facetsData?.global?.climate_impacts"
           :for-result-set-counts="climateImpactsCountsFromResultSet"
           @filter-change="handleFilterChange"
@@ -60,6 +62,7 @@
         <BiogeographicalRegionsFilter
           v-if="isFilterEnabled('biogeographical_regions')"
           :enabled="true"
+          :selection="filters.biogeographical_regions"
           :biogeographical-regions="facetsData?.global?.biogeographical_regions"
           :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
           @filter-change="handleFilterChange"
@@ -107,6 +110,7 @@
         <SectorFilter
           v-if="isFilterAvailable('sector')"
           :enabled="false"
+          :selection="filters.sector"
           :sectors="facetsData?.global?.sectors"
           :for-result-set-counts="sectorCountsFromResultSet"
           @filter-change="handleFilterChange"
@@ -117,6 +121,7 @@
         <HazardsFilter
           v-if="isFilterAvailable('hazards')"
           :enabled="false"
+          :selection="filters.hazards"
           :climate-impacts="facetsData?.global?.climate_impacts"
           :for-result-set-counts="climateImpactsCountsFromResultSet"
           @filter-change="handleFilterChange"
@@ -135,6 +140,7 @@
         <BiogeographicalRegionsFilter
           v-if="isFilterAvailable('biogeographical_regions')"
           :enabled="false"
+          :selection="filters.biogeographical_regions"
           :biogeographical-regions="facetsData?.global?.biogeographical_regions"
           :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
           @filter-change="handleFilterChange"

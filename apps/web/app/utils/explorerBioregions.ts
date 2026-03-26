@@ -104,7 +104,7 @@ export function buildRegionCooccurrenceFromHits(hits: SearchHitLike[]): RegionUm
   return { regionNames, matrix, counts, representativeByRegion }
 }
 
-/** Deterministic scalar in (0, 1) from id + salt (separates identical region profiles in UMAP). */
+/** Deterministic scalar in [0, 1) from id + salt (tie-break after bioregion + geo features). */
 export function umapJitter01(id: string, salt: number): number {
   let h = (salt + 1) * 374761393
   for (let j = 0; j < id.length; j++) {
@@ -114,7 +114,27 @@ export function umapJitter01(id: string, salt: number): number {
 }
 
 /**
- * One row per hit: multi-hot over sorted `regionNames` plus 3 jitter dims (so UMAP can separate docs with the same regions).
+ * Valid `[lat, lon]` in degrees from `document.location` (same order as map view: index 0 = lat, 1 = lon).
+ * Returns null for missing data, non-finite values, or `[0, 0]` placeholder (no usable point).
+ */
+export function parseDocumentLatLon(location: unknown): { lat: number; lon: number } | null {
+  if (!Array.isArray(location) || location.length !== 2) return null
+  const lat = Number(location[0])
+  const lon = Number(location[1])
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null
+  if (lat === 0 && lon === 0) return null
+  return { lat, lon }
+}
+
+function minMax01(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return 0.5
+  if (max === min || !Number.isFinite(min) || !Number.isFinite(max)) return 0.5
+  return (value - min) / (max - min)
+}
+
+/**
+ * One row per hit: multi-hot over sorted `regionNames`, then min–max scaled lat/lon over this batch,
+ * then one id jitter dimension for exact ties. Invalid/missing coords use the batch centroid (0.5, 0.5) in normalized space.
  */
 export function buildPerHitUmapVectors(hits: SearchHitLike[]): {
   regionNames: string[]
@@ -130,15 +150,38 @@ export function buildPerHitUmapVectors(hits: SearchHitLike[]): {
   const k = regionNames.length
   const idx = new Map(regionNames.map((r, i) => [r, i] as const))
 
+  const parsed = hits.map((h) => parseDocumentLatLon(h.document?.location))
+  const valid = parsed.filter((p): p is { lat: number; lon: number } => p !== null)
+  let minLat = 0
+  let maxLat = 1
+  let minLon = 0
+  let maxLon = 1
+  if (valid.length > 0) {
+    minLat = Math.min(...valid.map((p) => p.lat))
+    maxLat = Math.max(...valid.map((p) => p.lat))
+    minLon = Math.min(...valid.map((p) => p.lon))
+    maxLon = Math.max(...valid.map((p) => p.lon))
+  }
+
+  const GEO_LAT = k
+  const GEO_LON = k + 1
+  const JITTER = k + 2
+
   const vectors = hits.map((hit, hi) => {
     const row = new Array(k + 3).fill(0)
     for (const r of perHitRegions[hi]!) {
       const i = idx.get(r)
       if (i !== undefined) row[i] = 1
     }
-    row[k] = umapJitter01(hit.id, 0)
-    row[k + 1] = umapJitter01(hit.id, 1)
-    row[k + 2] = umapJitter01(hit.id, 2)
+    const p = parsed[hi]
+    if (p) {
+      row[GEO_LAT] = minMax01(p.lat, minLat, maxLat)
+      row[GEO_LON] = minMax01(p.lon, minLon, maxLon)
+    } else {
+      row[GEO_LAT] = 0.5
+      row[GEO_LON] = 0.5
+    }
+    row[JITTER] = umapJitter01(hit.id, 0)
     return row
   })
 

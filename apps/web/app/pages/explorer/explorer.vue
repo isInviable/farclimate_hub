@@ -225,6 +225,7 @@
 
 <script lang="ts" setup>
 import { useSearchStore } from "@/stores/search";
+import type { ExplorerEffectiveFilters } from "@/types/explorerFilters";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
 
@@ -290,9 +291,6 @@ const searchQuery = computed({
 
 const isSearching = computed(() => searchStore.isSearching);
 
-// Active filters from FilterManager
-const activeFilters = reactive<Record<string, any>>({});
-
 // Methods
 const setViewMode = (mode: string) => {
   viewMode.value = mode;
@@ -300,7 +298,7 @@ const setViewMode = (mode: string) => {
 
 // Filter handling methods
 const handleFiltersChanged = (filters: Record<string, any>) => {
-  Object.assign(activeFilters, filters);
+  searchStore.setExplorerEffectiveFilters(filters as ExplorerEffectiveFilters);
   // Sync facet params and re-run search so API returns filtered results
   const sectorSel = filters.sector;
   const sectors = typeof sectorSel === "object" && sectorSel !== null
@@ -414,6 +412,7 @@ const filteredPapers = computed(() => {
 
   return searchResults.filter((paper: any) => {
     const doc = paper.document || paper;
+    const activeFilters = searchStore.explorerEffectiveFilters;
 
     const sectorFilter = activeFilters.sector;
     const docSectors = Array.isArray(doc.sectors) ? doc.sectors : doc.sectors ? [doc.sectors] : [];

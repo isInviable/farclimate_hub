@@ -107,7 +107,9 @@
     "tooManyForAiTitle": "Demasiados artículos para resúmenes con IA",
     "tooManyForAiDescription": "Cada artículo dispara una llamada al modelo. Para limitar el gasto en tokens, como máximo {max} artículos a la vez. Ahora tienes {current} ({scope}). Reduce resultados o selecciona hasta {max} artículos con las casillas.",
     "tooManyForAiScopeGrid": "todos los artículos de esta página en la cuadrícula",
-    "tooManyForAiScopeSelected": "artículos seleccionados"
+    "tooManyForAiScopeSelected": "artículos seleccionados",
+    "matchingFiltersAria": "Coincide con filtros de búsqueda activos",
+    "matchingFiltersMore": "+{count} más"
   },
     "listActions": {
       "default": "Por defecto",
