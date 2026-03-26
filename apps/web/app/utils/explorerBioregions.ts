@@ -1,0 +1,146 @@
+import type { ArticleDetail, SearchResult } from '@/types/search'
+
+const NO_REGION = 'no-identificados'
+
+/** Normalize raw `biogeographical_regions` field (string or array); empty list if unusable. */
+export function normalizeBiogeographicalRegionsRaw(value: unknown): string[] {
+  if (value === null || value === undefined) return []
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed) return []
+    const split = trimmed.split(',').map((item) => item.trim()).filter(Boolean)
+    return split.length ? [...new Set(split)] : []
+  }
+
+  if (Array.isArray(value)) {
+    const flattened = value
+      .flatMap((item) => {
+        if (item === null || item === undefined) return []
+        if (typeof item === 'string') {
+          return item.split(',').map((part) => part.trim()).filter(Boolean)
+        }
+        const s = String(item).trim()
+        return s ? [s] : []
+      })
+      .filter(Boolean)
+    return flattened.length ? [...new Set(flattened)] : []
+  }
+
+  return []
+}
+
+/** Regions for a search hit; mirrors facet semantics (missing → `no-identificados`). */
+export function biogeographicalRegionsForHit(hit: {
+  document?: SearchResult | ArticleDetail | null
+}): string[] {
+  const geo = hit.document?.geographic_characterisation
+  if (!geo || typeof geo !== 'object' || Array.isArray(geo)) {
+    return [NO_REGION]
+  }
+  const list = normalizeBiogeographicalRegionsRaw(
+    (geo as Record<string, unknown>).biogeographical_regions
+  )
+  return list.length ? [...new Set(list)] : [NO_REGION]
+}
+
+/** Matches explorer filtered hits: `document.id` may be omitted at type level. */
+export type SearchHitLike = { id: string; document?: SearchResult | null }
+
+export type RegionUmapModel = {
+  regionNames: string[]
+  /** Symmetric co-occurrence: diagonal = doc count with region; off-diag = docs with both. */
+  matrix: number[][]
+  /** Hit count per region (same as diagonal of matrix). */
+  counts: Record<string, number>
+  /** First hit in `hits` order that contains each region (for panel open). */
+  representativeByRegion: Map<string, SearchResult>
+}
+
+/**
+ * Build per-region counts and symmetric co-occurrence from filtered hits.
+ * For each document, increments diagonal for each region it has; for each unordered pair, increments both off-diagonals.
+ */
+export function buildRegionCooccurrenceFromHits(hits: SearchHitLike[]): RegionUmapModel {
+  const perDocRegions = hits.map((h) => biogeographicalRegionsForHit(h))
+  const allRegions = new Set<string>()
+  for (const rs of perDocRegions) {
+    for (const r of rs) allRegions.add(r)
+  }
+  const regionNames = [...allRegions].sort((a, b) => a.localeCompare(b))
+  const n = regionNames.length
+  const idx = new Map(regionNames.map((r, i) => [r, i] as const))
+
+  const matrix = Array.from({ length: n }, () => Array(n).fill(0))
+  const representativeByRegion = new Map<string, SearchResult>()
+
+  for (let hi = 0; hi < hits.length; hi++) {
+    const hit = hits[hi]!
+    const doc = hit.document
+    const unique = [...new Set(perDocRegions[hi]!)]
+    for (let a = 0; a < unique.length; a++) {
+      const labelA = unique[a]!
+      const ia = idx.get(labelA)
+      if (ia === undefined) continue
+      if (doc?.id && !representativeByRegion.has(labelA)) {
+        representativeByRegion.set(labelA, doc)
+      }
+      for (let b = a; b < unique.length; b++) {
+        const labelB = unique[b]!
+        const ib = idx.get(labelB)
+        if (ib === undefined) continue
+        matrix[ia]![ib]! += 1
+        if (ia !== ib) matrix[ib]![ia]! += 1
+      }
+    }
+  }
+
+  const counts: Record<string, number> = {}
+  for (let i = 0; i < n; i++) {
+    const name = regionNames[i]!
+    counts[name] = matrix[i]![i]!
+  }
+
+  return { regionNames, matrix, counts, representativeByRegion }
+}
+
+/** Deterministic scalar in (0, 1) from id + salt (separates identical region profiles in UMAP). */
+export function umapJitter01(id: string, salt: number): number {
+  let h = (salt + 1) * 374761393
+  for (let j = 0; j < id.length; j++) {
+    h = (h * 31 + id.charCodeAt(j)) >>> 0
+  }
+  return (h % 10000) / 10000
+}
+
+/**
+ * One row per hit: multi-hot over sorted `regionNames` plus 3 jitter dims (so UMAP can separate docs with the same regions).
+ */
+export function buildPerHitUmapVectors(hits: SearchHitLike[]): {
+  regionNames: string[]
+  perHitRegions: string[][]
+  vectors: number[][]
+} {
+  const perHitRegions = hits.map((h) => biogeographicalRegionsForHit(h))
+  const all = new Set<string>()
+  for (const rs of perHitRegions) {
+    for (const r of rs) all.add(r)
+  }
+  const regionNames = [...all].sort((a, b) => a.localeCompare(b))
+  const k = regionNames.length
+  const idx = new Map(regionNames.map((r, i) => [r, i] as const))
+
+  const vectors = hits.map((hit, hi) => {
+    const row = new Array(k + 3).fill(0)
+    for (const r of perHitRegions[hi]!) {
+      const i = idx.get(r)
+      if (i !== undefined) row[i] = 1
+    }
+    row[k] = umapJitter01(hit.id, 0)
+    row[k + 1] = umapJitter01(hit.id, 1)
+    row[k + 2] = umapJitter01(hit.id, 2)
+    return row
+  })
+
+  return { regionNames, perHitRegions, vectors }
+}

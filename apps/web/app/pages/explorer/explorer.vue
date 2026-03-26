@@ -133,18 +133,12 @@
             @document-selected="handleDocumentSelected"
           />
 
-          <!-- Bubble View -->
-          <div v-else-if="viewMode === 'bubble'" class="p-6">
-            <!-- <DummyMap
-              :mapData="dummyData"
-              :uniqueBiogeographicalRegions="uniqueBiogeographicalRegions"
-              :viewMode="viewMode"
-              class="w-full h-full"
-              @click.stop="toggleBlock('resultsBox')"
-              @displayThisTitle="(txt: string) => displayTitle = txt"
-            /> -->
-            TBD
-          </div>
+          <!-- Bubble View (biogeographical regions / UMAP) -->
+          <ViewModeBioregionUmap
+            v-else-if="viewMode === 'bubble'"
+            :results="filteredPapers"
+            @document-selected="handleDocumentSelected"
+          />
 
           <!-- Gantt View -->
           <div v-else-if="viewMode === 'gantt'" class="p-6">
