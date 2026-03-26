@@ -11,11 +11,11 @@ The `packages/db/sql/` directory SHALL contain exactly 6 numbered SQL files that
 
 #### Scenario: Fresh database setup produces correct tables
 - **WHEN** `db:create` runs the 6 consolidated SQL files on a fresh database with no `knowledge` schema
-- **THEN** the resulting schema SHALL contain exactly the tables `knowledge.documents`, `knowledge.summary`, `knowledge.summary_multilang`, `knowledge.fulltext`, and `knowledge.embeddings` with all columns matching the current production schema (including `health_impact` on summary and `fts` on fulltext)
+- **THEN** the resulting schema SHALL contain exactly the tables `knowledge.documents`, `knowledge.summary`, `knowledge.summary_multilang`, `knowledge.fulltext`, `knowledge.embeddings`, and `knowledge.recipe` with all columns matching the current production schema (including `health_impact` on summary, `fts` on fulltext, and `ingredients` JSONB on recipe)
 
 #### Scenario: Fresh database setup produces correct indexes
 - **WHEN** `db:create` completes on a fresh database
-- **THEN** the schema SHALL have: GIN indexes on `summary.sectors`, `summary.climate_impacts`, `summary.adaptation_approaches`, `summary.keywords`; a GIN index on `fulltext.fts`; and an ivfflat index on `embeddings.embedding`
+- **THEN** the schema SHALL have: GIN indexes on `summary.sectors`, `summary.climate_impacts`, `summary.adaptation_approaches`, `summary.keywords`; a GIN index on `fulltext.fts`; an ivfflat index on `embeddings.embedding`; and a unique constraint on `(document_id, lang)` for `knowledge.recipe`
 
 #### Scenario: Fresh database setup produces correct functions
 - **WHEN** `db:create` completes on a fresh database
@@ -55,7 +55,7 @@ The consolidated migration files SHALL NOT contain any `UPDATE` statements inten
 
 ### Requirement: Function signatures remain unchanged
 
-All function signatures (parameter names, types, defaults, return types) SHALL be identical to the current versions. This ensures existing API routes and frontend code continue to work without modification.
+All function signatures (parameter names, types, defaults, return types) SHALL be identical to the current versions **except** that `public.get_all_documents` and `public.get_documents_by_ids` MAY be extended with an additional nullable return column `recipe_ingredients jsonb` sourced from `knowledge.recipe.ingredients` for `filter_lang`. All other functions listed in this spec (including `knowledge.hybrid_search`, `public.hybrid_search`, `public.keyword_search`, etc.) SHALL keep their parameter lists and return column sets unchanged.
 
 #### Scenario: hybrid_search signature unchanged
 - **WHEN** `knowledge.hybrid_search` is called with the same parameters as before
@@ -64,3 +64,7 @@ All function signatures (parameter names, types, defaults, return types) SHALL b
 #### Scenario: public.hybrid_search wrapper unchanged
 - **WHEN** `public.hybrid_search` is called via PostgREST with a text embedding parameter
 - **THEN** it SHALL cast to `vector(768)` and delegate to `knowledge.hybrid_search` exactly as before
+
+#### Scenario: get_documents_by_ids exposes recipe_ingredients
+- **WHEN** `public.get_documents_by_ids` is invoked with a language for which a `knowledge.recipe` row exists
+- **THEN** each returned row SHALL include `recipe_ingredients` equal to that row’s `ingredients` object, or NULL when no recipe exists for that `(document_id, lang)`

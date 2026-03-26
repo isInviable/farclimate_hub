@@ -20,10 +20,14 @@ The platform SHALL treat visitors without a Supabase session as demo users and S
 
 ### Requirement: Existing users can log in and restore authenticated sessions
 
-The platform SHALL allow existing platform users to authenticate with Supabase Auth and SHALL restore authenticated sessions on subsequent page loads until the session is ended or expires.
+The platform SHALL allow existing platform users to authenticate with Supabase Auth using either email OTP or email+password, and SHALL restore authenticated sessions on subsequent page loads until the session is ended or expires.
 
-#### Scenario: User logs in successfully
-- **WHEN** a valid existing user completes the login flow
+#### Scenario: User logs in successfully via OTP
+- **WHEN** a valid user completes the OTP verification flow
+- **THEN** the platform SHALL transition from demo mode to authenticated mode in the active session
+
+#### Scenario: User logs in successfully via password
+- **WHEN** a valid existing user completes the password login flow
 - **THEN** the platform SHALL transition from demo mode to authenticated mode in the active session
 
 #### Scenario: Authenticated user reloads the application
