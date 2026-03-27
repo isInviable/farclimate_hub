@@ -1,12 +1,12 @@
 import { useSearchStore } from "@/stores/search";
 import { fetchFacets } from "@/composables/useFacets";
-import type { SearchFacetParams } from "@/types/search";
+import type { ArticleDetail, SearchFacetParams } from "@/types/search";
 
 export interface SearchHit {
   id: string;
   document_uid: string;
   score: number;
-  document: Record<string, any>;
+  document: ArticleDetail;
 }
 
 export interface SearchResponse {

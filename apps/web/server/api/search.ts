@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google"
 import { embed } from "ai"
 import { createClient } from "@supabase/supabase-js"
+import { buildSearchHit } from "../utils/knowledgeDocument"
 
 const EMBEDDING_MODEL = "gemini-embedding-001"
 const EMBEDDING_DIMS = 768
@@ -105,47 +106,6 @@ function filterIdsByFacets(
   })
 }
 
-function normalizeRecipeIngredients(raw: unknown): Record<string, string> | null {
-  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return null
-  const out: Record<string, string> = {}
-  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-    if (typeof v === 'string') out[k] = v
-  }
-  return out
-}
-
-function buildHit(row: Record<string, any>, score: number) {
-  return {
-    id: row.id,
-    document_uid: row.document_uid,
-    score,
-    document: {
-      id: row.id,
-      title: row.title || '',
-      subtitle: row.subtitle || '',
-      summary: row.summary || '',
-      fulltext: row.fulltext || '',
-      source_url: row.source_url || '',
-      document_uid: row.document_uid,
-      image_url: row.image_url || '',
-      keywords: row.keywords || [],
-      climate_impacts: row.climate_impacts || [],
-      adaptation_approaches: row.adaptation_approaches || [],
-      sectors: row.sectors || [],
-      geographic_characterisation: row.geographic_characterisation || {},
-      location: [row.location_lat || 0, row.location_lon || 0],
-      implementation_years: {
-        start_year: row.implementation_years_start ? parseInt(row.implementation_years_start) : 0,
-        end_year: row.implementation_years_end ? parseInt(row.implementation_years_end) : 0,
-      },
-      contact: row.contact_preprocessed || '',
-      references: row.references_preprocessed || '',
-      websites: row.websites || {},
-      recipe_ingredients: normalizeRecipeIngredients(row.recipe_ingredients),
-    },
-  }
-}
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const query = (body?.query || '').trim()
@@ -190,7 +150,7 @@ export default defineEventHandler(async (event) => {
         const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
         rows = rows.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
       }
-      const hits = rows.map((row: any) => buildHit(row, 1))
+      const hits = rows.map((row: any) => buildSearchHit(row, 1))
       return { count: hits.length, hits }
     }
 
@@ -303,8 +263,8 @@ export default defineEventHandler(async (event) => {
 
     const hits = filteredResults.map((r: any) => {
       const doc = docsMap.get(r.id)
-      if (doc) return buildHit(doc, r.score)
-      return buildHit({ id: r.id, document_uid: r.document_uid, title: r.title }, r.score)
+      if (doc) return buildSearchHit(doc, r.score)
+      return buildSearchHit({ id: r.id, document_uid: r.document_uid, title: r.title }, r.score)
     })
 
     if (debug) {

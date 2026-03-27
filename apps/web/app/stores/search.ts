@@ -1,4 +1,4 @@
-import type { SearchResult } from '@/types/search'
+import type { ArticleDetail } from '@/types/search'
 import type { FilterFacetsResponse } from '@/types/facets'
 import type { ExplorerEffectiveFilters } from '@/types/explorerFilters'
 
@@ -31,7 +31,7 @@ export const useSearchStore = defineStore('search', () => {
       formatted: string
     }
     hits: {
-      document: SearchResult
+      document: ArticleDetail
       id: string
       score: number
     }[]

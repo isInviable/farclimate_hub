@@ -10,7 +10,7 @@
 
       <div class="flex gap-2 items-center">
         <UButton
-          :to="`/wireframes/article/${documentSlug}`"
+          :to="`/articles/${props.document.id}`"
           target="_blank"
           variant="ghost"
           :title="$t('common.openFullPage')"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from "vue";
+import { onBeforeUnmount, onMounted } from "vue";
 import { DialogDescription, DialogTitle } from "reka-ui";
 import { useI18n } from "vue-i18n";
 import type { ArticleDetail } from "@/types/search";
@@ -45,13 +45,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "close"): void;
 }>();
-
-const documentSlug = computed(() => {
-  const uid = props.document.document_uid || String(props.document.id);
-  // Example uid shape: "climateadapt::some-slug"
-  const parts = uid.split("::");
-  return parts.length > 1 ? parts[1] : parts[0];
-});
 
 function disableScroll() {
   document.body.style.overflow = "hidden";
