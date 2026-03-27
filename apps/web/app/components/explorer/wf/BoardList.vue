@@ -89,6 +89,12 @@
               <h3 class="font-bold text-lg text-gray-800 line-clamp-2">
                 {{ item.title }}
               </h3>
+              <p
+                v-if="!item.source_document_uid && (item.body_kind === 'text_segment' || item.body_kind === 'document')"
+                class="text-xs text-amber-800 bg-amber-50 rounded px-2 py-1"
+              >
+                {{ $t('pins.sourceMissing') }}
+              </p>
               <p v-if="item.notes" class="text-xs text-neutral-500 italic">
                 {{ item.notes }}
               </p>
@@ -215,6 +221,8 @@ interface PinnedItem {
   type: 'result' | 'contact' | 'image' | 'website' | 'other'
   data: any
   notes?: string
+  source_document_uid?: string | null
+  body_kind?: string
 }
 
 const props = defineProps<{

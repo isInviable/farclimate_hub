@@ -104,10 +104,6 @@ export const useProjectsStore = defineStore("projects", () => {
     }
   });
 
-  function saveCurrentProjectPins() {
-    // Pins are not persisted to project in DB in this change; no-op.
-  }
-
   return {
     projects,
     currentProjectId,
@@ -119,7 +115,6 @@ export const useProjectsStore = defineStore("projects", () => {
     deleteProject,
     initialize,
     getAllProjects,
-    saveCurrentProjectPins,
     loading: supabase.loading,
     error: supabase.error,
     fetchProjects: supabase.fetchProjects,

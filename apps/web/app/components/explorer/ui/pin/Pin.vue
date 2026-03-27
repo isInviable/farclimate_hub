@@ -2,7 +2,7 @@
   <div
     ref="pinWrapper"
     class="pin-wrapper relative group w-full"
-    :class="{ 'pin-active': isPinned }"
+    :class="{ 'pin-active': isPinnedUi }"
   >
     <slot></slot>
     <UPopover arrow v-model:open="isPopoverOpen">
@@ -12,19 +12,25 @@
         variant="ghost"
         color="primary"
         class="cursor-pointer pin-button absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-1 rounded-full shadow-md hover:bg-gray-50"
-        :class="{ 'opacity-100': isPinned }"
+        :class="{ 'opacity-100': isPinnedUi }"
+        :loading="pinBusy"
       >
       </UButton>
       <template #content>
         <div class="flex flex-col gap-2 px-4 py-4">
           <UTextarea
             v-model="pinNotes"
-            placeholder="Add notes to this pin"
+            :placeholder="$t('pins.notesPlaceholder')"
             size="lg"
             max-rows="8"
             class="w-72 "
           />
-          <UButton @click="isPopoverOpen = false" class="cursor-pointer" color="neutral">Save</UButton>
+          <UButton
+            @click="isPopoverOpen = false"
+            class="cursor-pointer"
+            color="neutral"
+            >{{ $t("pins.saveNotes") }}</UButton
+          >
         </div>
       </template>
     </UPopover>
@@ -33,14 +39,16 @@
 
 <script setup lang="ts">
 import { usePin } from "@/composables/usePin";
-import { usePinsStore } from "@/stores/pins";
+import { usePinsSupabase } from "~/composables/usePinsSupabase";
 
 const props = defineProps<{
   contentSelector?: string;
+  /** @deprecated Prefer `documentUid`; kept for callers that still pass search hit id. */
   pinId?: string;
   pinTitle?: string;
-  pinType?: 'result' | 'contact' | 'image' | 'website' | 'other';
-  pinData?: any;
+  pinType?: "result" | "contact" | "image" | "website" | "other";
+  /** Search / article payload; `document_uid` is used for dedupe and unpin. */
+  pinData?: unknown;
 }>();
 
 const emit = defineEmits<{
@@ -48,59 +56,91 @@ const emit = defineEmits<{
   (e: "unpinned"): void;
 }>();
 
-const { pinContent } = usePin();
-const pinsStore = usePinsStore();
-const isPinned = ref(false);
-const pinId = ref<string | null>(null);
-const contentElement = ref<HTMLElement | null>(null);
+const { pinContent, unpinContent } = usePin();
+const pinsApi = usePinsSupabase();
 const pinWrapper = ref<HTMLElement | null>(null);
+const contentElement = ref<HTMLElement | null>(null);
 const pinNotes = ref("");
 const isPopoverOpen = ref(false);
+const pinBusy = ref(false);
+/** Pins without `document_uid` (e.g. some blocks): track row id locally. */
+const adHocRowId = ref<string | null>(null);
 
-watch(
-  () => isPopoverOpen.value,
-  (newValue, oldValue) => {
-    if (!newValue && isPinned.value && pinId.value) {
-      console.log("Updating pin notes", pinId.value, pinNotes.value);
-      pinsStore.updatePinNotes(pinId.value, pinNotes.value);
-    }
-  }
+const documentUid = computed(() => {
+  const d = props.pinData as { document_uid?: string } | null | undefined;
+  return d?.document_uid;
+});
+
+const rowIdForDocument = computed(() =>
+  documentUid.value
+    ? pinsApi.findPinIdByDocumentUid(documentUid.value)
+    : null
 );
+
+const effectiveRowId = computed(
+  () => rowIdForDocument.value ?? adHocRowId.value
+);
+
+const isPinnedUi = computed(() => {
+  if (documentUid.value)
+    return pinsApi.isDocumentPinned(documentUid.value);
+  return !!adHocRowId.value;
+});
+
+watch(isPopoverOpen, (open, wasOpen) => {
+  if (open) {
+    const id = effectiveRowId.value;
+    if (id) {
+      const row = pinsApi.pins.value.find((p) => p.id === id);
+      pinNotes.value = row?.user_note ?? "";
+    }
+  } else if (wasOpen && effectiveRowId.value) {
+    void pinsApi.updatePin(effectiveRowId.value, {
+      user_note: pinNotes.value || null,
+    });
+  }
+});
 
 onMounted(() => {
   if (pinWrapper.value) {
-    // Get the content element based on selector or default to the first child
     contentElement.value = props.contentSelector
       ? (pinWrapper.value.querySelector(props.contentSelector) as HTMLElement)
       : (pinWrapper.value.firstElementChild as HTMLElement);
   }
 });
 
-const handlePin = () => {
-  if (!contentElement.value) return;
+async function handlePin() {
+  if (!contentElement.value || pinBusy.value) return;
 
-  if (!isPinned.value) {
-    pinId.value = pinContent(
-      contentElement.value,
-      {
-        id: props.pinId,
+  pinBusy.value = true;
+  try {
+    if (!isPinnedUi.value) {
+      const pinDataRecord =
+        props.pinData &&
+        typeof props.pinData === "object" &&
+        !Array.isArray(props.pinData)
+          ? (props.pinData as Record<string, unknown>)
+          : undefined;
+      const id = await pinContent(contentElement.value, {
+        sourceDocumentUid: documentUid.value ?? null,
         title: props.pinTitle,
         type: props.pinType,
-        data: props.pinData,
-        notes: pinNotes.value
-      }
-    );
-    isPinned.value = true;
-    emit("pinned");
-  } else {
-    if (pinId.value) {
-      pinsStore.unpinItem(pinId.value);
-      pinId.value = null;
+        data: pinDataRecord,
+        notes: pinNotes.value || undefined,
+      });
+      if (id && !documentUid.value) adHocRowId.value = id;
+      emit("pinned");
+    } else {
+      const id = effectiveRowId.value;
+      if (id) await unpinContent(id);
+      adHocRowId.value = null;
+      pinNotes.value = "";
+      emit("unpinned");
     }
-    isPinned.value = false;
-    emit("unpinned");
+  } finally {
+    pinBusy.value = false;
   }
-};
+}
 </script>
 
 <style scoped>

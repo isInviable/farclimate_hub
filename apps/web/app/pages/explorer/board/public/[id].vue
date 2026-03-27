@@ -3,10 +3,10 @@
     <PublicBoardHeader />
 
     <BoardList
-      :items="pinsStore.pinnedItems"
+      :items="boardItems"
       :enable-selection="false"
-      empty-all-message="The board owner hasn't pinned items yet."
-      empty-category-message="Try selecting a different category."
+      :empty-all-message="$t('pins.publicBoardEmpty')"
+      :empty-category-message="$t('pins.boardEmptyCategory')"
     />
 
     <PublicActionBar @open-comments="isCommentsOpen = true" @cloned="onCloned" />
@@ -16,37 +16,42 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useProjectsStore } from '@/stores/projects'
-import { usePinsStore } from '@/stores/pins'
+import { usePinsSupabase } from '~/composables/usePinsSupabase'
 
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
-const pinsStore = usePinsStore()
+const pinsApi = usePinsSupabase()
+
+const boardItems = computed(() => pinsApi.boardItems.value)
 
 const isCommentsOpen = ref(false)
 
-
-const getTypeLabel = (t: string) => {
-  if (t === 'result') return 'Solutions'
-  if (t === 'contact') return 'Contacts'
-  if (t === 'image') return 'Images'
-  if (t === 'website') return 'Websites'
-  return 'Other'
-}
-
-onMounted(async () => {
-  await projectsStore.initialize()
+async function syncPublicBoard() {
+  if (projectsStore.projects.length === 0) await projectsStore.initialize()
   const id = route.params.id as string
   if (!id) return
-  const project = projectsStore.getAllProjects().find(p => p.id === id)
-  if (!project) return
-  projectsStore.switchToProject(id, { readOnly: true })
+  if (projectsStore.getAllProjects().some((p) => p.id === id)) {
+    projectsStore.switchToProject(id, { readOnly: true })
+  }
+  await pinsApi.loadPinsForProject(id)
+}
+
+onMounted(() => {
+  void syncPublicBoard()
 })
 
-const onCloned = (newId: string) => {
+watch(
+  () => route.params.id as string | undefined,
+  () => {
+    void syncPublicBoard()
+  }
+)
+
+const onCloned = (_newId: string) => {
   router.push('/explorer/board')
 }
 </script>
@@ -67,5 +72,3 @@ const onCloned = (newId: string) => {
   overflow: hidden;
 }
 </style>
-
-

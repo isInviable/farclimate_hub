@@ -17,6 +17,14 @@
     "noData": "No hay datos disponibles",
     "articleNoFulltext": "No hay texto completo disponible para este artículo."
   },
+  "pins": {
+    "notesPlaceholder": "Añade notas a este marcador",
+    "saveNotes": "Guardar",
+    "boardEmpty": "Marca elementos desde el explorador para verlos aquí.",
+    "boardEmptyCategory": "Prueba otra categoría.",
+    "publicBoardEmpty": "El propietario del tablero aún no ha marcado elementos.",
+    "sourceMissing": "El documento de origen no está vinculado; el título y las notas siguen guardados."
+  },
   "header": {
     "home": "inicio",
     "solutions": "soluciones",

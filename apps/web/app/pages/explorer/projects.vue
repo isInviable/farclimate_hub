@@ -266,7 +266,7 @@
 
 <script setup lang="ts">
 import { useProjectsStore } from "@/stores/projects";
-import { usePinsStore } from "@/stores/pins";
+import { usePinsSupabase } from "~/composables/usePinsSupabase";
 import { useAccess } from "~/composables/useAccess";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Project } from "~/types/projects";
@@ -291,8 +291,19 @@ useHead({
 
 const route = useRoute();
 const projectsStore = useProjectsStore();
-const pinsStore = usePinsStore();
+const pinsApi = usePinsSupabase();
 const { isAuthenticated } = useAccess();
+
+const pinCounts = ref<Record<string, number>>({});
+
+async function refreshPinCounts() {
+  if (!isAuthenticated.value) {
+    pinCounts.value = {};
+    return;
+  }
+  const ids = projectsStore.projects.map((p) => p.id);
+  pinCounts.value = await pinsApi.fetchPinCountsByProjectId(ids);
+}
 
 const loginLink = computed(() => {
   const returnTo = route?.fullPath && route.fullPath !== "/login" ? route.fullPath : "/explorer/projects";
@@ -311,19 +322,25 @@ const sortedProjects = computed(() =>
 );
 
 function pinCountForProject(project: Project): number {
-  if (projectsStore.currentProjectId === project.id) {
-    return pinsStore.pinnedItems.length;
-  }
-  return 0;
+  return pinCounts.value[project.id] ?? 0;
 }
 
-const totalPins = computed(() => pinsStore.pinnedItems.length);
+const totalPins = computed(() =>
+  Object.values(pinCounts.value).reduce((a, n) => a + n, 0)
+);
 
 const mostActiveProject = computed(() => {
   if (projectsStore.projects.length === 0) return null;
-  if (pinsStore.pinnedItems.length > 0 && projectsStore.currentProject)
-    return projectsStore.currentProject;
-  return projectsStore.projects[0] ?? null;
+  let best: Project | null = null;
+  let bestN = -1;
+  for (const p of projectsStore.projects) {
+    const n = pinCounts.value[p.id] ?? 0;
+    if (n > bestN) {
+      bestN = n;
+      best = p;
+    }
+  }
+  return bestN > 0 ? best : projectsStore.projects[0] ?? null;
 });
 
 function createNewProject() {
@@ -334,13 +351,13 @@ function createNewProject() {
 
 async function confirmCreateProject() {
   if (!newProjectName.value.trim()) return;
-  projectsStore.saveCurrentProjectPins();
   creating.value = true;
   try {
     const created = await projectsStore.createProject(newProjectName.value.trim());
     if (created) {
       showCreateModal.value = false;
       newProjectName.value = "";
+      await refreshPinCounts();
     }
   } finally {
     creating.value = false;
@@ -354,7 +371,6 @@ function cancelCreateProject() {
 
 function switchToProject(projectId: string) {
   if (projectsStore.currentProjectId !== projectId) {
-    projectsStore.saveCurrentProjectPins();
     projectsStore.switchToProject(projectId);
     navigateTo("/explorer/explorer");
   }
@@ -410,8 +426,15 @@ function formatDate(isoDate: string) {
   return date.toLocaleDateString();
 }
 
+watch(
+  () => projectsStore.projects.map((p) => p.id).join(","),
+  () => {
+    void refreshPinCounts();
+  }
+);
+
 onMounted(() => {
-  projectsStore.initialize();
+  void projectsStore.initialize().then(() => refreshPinCounts());
 });
 </script>
 

@@ -66,8 +66,8 @@
 
           <!-- Pin Counter -->
           <uChip
-            :show="pinsStore.pinnedItems.length > 0"
-            :text="pinsStore.pinnedItems.length"
+            :show="pinCount > 0"
+            :text="pinCount"
             size="2xl"
           >
             <uButton
@@ -136,14 +136,16 @@
 
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { usePinsStore } from "@/stores/pins";
 import { useProjectsStore } from "@/stores/projects";
+import { usePinsSupabase } from "~/composables/usePinsSupabase";
 import type { Project } from "~/types/projects";
 import { useAccess } from "~/composables/useAccess";
 
-const pinsStore = usePinsStore();
+const pinsApi = usePinsSupabase();
+const pinCount = computed(() => pinsApi.pins.value.length);
 const projectsStore = useProjectsStore();
-const { isDemoMode, user, signOut, requireAuthForPersistence } = useAccess();
+const { isDemoMode, isAuthenticated, user, signOut, requireAuthForPersistence } =
+  useAccess();
 const route = useRoute();
 const router = useRouter();
 
@@ -167,10 +169,14 @@ onMounted(() => {
   projectsStore.initialize();
 });
 
-// Watch for pin changes and save to current project
-watch(() => pinsStore.pinnedItems, () => {
-  projectsStore.saveCurrentProjectPins();
-}, { deep: true });
+watch(
+  [() => projectsStore.currentProjectId, isAuthenticated],
+  ([id, authed]) => {
+    if (authed && id) void pinsApi.loadPinsForProject(id as string);
+    else void pinsApi.loadPinsForProject(null);
+  },
+  { immediate: true }
+);
 
 // i18n composables
 const { locale, locales } = useI18n();
@@ -313,14 +319,11 @@ function cancelEditingProject() {
 }
 
 function switchToProject(projectId: string) {
-  // Save current project's pins before switching
-  projectsStore.saveCurrentProjectPins();
   projectsStore.switchToProject(projectId);
 }
 
 async function createNewProject() {
   if (!requireAuthForPersistence()) return;
-  projectsStore.saveCurrentProjectPins();
   const newProject = await projectsStore.createProject('New Project');
   if (newProject) {
     nextTick(() => startEditingProject());

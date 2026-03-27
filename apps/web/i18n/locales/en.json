@@ -17,6 +17,14 @@
     "noData": "No data available",
     "articleNoFulltext": "No full text available for this article."
   },
+  "pins": {
+    "notesPlaceholder": "Add notes to this pin",
+    "saveNotes": "Save",
+    "boardEmpty": "Start pinning items from the explorer to see them here.",
+    "boardEmptyCategory": "Try selecting a different category.",
+    "publicBoardEmpty": "The board owner hasn't pinned items yet.",
+    "sourceMissing": "Source document is not linked; title and notes are still saved."
+  },
   "header": {
     "home": "home",
     "solutions": "solutions",

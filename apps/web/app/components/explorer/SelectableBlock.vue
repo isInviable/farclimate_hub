@@ -82,12 +82,11 @@ function toggleSelected() {
   isSelected.value = !isSelected.value;
 }
 
-function handlePin() {
+async function handlePin() {
   if (!isPinned.value && blockElement.value) {
-    pinContent(blockElement.value);
-    isPinned.value = true;
+    const id = await pinContent(blockElement.value);
+    if (id) isPinned.value = true;
   }
-  // Note: For unpinning, we'd need to track pinId, but for now just visual feedback
 }
 </script>
 

@@ -175,9 +175,9 @@ const toggleSelection = (hit: ListHit) =>
     document: hit.document,
   })
 
-const pinsStore = usePinsStore()
+const pinsApi = usePinsSupabase()
 const isPinned = (hit: ListHit) =>
-  pinsStore.pinnedItems?.some((i: { id: string }) => i.id === hit.id)
+  pinsApi.isDocumentPinned(hit.document?.document_uid)
 
 function handleDocumentClick(document: ArticleDetail) {
   emit('document-selected', document)

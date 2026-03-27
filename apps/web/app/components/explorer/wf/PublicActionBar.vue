@@ -32,20 +32,16 @@
 <script setup lang="ts">
 import ActionBarBase from './ActionBarBase.vue'
 import { useProjectsStore } from '@/stores/projects'
-import { usePinsStore } from '@/stores/pins'
 
 const emit = defineEmits<{ (e: 'cloned', projectId: string): void; (e: 'open-comments'): void }>()
 
 const projectsStore = useProjectsStore()
-const pinsStore = usePinsStore()
 
 const handleClone = async () => {
   if (!projectsStore.currentProject) return
   const sourceName = projectsStore.currentProject.name || 'Unnamed Project'
   const newProject = await projectsStore.createProject(`Copy of ${sourceName}`)
   if (newProject) {
-    pinsStore.setPinnedItems?.(pinsStore.pinnedItems || [])
-    projectsStore.saveCurrentProjectPins()
     emit('cloned', newProject.id)
   }
 }
