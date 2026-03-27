@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
+    "test:human-pins": "vitest run tests/human/pinboards.rls.test.ts",
     "test:watch": "vitest"
   },
   "dependencies": {
