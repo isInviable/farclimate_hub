@@ -5,6 +5,7 @@ DROP FUNCTION IF EXISTS public.hybrid_search(text, text, int, text, text, float,
 DROP FUNCTION IF EXISTS public.keyword_search(text, int, text);
 DROP FUNCTION IF EXISTS public.get_all_documents(text);
 DROP FUNCTION IF EXISTS public.get_documents_by_ids(uuid[], text);
+DROP FUNCTION IF EXISTS public.get_document_by_uid(text, text);
 DROP FUNCTION IF EXISTS public.get_filter_facets(uuid[]);
 DROP FUNCTION IF EXISTS public.get_summary_facet_arrays(uuid[]);
 
@@ -178,6 +179,71 @@ AS $$
   LEFT JOIN knowledge.recipe r ON r.document_id = d.id AND r.lang = filter_lang
   WHERE d.id = ANY(doc_ids);
 $$;
+
+/** Single document by stable `document_uid` (e.g. for explorer deep links from pins). */
+CREATE OR REPLACE FUNCTION public.get_document_by_uid(
+  p_document_uid text,
+  filter_lang text DEFAULT 'en'
+)
+RETURNS TABLE (
+  id uuid,
+  document_uid text,
+  title text,
+  source_url text,
+  image_url text,
+  summary text,
+  subtitle text,
+  fulltext text,
+  keywords text[],
+  climate_impacts text[],
+  adaptation_approaches text[],
+  sectors text[],
+  geographic_characterisation jsonb,
+  health_impact text,
+  location_lat double precision,
+  location_lon double precision,
+  implementation_years_start text,
+  implementation_years_end text,
+  contact_preprocessed text,
+  references_preprocessed text,
+  websites jsonb,
+  recipe_ingredients jsonb
+)
+LANGUAGE sql STABLE
+AS $$
+  SELECT
+    d.id,
+    d.document_uid,
+    COALESCE(ml.title, d.title) AS title,
+    d.source_url,
+    d.image_url,
+    ml.summary,
+    ml.subtitle,
+    f.fulltext,
+    s.keywords,
+    s.climate_impacts,
+    s.adaptation_approaches,
+    s.sectors,
+    s.geographic_characterisation,
+    s.health_impact,
+    s.location_lat,
+    s.location_lon,
+    s.implementation_years_start,
+    s.implementation_years_end,
+    s.contact_preprocessed,
+    s.references_preprocessed,
+    s.websites,
+    r.ingredients AS recipe_ingredients
+  FROM knowledge.documents d
+  LEFT JOIN knowledge.summary s ON s.document_id = d.id
+  LEFT JOIN knowledge.summary_multilang ml ON ml.document_id = d.id AND ml.lang = filter_lang
+  LEFT JOIN knowledge.fulltext f ON f.document_id = d.id AND f.lang = filter_lang
+  LEFT JOIN knowledge.recipe r ON r.document_id = d.id AND r.lang = filter_lang
+  WHERE d.document_uid = p_document_uid
+  LIMIT 1;
+$$;
+
+COMMENT ON FUNCTION public.get_document_by_uid(text, text) IS 'Load one knowledge document by stable document_uid for deep links.';
 
 CREATE OR REPLACE FUNCTION public.get_filter_facets(doc_ids uuid[] DEFAULT NULL)
 RETURNS jsonb

@@ -3,8 +3,10 @@
     <DeliverableHeader />
 
     <!-- Main Content -->
-    <BoardList
-      :items="boardItems"
+    <PinBoardView
+      :pins="pinsList"
+      :loading="pinsLoading"
+      :error="pinsError"
       :enable-selection="true"
       :empty-all-message="$t('pins.boardEmpty')"
       :empty-category-message="$t('pins.boardEmptyCategory')"
@@ -74,12 +76,15 @@ import { ref, computed, watch } from 'vue'
 import { usePinsSupabase } from '~/composables/usePinsSupabase'
 import { useProjectsStore } from '@/stores/projects'
 import { usePinnedSelectionStore } from '@/stores/selection'
+import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
 
 const pinsApi = usePinsSupabase()
 const projectsStore = useProjectsStore()
 const selectionStore = usePinnedSelectionStore()
 
-const boardItems = computed(() => pinsApi.boardItems.value)
+const pinsList = computed(() => pinsApi.pins.value)
+const pinsLoading = computed(() => pinsApi.loading.value)
+const pinsError = computed(() => pinsApi.error.value ?? null)
 
 watch(
   () => projectsStore.currentProjectId,

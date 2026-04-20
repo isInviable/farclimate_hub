@@ -228,6 +228,7 @@ import { useSearchStore } from "@/stores/search";
 import type { ExplorerEffectiveFilters } from "@/types/explorerFilters";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
+import type { ArticleDetail } from "@/types/search";
 
 // i18n composable for language detection
 const { locale } = useI18n();
@@ -265,8 +266,66 @@ const props = defineProps({
 const viewMode = ref("list");
 const searchStore = useSearchStore();
 const route = useRoute();
+const router = useRouter();
 const { search: hybridSearch, loadAll, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
-import type { ArticleDetail } from "@/types/search";
+
+function getDocumentUidFromQuery(
+  q: typeof route.query
+): string | null {
+  const raw = q.document ?? q.uid ?? q.document_uid;
+  if (Array.isArray(raw)) {
+    const first = raw[0];
+    return typeof first === "string" && first.trim() ? first.trim() : null;
+  }
+  if (typeof raw === "string" && raw.trim()) return raw.trim();
+  return null;
+}
+
+function stripDocumentQueryFromUrl() {
+  const newQuery = { ...route.query };
+  delete newQuery.document;
+  delete newQuery.uid;
+  delete newQuery.document_uid;
+  return router.replace({ path: route.path, query: newQuery });
+}
+
+const documentDeepLinkBusy = ref(false);
+
+/** Open side panel from `?document=` / `?uid=` / `?document_uid=` (pins, shared links). */
+async function openDocumentFromQueryParam(uid: string) {
+  if (documentDeepLinkBusy.value) return;
+  if (
+    selectedDocument.value?.document_uid === uid &&
+    isSidePanelOpen.value
+  ) {
+    return;
+  }
+  documentDeepLinkBusy.value = true;
+  try {
+    const hits = searchStore.resultsData?.hits || [];
+    const hit = hits.find(
+      (h: { document?: { document_uid?: string }; document_uid?: string }) =>
+        h.document?.document_uid === uid || h.document_uid === uid
+    );
+    if (hit?.document) {
+      handleDocumentSelected(hit.document as ArticleDetail);
+      await stripDocumentQueryFromUrl();
+    } else {
+      const lang = locale.value === "es" ? "es" : "en";
+      const res = await $fetch<{ document: ArticleDetail }>("/api/document-by-uid", {
+        query: { uid, lang },
+      });
+      if (res?.document) {
+        handleDocumentSelected(res.document);
+        await stripDocumentQueryFromUrl();
+      }
+    }
+  } catch (e) {
+    console.warn("[explorer] document deep link failed", e);
+  } finally {
+    documentDeepLinkBusy.value = false;
+  }
+}
 
 const selectedDocument = ref<ArticleDetail | null>(null);
 const isSidePanelOpen = ref(false);
@@ -452,18 +511,22 @@ const filteredPapers = computed(() => {
 });
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
   // Check for URL parameters
   const typeParam = route.query.type;
   if (typeParam) {
     const searchTerm = Array.isArray(typeParam) ? typeParam[0] : typeParam;
     if (searchTerm) {
       searchQuery.value = searchTerm;
-      search();
+      await search();
     }
   } else {
-    // Load all articles by default
-    loadAllArticles();
+    await loadAllArticles();
+  }
+
+  const docUid = getDocumentUidFromQuery(route.query);
+  if (docUid) {
+    await openDocumentFromQueryParam(docUid);
   }
 
   // Fetch demo map data similar to solutionsNakedAlt
@@ -510,6 +573,16 @@ watch(locale, () => {
     loadAllArticles();
   }
 });
+
+// Deep link: /explorer/explorer?document=<document_uid> (e.g. from pin board)
+watch(
+  () => getDocumentUidFromQuery(route.query),
+  (uid, prev) => {
+    if (uid && uid !== prev) {
+      void openDocumentFromQueryParam(uid);
+    }
+  }
+);
 
 // Select all results by default whenever results change
 watch(

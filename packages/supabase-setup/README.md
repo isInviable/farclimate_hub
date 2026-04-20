@@ -37,6 +37,21 @@ Current setup includes:
 
 5. `05_expose_human_schema.sql`
    - Exposes the `human` schema to the Supabase REST API (PostgREST). Without this, requests to `human.projects` or `human.profiles` return **406 Not Acceptable**. Run bootstrap at least once so list/create/update/delete from the frontend work.
+   - **Supabase JS:** use `client.schema('human').from('projects')` (and similarly for `pinboards`, `pins`, `profiles`, `saved_searches`). Using `.from('human.projects')` is wrong: PostgREST treats that as a single table name in `public`, which produces **PGRST205** (“Could not find the table `public.human.projects`”).
+
+6. `06_human_pinboards_pins.sql`
+   - Creates `human.pinboards` (exactly one per project, `UNIQUE(project_id)`).
+   - Creates `human.pins` with optional `source_document_uid` / `source_title_snapshot` (logical knowledge refs only — **no FK to `knowledge`**), `body_kind`, JSONB `body` with enforced envelope `{"v":1,"data":{...}}` (beta: `v` must be `1`, body size cap **512 KiB**), `user_note`, `sort_order`.
+   - Trigger on `human.projects` **after insert** creates the pinboard row; existing projects without a pinboard get a backfill `INSERT` on bootstrap.
+   - Owner-only RLS on pinboards and pins via `human.projects.owner_user_id = auth.uid()` (including **cascade deletes** when a project is removed). `anon` has no table access.
+   - Beta product limits (documented; pin count **10k** per pinboard enforced in app if needed): `body_kind` max **128** chars.
+
+7. `06_saved_searches.sql`
+   - Creates `human.saved_searches` scoped to projects (named filter snapshots).
+
+8. `07_human_pin_storage.sql`
+   - Creates private Storage bucket **`human-pin-images`** (beta: **20 MiB** max object, MIME `image/jpeg`, `image/png`, `image/webp`, `image/gif`).
+   - RLS on `storage.objects`: authenticated users may only read/write objects whose path’s **first segment** equals `auth.uid()` (convention `{uid}/{pin_id-or-segment}/{filename}`). Use a **server route or service role** to copy platform/knowledge images into this bucket when creating image pins.
 
 ## Usage
 
@@ -67,7 +82,7 @@ The SQL creates the Postgres function used by Supabase Auth, but the hosted proj
 
 Without that dashboard step, new JWTs will not include the `connected_admin` claim even though the function exists in the database.
 
-At the same time, the bootstrap SQL provisions `human.profiles` and `human.projects`: authenticated users can persist profile metadata and preferences, and create/list/update/delete only their own projects, with ownership enforced by RLS.
+At the same time, the bootstrap SQL provisions `human.profiles`, `human.projects`, pinboards/pins, optional saved searches, and the pin-image bucket: authenticated users can persist profile metadata and preferences, own projects with an auto-created pinboard, curate pins under RLS, and use Storage for pin images under their UUID prefix — all with ownership enforced by RLS. The Storage bucket and policies are created entirely via SQL; no extra dashboard step is required for bucket creation on hosted Supabase beyond running bootstrap.
 
 ## Managing elevated users
 
