@@ -2,26 +2,78 @@
   <div>
     <!-- Existing summary view -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Short description with images/video -->
+      <!-- Short description -->
       <SelectableBlock
         :label="$t('summaryHeaders.shortDescription')"
         icon="mdi:comment-text-outline"
         class="col-span-2"
       >
-        <div class="flex gap-2 mb-3">
-          <img
-            :src="document.image_url || '/img/img_placeholder.png'"
-            alt="article image"
-            class="aspect-video h-32 rounded border object-cover"
-          />
-          <img
-            src="/img/video_placeholder.png"
-            alt="video placeholder"
-            class="aspect-video h-32 rounded border object-cover"
-          />
-        </div>
         <p class="text-sm text-gray-700">{{ document.subtitle }}</p>
       </SelectableBlock>
+
+      <!-- Original case study URL (e.g. Climate-ADAPT) -->
+      <div
+        v-if="externalSourceUrl"
+        class="col-span-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3"
+      >
+        <UButton
+          :to="externalSourceUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="outline"
+          color="primary"
+          icon="i-lucide-external-link"
+          :label="$t('article.viewOnClimateAdapt')"
+        />
+        <p class="text-xs text-gray-500">
+          {{ $t("article.sourceLinkHint") }}
+        </p>
+      </div>
+
+      <!-- Images: all URLs + per-image pin + lightbox -->
+      <div
+        v-if="documentImageUrls.length"
+        class="col-span-2 grid grid-cols-2 gap-3 sm:grid-cols-3"
+      >
+        <SelectableBlock
+          v-for="(url, index) in documentImageUrls"
+          :key="url"
+          :label="$t('article.imageNumber', { n: index + 1 })"
+          icon="mdi:image-outline"
+          pin-kind="image"
+          class="min-w-0"
+        >
+          <button
+            type="button"
+            class="block w-full cursor-zoom-in rounded border-0 bg-transparent p-0 text-left overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            :aria-label="$t('article.openImageLightbox')"
+            @click.stop="openLightbox(url, index)"
+          >
+            <img
+              :src="url"
+              :alt="$t('article.imageAlt', { n: index + 1 })"
+              class="aspect-video h-32 w-full rounded border border-gray-200 object-cover"
+            />
+          </button>
+        </SelectableBlock>
+      </div>
+      <div
+        v-else
+        class="col-span-2 flex flex-col gap-3 rounded-md border border-dashed border-gray-200 bg-gray-50/50 p-4 sm:flex-row sm:items-center"
+      >
+        <img
+          src="/img/img_placeholder.png"
+          alt=""
+          class="aspect-video h-32 w-full max-w-xs shrink-0 rounded border border-gray-200 object-cover opacity-80"
+        />
+        <p class="text-sm text-gray-500">{{ $t("article.noImagesInGallery") }}</p>
+      </div>
+
+      <AppImageLightbox
+        v-model:open="lightboxOpen"
+        :src="lightboxSrc"
+        :alt="lightboxAlt"
+      />
       <!-- SECTOR -->
       <SelectableBlock
         :label="$t('summaryHeaders.sector')"
@@ -269,6 +321,10 @@ const { t: $t } = useI18n();
 
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
+const lightboxOpen = ref(false);
+const lightboxSrc = ref("");
+const lightboxAlt = ref("");
+
 const props = defineProps({
   document: { type: Object, required: true },
   parsedDocument: { type: Object, required: true },
@@ -276,6 +332,22 @@ const props = defineProps({
   isLoadingSection: { type: Function, required: true },
   mapPoints: { type: Array, required: true },
 });
+
+const documentImageUrls = useDocumentImageUrls(() => props.document);
+
+/** `source_url` from `knowledge.documents` when it is a usable http(s) URL. */
+const externalSourceUrl = computed(() => {
+  const raw = props.document?.source_url;
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  return /^https?:\/\//i.test(trimmed) ? trimmed : null;
+});
+
+function openLightbox(url, index) {
+  lightboxSrc.value = url;
+  lightboxAlt.value = $t("article.imageAlt", { n: index + 1 });
+  lightboxOpen.value = true;
+}
 
 const preferredGeoKeyOrder = [
   "city",

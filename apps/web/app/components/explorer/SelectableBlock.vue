@@ -99,11 +99,23 @@ function toggleSelected() {
   isSelected.value = !isSelected.value;
 }
 
+function resolvePinElement(): HTMLElement | null {
+  if (!blockElement.value) return null;
+  if (props.pinKind === "image") {
+    const img = blockElement.value.querySelector("img");
+    if (img instanceof HTMLImageElement) return img;
+  }
+  return blockElement.value;
+}
+
 async function handlePin() {
   if (isPinned.value || !blockElement.value) return;
 
+  const el = resolvePinElement();
+  if (!el) return;
+
   if (!articleContext) {
-    const id = await pinContent(blockElement.value, {
+    const id = await pinContent(el, {
       bodyKind: props.pinKind,
       title: props.label || undefined,
     });
@@ -117,7 +129,7 @@ async function handlePin() {
     .filter((s): s is string => !!s && s.trim().length > 0)
     .join(" — ");
 
-  const id = await pinContent(blockElement.value, {
+  const id = await pinContent(el, {
     sourceDocumentUid: articleContext.documentUid.value ?? null,
     title: composedTitle || undefined,
     bodyKind: props.pinKind,

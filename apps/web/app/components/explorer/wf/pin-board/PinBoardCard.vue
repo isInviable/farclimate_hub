@@ -2,10 +2,23 @@
   <div
     class="relative group bg-white rounded-lg shadow-md overflow-hidden border border-neutral-100"
   >
+    <div v-if="enableSelection" class="absolute top-3 right-3 z-30">
+      <UDropdownMenu :items="cardMenuItems" :ui="{ content: 'w-48' }">
+        <UButton
+          variant="ghost"
+          size="sm"
+          color="neutral"
+          icon="i-heroicons-ellipsis-vertical"
+          class="bg-white/90 shadow-sm hover:bg-white"
+          :aria-label="$t('pins.cardMenuAria')"
+        />
+      </UDropdownMenu>
+    </div>
+
     <button
       v-if="enableSelection"
       type="button"
-      class="absolute top-3 right-3 z-20 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+      class="absolute bottom-3 right-3 z-20 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
       :class="{ 'opacity-100': selectionStore.isSelected(pin.id) }"
       @click="selectionStore.toggleSelection(selectionItem)"
     >
@@ -32,11 +45,125 @@
       "
     />
 
-    <div class="absolute top-3 left-3 z-20">
+    <div
+      class="absolute top-3 left-3 z-20"
+      :class="{ 'pr-10': enableSelection }"
+    >
       <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">
         {{ bodyKindLabel }}
       </span>
     </div>
+
+    <UModal
+      v-model:open="isDeleteConfirmOpen"
+      portal="body"
+      :title="deleteModalTitle"
+      :ui="{
+        body: 'min-h-0',
+        footer: 'shrink-0 flex-wrap gap-2',
+      }"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <UAlert
+            color="error"
+            variant="soft"
+            icon="i-heroicons-exclamation-triangle"
+            :title="$t('pins.removeConfirmHeading')"
+            :description="$t('pins.removeConfirmDescription')"
+          />
+          <UAlert
+            v-if="deleteActionError"
+            color="error"
+            variant="outline"
+            :title="$t('pins.removeConfirmFailed')"
+            :description="deleteActionError"
+          />
+        </div>
+      </template>
+      <template #footer>
+        <div
+          class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end"
+        >
+          <UButton
+            type="button"
+            variant="ghost"
+            color="neutral"
+            class="w-full shrink-0 sm:w-auto"
+            :disabled="deleteLoading"
+            @click="isDeleteConfirmOpen = false"
+          >
+            {{ $t("pins.removeConfirmCancel") }}
+          </UButton>
+          <UButton
+            type="button"
+            color="error"
+            variant="solid"
+            class="w-full min-w-28 shrink-0 sm:w-auto"
+            :loading="deleteLoading"
+            leading-icon="i-heroicons-trash"
+            @click="confirmRemovePin"
+          >
+            {{ $t("pins.removeConfirmDelete") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="isEditNoteOpen"
+      portal="body"
+      :title="$t('pins.editNoteTitle')"
+      :ui="{
+        body: 'min-h-0',
+        footer: 'shrink-0 flex-wrap gap-2',
+      }"
+    >
+      <template #body>
+        <div class="space-y-3">
+          <UTextarea
+            v-model="editNoteDraft"
+            :placeholder="$t('pins.notesPlaceholder')"
+            :rows="6"
+            autoresize
+            class="w-full"
+          />
+          <UAlert
+            v-if="editNoteError"
+            color="error"
+            variant="soft"
+            :title="$t('pins.editNoteSaveFailed')"
+            :description="editNoteError"
+          />
+        </div>
+      </template>
+      <template #footer>
+        <div
+          class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end"
+        >
+          <UButton
+            type="button"
+            variant="ghost"
+            color="neutral"
+            class="w-full shrink-0 sm:w-auto"
+            :disabled="editSaveLoading"
+            @click="isEditNoteOpen = false"
+          >
+            {{ $t("pins.editNoteCancel") }}
+          </UButton>
+          <UButton
+            type="button"
+            color="primary"
+            variant="solid"
+            class="w-full min-w-28 shrink-0 sm:w-auto"
+            :loading="editSaveLoading"
+            @click="saveEditedNote"
+          >
+            {{ $t("pins.editNoteSave") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
 
     <div class="p-6 pt-14 space-y-3">
       <NuxtLink
@@ -80,6 +207,7 @@
 </template>
 
 <script setup lang="ts">
+import type { DropdownMenuItem } from "@nuxt/ui";
 import type { HumanPinRow } from "~/types/pins";
 import { pinToSelectionItem } from "~/utils/pinSelection";
 import PinBodyRenderer from "./PinBodyRenderer.vue";
@@ -93,8 +221,17 @@ const props = defineProps<{
 const { t, te } = useI18n();
 const localePath = useLocalePath();
 const selectionStore = usePinnedSelectionStore();
+const pinsApi = usePinsSupabase();
 
 const enableSelection = computed(() => props.enableSelection ?? false);
+
+const isDeleteConfirmOpen = ref(false);
+const isEditNoteOpen = ref(false);
+const editNoteDraft = ref("");
+const editNoteError = ref<string | null>(null);
+const deleteActionError = ref<string | null>(null);
+const deleteLoading = ref(false);
+const editSaveLoading = ref(false);
 
 const bodyData = computed(() => {
   const d = props.pin.body?.data;
@@ -105,11 +242,92 @@ const bodyData = computed(() => {
 
 const selectionItem = computed(() => pinToSelectionItem(props.pin));
 
+const deleteModalTitle = computed(() => {
+  const title =
+    props.pin.source_title_snapshot?.trim() || t("pins.noTitle");
+  return t("pins.removeConfirmTitle", { title });
+});
+
+const cardMenuItems = computed((): DropdownMenuItem[][] => [
+  [
+    {
+      label: t("pins.menuEditNote"),
+      icon: "i-heroicons-pencil-square",
+      onSelect: () => {
+        openEditNoteModal();
+      },
+    },
+    {
+      label: t("pins.menuRemove"),
+      icon: "i-heroicons-trash",
+      color: "error",
+      onSelect: () => {
+        deleteActionError.value = null;
+        isDeleteConfirmOpen.value = true;
+      },
+    },
+  ],
+]);
+
+watch(isEditNoteOpen, (open) => {
+  if (open) {
+    editNoteDraft.value = props.pin.user_note ?? "";
+    editNoteError.value = null;
+  }
+});
+
+watch(isDeleteConfirmOpen, (open) => {
+  if (open) deleteActionError.value = null;
+});
+
 function explorerLinkForDocument(documentUid: string) {
   return localePath({
     path: "/explorer/explorer",
     query: { document: documentUid },
   });
+}
+
+function openEditNoteModal() {
+  editNoteDraft.value = props.pin.user_note ?? "";
+  editNoteError.value = null;
+  isEditNoteOpen.value = true;
+}
+
+async function confirmRemovePin() {
+  deleteLoading.value = true;
+  deleteActionError.value = null;
+  try {
+    const ok = await pinsApi.deletePin(props.pin.id);
+    if (!ok) {
+      deleteActionError.value =
+        pinsApi.error.value ?? t("pins.removeConfirmFailed");
+      return;
+    }
+    if (selectionStore.isSelected(props.pin.id))
+      selectionStore.toggleSelection(selectionItem.value);
+    isDeleteConfirmOpen.value = false;
+  } finally {
+    deleteLoading.value = false;
+  }
+}
+
+async function saveEditedNote() {
+  editSaveLoading.value = true;
+  editNoteError.value = null;
+  try {
+    const note = editNoteDraft.value.trim();
+    const ok = await pinsApi.updatePin(props.pin.id, {
+      user_note: note.length ? note : null,
+    });
+    if (!ok) {
+      editNoteError.value =
+        pinsApi.error.value ?? t("pins.editNoteSaveFailedGeneric");
+      return;
+    }
+    isEditNoteOpen.value = false;
+  } finally {
+    editSaveLoading.value = false;
+  }
 }
 
 const bodyKindLabel = computed(() => {

@@ -35,6 +35,20 @@
     "emptySectionTitle": "Nada en esta sección",
     "noTitle": "(sin título)",
     "userNote": "Nota",
+    "cardMenuAria": "Acciones del marcador",
+    "menuEditNote": "Editar nota",
+    "menuRemove": "Eliminar",
+    "removeConfirmTitle": "Eliminar marcador: {title}",
+    "removeConfirmHeading": "¿Seguro?",
+    "removeConfirmDescription": "Esta acción no se puede deshacer. El marcador se eliminará permanentemente de este tablero.",
+    "removeConfirmCancel": "Cancelar",
+    "removeConfirmDelete": "Eliminar",
+    "removeConfirmFailed": "No se pudo eliminar el marcador",
+    "editNoteTitle": "Editar nota",
+    "editNoteSave": "Guardar",
+    "editNoteCancel": "Cancelar",
+    "editNoteSaveFailed": "No se pudo guardar la nota",
+    "editNoteSaveFailedGeneric": "Algo salió mal al guardar. Inténtalo de nuevo.",
     "chatEmpty": "No hay mensajes en este marcador.",
     "textEmpty": "Sin texto.",
     "imagePlaceholder": "Vista previa no disponible aún (ver human-pin-storage).",
@@ -197,6 +211,16 @@
       "lessons_learnt": "Lecciones aprendidas",
       "transferability": "Transferibilidad"
     }
+  },
+  "article": {
+    "imageNumber": "Imagen {n}",
+    "imageAlt": "Imagen del artículo {n}",
+    "noImagesInGallery": "No hay imágenes vinculadas para este artículo.",
+    "lightboxTitle": "Imagen",
+    "lightboxClose": "Cerrar",
+    "openImageLightbox": "Ver imagen a tamaño completo",
+    "viewOnClimateAdapt": "Ver en Climate-ADAPT",
+    "sourceLinkHint": "Abre el caso de estudio oficial en el sitio web Climate-ADAPT de la AEE."
   },
   "summaryHeaders": {
     "shortDescription": "Descripción corta",
