@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from "vue";
+import { computed, provide, ref, watch, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
 import ArticleStructuredView from './ArticleStructuredView.vue';
 import ArticleSummaryView from './ArticleSummaryView.vue';
 import { useI18n } from 'vue-i18n';
+import { PinArticleContextKey } from './pinContext';
 
 const md = new MarkdownIt({
   html: true,
@@ -87,7 +88,25 @@ const props = defineProps({
   },
 });
 
-// AI Summary state management
+const pinDocumentUid = computed<string | null>(() => {
+  const doc = props.document as { document_uid?: unknown; id?: unknown } | null | undefined;
+  const uid = doc?.document_uid;
+  if (typeof uid === "string" && uid.trim()) return uid;
+  const id = doc?.id;
+  if (typeof id === "string" && id.trim()) return id;
+  return null;
+});
+
+const pinDocumentTitle = computed<string | null>(() => {
+  const raw = (props.document as { title?: unknown } | null | undefined)?.title;
+  return typeof raw === "string" && raw.trim() ? raw : null;
+});
+
+provide(PinArticleContextKey, {
+  documentUid: pinDocumentUid,
+  title: pinDocumentTitle,
+});
+
 const sectionSummaryCache = ref(new Map());
 const loadingSections = ref(new Set());
 

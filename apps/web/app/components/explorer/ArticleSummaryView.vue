@@ -176,6 +176,7 @@
       <SelectableBlock
         :label="$t('summaryHeaders.contactPersons')"
         icon="mdi:account-box-outline"
+        pin-kind="contact"
       >
         <div
           v-if="document.contact"
@@ -191,6 +192,7 @@
         :value="document.websites?.url"
         icon="mdi:web"
         is-link
+        pin-kind="website"
       />
       <SelectableBlock
         :label="$t('summaryHeaders.scientificReferences')"

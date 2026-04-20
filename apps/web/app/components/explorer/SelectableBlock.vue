@@ -34,7 +34,7 @@
         <div v-if="isHtml" v-html="value" class="text-sm" />
         <a
           v-else-if="isLink && value"
-          :href="value"
+          :href="String(value)"
           target="_blank"
           class="text-blue-600 underline text-sm break-all"
           >{{ value }}</a
@@ -59,21 +59,38 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
+<script setup lang="ts">
+import { inject, ref } from "vue";
 import { usePin } from "@/composables/usePin";
+import { PinArticleContextKey } from "./pinContext";
 
-const props = defineProps({
-  label: String,
-  value: [String, Number],
-  icon: String,
-  isHtml: Boolean,
-  isLink: Boolean,
-  showAiIcon: Boolean,
+type PinKind = "text_segment" | "contact" | "website" | "image";
+
+interface Props {
+  label?: string;
+  value?: string | number;
+  icon?: string;
+  isHtml?: boolean;
+  isLink?: boolean;
+  showAiIcon?: boolean;
+  /** Override the persisted `body_kind`; defaults to `text_segment`. */
+  pinKind?: PinKind;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  label: "",
+  value: "",
+  icon: "",
+  isHtml: false,
+  isLink: false,
+  showAiIcon: false,
+  pinKind: "text_segment",
 });
 
 const { pinContent } = usePin();
-const blockElement = ref(null);
+const articleContext = inject(PinArticleContextKey, null);
+
+const blockElement = ref<HTMLElement | null>(null);
 const isSelected = ref(false);
 const isHovered = ref(false);
 const isPinned = ref(false);
@@ -83,10 +100,29 @@ function toggleSelected() {
 }
 
 async function handlePin() {
-  if (!isPinned.value && blockElement.value) {
-    const id = await pinContent(blockElement.value);
+  if (isPinned.value || !blockElement.value) return;
+
+  if (!articleContext) {
+    const id = await pinContent(blockElement.value, {
+      bodyKind: props.pinKind,
+      title: props.label || undefined,
+    });
     if (id) isPinned.value = true;
+    return;
   }
+
+  const articleTitle = articleContext.title.value;
+  const blockLabel = props.label?.trim() || "";
+  const composedTitle = [articleTitle, blockLabel]
+    .filter((s): s is string => !!s && s.trim().length > 0)
+    .join(" — ");
+
+  const id = await pinContent(blockElement.value, {
+    sourceDocumentUid: articleContext.documentUid.value ?? null,
+    title: composedTitle || undefined,
+    bodyKind: props.pinKind,
+  });
+  if (id) isPinned.value = true;
 }
 </script>
 
@@ -96,6 +132,3 @@ async function handlePin() {
   box-shadow: 0 0 0 2px #3b82f6;
 }
 </style>
-
-
-
