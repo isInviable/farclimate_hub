@@ -129,10 +129,14 @@ async function handlePin() {
     .filter((s): s is string => !!s && s.trim().length > 0)
     .join(" — ");
 
+  // Stamp the parent document's `[lat, lon]` into `body.data.location` so
+  // the pinboard map view (change `pinboard-global-map`) can render a marker
+  // for this article. Validation happens inside `pinContent`.
   const id = await pinContent(el, {
     sourceDocumentUid: articleContext.documentUid.value ?? null,
     title: composedTitle || undefined,
     bodyKind: props.pinKind,
+    location: articleContext.location.value ?? null,
   });
   if (id) isPinned.value = true;
 }

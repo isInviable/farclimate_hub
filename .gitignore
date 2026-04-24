@@ -23,3 +23,4 @@ dist/
 .nuxt/
 .output/
 old/*
+pipeline/images/*

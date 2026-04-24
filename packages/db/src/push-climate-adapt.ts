@@ -7,6 +7,7 @@ import {
   EMBEDDING_MODEL,
   EMBEDDING_DIMENSIONS,
 } from "./embed.js";
+import { slugFromSourceUrl, syncDocumentImagesForSlug } from "./document-images.js";
 
 const AUGMENTED_DIR = resolve(import.meta.dirname, "..", "..", "..", "pipeline", "augmented");
 const SOURCE_TYPE = "climate_adapt_case_study";
@@ -42,21 +43,19 @@ async function upsertDocument(doc: Record<string, unknown>): Promise<string> {
   const uid = buildDocumentUid(doc.source_url as string | undefined, doc.source_file as string);
 
   const [row] = await sql`
-    INSERT INTO knowledge.documents (document_uid, source_type, source_url, source_file, title, image_url, creation_date)
+    INSERT INTO knowledge.documents (document_uid, source_type, source_url, source_file, title, creation_date)
     VALUES (
       ${uid},
       ${SOURCE_TYPE},
       ${(doc.source_url as string) ?? null},
       ${(doc.source_file as string) ?? null},
       ${(doc.title as string) ?? null},
-      ${(doc.image_url as string) ?? null},
       ${(doc.creation_date as string) ?? null}
     )
     ON CONFLICT (document_uid) DO UPDATE SET
       source_url    = EXCLUDED.source_url,
       source_file   = EXCLUDED.source_file,
       title         = EXCLUDED.title,
-      image_url     = EXCLUDED.image_url,
       creation_date = EXCLUDED.creation_date,
       updated_at    = now()
     RETURNING id
@@ -219,6 +218,16 @@ async function main() {
 
     const documentId = await upsertDocument(doc);
     sourceFileToId.set(sourceFile, documentId);
+
+    const slug = slugFromSourceUrl(doc.source_url as string | undefined);
+    if (slug) {
+      try {
+        const uploadedCount = await syncDocumentImagesForSlug(documentId, slug);
+        console.log(`  [IMG] ${slug}: ${uploadedCount} images synced`);
+      } catch (err) {
+        console.warn(`  [IMG] ${slug}: sync failed:`, err);
+      }
+    }
 
     await upsertSummary(documentId, doc);
     await upsertSummaryMultilang(documentId, "en", {

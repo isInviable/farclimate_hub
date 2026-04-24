@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { usePinsSupabase } from "~/composables/usePinsSupabase";
 import { emptyPinBody } from "~/types/pins";
+import { isValidPinLocation } from "~/utils/pinBoardMap";
 
 export interface PinContentOverrides {
   /** Stored as `human.pins.source_document_uid` when pinning a search/article row. */
@@ -12,6 +13,14 @@ export interface PinContentOverrides {
   notes?: string;
   /** Override detected body kind (e.g. `text_segment`). */
   bodyKind?: string;
+  /**
+   * Optional `[latitude, longitude]` snapshot of the parent document's
+   * location. When provided and valid (see `isValidPinLocation`) it is
+   * written into `body.data.location`; the pinboard map view reads this
+   * field to render one marker per article. See change
+   * `pinboard-global-map`.
+   */
+  location?: [number, number] | null;
 }
 
 export function usePin() {
@@ -57,6 +66,9 @@ export function usePin() {
 
     const body_kind = bodyKindFromElement(element, overrides);
     const data = bodyDataFromElement(element, overrides);
+    if (isValidPinLocation(overrides?.location)) {
+      data.location = overrides!.location;
+    }
     const body = { ...emptyPinBody(), data };
 
     const row = await pinsApi.createPin({

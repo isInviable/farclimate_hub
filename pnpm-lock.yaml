@@ -131,6 +131,9 @@ importers:
       '@google/genai':
         specifier: ^1.43.0
         version: 1.43.0
+      '@supabase/supabase-js':
+        specifier: ^2.98.0
+        version: 2.99.1
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1

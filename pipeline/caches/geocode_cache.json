@@ -610,5 +610,73 @@
   "Bærum, Norway": [
     59.95742329999999,
     10.4786126
+  ],
+  "Slovakia": [
+    48.669026,
+    19.699024
+  ],
+  "Unterfranken (DE), Germany": [
+    50.0780217,
+    10.0511934
+  ],
+  "Arles, France": [
+    43.676647,
+    4.6277769
+  ],
+  "Stuttgart (DE), Germany": [
+    48.7758459,
+    9.1829321
+  ],
+  "Zuid-Holland (NL), Netherlands": [
+    52.0207975,
+    4.4937836
+  ],
+  "Rheinhessen-Pfalz (DE), Germany": [
+    49.48221160000001,
+    7.860948100000001
+  ],
+  "Tyne, United Kingdom": [
+    57.81085049999999,
+    -4.0543383
+  ],
+  "Iceland": [
+    64.963051,
+    -19.020835
+  ],
+  "Rhône-Alpes (FR), France": [
+    44.952398019338,
+    6.484082302400288
+  ],
+  "Innertkirchen, Switzerland": [
+    46.7058635,
+    8.2292107
+  ],
+  "Schwaben (DE), Germany": [
+    48.38146709999999,
+    10.7008406
+  ],
+  "Ostschweiz (CH), Switzerland": [
+    47.30397259999999,
+    9.289161199999999
+  ],
+  "Trnava, Slovakia": [
+    48.3709108,
+    17.5833218
+  ],
+  "Zahodna Slovenija (SI), Slovenia": [
+    46.151241,
+    14.995463
+  ],
+  "País Vasco (ES), Spain": [
+    42.9896248,
+    -2.6189273
+  ],
+  "Portugal": [
+    39.39987199999999,
+    -8.224454
+  ],
+  "Pohjois- ja Itä-Suomi (FI), Finland": [
+    62.56338909999999,
+    28.5024043
   ]
 }

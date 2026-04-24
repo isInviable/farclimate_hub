@@ -102,9 +102,25 @@ const pinDocumentTitle = computed<string | null>(() => {
   return typeof raw === "string" && raw.trim() ? raw : null;
 });
 
+// Snapshot the parent document's `[lat, lon]` so nested pin entry points
+// (SelectableBlock) can stamp `body.data.location` for the pinboard map.
+// See change `pinboard-global-map`.
+const pinDocumentLocation = computed<[number, number] | null>(() => {
+  const raw = (props.document as { location?: unknown } | null | undefined)
+    ?.location;
+  if (!Array.isArray(raw) || raw.length !== 2) return null;
+  const [lat, lon] = raw as unknown[];
+  if (typeof lat !== "number" || typeof lon !== "number") return null;
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+  if (lat === 0 && lon === 0) return null;
+  return [lat, lon];
+});
+
 provide(PinArticleContextKey, {
   documentUid: pinDocumentUid,
   title: pinDocumentTitle,
+  location: pinDocumentLocation,
 });
 
 const sectionSummaryCache = ref(new Map());

@@ -71,6 +71,20 @@ const documentUid = computed(() => {
   return d?.document_uid;
 });
 
+/**
+ * Snapshot the search-result's `[lat, lon]` so `body.data.location` gets
+ * stamped on pin creation, feeding the pinboard map view (change
+ * `pinboard-global-map`). Validation happens inside `pinContent`.
+ */
+const documentLocation = computed<[number, number] | null>(() => {
+  const raw = (props.pinData as { location?: unknown } | null | undefined)
+    ?.location;
+  if (!Array.isArray(raw) || raw.length !== 2) return null;
+  const [lat, lon] = raw as unknown[];
+  if (typeof lat !== "number" || typeof lon !== "number") return null;
+  return [lat, lon];
+});
+
 const rowIdForDocument = computed(() =>
   documentUid.value
     ? pinsApi.findPinIdByDocumentUid(documentUid.value)
@@ -127,6 +141,7 @@ async function handlePin() {
         type: props.pinType,
         data: pinDataRecord,
         notes: pinNotes.value || undefined,
+        location: documentLocation.value,
       });
       if (id && !documentUid.value) adHocRowId.value = id;
       emit("pinned");

@@ -1,7 +1,7 @@
 /**
  * Maps Supabase `get_documents_by_ids` (and related RPC) rows to the explorer article document shape.
  */
-import type { ArticleDetail } from '../../app/types/search'
+import type { ArticleDetail, DocumentImage } from '../../app/types/search'
 
 export function normalizeRecipeIngredients(raw: unknown): Record<string, string> | null {
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return null
@@ -9,6 +9,37 @@ export function normalizeRecipeIngredients(raw: unknown): Record<string, string>
   for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
     if (typeof v === 'string') out[k] = v
   }
+  return out
+}
+
+/**
+ * Lift the `images jsonb` column from the `get_*` knowledge RPCs into an array
+ * of typed entries. Always returns an array (never null) so consumers can do
+ * `document.images?.[0]?.public_url` / `v-for="img in document.images"` safely.
+ */
+export function normalizeDocumentImages(raw: unknown): DocumentImage[] {
+  if (!Array.isArray(raw)) return []
+  const out: DocumentImage[] = []
+  for (const entry of raw) {
+    if (!entry || typeof entry !== 'object') continue
+    const item = entry as Record<string, unknown>
+    const position = typeof item.position === 'number' ? item.position : Number(item.position)
+    const public_url = typeof item.public_url === 'string' ? item.public_url : ''
+    if (!public_url || !Number.isFinite(position)) continue
+    out.push({
+      position,
+      public_url,
+      source_url: typeof item.source_url === 'string' ? item.source_url : undefined,
+      title: typeof item.title === 'string' ? item.title : null,
+      description: typeof item.description === 'string' ? item.description : null,
+      credits: typeof item.credits === 'string' ? item.credits : null,
+      content_type: typeof item.content_type === 'string' ? item.content_type : null,
+      width: typeof item.width === 'number' ? item.width : null,
+      height: typeof item.height === 'number' ? item.height : null,
+      bytes: typeof item.bytes === 'number' ? item.bytes : null,
+    })
+  }
+  out.sort((a, b) => a.position - b.position)
   return out
 }
 
@@ -21,7 +52,7 @@ export function mapKnowledgeRowToArticleDocument(row: Record<string, any>): Arti
     fulltext: row.fulltext || '',
     source_url: row.source_url || '',
     document_uid: row.document_uid,
-    image_url: row.image_url || '',
+    images: normalizeDocumentImages(row.images),
     keywords: row.keywords || [],
     climate_impacts: row.climate_impacts || [],
     adaptation_approaches: row.adaptation_approaches || [],

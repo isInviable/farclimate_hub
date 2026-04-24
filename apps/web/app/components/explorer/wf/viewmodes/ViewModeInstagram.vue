@@ -15,9 +15,9 @@
           </button>
         </div>
 
-        <!-- Post Image -->
+        <!-- Post Image (hero, from knowledge.document_images position 0) -->
         <img
-          :src="hit.document.image_url"
+          :src="getHeroImageUrl(hit.document)"
           alt="Solution Image"
           class="w-full h-auto object-cover cursor-pointer"
           @error="handleImageError"
@@ -85,6 +85,11 @@ const truncate = (text, length) => {
 
 const handleImageError = (event) => {
   event.target.src = "/img/img_placeholder.png";
+};
+
+const getHeroImageUrl = (doc) => {
+  const first = Array.isArray(doc?.images) ? doc.images[0] : null;
+  return first?.public_url || "/img/img_placeholder.png";
 };
 
 const getUsername = (doc) => {

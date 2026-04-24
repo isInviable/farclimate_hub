@@ -54,15 +54,7 @@
       </span>
     </div>
 
-    <UModal
-      v-model:open="isDeleteConfirmOpen"
-      portal="body"
-      :title="deleteModalTitle"
-      :ui="{
-        body: 'min-h-0',
-        footer: 'shrink-0 flex-wrap gap-2',
-      }"
-    >
+    <UModal v-model:open="isDeleteConfirmOpen" :title="deleteModalTitle">
       <template #body>
         <div class="space-y-3">
           <UAlert
@@ -82,14 +74,11 @@
         </div>
       </template>
       <template #footer>
-        <div
-          class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end"
-        >
+        <div class="flex justify-end gap-2">
           <UButton
             type="button"
             variant="ghost"
             color="neutral"
-            class="w-full shrink-0 sm:w-auto"
             :disabled="deleteLoading"
             @click="isDeleteConfirmOpen = false"
           >
@@ -98,10 +87,9 @@
           <UButton
             type="button"
             color="error"
-            variant="solid"
-            class="w-full min-w-28 shrink-0 sm:w-auto"
+            variant="outline"
             :loading="deleteLoading"
-            leading-icon="i-heroicons-trash"
+            icon="i-heroicons-trash"
             @click="confirmRemovePin"
           >
             {{ $t("pins.removeConfirmDelete") }}
@@ -110,15 +98,7 @@
       </template>
     </UModal>
 
-    <UModal
-      v-model:open="isEditNoteOpen"
-      portal="body"
-      :title="$t('pins.editNoteTitle')"
-      :ui="{
-        body: 'min-h-0',
-        footer: 'shrink-0 flex-wrap gap-2',
-      }"
-    >
+    <UModal v-model:open="isEditNoteOpen" :title="$t('pins.editNoteTitle')">
       <template #body>
         <div class="space-y-3">
           <UTextarea
@@ -138,14 +118,11 @@
         </div>
       </template>
       <template #footer>
-        <div
-          class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end"
-        >
+        <div class="flex justify-end gap-2">
           <UButton
             type="button"
             variant="ghost"
             color="neutral"
-            class="w-full shrink-0 sm:w-auto"
             :disabled="editSaveLoading"
             @click="isEditNoteOpen = false"
           >
@@ -154,8 +131,6 @@
           <UButton
             type="button"
             color="primary"
-            variant="solid"
-            class="w-full min-w-28 shrink-0 sm:w-auto"
             :loading="editSaveLoading"
             @click="saveEditedNote"
           >
@@ -166,14 +141,8 @@
     </UModal>
 
     <div class="p-6 pt-14 space-y-3">
-      <NuxtLink
-        v-if="pin.source_document_uid"
-        :to="explorerLinkForDocument(pin.source_document_uid)"
-        class="inline-flex items-center gap-1 text-sm text-teal-600 hover:text-teal-800 underline-offset-2 hover:underline"
-      >
-        <Icon name="mdi:open-in-new" size="1rem" />
-        {{ $t("pins.openInExplorer") }}
-      </NuxtLink>
+     
+      
 
       <p
         v-if="
@@ -185,22 +154,36 @@
         {{ $t("pins.sourceMissing") }}
       </p>
 
-      <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
-        {{ pin.source_title_snapshot?.trim() || $t("pins.noTitle") }}
-      </h3>
+      <div
+        :class="[
+          'space-y-3 -mx-2 px-2 py-1 rounded',
+          pin.source_document_uid
+            ? 'cursor-pointer hover:bg-neutral-50 transition-colors'
+            : '',
+        ]"
+        :role="pin.source_document_uid ? 'button' : undefined"
+        :tabindex="pin.source_document_uid ? 0 : undefined"
+        @click="handleBodyClick"
+        @keydown.enter.prevent="handleBodyClick"
+        @keydown.space.prevent="handleBodyClick"
+      >
+        <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
+          {{ pin.source_title_snapshot?.trim() || $t("pins.noTitle") }}
+        </h3>
 
-      <PinBodyRenderer
-        :body-kind="pin.body_kind"
-        :data="bodyData"
-      />
+        <PinBodyRenderer
+          :body-kind="pin.body_kind"
+          :data="bodyData"
+        />
 
-      <div v-if="pin.user_note?.trim()" class="pt-2 border-t border-neutral-100">
-        <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">
-          {{ $t("pins.userNote") }}
-        </p>
-        <p class="text-sm text-neutral-700 whitespace-pre-wrap">
-          {{ pin.user_note }}
-        </p>
+        <div v-if="pin.user_note?.trim()" class="pt-2 border-t border-neutral-100">
+          <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">
+            {{ $t("pins.userNote") }}
+          </p>
+          <p class="text-sm text-neutral-700 whitespace-pre-wrap">
+            {{ pin.user_note }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -216,6 +199,10 @@ import { usePinnedSelectionStore } from "@/stores/selection";
 const props = defineProps<{
   pin: HumanPinRow
   enableSelection?: boolean
+}>();
+
+const emit = defineEmits<{
+  (e: "open-article", uid: string): void;
 }>();
 
 const { t, te } = useI18n();
@@ -280,12 +267,7 @@ watch(isDeleteConfirmOpen, (open) => {
   if (open) deleteActionError.value = null;
 });
 
-function explorerLinkForDocument(documentUid: string) {
-  return localePath({
-    path: "/explorer/explorer",
-    query: { document: documentUid },
-  });
-}
+
 
 function openEditNoteModal() {
   editNoteDraft.value = props.pin.user_note ?? "";
@@ -335,4 +317,14 @@ const bodyKindLabel = computed(() => {
   const key = `pins.kinds.${k}`;
   return te(key) ? t(key) : t("pins.kinds.unknown");
 });
+
+function handleBodyClick() {
+  const uid = props.pin.source_document_uid;
+  if (!uid) return;
+  if (typeof window !== "undefined") {
+    const selection = window.getSelection?.();
+    if (selection && selection.toString().length > 0) return;
+  }
+  emit("open-article", uid);
+}
 </script>

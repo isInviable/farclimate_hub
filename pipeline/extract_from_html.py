@@ -208,6 +208,177 @@ def parse_geochar_from_html(html: str) -> tuple[dict, str | None]:
     return geo, health_impact if health_impact else None
 
 
+# ---------------------------------------------------------------------------
+# window.__data extraction (Volto/Plone server-side initial state)
+# ---------------------------------------------------------------------------
+
+# Climate-ADAPT ships `<script nonce="" charset="UTF-8">window.__data={…};</script>` in
+# every page. The JSON is mostly valid, but Volto serializes JavaScript `undefined`
+# literals (seen under router.location.state / router.location.query, etc.).
+# We rewrite the small set of non-JSON tokens seen in samples before parsing.
+
+_WINDOW_DATA_START_RE = re.compile(r"window\.__data\s*=\s*\{")
+_UNDEFINED_VALUE_RE = re.compile(r":\s*undefined\b")
+
+
+def _parse_window_data(html: str) -> dict | None:
+    """Locate the window.__data JSON payload and parse it.
+
+    Uses a brace counter that respects string literals so nested `{` / `}`
+    inside quoted strings don't throw off matching. Returns the parsed dict,
+    or None when the script tag is absent or the JSON cannot be decoded.
+    """
+    match = _WINDOW_DATA_START_RE.search(html)
+    if match is None:
+        return None
+    start = match.end() - 1  # index of the opening `{`
+    depth = 0
+    pos = start
+    in_string = False
+    escape = False
+    n = len(html)
+    while pos < n:
+        ch = html[pos]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+        else:
+            if ch == '"':
+                in_string = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    payload = html[start : pos + 1]
+                    fixed = _UNDEFINED_VALUE_RE.sub(": null", payload)
+                    try:
+                        return json.loads(fixed)
+                    except Exception:
+                        return None
+        pos += 1
+    return None
+
+
+# Priority chain for picking the biggest primary_photo scale URL.
+_PRIMARY_PHOTO_SCALE_ORDER = ("huge", "great", "larger", "large")
+
+# Matches the trailing /@@images/image/<scale> segment on Plone-served image URLs.
+_PLONE_IMAGE_SCALE_RE = re.compile(r"(/@@images/image)/[^/?#]+(\??[^#]*)$")
+
+
+def _hero_entry_from_primary_photo(primary_photo: dict, credits: str | None) -> dict | None:
+    """Build a `gallery_images[0]` entry from `content.data.primary_photo`.
+
+    Uses the scales priority chain, falling back to the unscaled `download` URL.
+    Returns None when no usable URL is present.
+    """
+    if not isinstance(primary_photo, dict):
+        return None
+    source_url: str | None = None
+    scales = primary_photo.get("scales") or {}
+    for name in _PRIMARY_PHOTO_SCALE_ORDER:
+        scale = scales.get(name) if isinstance(scales, dict) else None
+        if isinstance(scale, dict) and scale.get("download"):
+            source_url = scale["download"]
+            break
+    if not source_url:
+        source_url = primary_photo.get("download") or None
+    if not source_url:
+        return None
+    entry: dict = {
+        "position": 0,
+        "source_url": source_url,
+        "source_url_fallback": primary_photo.get("download") or None,
+    }
+    title = primary_photo.get("filename")
+    if title:
+        entry["title"] = title
+    if credits:
+        entry["credits"] = credits
+    width = primary_photo.get("width")
+    height = primary_photo.get("height")
+    if isinstance(width, int) and width > 0:
+        entry["width"] = width
+    if isinstance(height, int) and height > 0:
+        entry["height"] = height
+    content_type = primary_photo.get("content-type")
+    if content_type:
+        entry["content_type"] = content_type
+    return entry
+
+
+def _rewrite_plone_image_to_huge(url: str) -> str:
+    """Swap the trailing `/@@images/image/<scale>` segment with `/huge`.
+
+    Leaves URLs without that pattern untouched.
+    """
+    if not url:
+        return url
+    return _PLONE_IMAGE_SCALE_RE.sub(r"\1/huge\2", url)
+
+
+def _gallery_entry_from_cca(item: dict, position: int) -> dict | None:
+    """Build a `gallery_images[position]` entry from a `cca_gallery[i]` element."""
+    if not isinstance(item, dict):
+        return None
+    url = item.get("url")
+    if not url:
+        return None
+    huge_url = _rewrite_plone_image_to_huge(url)
+    entry: dict = {
+        "position": position,
+        "source_url": huge_url,
+    }
+    if huge_url != url:
+        entry["source_url_fallback"] = url
+    title = item.get("title")
+    description = item.get("description")
+    rights = item.get("rights")
+    if title:
+        entry["title"] = title
+    if description:
+        entry["description"] = description
+    if rights:
+        entry["credits"] = rights
+    return entry
+
+
+def _build_gallery_images(window_data: dict) -> list[dict]:
+    """Produce an ordered `gallery_images` list from parsed window.__data.
+
+    Position 0 is the hero image (from `primary_photo`) when available;
+    remaining positions follow `cca_gallery` order. Each entry always carries
+    a `position` + `source_url`; title/description/credits/width/height/
+    content_type/source_url_fallback are included when known.
+    """
+    content_data = (window_data.get("content") or {}).get("data") or {}
+    if not isinstance(content_data, dict):
+        return []
+
+    primary_photo = content_data.get("primary_photo")
+    primary_copyright = content_data.get("primary_photo_copyright")
+    gallery = content_data.get("cca_gallery") or []
+
+    entries: list[dict] = []
+    hero = _hero_entry_from_primary_photo(primary_photo, primary_copyright) if isinstance(primary_photo, dict) else None
+    if hero is not None:
+        entries.append(hero)
+
+    if isinstance(gallery, list):
+        start_position = len(entries)
+        for offset, item in enumerate(gallery):
+            entry = _gallery_entry_from_cca(item, start_position + offset)
+            if entry is not None:
+                entries.append(entry)
+
+    return entries
+
+
 def extract_article_fulltext(html: str, base_url: str = "") -> str:
     """
     Extract article-only full text (no header, nav, footer) using crawl4ai's
@@ -385,6 +556,19 @@ def main():
         item["geographic_characterisation"] = geo_obj
         if health_impact_val is not None:
             item["health_impact"] = health_impact_val
+
+        # Ordered list of images extracted from window.__data (hero + gallery).
+        # On parse failure we still emit an empty list so downstream steps
+        # can run idempotently; a single page with no images is not fatal.
+        window_data = _parse_window_data(html)
+        if window_data is None:
+            print(
+                f"  {html_path.name}: window.__data missing or unparseable; gallery_images=[]",
+                file=sys.stderr,
+            )
+            item["gallery_images"] = []
+        else:
+            item["gallery_images"] = _build_gallery_images(window_data)
 
         out_path.write_text(json.dumps(item, indent=2, ensure_ascii=False), encoding="utf-8")
         if args.markdown and fulltext:

@@ -16,6 +16,19 @@ export interface GeographicCharacterisation {
   sub_nationals?: string;
 }
 
+export interface DocumentImage {
+  position: number;
+  public_url: string;
+  source_url?: string;
+  title?: string | null;
+  description?: string | null;
+  credits?: string | null;
+  content_type?: string | null;
+  width?: number | null;
+  height?: number | null;
+  bytes?: number | null;
+}
+
 export interface SearchResult {
   title: string;
   subtitle?: string;
@@ -23,7 +36,7 @@ export interface SearchResult {
   fulltext?: string;
   source_url?: string;
   document_uid?: string;
-  image_url?: string;
+  images?: DocumentImage[];
 
   keywords?: string[];
   climate_impacts?: string[];

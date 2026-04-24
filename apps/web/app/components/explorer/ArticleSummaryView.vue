@@ -32,13 +32,13 @@
 
       <!-- Images: all URLs + per-image pin + lightbox -->
       <div
-        v-if="documentImageUrls.length"
+        v-if="galleryImages.length"
         class="col-span-2 grid grid-cols-2 gap-3 sm:grid-cols-3"
       >
         <SelectableBlock
-          v-for="(url, index) in documentImageUrls"
-          :key="url"
-          :label="$t('article.imageNumber', { n: index + 1 })"
+          v-for="(img, index) in galleryImages"
+          :key="img.public_url"
+          :label="img.title || $t('article.imageNumber', { n: index + 1 })"
           icon="mdi:image-outline"
           pin-kind="image"
           class="min-w-0"
@@ -47,11 +47,11 @@
             type="button"
             class="block w-full cursor-zoom-in rounded border-0 bg-transparent p-0 text-left overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             :aria-label="$t('article.openImageLightbox')"
-            @click.stop="openLightbox(url, index)"
+            @click.stop="openLightbox(img, index)"
           >
             <img
-              :src="url"
-              :alt="$t('article.imageAlt', { n: index + 1 })"
+              :src="img.public_url"
+              :alt="img.title || $t('article.imageAlt', { n: index + 1 })"
               class="aspect-video h-32 w-full rounded border border-gray-200 object-cover"
             />
           </button>
@@ -73,6 +73,9 @@
         v-model:open="lightboxOpen"
         :src="lightboxSrc"
         :alt="lightboxAlt"
+        :title="lightboxTitle"
+        :description="lightboxDescription"
+        :credits="lightboxCredits"
       />
       <!-- SECTOR -->
       <SelectableBlock
@@ -324,6 +327,9 @@ const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 const lightboxOpen = ref(false);
 const lightboxSrc = ref("");
 const lightboxAlt = ref("");
+const lightboxTitle = ref(null);
+const lightboxDescription = ref(null);
+const lightboxCredits = ref(null);
 
 const props = defineProps({
   document: { type: Object, required: true },
@@ -333,7 +339,18 @@ const props = defineProps({
   mapPoints: { type: Array, required: true },
 });
 
-const documentImageUrls = useDocumentImageUrls(() => props.document);
+/**
+ * Ordered list of images from `knowledge.document_images` (hero at position 0
+ * + gallery). Filters out entries without a usable public URL so the template
+ * can rely on `img.public_url` everywhere.
+ */
+const galleryImages = computed(() => {
+  const raw = props.document?.images;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(
+    (img) => img && typeof img.public_url === "string" && img.public_url.length > 0,
+  );
+});
 
 /** `source_url` from `knowledge.documents` when it is a usable http(s) URL. */
 const externalSourceUrl = computed(() => {
@@ -343,9 +360,12 @@ const externalSourceUrl = computed(() => {
   return /^https?:\/\//i.test(trimmed) ? trimmed : null;
 });
 
-function openLightbox(url, index) {
-  lightboxSrc.value = url;
-  lightboxAlt.value = $t("article.imageAlt", { n: index + 1 });
+function openLightbox(img, index) {
+  lightboxSrc.value = img.public_url;
+  lightboxAlt.value = img.title || $t("article.imageAlt", { n: index + 1 });
+  lightboxTitle.value = img.title || null;
+  lightboxDescription.value = img.description || null;
+  lightboxCredits.value = img.credits || null;
   lightboxOpen.value = true;
 }
 

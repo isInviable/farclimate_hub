@@ -11,16 +11,42 @@
           type="button"
           class="w-full text-left px-4 py-2 rounded-lg transition-colors"
           :class="[
-            selectedKind === cat.value
+            isKindSelected(cat.value)
               ? 'bg-neutral-500 text-white'
               : 'text-gray-700 hover:bg-gray-100',
           ]"
-          @click="selectedKind = cat.value"
+          @click="selectKind(cat.value)"
         >
           <div class="flex items-center justify-between gap-2">
             <span class="truncate">{{ cat.label }}</span>
             <span class="text-sm opacity-75 shrink-0">{{ cat.count }}</span>
           </div>
+        </button>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-200">
+        <button
+          type="button"
+          class="w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center justify-between gap-2"
+          :class="[
+            !mapEntryEnabled
+              ? 'text-gray-400 cursor-not-allowed'
+              : selectedView === 'map'
+              ? 'bg-neutral-500 text-white'
+              : 'text-gray-700 hover:bg-gray-100',
+          ]"
+          :disabled="!mapEntryEnabled"
+          :aria-disabled="!mapEntryEnabled"
+          :title="!mapEntryEnabled ? $t('pins.map.emptyTooltip') : undefined"
+          @click="selectMap"
+        >
+          <span class="flex items-center gap-2 truncate">
+            <Icon name="mdi:map-outline" class="shrink-0" />
+            <span class="truncate">{{ $t("pins.map.label") }}</span>
+          </span>
+          <span class="text-sm opacity-75 shrink-0">{{
+            mapArticleCount
+          }}</span>
         </button>
       </div>
     </aside>
@@ -50,6 +76,12 @@
           class="w-10 h-10 animate-spin text-primary-500"
         />
       </div>
+
+      <template v-else-if="selectedView === 'map'">
+        <div class="w-full h-[70vh] rounded-lg overflow-hidden border border-gray-200 bg-white">
+          <PinBoardMap :pins="props.pins" @open-article="handleOpenArticleFromMap" />
+        </div>
+      </template>
 
       <template v-else>
         <div
@@ -85,19 +117,32 @@
                 :key="pin.id"
                 :pin="pin"
                 :enable-selection="enableSelection"
+                @open-article="openArticle"
               />
             </div>
           </section>
         </div>
       </template>
     </main>
+
+    <ArticleSidePanel
+      v-if="openedArticleUid"
+      :open="openedArticleUid !== null"
+      :document-uid="openedArticleUid"
+      :title-fallback="titleFallback"
+      :pins="openedArticlePins"
+      @close="openedArticleUid = null"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { HumanPinRow } from "~/types/pins";
 import { groupPinsByBodyKind } from "~/utils/pinBoardSections";
+import { groupPinsForMap } from "~/utils/pinBoardMap";
 import PinBoardCard from "./PinBoardCard.vue";
+import PinBoardMap from "./PinBoardMap.vue";
+import ArticleSidePanel from "~/components/explorer/ArticleSidePanel.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -119,9 +164,23 @@ const props = withDefaults(
 
 const { t, te } = useI18n();
 
+/**
+ * Grid state: selected `body_kind`. Map view lives on a separate axis
+ * (`selectedView`) so switching to map doesn't lose the user's kind
+ * filter, and switching back to a kind restores the grid automatically.
+ */
 const selectedKind = ref<string>("all");
+const selectedView = ref<"grid" | "map">("grid");
 
 const sections = computed(() => groupPinsByBodyKind(props.pins));
+
+/**
+ * Map view data source. Derived from the in-memory pin list only — no
+ * server calls. See change `pinboard-global-map`.
+ */
+const mapGroups = computed(() => groupPinsForMap(props.pins));
+const mapArticleCount = computed(() => mapGroups.value.length);
+const mapEntryEnabled = computed(() => mapArticleCount.value > 0);
 
 const sidebarCategories = computed(() => {
   const total = props.pins.length;
@@ -153,7 +212,24 @@ function sectionLabel(kind: string): string {
   return te(key) ? t(key) : t("pins.kinds.unknown");
 }
 
+function isKindSelected(kind: string): boolean {
+  return selectedView.value === "grid" && selectedKind.value === kind;
+}
+
+function selectKind(kind: string) {
+  selectedKind.value = kind;
+  selectedView.value = "grid";
+}
+
+function selectMap() {
+  if (!mapEntryEnabled.value) return;
+  selectedView.value = "map";
+}
+
 const summaryLine = computed(() => {
+  if (selectedView.value === "map") {
+    return t("pins.map.summary", { count: mapArticleCount.value });
+  }
   const n = flatFilteredPins.value.length;
   if (selectedKind.value === "all") {
     return t("pins.summaryTotal", { count: n });
@@ -175,4 +251,31 @@ const emptyCategory = computed(() =>
     ? props.emptyAllMessage || t("pins.boardEmpty")
     : props.emptyCategoryMessage || t("pins.boardEmptyCategory")
 );
+
+/**
+ * Article-drawer state shared between the map popup and the grid cards.
+ * Lives at the view level so it survives view switches (map <-> grid)
+ * and so both pages (`/board` and `/board/public/[id]`) inherit it.
+ */
+const openedArticleUid = ref<string | null>(null);
+
+const openedArticlePins = computed<HumanPinRow[]>(() => {
+  const uid = openedArticleUid.value;
+  if (!uid) return [];
+  return props.pins.filter((p) => p.source_document_uid === uid);
+});
+
+const titleFallback = computed<string | null>(() => {
+  const first = openedArticlePins.value[0];
+  return first?.source_title_snapshot ?? null;
+});
+
+function openArticle(uid: string | null | undefined) {
+  if (!uid) return;
+  openedArticleUid.value = uid;
+}
+
+function handleOpenArticleFromMap(payload: { documentUid: string }) {
+  openArticle(payload?.documentUid);
+}
 </script>

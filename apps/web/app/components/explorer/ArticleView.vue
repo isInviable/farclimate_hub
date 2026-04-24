@@ -32,7 +32,7 @@
         <div class="col-span-2 row-span-2 bg-white">
             <div class="border border-dashed border-white hover:border-sky-500 aspect-video">
                 <MapBase v-if="mapPoints.length > 0" :points="mapPoints" class="w-full h-full" />
-                <img v-else :src="document.image_url || '/img/dummy_map.png'" alt="article image" class="h-auto w-full mb-2 object-cover">
+                <img v-else :src="heroImageUrl || '/img/dummy_map.png'" alt="article image" class="h-auto w-full mb-2 object-cover">
             </div>
             <div class="px-4 py-2 bg-gray-50 mt-2">
                 <p class="text-xs pt-1 text-right"><span class="font-mono float-left">location: </span>{{ parsedDocument.location }}</p>
@@ -58,9 +58,19 @@
             <div class=" p-6 border border-white hover:border-sky-500 border-dashed">
                 <h6 class="font-mono text-sm mb-2">media gallery</h6>
                 <div class="grid grid-cols-2 gap-2">
-                    <img :src="document.image_url || '/img/img_placeholder.png'" alt="dummy map" class="aspect-video border border-white hover:border-sky-500 border-dashed">
-                    <img src="/img/img_placeholder.png" alt="dummy map" class="aspect-video">
-                    <img src="/img/video_placeholder.png" alt="dummy map" class="h-auto w-full ">
+                    <img
+                      v-for="(img, idx) in galleryImages"
+                      :key="img.public_url"
+                      :src="img.public_url"
+                      :alt="img.title || 'article image'"
+                      class="aspect-video border border-white hover:border-sky-500 border-dashed object-cover"
+                    >
+                    <img
+                      v-if="galleryImages.length === 0"
+                      src="/img/img_placeholder.png"
+                      alt="placeholder"
+                      class="aspect-video"
+                    >
                 </div>
             </div>
             <div class=" p-6 border border-white hover:border-sky-500 border-dashed">
@@ -150,6 +160,14 @@ onMounted(() => {
 const gridClass = computed(() => {
     return props.showSidebar ? 'grid grid-cols-[7fr_2fr] gap-8' : 'grid grid-cols-1';
 });
+
+const galleryImages = computed(() => {
+    const raw = props.document?.images;
+    if (!Array.isArray(raw)) return [];
+    return raw.filter((img) => img && typeof img.public_url === 'string' && img.public_url.length > 0);
+});
+
+const heroImageUrl = computed(() => galleryImages.value[0]?.public_url || '');
 
 const mapPoints = computed(() => {
     if (props.document && props.document.location && Array.isArray(props.document.location) && props.document.location.length === 2) {

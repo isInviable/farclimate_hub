@@ -50,7 +50,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Define model globally so it is easy to update.
 # google-genai expects model IDs like "gemini-2.0-flash", not "gemini/...".
-_raw_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+_raw_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
 GEMINI_MODEL = _raw_model.split("/")[-1]
 
 if not GEMINI_API_KEY:

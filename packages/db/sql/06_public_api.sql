@@ -67,7 +67,7 @@ RETURNS TABLE (
   document_uid text,
   title text,
   source_url text,
-  image_url text,
+  images jsonb,
   summary text,
   subtitle text,
   fulltext text,
@@ -93,7 +93,27 @@ AS $$
     d.document_uid,
     COALESCE(ml.title, d.title) AS title,
     d.source_url,
-    d.image_url,
+    COALESCE(
+      (
+        SELECT jsonb_agg(
+          jsonb_build_object(
+            'position',     di.position,
+            'public_url',   di.public_url,
+            'source_url',   di.source_url,
+            'title',        di.title,
+            'description',  di.description,
+            'credits',      di.credits,
+            'content_type', di.content_type,
+            'width',        di.width,
+            'height',       di.height,
+            'bytes',        di.bytes
+          ) ORDER BY di.position
+        )
+        FROM knowledge.document_images di
+        WHERE di.document_id = d.id
+      ),
+      '[]'::jsonb
+    ) AS images,
     ml.summary,
     ml.subtitle,
     f.fulltext,
@@ -128,7 +148,7 @@ RETURNS TABLE (
   document_uid text,
   title text,
   source_url text,
-  image_url text,
+  images jsonb,
   summary text,
   subtitle text,
   fulltext text,
@@ -154,7 +174,27 @@ AS $$
     d.document_uid,
     COALESCE(ml.title, d.title) AS title,
     d.source_url,
-    d.image_url,
+    COALESCE(
+      (
+        SELECT jsonb_agg(
+          jsonb_build_object(
+            'position',     di.position,
+            'public_url',   di.public_url,
+            'source_url',   di.source_url,
+            'title',        di.title,
+            'description',  di.description,
+            'credits',      di.credits,
+            'content_type', di.content_type,
+            'width',        di.width,
+            'height',       di.height,
+            'bytes',        di.bytes
+          ) ORDER BY di.position
+        )
+        FROM knowledge.document_images di
+        WHERE di.document_id = d.id
+      ),
+      '[]'::jsonb
+    ) AS images,
     ml.summary,
     ml.subtitle,
     f.fulltext,
@@ -190,7 +230,7 @@ RETURNS TABLE (
   document_uid text,
   title text,
   source_url text,
-  image_url text,
+  images jsonb,
   summary text,
   subtitle text,
   fulltext text,
@@ -216,7 +256,27 @@ AS $$
     d.document_uid,
     COALESCE(ml.title, d.title) AS title,
     d.source_url,
-    d.image_url,
+    COALESCE(
+      (
+        SELECT jsonb_agg(
+          jsonb_build_object(
+            'position',     di.position,
+            'public_url',   di.public_url,
+            'source_url',   di.source_url,
+            'title',        di.title,
+            'description',  di.description,
+            'credits',      di.credits,
+            'content_type', di.content_type,
+            'width',        di.width,
+            'height',       di.height,
+            'bytes',        di.bytes
+          ) ORDER BY di.position
+        )
+        FROM knowledge.document_images di
+        WHERE di.document_id = d.id
+      ),
+      '[]'::jsonb
+    ) AS images,
     ml.summary,
     ml.subtitle,
     f.fulltext,

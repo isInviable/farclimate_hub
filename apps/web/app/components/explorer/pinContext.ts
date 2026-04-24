@@ -15,6 +15,14 @@ export interface PinArticleContext {
   documentUid: Ref<string | null>;
   /** Human-readable title of the parent document. `null` when unknown. */
   title: Ref<string | null>;
+  /**
+   * Parent document's geographic coordinates as `[latitude, longitude]`, or
+   * `null` when the document has no valid location. Used by `SelectableBlock`
+   * (and siblings) to stamp `body.data.location` at pin-creation time so the
+   * pinboard map view (see change `pinboard-global-map`) can render a marker
+   * per article without refetching documents.
+   */
+  location: Ref<[number, number] | null>;
 }
 
 export const PinArticleContextKey: InjectionKey<PinArticleContext> = Symbol(

@@ -63,6 +63,20 @@
       "website": "Website",
       "contact": "Contact",
       "unknown": "Other"
+    },
+    "map": {
+      "label": "Map",
+      "emptyTooltip": "No pinned articles have a location yet. Pin articles with coordinates to populate the map.",
+      "emptyBody": "None of your pinned articles have a location yet.",
+      "summary": "{count} article(s) on the map",
+      "popupPinsHeader": "{count} pin(s) from this article",
+      "noteTruncated": "…"
+    },
+    "drawer": {
+      "openArticle": "Open article",
+      "pinsInArticleHeader": "Your pins from this article",
+      "loadError": "Could not load the article. Please try again.",
+      "loading": "Loading article…"
     }
   },
   "header": {

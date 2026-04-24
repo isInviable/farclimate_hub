@@ -7,6 +7,19 @@ export interface GeographicCharacterisation {
   sub_nationals: string
 }
 
+export interface DocumentImage {
+  position: number
+  public_url: string
+  source_url?: string
+  title?: string | null
+  description?: string | null
+  credits?: string | null
+  content_type?: string | null
+  width?: number | null
+  height?: number | null
+  bytes?: number | null
+}
+
 export interface SearchResult {
   adaptation_approaches: string[]
   case_study_documents: any[]
@@ -18,7 +31,7 @@ export interface SearchResult {
   geographic_characterisation: GeographicCharacterisation
   governance_level: string
   id: string
-  image_url: string
+  images?: DocumentImage[]
   implementation_time: string
   keywords: string[]
   lifetime: string

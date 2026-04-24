@@ -63,6 +63,20 @@
       "website": "Web",
       "contact": "Contacto",
       "unknown": "Otro"
+    },
+    "map": {
+      "label": "Mapa",
+      "emptyTooltip": "Aún no hay artículos marcados con ubicación. Marca artículos con coordenadas para poblar el mapa.",
+      "emptyBody": "Ninguno de tus artículos marcados tiene ubicación todavía.",
+      "summary": "{count} artículo(s) en el mapa",
+      "popupPinsHeader": "{count} marcador(es) de este artículo",
+      "noteTruncated": "…"
+    },
+    "drawer": {
+      "openArticle": "Abrir artículo",
+      "pinsInArticleHeader": "Tus marcadores de este artículo",
+      "loadError": "No se pudo cargar el artículo. Inténtalo de nuevo.",
+      "loading": "Cargando artículo…"
     }
   },
   "header": {

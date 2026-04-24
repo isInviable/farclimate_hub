@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS knowledge.documents (
   source_url        TEXT,
   source_file       TEXT,
   title             TEXT,
-  image_url         TEXT,
   creation_date     TEXT,
   ingested_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -152,3 +151,34 @@ CREATE TABLE IF NOT EXISTS knowledge.recipe (
 COMMENT ON TABLE knowledge.recipe IS 'Recipe-style standardized sections (ingredients) from case-study text; regenerable; one row per (document, lang).';
 COMMENT ON COLUMN knowledge.recipe.lang IS 'Language of extraction, e.g. en from English augmentation pass.';
 COMMENT ON COLUMN knowledge.recipe.ingredients IS 'JSON object with canonical string keys: who_is_involved, economic_data, context_summary, challenges, policy_context, legal_aspects, objectives, solutions_implemented, implementation_phases, success_and_limiting, benefits, lessons_learnt, transferability.';
+
+-- ---------------------------------------------------------------------------
+-- document_images (hero + gallery images per document, ordered by position)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS knowledge.document_images (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  document_id   UUID NOT NULL REFERENCES knowledge.documents(id) ON DELETE CASCADE,
+  position      INT  NOT NULL,
+  source_url    TEXT NOT NULL,
+  storage_path  TEXT NOT NULL,
+  public_url    TEXT NOT NULL,
+  title         TEXT,
+  description   TEXT,
+  credits       TEXT,
+  content_type  TEXT,
+  width         INT,
+  height        INT,
+  bytes         INT,
+
+  UNIQUE (document_id, position)
+);
+
+CREATE INDEX IF NOT EXISTS document_images_document_id_position_idx
+  ON knowledge.document_images (document_id, position);
+
+COMMENT ON TABLE  knowledge.document_images IS 'Ordered hero + gallery images per document, mirrored to the article-images Supabase Storage bucket. Position 0 is the hero when one exists.';
+COMMENT ON COLUMN knowledge.document_images.position IS '0-based ordering within the document; position 0 is the hero when a primary photo is available.';
+COMMENT ON COLUMN knowledge.document_images.source_url IS 'Original Climate-ADAPT URL the binary was downloaded from (best-available scale).';
+COMMENT ON COLUMN knowledge.document_images.storage_path IS 'Path inside the article-images Supabase Storage bucket, e.g. climateadapt/<slug>/00.png.';
+COMMENT ON COLUMN knowledge.document_images.public_url IS 'Public URL to the stored object (bucket is public-read).';
+COMMENT ON COLUMN knowledge.document_images.credits IS 'Attribution / rights text (e.g. primary_photo_copyright for hero, cca_gallery[i].rights for gallery).';

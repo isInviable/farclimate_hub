@@ -3,3 +3,4 @@ asyncio
 python-dotenv
 google-genai
 geocoder
+httpx>=0.27
