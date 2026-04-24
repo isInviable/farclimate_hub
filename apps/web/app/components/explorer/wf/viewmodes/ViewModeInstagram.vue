@@ -10,23 +10,20 @@
             }}</span>
             <p class="text-xs text-gray-500">{{ getLocation(hit.document) }}</p>
           </div>
-          <button class="text-gray-500">
+          <button type="button" class="text-gray-500">
             <Icon name="mdi:dots-horizontal" size="1.5rem" />
           </button>
         </div>
 
-        <!-- Post Image (hero, from knowledge.document_images position 0) -->
-        <img
-          :src="getHeroImageUrl(hit.document)"
-          alt="Solution Image"
-          class="w-full h-auto object-cover cursor-pointer"
-          @error="handleImageError"
-          @click="handleDocumentClick(hit.document)"
+        <ViewModeInstagramCarousel
+          :images="hit.document.images"
+          @activate="handleDocumentClick(hit.document)"
         />
 
         <!-- Post Actions -->
         <div class="flex items-center p-3">
           <button
+            type="button"
             class="mr-4 text-gray-700 hover:text-gray-900 transition-colors"
           >
             <Icon name="mdi:share-outline" size="1.75rem" />
@@ -50,81 +47,72 @@
             }}</span>
             {{ truncate(hit.document.subtitle, 200) }}
           </p>
-          <a
+          <button
+            type="button"
+            class="text-xs text-gray-500 mt-2 cursor-pointer hover:underline text-left"
             @click="handleDocumentClick(hit.document)"
-            class="text-xs text-gray-500 mt-2 inline-block cursor-pointer hover:underline"
           >
-            View more...
-          </a>
+            {{ t('viewModes.instagramViewMore') }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { useDocumentStore } from "@/stores/document";
+<script setup lang="ts">
+import type { ArticleDetail } from '~/types/search'
 
-const documentStore = useDocumentStore();
+const { t } = useI18n()
 
-const props = defineProps({
-  results: {
-    type: Array,
-    default: () => [],
-  },
-});
+defineProps<{
+  results: { id: string; document: ArticleDetail }[]
+}>()
 
-const emit = defineEmits(['document-selected']);
+const emit = defineEmits<{
+  'document-selected': [document: ArticleDetail]
+}>()
 
-const truncate = (text, length) => {
+const truncate = (text: string | undefined, length: number) => {
   if (text && text.length > length) {
-    return text.slice(0, length) + "...";
+    return text.slice(0, length) + '...'
   }
-  return text;
-};
+  return text ?? ''
+}
 
-const handleImageError = (event) => {
-  event.target.src = "/img/img_placeholder.png";
-};
-
-const getHeroImageUrl = (doc) => {
-  const first = Array.isArray(doc?.images) ? doc.images[0] : null;
-  return first?.public_url || "/img/img_placeholder.png";
-};
-
-const getUsername = (doc) => {
+const getUsername = (doc: ArticleDetail) => {
   if (doc.contact && typeof doc.contact === 'string') {
-    // Take the first line (up to the first line break)
-    let firstLine = doc.contact.split(/\r?\n/)[0].trim();
-    // Limit to 64 characters
+    let firstLine = doc.contact.split(/\r?\n/)[0].trim()
     if (firstLine.length > 64) {
-      firstLine = firstLine.slice(0, 64) + '...';
+      firstLine = firstLine.slice(0, 64) + '...'
     }
-    return firstLine || "Climate Shaper";
+    return firstLine || 'Climate Shaper'
   }
   if (doc.sectors) {
-    const sectors = doc.sectors.split(",");
-    return sectors[0].trim();
+    const raw =
+      typeof doc.sectors === 'string' ? doc.sectors.split(',') : doc.sectors
+    const first = raw[0]?.trim()
+    if (first) return first
   }
-  return "Climate Shaper";
-};
+  return 'Climate Shaper'
+}
 
-const getLocation = (doc) => {
+const getLocation = (doc: ArticleDetail) => {
   if (doc.geographic_characterisation) {
     if (doc.geographic_characterisation.city)
-      return doc.geographic_characterisation.city;
+      return doc.geographic_characterisation.city
     if (doc.geographic_characterisation.countries)
-      return doc.geographic_characterisation.countries;
+      return doc.geographic_characterisation.countries
   }
-  return "Unknown Location";
-};
+  return 'Unknown Location'
+}
 
-const getTitle = (doc) => {
-  if (doc.title) return doc.title;
-  return "Unknown Title";
-};
+const getTitle = (doc: ArticleDetail) => {
+  if (doc.title) return doc.title
+  return 'Unknown Title'
+}
 
-function handleDocumentClick(document) {
-  emit('document-selected', document);
+function handleDocumentClick(document: ArticleDetail) {
+  emit('document-selected', document)
 }
 </script>
