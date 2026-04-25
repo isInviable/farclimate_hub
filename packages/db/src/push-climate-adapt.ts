@@ -35,6 +35,15 @@ function readJson(filePath: string): Record<string, unknown> {
   return JSON.parse(readFileSync(filePath, "utf-8"));
 }
 
+/** True if at least one ingredient has non-blank string content (matches UI / explorer behavior). */
+function recipeIngredientsHasContent(ingredients: Record<string, unknown>): boolean {
+  for (const v of Object.values(ingredients)) {
+    if (typeof v === "string" && v.trim().length > 0) return true;
+    if (v != null && typeof v !== "string") return true;
+  }
+  return false;
+}
+
 // ---------------------------------------------------------------------------
 // Upsert functions
 // ---------------------------------------------------------------------------
@@ -239,8 +248,12 @@ async function main() {
 
     const recipe = doc.recipe as { lang?: string; ingredients?: Record<string, unknown> } | undefined;
     if (recipe?.ingredients && typeof recipe.ingredients === "object" && !Array.isArray(recipe.ingredients)) {
-      const recipeLang = typeof recipe.lang === "string" && recipe.lang ? recipe.lang : "en";
-      await upsertRecipe(documentId, recipeLang, recipe.ingredients);
+      if (recipeIngredientsHasContent(recipe.ingredients)) {
+        const recipeLang = typeof recipe.lang === "string" && recipe.lang ? recipe.lang : "en";
+        await upsertRecipe(documentId, recipeLang, recipe.ingredients);
+      } else {
+        console.warn(`  [RECIPE] skip (all empty): ${sourceFile}`);
+      }
     }
 
     const embeddingText = composeEmbeddingText(

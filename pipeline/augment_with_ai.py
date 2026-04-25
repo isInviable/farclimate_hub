@@ -518,7 +518,11 @@ def _coerce_recipe_section_value(val) -> str:  # noqa: ANN001
 
 
 def normalize_recipe_ingredients(raw: dict) -> dict[str, str]:
-    """Map model JSON keys to canonical keys; drop title, short_description, sdgs, and unknown keys."""
+    """Map model JSON keys to canonical keys; drop title, short_description, sdgs, and unknown keys.
+
+    The prompt asks for `context_challenges` etc., but some models return canonical names
+    (`challenges`, …) instead — those are merged in a second pass when a slot is still empty.
+    """
     out = empty_recipe_ingredients()
     if not isinstance(raw, dict):
         return out
@@ -526,6 +530,11 @@ def normalize_recipe_ingredients(raw: dict) -> dict[str, str]:
         if model_key not in raw:
             continue
         out[canon] = _coerce_recipe_section_value(raw.get(model_key))
+    for k in RECIPE_CANONICAL_KEYS:
+        if k in raw and not (out.get(k) or "").strip():
+            v = _coerce_recipe_section_value(raw.get(k))
+            if v:
+                out[k] = v
     return out
 
 
@@ -674,11 +683,7 @@ def extract_recipe(source_text: str) -> dict[str, str]:
         cached = global_recipe_extraction_cache[cache_key]
         if isinstance(cached, dict):
             print("Found recipe extraction in cache.")
-            merged = empty_recipe_ingredients()
-            for k in RECIPE_CANONICAL_KEYS:
-                v = cached.get(k)
-                merged[k] = v if isinstance(v, str) else ""
-            return merged
+            return normalize_recipe_ingredients(cached)
 
     prompt = _RECIPE_PROMPT_TEMPLATE + text
 
