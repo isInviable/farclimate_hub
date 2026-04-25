@@ -20,7 +20,16 @@ const props = defineProps<{
 const comp = computed(() => {
   const k = (props.bodyKind || "").toLowerCase();
   if (k === "chat") return PinRenderChat;
-  if (k === "text_segment" || k === "document" || k === "section")
+  if (
+    k === "text_segment" ||
+    k === "selected_text" ||
+    k === "recipe_section" ||
+    k === "ai_summary" ||
+    k === "chat_response" ||
+    k === "reference" ||
+    k === "document" ||
+    k === "section"
+  )
     return PinRenderText;
   if (k === "image") return PinRenderImage;
   return PinRenderFallback;

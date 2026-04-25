@@ -35,7 +35,17 @@ function mapBodyKindToBoardType(
   if (kind === "image") return "image"
   if (kind === "website") return "website"
   if (kind === "contact") return "contact"
-  if (kind === "text_segment" || kind === "document" || kind === "section") return "result"
+  if (
+    kind === "text_segment" ||
+    kind === "selected_text" ||
+    kind === "recipe_section" ||
+    kind === "ai_summary" ||
+    kind === "chat_response" ||
+    kind === "reference" ||
+    kind === "document" ||
+    kind === "section"
+  )
+    return "result"
   if (kind === "chat") return "other"
   const src = data.src
   if (typeof src === "string" && src.length > 0) return "image"
@@ -55,6 +65,14 @@ function boardDataFromPin(pin: HumanPinRow): Record<string, unknown> {
     const msgs = d.messages as Array<{ text?: string }>
     const text = msgs.map((m) => m.text ?? "").join("\n").trim()
     if (text && !d.description) d.description = text.slice(0, 800)
+  }
+
+  if (pin.body_kind === "selected_text" && typeof d.quote === "string" && !d.markdown) {
+    d.markdown = d.quote
+  }
+
+  if (pin.body_kind === "chat_response" && typeof d.text === "string" && !d.markdown) {
+    d.markdown = d.text
   }
 
   if (pin.body_kind === "image" && typeof d.src !== "string") {

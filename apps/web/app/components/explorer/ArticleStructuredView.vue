@@ -57,20 +57,29 @@
             :id="section.anchor"
             class="mb-6"
           >
-            <UCard class="overflow-hidden">
-              <div class="p-6">
-                <div class="flex items-center gap-3 mb-4 border-b border-default pb-3">
-                  <UIcon :name="section.icon" class="size-8 shrink-0 text-primary" />
-                  <h2 class="text-xl font-bold text-highlighted">
-                    {{ section.title }}
-                  </h2>
+            <CapturableBlock
+              :title="section.title"
+              pin-kind="recipe_section"
+              source-view="structured"
+              :payload="recipeSectionPayload(section)"
+              :preview="section.content"
+              :chrome="false"
+            >
+              <UCard class="overflow-hidden">
+                <div class="p-6">
+                  <div class="flex items-center gap-3 mb-4 border-b border-default pb-3 pr-10">
+                    <UIcon :name="section.icon" class="size-8 shrink-0 text-primary" />
+                    <h2 class="text-xl font-bold text-highlighted">
+                      {{ section.title }}
+                    </h2>
+                  </div>
+                  <div
+                    class="prose prose-sm md:prose-md max-w-none text-default"
+                    v-html="md.render(section.content)"
+                  />
                 </div>
-                <div
-                  class="prose prose-sm md:prose-md max-w-none text-default"
-                  v-html="md.render(section.content)"
-                />
-              </div>
-            </UCard>
+              </UCard>
+            </CapturableBlock>
           </div>
         </template>
       </template>
@@ -101,6 +110,7 @@
 
 <script setup lang="ts">
 import MarkdownIt from "markdown-it";
+import CapturableBlock from "./CapturableBlock.vue";
 
 const RECIPE_SECTION_KEYS = [
   "context_summary",
@@ -242,4 +252,17 @@ const visibleSections = computed(() => {
   }
   return list;
 });
+
+function recipeSectionPayload(section: {
+  key: RecipeSectionKey;
+  title: string;
+  content: string;
+}) {
+  return {
+    sectionKey: section.key,
+    sectionTitle: section.title,
+    markdown: section.content,
+    sourceView: "structured",
+  };
+}
 </script>

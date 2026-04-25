@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { usePinsSupabase } from "~/composables/usePinsSupabase";
-import { emptyPinBody } from "~/types/pins";
+import type { PinCaptureRequest } from "~/types/pinCapture";
+import { buildPinCapturePayload } from "~/utils/pinCapturePayload";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
 
 export interface PinContentOverrides {
@@ -57,31 +58,44 @@ export function usePin() {
   /**
    * Creates a pin in the current project. Returns new pin id or null.
    */
+  async function pinCapture(input: PinCaptureRequest): Promise<string | null> {
+    const projectId = projectsStore.currentProject?.id;
+    if (!projectId) return null;
+
+    const payload = buildPinCapturePayload(input);
+
+    const row = await pinsApi.createPin({
+      projectId,
+      body_kind: payload.body_kind,
+      body: payload.body,
+      source_document_uid: payload.source_document_uid,
+      source_title_snapshot: payload.source_title_snapshot,
+      user_note: payload.user_note,
+    });
+
+    if (row && input.animationElement) await animatePin(input.animationElement);
+    return row?.id ?? null;
+  }
+
+  /**
+   * Compatibility path for legacy callers that still pin a rendered DOM element.
+   * New capture surfaces should pass explicit data through `pinCapture`.
+   */
   async function pinContent(
     element: HTMLElement,
     overrides?: PinContentOverrides
   ): Promise<string | null> {
-    const projectId = projectsStore.currentProject?.id;
-    if (!projectId) return null;
-
     const body_kind = bodyKindFromElement(element, overrides);
     const data = bodyDataFromElement(element, overrides);
-    if (isValidPinLocation(overrides?.location)) {
-      data.location = overrides!.location;
-    }
-    const body = { ...emptyPinBody(), data };
-
-    const row = await pinsApi.createPin({
-      projectId,
-      body_kind,
-      body,
-      source_document_uid: overrides?.sourceDocumentUid ?? null,
-      source_title_snapshot: overrides?.title ?? null,
-      user_note: overrides?.notes ?? null,
+    return pinCapture({
+      bodyKind: body_kind,
+      data,
+      notes: overrides?.notes ?? null,
+      sourceDocumentUid: overrides?.sourceDocumentUid ?? null,
+      title: overrides?.title,
+      location: overrides?.location ?? null,
+      animationElement: element,
     });
-
-    if (row) await animatePin(element);
-    return row?.id ?? null;
   }
 
   async function unpinContent(id: string): Promise<boolean> {
@@ -133,6 +147,7 @@ export function usePin() {
   }
 
   return {
+    pinCapture,
     pinContent,
     unpinContent,
     isPinned,

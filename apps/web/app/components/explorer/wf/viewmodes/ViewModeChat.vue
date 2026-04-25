@@ -28,11 +28,20 @@
             <!-- SDK-internal markers; not meant for display (were shown via JSON fallback before). -->
             <template v-if="part.type === 'step-start'" />
             <template v-else-if="part.type === 'text'">
-              <div
+              <CapturableBlock
                 v-if="role === 'assistant'"
-                class="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1"
-                v-html="md.render(part.text)"
-              />
+                pin-kind="chat_response"
+                :title="$t('pins.capture.chatResponseTitle')"
+                :payload="chatResponsePayload(part.text, index)"
+                :preview="part.text"
+                source-view="chat"
+                :chrome="false"
+              >
+                <div
+                  class="prose prose-sm dark:prose-invert max-w-none [&_p]:my-1 pr-8"
+                  v-html="md.render(part.text)"
+                />
+              </CapturableBlock>
               <span v-else class="whitespace-pre-wrap">{{ part.text }}</span>
             </template>
             <pre
@@ -85,10 +94,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useI18n } from "vue-i18n";
 import { Chat } from "@ai-sdk/vue";
 import MarkdownIt from "markdown-it";
+import CapturableBlock from "../../CapturableBlock.vue";
 
 const md = new MarkdownIt();
 
@@ -195,5 +203,15 @@ function askExample(question: string) {
   showExamples.value = false;
   input.value = question;
   onSubmit();
+}
+
+function chatResponsePayload(text: string, index: number) {
+  return {
+    markdown: text,
+    text,
+    messagePartIndex: index,
+    role: "assistant",
+    sourceView: "chat",
+  };
 }
 </script>

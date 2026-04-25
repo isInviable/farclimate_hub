@@ -1,40 +1,42 @@
 <template>
   <div class=" mx-auto py-8 space-y-6" :class="{ 'w-full': showSidebar === true, 'max-w-3xl': showSidebar === false }">
-    <UTabs :items="tabItems" variant="link" :ui="{ trigger: 'grow' }" class="gap-4 w-full">
-      <template #summary>
-        <ArticleSummaryView :document="document" :parsed-document="parsedDocument" :get-section-summary="getSectionSummary" :is-loading-section="isLoadingSection" :map-points="mapPoints" />
-      </template>
+    <ArticleTextSelectionCapture source-view="article">
+      <UTabs :items="tabItems" variant="link" :ui="{ trigger: 'grow' }" class="gap-4 w-full">
+        <template #summary>
+          <ArticleSummaryView :document="document" :parsed-document="parsedDocument" :get-section-summary="getSectionSummary" :is-loading-section="isLoadingSection" :map-points="mapPoints" />
+        </template>
 
-      <template #structured>
-        <ArticleStructuredView
-          :document-id="document.id"
-          :recipe-ingredients="document.recipe_ingredients ?? null"
-          :show-index="showSidebar !== false"
-        />
-      </template>
+        <template #structured>
+          <ArticleStructuredView
+            :document-id="document.id"
+            :recipe-ingredients="document.recipe_ingredients ?? null"
+            :show-index="showSidebar !== false"
+          />
+        </template>
 
-      <template #full>
-        <UCard>
-          <div class="p-6">
-            <div
-              v-if="document.fulltext"
-              class="prose prose-sm max-w-none"
-              v-html="md.render(document.fulltext)"
-            />
-            <UAlert
-              v-else
-              color="neutral"
-              variant="subtle"
-              :title="t('common.articleNoFulltext')"
-            />
-          </div>
-        </UCard>
-      </template>
+        <template #full>
+          <UCard>
+            <div class="p-6">
+              <div
+                v-if="document.fulltext"
+                class="prose prose-sm max-w-none"
+                v-html="md.render(document.fulltext)"
+              />
+              <UAlert
+                v-else
+                color="neutral"
+                variant="subtle"
+                :title="t('common.articleNoFulltext')"
+              />
+            </div>
+          </UCard>
+        </template>
 
-      <template #chat>
-        <ViewModeChat :document="document" />
-      </template>
-    </UTabs>
+        <template #chat>
+          <ViewModeChat :document="document" />
+        </template>
+      </UTabs>
+    </ArticleTextSelectionCapture>
   </div>
 </template>
 
@@ -43,6 +45,7 @@ import { computed, provide, ref, watch, onMounted } from "vue";
 import MarkdownIt from "markdown-it";
 import ArticleStructuredView from './ArticleStructuredView.vue';
 import ArticleSummaryView from './ArticleSummaryView.vue';
+import ArticleTextSelectionCapture from './ArticleTextSelectionCapture.vue';
 import { useI18n } from 'vue-i18n';
 import { PinArticleContextKey } from './pinContext';
 

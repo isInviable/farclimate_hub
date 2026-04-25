@@ -5,41 +5,34 @@
     :class="{ 'pin-active': isPinnedUi }"
   >
     <slot></slot>
-    <UPopover arrow v-model:open="isPopoverOpen">
-      <UButton
-        @click="handlePin"
-        icon="mdi:pin"
-        variant="ghost"
-        color="primary"
-        class="cursor-pointer pin-button absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-1 rounded-full shadow-md hover:bg-gray-50"
-        :class="{ 'opacity-100': isPinnedUi }"
-        :loading="pinBusy"
-      >
-      </UButton>
-      <template #content>
-        <div class="flex flex-col gap-2 px-4 py-4">
-          <UTextarea
-            v-model="pinNotes"
-            :placeholder="$t('pins.notesPlaceholder')"
-            size="lg"
-            max-rows="8"
-            class="w-72 "
-          />
-          <UButton
-            @click="isPopoverOpen = false"
-            class="cursor-pointer"
-            color="neutral"
-            >{{ $t("pins.saveNotes") }}</UButton
-          >
-        </div>
-      </template>
-    </UPopover>
+    <UButton
+      icon="mdi:pin"
+      variant="ghost"
+      color="primary"
+      class="cursor-pointer pin-button absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mb-1 rounded-full shadow-md hover:bg-gray-50"
+      :class="{ 'opacity-100': isPinnedUi }"
+      :loading="pinBusy"
+      :aria-label="$t('pins.capture.buttonAria')"
+      @click.stop="handlePinButton"
+    />
+
+    <PinCaptureDialog
+      v-model:open="isCaptureDialogOpen"
+      :body-kind="bodyKind"
+      :title="pinTitle"
+      :preview="capturePreview"
+      :saving="pinBusy"
+      :error="saveError"
+      @save="savePin"
+      @cancel="saveError = null"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { usePin } from "@/composables/usePin";
 import { usePinsSupabase } from "~/composables/usePinsSupabase";
+import PinCaptureDialog from "../../PinCaptureDialog.vue";
 
 const props = defineProps<{
   contentSelector?: string;
@@ -60,9 +53,9 @@ const { pinContent, unpinContent } = usePin();
 const pinsApi = usePinsSupabase();
 const pinWrapper = ref<HTMLElement | null>(null);
 const contentElement = ref<HTMLElement | null>(null);
-const pinNotes = ref("");
-const isPopoverOpen = ref(false);
+const isCaptureDialogOpen = ref(false);
 const pinBusy = ref(false);
+const saveError = ref<string | null>(null);
 /** Pins without `document_uid` (e.g. some blocks): track row id locally. */
 const adHocRowId = ref<string | null>(null);
 
@@ -101,18 +94,34 @@ const isPinnedUi = computed(() => {
   return !!adHocRowId.value;
 });
 
-watch(isPopoverOpen, (open, wasOpen) => {
-  if (open) {
-    const id = effectiveRowId.value;
-    if (id) {
-      const row = pinsApi.pins.value.find((p) => p.id === id);
-      pinNotes.value = row?.user_note ?? "";
-    }
-  } else if (wasOpen && effectiveRowId.value) {
-    void pinsApi.updatePin(effectiveRowId.value, {
-      user_note: pinNotes.value || null,
-    });
+const bodyKind = computed(() => {
+  if (props.pinType === "website") return "website";
+  if (props.pinType === "contact") return "contact";
+  if (props.pinType === "image") return "image";
+  return "text_segment";
+});
+
+const pinTitle = computed(() => props.pinTitle?.trim() || undefined);
+
+const capturePreview = computed(() => {
+  const pinDataRecord =
+    props.pinData &&
+    typeof props.pinData === "object" &&
+    !Array.isArray(props.pinData)
+      ? (props.pinData as Record<string, unknown>)
+      : null;
+
+  for (const key of ["subtitle", "description", "title"]) {
+    const value = pinDataRecord?.[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
   }
+
+  return (
+    contentElement.value?.innerText ||
+    contentElement.value?.textContent ||
+    props.pinTitle ||
+    ""
+  ).trim();
 });
 
 onMounted(() => {
@@ -123,35 +132,53 @@ onMounted(() => {
   }
 });
 
-async function handlePin() {
+async function handlePinButton() {
   if (!contentElement.value || pinBusy.value) return;
+
+  if (!isPinnedUi.value) {
+    saveError.value = null;
+    isCaptureDialogOpen.value = true;
+    return;
+  }
 
   pinBusy.value = true;
   try {
-    if (!isPinnedUi.value) {
-      const pinDataRecord =
-        props.pinData &&
-        typeof props.pinData === "object" &&
-        !Array.isArray(props.pinData)
-          ? (props.pinData as Record<string, unknown>)
-          : undefined;
-      const id = await pinContent(contentElement.value, {
-        sourceDocumentUid: documentUid.value ?? null,
-        title: props.pinTitle,
-        type: props.pinType,
-        data: pinDataRecord,
-        notes: pinNotes.value || undefined,
-        location: documentLocation.value,
-      });
-      if (id && !documentUid.value) adHocRowId.value = id;
-      emit("pinned");
-    } else {
-      const id = effectiveRowId.value;
-      if (id) await unpinContent(id);
-      adHocRowId.value = null;
-      pinNotes.value = "";
-      emit("unpinned");
+    const id = effectiveRowId.value;
+    if (id) await unpinContent(id);
+    adHocRowId.value = null;
+    emit("unpinned");
+  } finally {
+    pinBusy.value = false;
+  }
+}
+
+async function savePin(note: string) {
+  if (!contentElement.value || pinBusy.value) return;
+
+  pinBusy.value = true;
+  saveError.value = null;
+  try {
+    const pinDataRecord =
+      props.pinData &&
+      typeof props.pinData === "object" &&
+      !Array.isArray(props.pinData)
+        ? (props.pinData as Record<string, unknown>)
+        : undefined;
+    const id = await pinContent(contentElement.value, {
+      sourceDocumentUid: documentUid.value ?? null,
+      title: props.pinTitle,
+      type: props.pinType,
+      data: pinDataRecord,
+      notes: note,
+      location: documentLocation.value,
+    });
+    if (!id) {
+      saveError.value = pinsApi.error.value ?? "Could not save pin";
+      return;
     }
+    if (!documentUid.value) adHocRowId.value = id;
+    isCaptureDialogOpen.value = false;
+    emit("pinned");
   } finally {
     pinBusy.value = false;
   }

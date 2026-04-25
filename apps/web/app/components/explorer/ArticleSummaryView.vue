@@ -7,6 +7,7 @@
         :label="$t('summaryHeaders.shortDescription')"
         icon="mdi:comment-text-outline"
         class="col-span-2"
+        :capture-enabled="false"
       >
         <p class="text-sm text-gray-700">{{ document.subtitle }}</p>
       </SelectableBlock>
@@ -41,6 +42,9 @@
           :label="img.title || $t('article.imageNumber', { n: index + 1 })"
           icon="mdi:image-outline"
           pin-kind="image"
+          source-view="summary"
+          :payload="imagePinPayload(img, index)"
+          :preview="img.description || img.title || $t('article.imageNumber', { n: index + 1 })"
           class="min-w-0"
         >
           <button
@@ -81,6 +85,7 @@
       <SelectableBlock
         :label="$t('summaryHeaders.sector')"
         icon="mdi:tree-outline"
+        :capture-enabled="false"
       >
         <div class="flex flex-wrap gap-2">
           <span
@@ -97,11 +102,13 @@
         :label="$t('summaryHeaders.date')"
         :value="parsedDocument.implementation_years"
         icon="mdi:calendar-range"
+        :capture-enabled="false"
       />
       <!-- HAZARDS -->
       <SelectableBlock
         :label="$t('summaryHeaders.hazards')"
         icon="mdi:weather-lightning-rainy"
+        :capture-enabled="false"
       >
         <div class="flex flex-wrap gap-2">
           <span
@@ -117,6 +124,7 @@
       <SelectableBlock
         :label="$t('summaryHeaders.typeOfSolution')"
         icon="mdi:lightbulb-on-outline"
+        :capture-enabled="false"
       >
         <div class="flex flex-wrap gap-2">
           <span
@@ -133,6 +141,11 @@
         :label="$t('summaryHeaders.whoIsInvolved')"
         icon="mdi:account-group-outline"
         :showAiIcon="!!getSectionSummary('who_is_involved')"
+        pin-kind="ai_summary"
+        source-view="summary"
+        :capture-enabled="!!getSectionSummary('who_is_involved')"
+        :payload="aiSummaryPayload('who_is_involved')"
+        :preview="aiSummaryPreview('who_is_involved')"
       >
         <div
           v-if="isLoadingSection('who_is_involved')"
@@ -173,6 +186,7 @@
         :label="$t('summaryHeaders.geographicalScope')"
         icon="mdi:map-marker-radius-outline"
         class="relative"
+        :capture-enabled="false"
       >
         <MapBase
           v-if="mapPoints.length > 0"
@@ -188,6 +202,11 @@
         :label="$t('summaryHeaders.economicData')"
         icon="mdi:currency-eur"
         :showAiIcon="!!getSectionSummary('economic_data')"
+        pin-kind="ai_summary"
+        source-view="summary"
+        :capture-enabled="!!getSectionSummary('economic_data')"
+        :payload="aiSummaryPayload('economic_data')"
+        :preview="aiSummaryPreview('economic_data')"
       >
         <div
           v-if="isLoadingSection('economic_data')"
@@ -232,6 +251,9 @@
         :label="$t('summaryHeaders.contactPersons')"
         icon="mdi:account-box-outline"
         pin-kind="contact"
+        source-view="summary"
+        :payload="contactPinPayload"
+        :preview="document.contact || ''"
       >
         <div
           v-if="document.contact"
@@ -248,10 +270,17 @@
         icon="mdi:web"
         is-link
         pin-kind="website"
+        source-view="summary"
+        :payload="websitePinPayload"
+        :preview="document.websites?.url || ''"
       />
       <SelectableBlock
         :label="$t('summaryHeaders.scientificReferences')"
         icon="mdi:book-open-outline"
+        pin-kind="reference"
+        source-view="summary"
+        :payload="referencesPinPayload"
+        :preview="document.references || ''"
       >
         <div
           v-if="document.references"
@@ -266,6 +295,7 @@
       <SelectableBlock
         :label="$t('summaryHeaders.keywords')"
         icon="mdi:tag-outline"
+        :capture-enabled="false"
       >
         <div class="flex flex-wrap gap-2">
           <span
@@ -282,6 +312,7 @@
         v-if="geographicEntries.length > 0"
         label="Geographic characterisation"
         icon="mdi:map-marker-multiple-outline"
+        :capture-enabled="false"
       >
         <div class="space-y-3">
           <div
@@ -368,6 +399,55 @@ function openLightbox(img, index) {
   lightboxCredits.value = img.credits || null;
   lightboxOpen.value = true;
 }
+
+function imagePinPayload(img, index) {
+  return {
+    src: img.public_url,
+    alt: img.title || $t("article.imageAlt", { n: index + 1 }),
+    title: img.title || null,
+    description: img.description || null,
+    credits: img.credits || null,
+    sourceView: "summary",
+  };
+}
+
+function aiSummaryPreview(section) {
+  const summary = props.getSectionSummary(section);
+  if (!summary?.items || !Array.isArray(summary.items)) return "";
+  return summary.items
+    .map((item) =>
+      [item.label, item.description].filter(Boolean).join(": ")
+    )
+    .filter(Boolean)
+    .join("\n");
+}
+
+function aiSummaryPayload(section) {
+  const summary = props.getSectionSummary(section);
+  return {
+    sectionKey: section,
+    items: Array.isArray(summary?.items) ? summary.items : [],
+    markdown: aiSummaryPreview(section),
+    sourceView: "summary",
+    generatedBy: "ai_summary",
+  };
+}
+
+const contactPinPayload = computed(() => ({
+  markdown: props.document.contact || "",
+  sourceView: "summary",
+}));
+
+const websitePinPayload = computed(() => ({
+  url: props.document.websites?.url || "",
+  markdown: props.document.websites?.url || "",
+  sourceView: "summary",
+}));
+
+const referencesPinPayload = computed(() => ({
+  markdown: props.document.references || "",
+  sourceView: "summary",
+}));
 
 const preferredGeoKeyOrder = [
   "city",
