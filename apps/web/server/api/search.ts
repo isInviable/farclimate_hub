@@ -148,8 +148,9 @@ export default defineEventHandler(async (event) => {
         if (summaryErr) throw summaryErr
         const summaryRows = (summaryData || []) as SummaryFacetRow[]
         const allowedIds = new Set(filterIdsByFacets(docIds, summaryRows, facetFilters))
-        rows = rows.filter((r: any) => allowedIds.has(r.id)).slice(0, limit)
+        rows = rows.filter((r: any) => allowedIds.has(r.id))
       }
+      rows = rows.slice(0, limit)
       const hits = rows.map((row: any) => buildSearchHit(row, 1))
       return { count: hits.length, hits }
     }

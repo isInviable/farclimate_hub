@@ -191,6 +191,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive } from "vue";
 import { useSearchStore } from '@/stores/search';
+import type { FilterFacetsResponse } from '@/types/facets';
 import type { SavedSearchFilters } from "~/types/savedSearches";
 import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
@@ -202,11 +203,8 @@ import SavedSearchMenu from './SavedSearchMenu.vue';
 // Props
 const props = defineProps<{
   searchResults?: any[];
-  /** From search store facetsData (POST /api/facets response). When set, Sector, Hazards and Biogeographical regions filters use real data. */
-  facetsData?: {
-    global: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[]; biogeographical_regions: { value: string; count: number }[] };
-    for_result_set: { sectors: { value: string; count: number }[]; climate_impacts: { value: string; count: number }[]; adaptation_approaches: { value: string; count: number }[]; keywords: { value: string; count: number }[]; biogeographical_regions: { value: string; count: number }[] };
-  } | null;
+  /** Facets with global corpus totals plus counts for the current result set. */
+  facetsData?: FilterFacetsResponse | null;
 }>();
 
 // Emits
@@ -221,7 +219,7 @@ const filters = reactive<Record<string, any>>({});
 const enabledFilters = reactive<Record<string, boolean>>({});
 const searchResults = ref(props.searchResults || []);
 
-// Derive for_result_set counts as Record<value, count> for BarChartFilter
+// Derive current result-set counts as Record<value, count> for BarChartFilter.
 const sectorCountsFromResultSet = computed(() => {
   const arr = props.facetsData?.for_result_set?.sectors ?? [];
   return Object.fromEntries(arr.map((e) => [e.value, e.count]));

@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
   const modelMessages = await convertToModelMessages(messages as UIMessage[]);
 
   const result = streamText({
-    model: google("gemini-3-flash-preview"),
+    model: google("gemini-3.1-flash-lite-preview"),
     system,
     messages: modelMessages,
     // Re-chunk provider output so the UI updates in smaller steps (word ≈ ChatGPT-like; use "line" for newline-based chunks).

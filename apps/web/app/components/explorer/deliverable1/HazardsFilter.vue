@@ -50,7 +50,6 @@ const items = computed(() =>
   (props.climateImpacts ?? []).map((e) => ({ key: e.value, label: e.value }))
 );
 const counts = computed(() => props.forResultSetCounts ?? {});
-/** Total counts per climate impact (for the "max" bar); never changes. */
 const countsGlobal = computed(() =>
   Object.fromEntries((props.climateImpacts ?? []).map((e) => [e.value, e.count]))
 );

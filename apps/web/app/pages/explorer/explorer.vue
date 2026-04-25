@@ -8,20 +8,12 @@
         <div class="sticky top-8">
           <!-- Results Counter -->
           <div class="flex items-center mb-6">
-            <div
-              class="bg-slate-400 border border-slate-400 px-1 py-1 text-xs font-mono"
-            >
-              <span class="text-white pl-2"
-                > <span class="font-medium">{{ filteredPapers.length }}</span>
+            <div class="bg-black border border-black px-2 py-1 text-xs font-mono">
+              <span class="text-white">
+                Showing <span class="font-medium">{{ filteredPapers.length }}</span>
+                of <span class="font-medium">{{ corpusTotalCount }}</span>
+                case studies
               </span>
-            </div>
-            <div
-              class="bg-black border border-black px-2 py-1 text-xs font-mono"
-            >
-              <span class="text-white ">
-                / <span class="font-medium">{{ searchStore.resultsData?.hits?.length || 0 }}</span>
-                case studies</span
-              >
             </div>
           </div>
 
@@ -228,6 +220,7 @@ import { useSearchStore } from "@/stores/search";
 import type { ExplorerEffectiveFilters } from "@/types/explorerFilters";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
+import { fetchCorpusMetadata } from "@/composables/useFacets";
 import type { ArticleDetail } from "@/types/search";
 
 // i18n composable for language detection
@@ -349,6 +342,7 @@ const searchQuery = computed({
 });
 
 const isSearching = computed(() => searchStore.isSearching);
+const corpusTotalCount = computed(() => searchStore.corpusMetadata?.totalCount ?? 0);
 
 // Methods
 const setViewMode = (mode: string) => {
@@ -407,6 +401,15 @@ async function search() {
 
 async function loadAllArticles() {
   await loadAll();
+}
+
+async function loadCorpusMetadata() {
+  try {
+    const metadata = await fetchCorpusMetadata();
+    searchStore.setCorpusMetadata(metadata);
+  } catch (e) {
+    console.warn("[explorer] failed to load corpus metadata", e);
+  }
 }
 
 // Document selection handlers
@@ -512,6 +515,8 @@ const filteredPapers = computed(() => {
 
 // Lifecycle
 onMounted(async () => {
+  await loadCorpusMetadata();
+
   // Check for URL parameters
   const typeParam = route.query.type;
   if (typeParam) {

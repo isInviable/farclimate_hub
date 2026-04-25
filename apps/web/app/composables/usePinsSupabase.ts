@@ -40,6 +40,7 @@ function mapBodyKindToBoardType(
     kind === "selected_text" ||
     kind === "recipe_section" ||
     kind === "ai_summary" ||
+    kind === "grid_compare_summary" ||
     kind === "chat_response" ||
     kind === "reference" ||
     kind === "document" ||
@@ -73,6 +74,16 @@ function boardDataFromPin(pin: HumanPinRow): Record<string, unknown> {
 
   if (pin.body_kind === "chat_response" && typeof d.text === "string" && !d.markdown) {
     d.markdown = d.text
+  }
+
+  if (
+    pin.body_kind === "grid_compare_summary" &&
+    typeof d.markdown !== "string" &&
+    (typeof d.data === "string" || typeof d.summary === "string")
+  ) {
+    const a = typeof d.data === "string" ? d.data.trim() : ""
+    const b = typeof d.summary === "string" ? d.summary.trim() : ""
+    d.markdown = [a, b].filter(Boolean).join("\n\n")
   }
 
   if (pin.body_kind === "image" && typeof d.src !== "string") {

@@ -1,4 +1,4 @@
-import type { FilterFacetsResponse } from "@/types/facets"
+import type { ExplorerCorpusMetadataResponse, FilterFacetsResponse } from "@/types/facets"
 
 /**
  * Fetches filter facets (global + for result set) from POST /api/facets.
@@ -10,4 +10,11 @@ export async function fetchFacets(docIds: string[]): Promise<FilterFacetsRespons
     method: "POST",
     body,
   })
+}
+
+/**
+ * Fetches cached explorer corpus metadata: unique case-study total and global facet counts.
+ */
+export async function fetchCorpusMetadata(): Promise<ExplorerCorpusMetadataResponse> {
+  return await $fetch<ExplorerCorpusMetadataResponse>("/api/explorer/corpus-metadata")
 }

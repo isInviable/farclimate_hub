@@ -21,6 +21,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -50,7 +51,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 # Define model globally so it is easy to update.
 # google-genai expects model IDs like "gemini-2.0-flash", not "gemini/...".
-_raw_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+_raw_model = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
 GEMINI_MODEL = _raw_model.split("/")[-1]
 
 if not GEMINI_API_KEY:
@@ -68,7 +69,10 @@ COST_ESTIMATION_CACHE_FILE = CACHE_DIR / "cost_estimation_cache.json"
 RECIPE_EXTRACTION_CACHE_FILE = CACHE_DIR / "recipe_extraction_cache.json"
 
 # Bump when the recipe prompt or canonical ingredients shape changes (invalidates cache file entries).
-RECIPE_EXTRACTION_CACHE_VERSION = "v1"
+RECIPE_EXTRACTION_CACHE_VERSION = "v2"
+
+# Bump when years prompt / JSON contract changes (invalidates years_cache.json keys).
+YEARS_CACHE_KEY_PREFIX = "v2:"
 
 
 def _load_json_cache(path: Path) -> dict:
@@ -113,17 +117,22 @@ RECIPE_CANONICAL_KEYS: tuple[str, ...] = (
 )
 
 # Map JSON keys from the model to canonical ingredient keys.
+# Includes legacy `context_*` names from older prompts; structured JSON uses canonical names.
 RECIPE_MODEL_TO_CANONICAL: dict[str, str] = {
     "who_is_involved": "who_is_involved",
     "economic_data": "economic_data",
     "context_summary": "context_summary",
     "context_challenges": "challenges",
+    "challenges": "challenges",
     "context_policy": "policy_context",
+    "policy_context": "policy_context",
     "context_legal_aspects": "legal_aspects",
+    "legal_aspects": "legal_aspects",
     "objectives": "objectives",
     "solutions_implemented": "solutions_implemented",
     "implementation_phases": "implementation_phases",
     "success_and_limiting_factors": "success_and_limiting",
+    "success_and_limiting": "success_and_limiting",
     "benefits": "benefits",
     "lessons_learnt": "lessons_learnt",
     "transferability": "transferability",
@@ -262,25 +271,58 @@ def extract_years_from_fulltext(fulltext: str) -> dict | str:
     if len(text) > 8000:
         text = text[:8000]
 
-    if text in global_years_cache:
-        cached = global_years_cache[text]
-        # If we previously cached an empty string (e.g. from an error),
-        # treat it as a miss so we can retry with a now-correct setup.
-        if cached != "":
-            print("Found years in cache for given fulltext.")
-            return cached
+    years_cache_key = YEARS_CACHE_KEY_PREFIX + text
+    if years_cache_key in global_years_cache:
+        cached = global_years_cache[years_cache_key]
+        print("Found years in cache for given fulltext.")
+        return cached
+
+    # Backfill from the pre-v2 cache shape when it has a useful value.
+    legacy_cached = global_years_cache.get(text)
+    if legacy_cached not in (None, ""):
+        print("Found years in legacy cache for given fulltext.")
+        global_years_cache[years_cache_key] = legacy_cached
+        _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
+        return legacy_cached
+
+    def fallback_years_from_text() -> dict | str:
+        """Cheap fallback for transient/partial Gemini JSON failures."""
+        years = [int(y) for y in re.findall(r"\b(?:19|20)\d{2}\b", text)]
+        if not years:
+            return ""
+        start_year = str(min(years))
+        end_year = str(max(years))
+        if start_year == end_year:
+            end_year = ""
+        out = {"start_year": start_year, "end_year": end_year}
+        print(f"  [YEARS] fallback regex -> {out}")
+        return out
+
+    years_schema = types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "start_year": types.Schema(
+                type=types.Type.STRING,
+                description="First year of implementation (YYYY) or empty if unknown",
+            ),
+            "end_year": types.Schema(
+                type=types.Type.STRING,
+                description="Last year of implementation (YYYY) or empty if unknown or ongoing",
+            ),
+        },
+        required=["start_year", "end_year"],
+    )
 
     try:
         prompt = (
             "This text describes an adaptation case study, which may include information "
             "about when the adaptation project or measure was implemented.\n\n"
             "Task:\n"
-            "- Carefully scan the text and extract the starting and ending years of the implementation period.\n"
-            "- If you can only find one year, return it as 'start_year' and leave 'end_year' empty.\n"
-            "- If the text does not contain any clear information about implementation years, return an empty string.\n\n"
-            "Return format:\n"
-            '- Either an empty string ""\n'
-            "- Or a JSON object like: {\"start_year\": \"2015\", \"end_year\": \"2020\"}\n\n"
+            "- Extract the starting and ending calendar years of the main implementation or project period.\n"
+            "- Prefer four-digit years (e.g. 2015) when the source gives them.\n"
+            "- If only one year is stated, return it in start_year and set end_year to an empty string.\n"
+            "- If no implementation years are present in the text, set both fields to empty strings.\n"
+            "Respond with JSON only (the schema is enforced by the API).\n\n"
             "Text:\n"
             f"{text}"
         )
@@ -288,55 +330,40 @@ def extract_years_from_fulltext(fulltext: str) -> dict | str:
         response = genai_client.models.generate_content(
             model=GEMINI_MODEL,
             contents=prompt,
-            config=types.GenerateContentConfig(max_output_tokens=150),
+            config=types.GenerateContentConfig(
+                max_output_tokens=2048,
+                temperature=0,
+                response_mime_type="application/json",
+                response_schema=years_schema,
+                thinking_config=types.ThinkingConfig(include_thoughts=False),
+            ),
         )
 
-        result_text: str | None = None
-        if hasattr(response, "text") and response.text:
-            result_text = response.text
-        elif hasattr(response, "candidates") and response.candidates:
-            candidate = response.candidates[0]
-            if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
-                if isinstance(candidate.content.parts, list):
-                    result_text = "".join(
-                        [p.get("text", "") if isinstance(p, dict) else str(p) for p in candidate.content.parts]
-                    )
-                else:
-                    result_text = str(candidate.content.parts)
-            elif hasattr(candidate.content, "text"):
-                result_text = candidate.content.text
+        result = _parse_json_object_from_gemini(response)
+        if not result:
+            if response is not None and _gemini_result_text(response) is not None:
+                print(
+                    "Years response could not be parsed as JSON object:",
+                    (_gemini_result_text(response) or "")[:300],
+                    file=sys.stderr,
+                )
+            else:
+                print("Years response was empty (no text).", file=sys.stderr)
+            _log_gemini_response_debug("years", response)
+            fallback = fallback_years_from_text()
+            global_years_cache[years_cache_key] = fallback
+            _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
+            return fallback
 
-        print("Extracted result_text for years:", result_text)
-        if not result_text:
-            global_years_cache[text] = ""
-            _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
-            return ""
-
-        cleaned_text = (
-            result_text.strip()
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-        try:
-            result = json.loads(cleaned_text)
-            # Normalise to expected shape
-            if not isinstance(result, dict):
-                raise ValueError("Years result is not a dict")
-            start_year = str(result.get("start_year", "") or "")
-            end_year = str(result.get("end_year", "") or "")
-            out = {"start_year": start_year, "end_year": end_year}
-            global_years_cache[text] = out
-            _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
-            return out
-        except Exception:  # noqa: BLE001
-            print("Years response is not valid JSON:", cleaned_text, file=sys.stderr)
-            global_years_cache[text] = ""
-            _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
-            return ""
+        start_year = str(result.get("start_year", "") or "")
+        end_year = str(result.get("end_year", "") or "")
+        out = {"start_year": start_year, "end_year": end_year}
+        global_years_cache[years_cache_key] = out
+        _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
+        return out
     except Exception as e:  # noqa: BLE001
         print(f"Error extracting years from fulltext: {e}", file=sys.stderr)
-        global_years_cache[text] = ""
+        global_years_cache[years_cache_key] = ""
         _save_json_cache(YEARS_CACHE_FILE, global_years_cache)
         return ""
 
@@ -538,107 +565,43 @@ def normalize_recipe_ingredients(raw: dict) -> dict[str, str]:
     return out
 
 
+def has_renderable_recipe_ingredients(ingredients: dict[str, str]) -> bool:
+    """Same basic rule as the UI: at least one section has non-blank text."""
+    return any(isinstance(v, str) and v.strip() for v in ingredients.values())
+
+
 _RECIPE_PROMPT_TEMPLATE = """You are a specialist in summarizing climate adaptation case studies.
-You will receive the raw text of a case study. Your task is to extract
-and rewrite the content into standardized sections and return them as a
-single JSON object.
+You will receive the raw text of a case study. The API will ask you for a JSON object
+with a fixed set of string fields. Each value is one markdown string; use an empty
+string for any section with no content in the source.
 
 CRITICAL RULES:
 - Only use information explicitly present in the source text.
-- If a section has no corresponding content in the source, return an
-  empty string "" for that key.
+- If a section has no corresponding content in the source, use an empty string for that key.
 - Do not infer, estimate, or expand beyond what is stated.
-- Do not merge content between sections.
-- Return only the JSON object. No preamble, no explanation, no markdown
-  code blocks.
-- Do NOT include keys for title, short_description, or SDGs.
+- Do not merge content between distinct sections.
+- Do NOT add title, short_description, or SDG fields (not part of the schema).
 
-**Formatting instructions:**
-The json object values must be formatted in markdown.
-- Each key should have only text as the single value, no arrays or any other complex data types.
+Formatting inside each string value (markdown):
 - Use **bold** for important concepts, numbers, and names.
-- Do not use arrays for list of items, use bullet points or numbered lists instead.
-- Use bullet points or numbered lists where appropriate.
-- Add extra line breaks between sections for clarity.
-- Make the markdown visually attractive and easy to scan.
+- Use bullet or numbered lists (not JSON arrays) for list-like content in the string.
+- Add line breaks for readability. Voice: professional, concise, factual, kind.
 
-Voice  type:
- - Professional
- - concise
- - factual
- - kind
+Section guide (one JSON string field per item; use the exact key names the schema provides):
 
-
-The JSON object must have exactly these keys:
-
-{
-  "who_is_involved":
-    Identify the main organizations, institutions, or groups that
-    participated. For each, briefly state their role or responsibility.
-    Mention any participatory processes (surveys, consultations,
-    workshops) and their effect on the project. Write as flowing prose,
-    2-4 sentences. Do not include individual names or contact details.,
-
-  "economic_data":
-    All financial and cost-related information: total project cost and
-    what it covered, whether tools are free or paid, any variable costs.
-    Include references to other resources for cost details if mentioned.
-    Factual only — do not estimate or infer costs not explicitly stated.,
-
-  "context_summary":
-    3-5 sentences capturing the essence: what problem it addresses, what
-    solution was developed, where it was implemented, and who led it.
-    Standalone introduction for someone unfamiliar with the case.,
-
-  "context_challenges":
-    The specific environmental, technical, or operational problems that
-    motivated the project. Include climate-related risks, knowledge gaps,
-    or urgency factors mentioned. Do not add challenges not explicitly
-    stated.,
-
-  "context_policy":
-    The policy framework within which the project was developed. Include
-    specific plans, programmes, or government strategies explicitly named
-    in the source. Only include what is explicitly mentioned.,
-
-  "context_legal_aspects":
-    Laws, regulations, directives, or legal obligations mentioned.
-    Include article or paragraph references if provided. Do not interpret
-    or infer legal implications beyond what is stated.,
-
-  "objectives":
-    The stated goals of the project as a numbered list. Keep original
-    intent but rephrase for clarity. Do not add objectives not explicitly
-    mentioned.,
-
-  "solutions_implemented":
-    Concrete actions, tools, systems, or measures put in place. Preserve
-    any numbered structure from the source. Include specific outputs and
-    quantitative details only if explicitly stated.,
-
-  "implementation_phases":
-    Dates, durations, milestones, or sequencing information in
-    chronological order. Only what is explicitly stated in the source.,
-
-  "success_and_limiting_factors":
-    Two clearly labelled subsections: (1) success factors and (2)
-    limiting factors. Only include factors explicitly discussed — do not
-    generalise or add assumed factors.,
-
-  "benefits":
-    Environmental, social, economic, or institutional benefits mentioned.
-    Reflect whether benefits are confirmed or expected/unquantified. Do not
-    attribute numbers or outcomes not explicitly stated.,
-
-  "lessons_learnt":
-    Key takeaways explicitly stated by the project authors. May relate to
-    process, stakeholder engagement, tool design, or knowledge transfer. Do not derive lessons from other sections.,
-
-  "transferability":
-    What the source says about replicating or adapting this approach
-    elsewhere. Include conditions, required adaptations, or existing
-    replications mentioned. Only what is explicitly stated.
-}
+- who_is_involved: Organizations, institutions, or groups; roles; participatory processes (2–4 sentences; no private contact details).
+- economic_data: Financial or cost information as stated; no invented figures.
+- context_summary: 3–5 sentence standalone overview (problem, solution, place, lead actors).
+- challenges: Environmental, technical, or operational problems; climate risks; only from the source.
+- policy_context: Named plans, strategies, or programmes; only as stated.
+- legal_aspects: Laws, regulations, or obligations; only as stated.
+- objectives: Project goals; numbered list in markdown if the source is structured.
+- solutions_implemented: Concrete measures, systems, or outputs; preserve numbering if present.
+- implementation_phases: Time sequence (dates, durations, milestones); only as stated.
+- success_and_limiting: Two subsections: success factors and limiting factors; only factors discussed in the source.
+- benefits: Environmental, social, economic, or institutional benefits; no invented outcomes.
+- lessons_learnt: Stated takeaways only; do not import from other sections.
+- transferability: Replication, conditions, or upscaling; only as stated.
 
 Case study text:
 """
@@ -662,6 +625,80 @@ def _gemini_result_text(response) -> str | None:  # noqa: ANN001
     return result_text
 
 
+def _log_gemini_response_debug(label: str, response) -> None:  # noqa: ANN001
+    """Print compact Gemini response diagnostics when structured parsing fails."""
+    if response is None:
+        print(f"[Gemini:{label}] no response object", file=sys.stderr)
+        return
+    usage = getattr(response, "usage_metadata", None)
+    if usage is not None and hasattr(usage, "model_dump"):
+        print(f"[Gemini:{label}] usage={usage.model_dump()}", file=sys.stderr)
+    candidates = getattr(response, "candidates", None) or []
+    if not candidates:
+        print(f"[Gemini:{label}] no candidates", file=sys.stderr)
+        return
+    candidate = candidates[0]
+    finish_reason = getattr(candidate, "finish_reason", None)
+    finish_message = getattr(candidate, "finish_message", None)
+    token_count = getattr(candidate, "token_count", None)
+    safety = getattr(candidate, "safety_ratings", None)
+    print(
+        f"[Gemini:{label}] finish_reason={finish_reason} "
+        f"finish_message={finish_message!r} token_count={token_count}",
+        file=sys.stderr,
+    )
+    if safety:
+        print(f"[Gemini:{label}] safety_ratings={safety}", file=sys.stderr)
+
+
+def _parse_json_object_from_gemini(response) -> dict | None:  # noqa: ANN001
+    """
+    Structured JSON (response_mime_type + response_schema) sets `response.parsed`.
+    Otherwise parse `response.text` as JSON. Returns a dict or None.
+    """
+    if response is None:
+        return None
+    parsed = getattr(response, "parsed", None)
+    if parsed is not None:
+        if isinstance(parsed, dict):
+            return parsed
+        if hasattr(parsed, "model_dump") and callable(parsed.model_dump):
+            dumped = parsed.model_dump()
+            return dumped if isinstance(dumped, dict) else None
+    result_text = _gemini_result_text(response)
+    if not result_text or not str(result_text).strip():
+        return None
+    cleaned = (
+        str(result_text)
+        .strip()
+        .replace("```json", "")
+        .replace("```", "")
+        .strip()
+    )
+    if not cleaned:
+        return None
+    try:
+        out = json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None
+    return out if isinstance(out, dict) else None
+
+
+def _recipe_ingredients_json_schema() -> types.Schema:
+    """JSON schema for knowledge.recipe.ingredients (canonical string keys, markdown values)."""
+    props: dict[str, types.Schema] = {}
+    for key in RECIPE_CANONICAL_KEYS:
+        label = " ".join(key.split("_"))
+        props[key] = types.Schema(
+            type=types.Type.STRING,
+            description=f"Markdown for {label} section, or empty if not in the source.",
+        )
+    return types.Schema(
+        type=types.Type.OBJECT,
+        properties=props,
+    )
+
+
 def extract_recipe(source_text: str) -> dict[str, str]:
     """
     Extract recipe sections from case-study body text (uses `fulltext` in practice).
@@ -678,12 +715,24 @@ def extract_recipe(source_text: str) -> dict[str, str]:
     if len(text) > 48000:
         text = text[:48000]
 
-    cache_key = f"{RECIPE_EXTRACTION_CACHE_VERSION}:{hashlib.sha256(text.encode('utf-8')).hexdigest()}"
+    text_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+    cache_key = f"{RECIPE_EXTRACTION_CACHE_VERSION}:{text_hash}"
     if cache_key in global_recipe_extraction_cache:
         cached = global_recipe_extraction_cache[cache_key]
         if isinstance(cached, dict):
             print("Found recipe extraction in cache.")
             return normalize_recipe_ingredients(cached)
+
+    # Reuse good v1 recipe cache entries instead of recomputing every article after the v2 bump.
+    legacy_cache_key = f"v1:{text_hash}"
+    cached = global_recipe_extraction_cache.get(legacy_cache_key)
+    if isinstance(cached, dict):
+        normalized_cached = normalize_recipe_ingredients(cached)
+        if has_renderable_recipe_ingredients(normalized_cached):
+            print("Found recipe extraction in legacy cache.")
+            global_recipe_extraction_cache[cache_key] = normalized_cached
+            _save_json_cache(RECIPE_EXTRACTION_CACHE_FILE, global_recipe_extraction_cache)
+            return normalized_cached
 
     prompt = _RECIPE_PROMPT_TEMPLATE + text
 
@@ -692,24 +741,19 @@ def extract_recipe(source_text: str) -> dict[str, str]:
         response = genai_client.models.generate_content(
             model=GEMINI_MODEL,
             contents=prompt,
-            config=types.GenerateContentConfig(max_output_tokens=8192),
+            config=types.GenerateContentConfig(
+                max_output_tokens=8192,
+                temperature=0,
+                response_mime_type="application/json",
+                response_schema=_recipe_ingredients_json_schema(),
+                thinking_config=types.ThinkingConfig(include_thoughts=False),
+            ),
         )
-        result_text = _gemini_result_text(response)
-        if not result_text:
-            return None
-        cleaned = (
-            result_text.strip()
-            .replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-        try:
-            parsed = json.loads(cleaned)
-        except json.JSONDecodeError:
-            print("Recipe extraction response is not valid JSON:", cleaned[:500], file=sys.stderr)
-            return None
-        if not isinstance(parsed, dict):
-            print("Recipe extraction JSON is not an object.", file=sys.stderr)
+        parsed = _parse_json_object_from_gemini(response)
+        if not parsed:
+            snippet = (_gemini_result_text(response) or "")[:500]
+            print("Recipe extraction could not obtain JSON object:", snippet, file=sys.stderr)
+            _log_gemini_response_debug("recipe", response)
             return None
         return normalize_recipe_ingredients(parsed)
 
@@ -718,16 +762,17 @@ def extract_recipe(source_text: str) -> dict[str, str]:
         if normalized is None:
             normalized = call_and_parse()
         if normalized is None:
-            normalized = empty_recipe_ingredients()
-        global_recipe_extraction_cache[cache_key] = normalized
+            print("Recipe extraction failed after retries; not caching empty fallback.", file=sys.stderr)
+            return empty_recipe_ingredients()
+        if has_renderable_recipe_ingredients(normalized):
+            global_recipe_extraction_cache[cache_key] = normalized
+        else:
+            print("Recipe extraction returned all-empty ingredients; not caching.", file=sys.stderr)
         _save_json_cache(RECIPE_EXTRACTION_CACHE_FILE, global_recipe_extraction_cache)
         return normalized
     except Exception as e:  # noqa: BLE001
         print(f"Error extracting recipe: {e}", file=sys.stderr)
-        fallback = empty_recipe_ingredients()
-        global_recipe_extraction_cache[cache_key] = fallback
-        _save_json_cache(RECIPE_EXTRACTION_CACHE_FILE, global_recipe_extraction_cache)
-        return fallback
+        return empty_recipe_ingredients()
 
 
 def preprocess_text_field(field_value, field_type: str):  # noqa: ANN001

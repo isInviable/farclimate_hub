@@ -25,6 +25,7 @@ const comp = computed(() => {
     k === "selected_text" ||
     k === "recipe_section" ||
     k === "ai_summary" ||
+    k === "grid_compare_summary" ||
     k === "chat_response" ||
     k === "reference" ||
     k === "document" ||

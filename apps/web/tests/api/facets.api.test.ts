@@ -18,12 +18,14 @@ describe("Filter facets types and response shape", () => {
         climate_impacts: [],
         adaptation_approaches: [],
         keywords: [],
+        biogeographical_regions: [],
       },
       for_result_set: {
         sectors: [],
         climate_impacts: [],
         adaptation_approaches: [],
         keywords: [],
+        biogeographical_regions: [],
       },
     }
     expect(mock.global).toBeDefined()
@@ -33,6 +35,7 @@ describe("Filter facets types and response shape", () => {
       "climate_impacts",
       "adaptation_approaches",
       "keywords",
+      "biogeographical_regions",
     ]
     for (const cat of categories) {
       expect(Array.isArray(mock.global[cat])).toBe(true)

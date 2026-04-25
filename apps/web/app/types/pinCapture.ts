@@ -3,6 +3,7 @@ export type PinCaptureBodyKind =
   | "selected_text"
   | "recipe_section"
   | "ai_summary"
+  | "grid_compare_summary"
   | "chat_response"
   | "contact"
   | "website"

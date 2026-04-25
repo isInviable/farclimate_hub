@@ -45,5 +45,7 @@ describe("POST /api/search with facet params", () => {
     const data = (await res.json()) as { count: number; hits: unknown[] }
     expect(data).toHaveProperty("count")
     expect(Array.isArray(data.hits)).toBe(true)
+    expect(data.hits.length).toBeLessThanOrEqual(5)
+    expect(data.count).toBeLessThanOrEqual(5)
   })
 })

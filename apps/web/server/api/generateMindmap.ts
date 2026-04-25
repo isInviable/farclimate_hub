@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
       `DOCUMENTS (each contains 'articleId: <id>'):\n${context}`;
 
     const { text } = await generateText({
-      model: google("gemini-3-flash-preview"),
+      model: google("gemini-3.1-flash-lite-preview"),
       prompt:  defaultPrompt,
       maxTokens: 1200,
       temperature: 0.4,

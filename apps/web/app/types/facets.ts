@@ -35,3 +35,11 @@ export interface FilterFacetsRequest {
   /** Optional list of document UUIDs (e.g. current search hit IDs). When provided, for_result_set is filled. */
   doc_ids?: string[]
 }
+
+/** Cached explorer-level metadata used before/alongside result loading */
+export interface ExplorerCorpusMetadataResponse {
+  /** Number of unique case studies/documents in the corpus, independent of locale */
+  totalCount: number
+  /** Corpus-wide facet counts, not contextual to current search results */
+  globalFacets: FacetCategory
+}

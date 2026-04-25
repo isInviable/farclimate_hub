@@ -50,7 +50,6 @@ const items = computed(() =>
   (props.sectors ?? []).map((e) => ({ key: e.value, label: e.value }))
 );
 const counts = computed(() => props.forResultSetCounts ?? {});
-/** Total counts per sector (for the "max" bar); never changes. */
 const countsGlobal = computed(() =>
   Object.fromEntries((props.sectors ?? []).map((e) => [e.value, e.count]))
 );

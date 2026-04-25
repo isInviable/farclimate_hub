@@ -40,15 +40,12 @@
             </span>
           </div>
 
-          <!-- Stacked bars: background = total (max), foreground = current result set -->
           <div class="relative h-2 w-full rounded-sm overflow-hidden ">
-            <!-- Bar 1: total count (never changes); only when countsGlobal is provided -->
             <div
               v-if="hasGlobalCounts"
               class="absolute left-0 top-0 h-full rounded-sm bg-slate-200"
               :style="{ width: `${getGlobalPercent(item.label)}%` }"
             />
-            <!-- Bar 2: current search result count (same scale, overlays) -->
             <div
               class="absolute left-0 top-0 h-full rounded-sm"
               :class="isSelected(item.key) ? 'bg-slate-800' : 'bg-slate-500'"
@@ -72,9 +69,9 @@ const props = defineProps<{
   icon: string;
   filterKey: string;
   items: Item[];
-  /** Current result set counts (what the user is seeing) */
+  /** Current result set counts keyed by facet value */
   counts: Record<string, number>;
-  /** Total/max counts per facet (never changes). When set, two stacked bars are shown. */
+  /** Corpus-wide counts keyed by facet value */
   countsGlobal?: Record<string, number>;
   enabled?: boolean;
   /**
@@ -131,7 +128,7 @@ const hasGlobalCounts = computed(() => {
   return g && Object.keys(g).length > 0;
 });
 
-// Scale for bar widths: use max of global counts when available, else max of current counts
+// Scale bar widths against the largest corpus-wide count when available.
 const maxScale = computed(() => {
   if (hasGlobalCounts.value && props.countsGlobal) {
     const values = Object.values(props.countsGlobal);
@@ -143,7 +140,6 @@ const maxScale = computed(() => {
 
 const getGlobalCount = (label: string): number => props.countsGlobal?.[label] ?? 0;
 const getCurrentCount = (label: string): number => props.counts?.[label] ?? 0;
-
 const getGlobalPercent = (label: string): number => {
   const c = hasGlobalCounts.value ? getGlobalCount(label) : getCurrentCount(label);
   return maxScale.value ? (c / maxScale.value) * 100 : 0;

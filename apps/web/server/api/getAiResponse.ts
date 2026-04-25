@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
     `;
 
     const { object } = await generateObject({
-      model: google("gemini-3-flash-preview"),
+      model: google("gemini-3.1-flash-lite-preview"),
       prompt: fullPrompt,
       output: "array",
       schema: z.object({

@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const { object } = await generateObject({
-      model: google("gemini-3-flash-preview"),
+      model: google("gemini-3.1-flash-lite-preview"),
       prompt: sectionPrompt,
       schema: z.object({
         title: z.string().describe("A short title for the section (3-5 words)"),

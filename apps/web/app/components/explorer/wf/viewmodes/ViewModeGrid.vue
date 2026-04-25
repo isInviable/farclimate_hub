@@ -74,77 +74,95 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
+    <div
+      class="w-full [column-gap:1.5rem] [column-fill:_balance] columns-1 md:columns-2 xl:columns-3"
+    >
+      <ViewModeGridHitContext
         v-for="hit in pagedItems"
         :key="hit.id"
-        :class="[
-          'bg-white rounded-md shadow-sm hover:shadow-lg transition-shadow overflow-hidden',
-          isSelected(hit.id)
-            ? 'ring-2 ring-primary-500 border-primary-200'
-            : 'border border-neutral-200',
-        ]"
+        :document="hit.document"
       >
-        <Pin
-          @pinned="() => handlePinned(hit)"
-          @unpinned="() => handleUnpinned(hit)"
+        <div
+          :class="[
+            'break-inside-avoid mb-6 min-w-0 bg-white rounded-md shadow-sm transition-shadow overflow-hidden',
+            isSelected(hit.id)
+              ? 'ring-2 ring-primary-500 border border-primary-200'
+              : 'border border-neutral-200 hover:shadow-lg',
+          ]"
         >
-          <div class="h-full p-4">
-            <div class="flex justify-start items-start gap-2 mb-2">
-              <UCheckbox
-                :model-value="isSelected(hit.id)"
-                color="primary"
-                size="xs"
-                @update:model-value="() => toggleSelection(hit)"
-                @click.stop
-              />
-              <div
-                class="cursor-pointer flex-1"
-                role="button"
-                tabindex="0"
-                @click="handleDocumentClick(hit.document)"
-                @keydown.enter.prevent="handleDocumentClick(hit.document)"
-              >
-                <h3 class="font-semibold text-neutral-900 leading-tight text-sm mb-2">
-                  {{ hit.document.title }}
-                </h3>
+          <CapturableBlock
+            :chrome="false"
+            pin-kind="grid_compare_summary"
+            :title="compareModeLabel"
+            :payload="gridComparePayload(hit)"
+            :preview="gridPinPreview(hit)"
+            source-view="grid_compare"
+            :show-ai-icon="selectedProperty !== 'subtitle'"
+            :capture-enabled="true"
+            class="block h-full"
+          >
+            <div class="h-full p-4 pr-10">
+              <div class="flex justify-start items-start gap-2 mb-2">
+                <UCheckbox
+                  :model-value="isSelected(hit.id)"
+                  color="primary"
+                  size="xs"
+                  @update:model-value="() => toggleSelection(hit)"
+                  @click.stop
+                />
+                <div
+                  class="cursor-pointer flex-1"
+                  role="button"
+                  tabindex="0"
+                  @click="handleDocumentClick(hit.document)"
+                  @keydown.enter.prevent="handleDocumentClick(hit.document)"
+                >
+                  <h3 class="font-semibold text-neutral-900 leading-tight text-sm mb-2 pr-1">
+                    {{ hit.document.title }}
+                  </h3>
 
-                <div class="text-sm text-neutral-600">
-                  <div
-                    v-if="isLoading(hit.id)"
-                    class="flex items-center justify-center py-8"
-                  >
-                    <UIcon name="i-lucide-loader-2" class="size-6 animate-spin text-sky-500" />
-                  </div>
-                  <template v-else>
-                    <div v-if="getSummary(hit.id)" class="space-y-2">
-                      <p
-                        class="text-sm text-neutral-800 font-medium"
-                        v-html="renderMarkdown(getSummary(hit.id)?.data ?? '')"
-                      />
-                      <div
-                        class="prose prose-sm max-w-none"
-                        v-html="renderMarkdown(getSummary(hit.id)?.summary ?? '')"
+                  <div class="text-sm text-neutral-600">
+                    <div
+                      v-if="isLoading(hit.id)"
+                      class="flex items-center justify-center py-8"
+                    >
+                      <UIcon
+                        name="i-lucide-loader-2"
+                        class="size-6 animate-spin text-sky-500"
                       />
                     </div>
-                    <p v-else class="line-clamp-4 whitespace-pre-line">
-                      {{ bodyFallback(hit) }}
-                    </p>
-                  </template>
+                    <template v-else>
+                      <div v-if="getSummary(hit.id)" class="space-y-2">
+                        <p
+                          class="text-sm text-neutral-800 font-medium"
+                          v-html="renderMarkdown(getSummary(hit.id)?.data ?? '')"
+                        />
+                        <div
+                          class="prose prose-sm max-w-none"
+                          v-html="renderMarkdown(getSummary(hit.id)?.summary ?? '')"
+                        />
+                      </div>
+                      <p v-else class="whitespace-pre-line text-neutral-700">
+                        {{ bodyFallback(hit) }}
+                      </p>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Pin>
-      </div>
+          </CapturableBlock>
+        </div>
+      </ViewModeGridHitContext>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import MarkdownIt from 'markdown-it'
-import { useI18n } from 'vue-i18n'
-import { useSearchSelectionStore } from '@/stores/searchSelection'
+import MarkdownIt from "markdown-it"
+import { useI18n } from "vue-i18n"
+import { useSearchSelectionStore } from "@/stores/searchSelection"
+import CapturableBlock from "../../CapturableBlock.vue"
+import ViewModeGridHitContext from "./ViewModeGridHitContext.vue"
 import {
   buildCustomCompareContext,
   fallbackSnippetForProperty,
@@ -153,20 +171,32 @@ import {
   resolvePropertySourceText,
   type GridCompareDocument,
   type GridCompareSelectValue,
-} from '@/composables/gridCompareSource'
-import { useExplorerResultsPaging } from '@/composables/useExplorerResultsPaging'
+} from "@/composables/gridCompareSource"
+import { useExplorerResultsPaging } from "@/composables/useExplorerResultsPaging"
 import type {
   SummarizePropertyBatchResponseBody,
   SummarizePropertyResponseBody,
 } from "~/types/summarize"
-import type { ArticleDetail } from "~/types/search"
+import type { ArticleDetail, SearchResult } from "~/types/search"
 import type { SearchSelectedItem } from "@/stores/searchSelection"
 
 const md = new MarkdownIt()
 
+type GridHitDocument = GridCompareDocument &
+  Pick<
+    SearchResult,
+    | "document_uid"
+    | "location"
+    | "id"
+    | "title"
+    | "subtitle"
+    | "summary"
+    | "recipe_ingredients"
+  >
+
 interface SearchHit {
   id: string
-  document: GridCompareDocument & { id?: string; title?: string }
+  document: GridHitDocument
 }
 
 const props = withDefaults(
@@ -226,14 +256,22 @@ const pageSelectionItems = computed<SearchSelectedItem[]>(() =>
 )
 
 const selectItems = computed(() => [
-  { label: t('viewModes.summary'), value: 'subtitle' as const },
-  { label: t('viewModes.costBenefit'), value: 'cost_benefit' as const },
-  { label: t('viewModes.implementationTime'), value: 'implementation_time' as const },
-  { label: t('viewModes.lifetime'), value: 'lifetime' as const },
-  { label: t('viewModes.stakeholderParticipation'), value: 'stakeholder_participation' as const },
-  { label: t('viewModes.successLimitations'), value: 'success_limitations' as const },
-  { label: t('viewModes.customCompare'), value: 'custom' as const },
+  { label: t("viewModes.summary"), value: "subtitle" as const },
+  { label: t("viewModes.costBenefit"), value: "cost_benefit" as const },
+  { label: t("viewModes.implementationTime"), value: "implementation_time" as const },
+  { label: t("viewModes.lifetime"), value: "lifetime" as const },
+  { label: t("viewModes.stakeholderParticipation"), value: "stakeholder_participation" as const },
+  { label: t("viewModes.successLimitations"), value: "success_limitations" as const },
+  { label: t("viewModes.customCompare"), value: "custom" as const },
 ])
+
+/** Second part of `source_title_snapshot` for grid pins (see `CapturableBlock` composed title). */
+const compareModeLabel = computed(() => {
+  const v = selectedProperty.value
+  if (v === "custom") return t("viewModes.customCompare")
+  if (v === "subtitle") return t("viewModes.summary")
+  return selectItems.value.find((i) => i.value === v)?.label ?? v
+})
 
 const isSelected = (id: string) => sel.isSelected(id)
 
@@ -245,7 +283,7 @@ function toggleSelection(hit: SearchHit) {
   })
 }
 
-function handleDocumentClick(doc: GridCompareDocument & { id?: string }) {
+function handleDocumentClick(doc: GridHitDocument) {
   emit("document-selected", doc as ArticleDetail)
 }
 
@@ -271,29 +309,65 @@ function getSummary(id: string) {
 
 function bodyFallback(hit: SearchHit): string {
   const doc = hit.document
-  if (selectedProperty.value === 'subtitle') {
-    return (doc.subtitle ?? '').trim() || t('viewModes.sectionEmpty')
+  if (selectedProperty.value === "subtitle") {
+    return (doc.subtitle ?? "").trim() || t("viewModes.sectionEmpty")
   }
-  if (selectedProperty.value === 'custom') {
+  if (selectedProperty.value === "custom") {
     if (!customComparePrompt.value.trim()) {
-      return t('viewModes.customCompareEmptyHint')
+      return t("viewModes.customCompareEmptyHint")
     }
     if (!customCompareHasSubmitted.value) {
-      return t('viewModes.customCompareSubmitHint')
+      return t("viewModes.customCompareSubmitHint")
     }
-    return fallbackSnippetForProperty(doc) || t('viewModes.sectionEmpty')
+    return fallbackSnippetForProperty(doc) || t("viewModes.sectionEmpty")
   }
   const raw = resolvePropertySourceText(doc, selectedProperty.value)
   if (raw) return raw
-  return fallbackSnippetForProperty(doc) || t('viewModes.sectionEmpty')
+  return fallbackSnippetForProperty(doc) || t("viewModes.sectionEmpty")
 }
 
-function handlePinned(hit: SearchHit) {
-  console.log('Pinned:', hit.document.title)
+function gridPinMarkdown(hit: SearchHit): string {
+  const s = getSummary(hit.id)
+  if (s) {
+    const dataStr = String(s.data ?? "").trim()
+    const sumStr = String(s.summary ?? "").trim()
+    return [dataStr, sumStr].filter(Boolean).join("\n\n")
+  }
+  return bodyFallback(hit)
 }
 
-function handleUnpinned(hit: SearchHit) {
-  console.log('Unpinned:', hit.document.title)
+function gridComparePayload(hit: SearchHit): Record<string, unknown> {
+  const mode: "property" | "custom" =
+    selectedProperty.value === "custom" ? "custom" : "property"
+  const p: Record<string, unknown> = {
+    mode,
+    sourceView: "grid_compare",
+    articleTitle: (hit.document.title ?? "").trim(),
+  }
+  if (
+    mode === "property" &&
+    selectedProperty.value !== "subtitle" &&
+    selectedProperty.value !== "custom"
+  ) {
+    p.property = selectedProperty.value
+  }
+  if (mode === "custom") {
+    const prompt = customComparePrompt.value.trim()
+    if (prompt) p.promptHash = hashPrompt(prompt)
+  }
+  const s = getSummary(hit.id)
+  if (s) {
+    p.data = s.data ?? ""
+    p.summary = s.summary ?? ""
+  }
+  p.markdown = gridPinMarkdown(hit)
+  return p
+}
+
+function gridPinPreview(hit: SearchHit): string {
+  const text = gridPinMarkdown(hit)
+  if (text.length > 800) return `${text.slice(0, 800)}…`
+  return text
 }
 
 function sourceTextForSummarize(hit: SearchHit): string | null {
@@ -413,12 +487,3 @@ function toggleSelectAllOnPage() {
   else sel.mergeAdd(items)
 }
 </script>
-
-<style scoped>
-.line-clamp-4 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
-</style>

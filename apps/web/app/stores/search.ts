@@ -1,9 +1,20 @@
 import type { ArticleDetail } from '@/types/search'
-import type { FilterFacetsResponse } from '@/types/facets'
+import type { ExplorerCorpusMetadataResponse, FacetCategory, FilterFacetsResponse } from '@/types/facets'
 import type { ExplorerEffectiveFilters } from '@/types/explorerFilters'
+
+function emptyFacetCategory(): FacetCategory {
+  return {
+    sectors: [],
+    climate_impacts: [],
+    adaptation_approaches: [],
+    keywords: [],
+    biogeographical_regions: [],
+  }
+}
 
 export const useSearchStore = defineStore('search', () => {
   const facetsData = ref<FilterFacetsResponse | null>(null)
+  const corpusMetadata = ref<ExplorerCorpusMetadataResponse | null>(null)
 
   /** Last effective sidebar filters (JSON-serializable); mirrors `FilterManager` emit payload. */
   const explorerEffectiveFilters = ref<ExplorerEffectiveFilters>({})
@@ -63,12 +74,20 @@ export const useSearchStore = defineStore('search', () => {
     facetsData.value = data
   }
 
+  const setCorpusMetadata = (data: ExplorerCorpusMetadataResponse | null) => {
+    corpusMetadata.value = data
+    facetsData.value = data
+      ? { global: data.globalFacets, for_result_set: emptyFacetCategory() }
+      : null
+  }
+
   const setIsSearching = (value: boolean) => {
     isSearching.value = value
   }
 
   return {
     facetsData,
+    corpusMetadata,
     explorerEffectiveFilters,
     selectedTags,
     searchQuery,
@@ -76,6 +95,7 @@ export const useSearchStore = defineStore('search', () => {
     isSearching,
     resultsData,
     setFacetsData,
+    setCorpusMetadata,
     setExplorerEffectiveFilters,
     setSelectedTags,
     setSearchQuery,

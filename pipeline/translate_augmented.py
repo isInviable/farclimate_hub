@@ -43,7 +43,7 @@ if not GEMINI_API_KEY:
     sys.exit(1)
 
 # Normalise model ID for google-genai (strip provider prefix like 'gemini/')
-_raw_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+_raw_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_MODEL = _raw_model.split("/")[-1]
 
 genai_client = genai.Client(api_key=GEMINI_API_KEY)

@@ -49,7 +49,11 @@ export function useHybridSearch() {
       searchStore.setFacetsData(facets);
     } catch (e) {
       console.warn("[useHybridSearch] fetchFacets after search failed:", e);
-      searchStore.setFacetsData(null);
+      if (searchStore.corpusMetadata) {
+        searchStore.setCorpusMetadata(searchStore.corpusMetadata);
+      } else {
+        searchStore.setFacetsData(null);
+      }
     }
   }
 
@@ -63,7 +67,7 @@ export function useHybridSearch() {
     try {
       const response = await $fetch<SearchResponse>("/api/search", {
         method: "POST",
-        body: buildSearchBody(query, 30),
+        body: buildSearchBody(query, 60),
       });
 
       results.value = response.hits;
@@ -92,7 +96,7 @@ export function useHybridSearch() {
     try {
       const response = await $fetch<SearchResponse>("/api/search", {
         method: "POST",
-        body: buildSearchBody("", 100),
+        body: buildSearchBody("", 30),
       });
 
       results.value = response.hits;
