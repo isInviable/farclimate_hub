@@ -252,7 +252,6 @@ const emit = defineEmits<{
 }>();
 
 const { t, te } = useI18n();
-const localePath = useLocalePath();
 const selectionStore = usePinnedSelectionStore();
 const pinsApi = usePinsSupabase();
 

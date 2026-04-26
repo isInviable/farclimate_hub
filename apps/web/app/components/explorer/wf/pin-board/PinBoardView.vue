@@ -85,7 +85,7 @@
 
       <template v-else>
         <div
-          v-if="flatFilteredPins.length === 0"
+          v-if="isGridEmpty"
           class="text-center py-12">
           <Icon name="mdi:pin-off" size="4rem" class="mx-auto text-gray-400 mb-4" />
           <h3 class="text-xl font-semibold text-gray-600 mb-2">
@@ -97,8 +97,28 @@
         </div>
 
         <div v-else class="space-y-10">
+          <section v-if="showSavedSearchesBlock">
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
+            >
+              {{ $t("pins.sidebarSavedSearches") }}
+              <span class="text-sm font-normal text-neutral-500 ml-2">
+                ({{ savedSearches.length }})
+              </span>
+            </h2>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <PinBoardSavedSearchCard
+                v-for="s in savedSearches"
+                :key="s.id"
+                :saved-search="s"
+              />
+            </div>
+          </section>
+
           <section
-            v-for="section in visibleSections"
+            v-for="section in visiblePinSections"
             :key="section.bodyKind"
           >
             <h2
@@ -141,8 +161,12 @@ import type { HumanPinRow } from "~/types/pins";
 import { groupPinsByBodyKind } from "~/utils/pinBoardSections";
 import { groupPinsForMap } from "~/utils/pinBoardMap";
 import PinBoardCard from "./PinBoardCard.vue";
+import PinBoardSavedSearchCard from "./PinBoardSavedSearchCard.vue";
 import PinBoardMap from "./PinBoardMap.vue";
 import ArticleSidePanel from "~/components/explorer/ArticleSidePanel.vue";
+import { useProjectsStore } from "@/stores/projects";
+
+const KIND_SAVED_SEARCHES = "__saved_searches__";
 
 const props = withDefaults(
   defineProps<{
@@ -163,6 +187,18 @@ const props = withDefaults(
 );
 
 const { t, te } = useI18n();
+const projectsStore = useProjectsStore();
+const savedSearchesApi = useSavedSearchesSupabase();
+
+watch(
+  () => projectsStore.currentProjectId,
+  (id) => {
+    void savedSearchesApi.fetchSavedSearches(id);
+  },
+  { immediate: true }
+);
+
+const savedSearches = computed(() => savedSearchesApi.savedSearches.value);
 
 /**
  * Grid state: selected `body_kind`. Map view lives on a separate axis
@@ -183,9 +219,10 @@ const mapArticleCount = computed(() => mapGroups.value.length);
 const mapEntryEnabled = computed(() => mapArticleCount.value > 0);
 
 const sidebarCategories = computed(() => {
-  const total = props.pins.length;
+  const nPins = props.pins.length;
+  const nSaved = savedSearches.value.length;
   const rows: { value: string; label: string; count: number }[] = [
-    { value: "all", label: t("pins.filterAll"), count: total },
+    { value: "all", label: t("pins.filterAll"), count: nPins + nSaved },
   ];
   for (const s of sections.value) {
     const key = `pins.kinds.${s.bodyKind}`;
@@ -195,17 +232,45 @@ const sidebarCategories = computed(() => {
       count: s.pins.length,
     });
   }
+  rows.push({
+    value: KIND_SAVED_SEARCHES,
+    label: t("pins.sidebarSavedSearches"),
+    count: nSaved,
+  });
   return rows;
 });
 
-const visibleSections = computed(() => {
+const visiblePinSections = computed(() => {
+  if (selectedKind.value === KIND_SAVED_SEARCHES) return [];
   if (selectedKind.value === "all") return sections.value;
   return sections.value.filter((s) => s.bodyKind === selectedKind.value);
 });
 
+const showSavedSearchesBlock = computed(() => {
+  if (savedSearches.value.length === 0) return false;
+  return (
+    selectedKind.value === "all" || selectedKind.value === KIND_SAVED_SEARCHES
+  );
+});
+
 const flatFilteredPins = computed(() =>
-  visibleSections.value.flatMap((s) => s.pins)
+  visiblePinSections.value.flatMap((s) => s.pins)
 );
+
+const pinCountInGrid = computed(() =>
+  visiblePinSections.value.reduce((acc, s) => acc + s.pins.length, 0)
+);
+
+const isGridEmpty = computed(() => {
+  if (selectedView.value === "map") return false;
+  if (selectedKind.value === KIND_SAVED_SEARCHES) {
+    return savedSearches.value.length === 0;
+  }
+  if (selectedKind.value === "all") {
+    return pinCountInGrid.value === 0 && savedSearches.value.length === 0;
+  }
+  return pinCountInGrid.value === 0;
+});
 
 function sectionLabel(kind: string): string {
   const key = `pins.kinds.${kind}`;
@@ -230,27 +295,39 @@ const summaryLine = computed(() => {
   if (selectedView.value === "map") {
     return t("pins.map.summary", { count: mapArticleCount.value });
   }
-  const n = flatFilteredPins.value.length;
-  if (selectedKind.value === "all") {
-    return t("pins.summaryTotal", { count: n });
+  if (selectedKind.value === KIND_SAVED_SEARCHES) {
+    return t("pins.summarySavedSearchesOnly", {
+      count: savedSearches.value.length,
+    });
   }
+  if (selectedKind.value === "all") {
+    const n = pinCountInGrid.value + savedSearches.value.length;
+    return t("pins.summaryBoardTotal", { count: n });
+  }
+  const n = flatFilteredPins.value.length;
   return t("pins.summaryInSection", {
     count: n,
     section: sectionLabel(selectedKind.value),
   });
 });
 
-const emptyTitle = computed(() =>
-  selectedKind.value === "all"
+const emptyTitle = computed(() => {
+  if (selectedKind.value === KIND_SAVED_SEARCHES) {
+    return t("pins.emptySavedSearchesTitle");
+  }
+  return selectedKind.value === "all"
     ? t("pins.emptyBoardTitle")
-    : t("pins.emptySectionTitle")
-);
+    : t("pins.emptySectionTitle");
+});
 
-const emptyCategory = computed(() =>
-  selectedKind.value === "all"
+const emptyCategory = computed(() => {
+  if (selectedKind.value === KIND_SAVED_SEARCHES) {
+    return t("pins.savedSearchMenuEmpty");
+  }
+  return selectedKind.value === "all"
     ? props.emptyAllMessage || t("pins.boardEmpty")
-    : props.emptyCategoryMessage || t("pins.boardEmptyCategory")
-);
+    : props.emptyCategoryMessage || t("pins.boardEmptyCategory");
+});
 
 /**
  * Article-drawer state shared between the map popup and the grid cards.

@@ -189,10 +189,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, watch, nextTick } from "vue";
 import { useSearchStore } from '@/stores/search';
+import { useProjectsStore } from '@/stores/projects';
 import type { FilterFacetsResponse } from '@/types/facets';
 import type { SavedSearchFilters } from "~/types/savedSearches";
+import { applySavedSearchFiltersState } from "~/utils/applySavedSearchFilters";
+import { tryConsumePendingSavedSearchApply } from "~/utils/pendingSavedSearchExplorer";
+import { useSavedSearchExplorerApplySignal } from "~/composables/useSavedSearchExplorerApplySignal";
 import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
 import HazardsFilter from './HazardsFilter.vue';
@@ -235,6 +239,30 @@ const biogeographicalRegionsCountsFromResultSet = computed(() => {
 
 // Initialize search filter if there's already a search query
 const searchStore = useSearchStore();
+const projectsStore = useProjectsStore();
+const { tick: savedSearchApplyTick } = useSavedSearchExplorerApplySignal();
+
+function consumePendingSavedSearchIfAny() {
+  const pid = projectsStore.currentProjectId;
+  if (!pid) return;
+  const pending = tryConsumePendingSavedSearchApply(pid);
+  if (!pending) return;
+  void nextTick(() => {
+    handleLoadSavedSearch(pending);
+  });
+}
+
+watch(
+  () => projectsStore.currentProjectId,
+  () => {
+    consumePendingSavedSearchIfAny();
+  },
+  { immediate: true }
+);
+
+watch(savedSearchApplyTick, () => {
+  consumePendingSavedSearchIfAny();
+});
 
 // Check if there's an existing search query and enable search filter
 if (searchStore.searchQuery && searchStore.searchQuery.trim()) {
@@ -338,27 +366,12 @@ const handleSearchError = (error: any) => {
 };
 
 const handleLoadSavedSearch = (state: SavedSearchFilters) => {
-  Object.keys(filters).forEach((k) => delete filters[k]);
-  Object.keys(enabledFilters).forEach((k) => delete enabledFilters[k]);
-
-  if (state.filters) {
-    Object.entries(state.filters).forEach(([k, v]) => {
-      filters[k] = v;
-    });
-  }
-  if (state.enabledFilters) {
-    Object.entries(state.enabledFilters).forEach(([k, v]) => {
-      enabledFilters[k] = v;
-    });
-  }
-  if (state.searchQuery !== undefined) {
-    searchStore.setSearchQuery(state.searchQuery);
-    if (state.searchQuery.trim()) {
-      filters.search = state.searchQuery;
-      enabledFilters.search = true;
-    }
-  }
-  emit('filters-changed', getEffectiveFilters());
+  const effective = applySavedSearchFiltersState(state, {
+    filters,
+    enabledFilters,
+    setSearchQuery: (q) => searchStore.setSearchQuery(q),
+  });
+  emit('filters-changed', effective);
 };
 
 const clearAllFilters = () => {
