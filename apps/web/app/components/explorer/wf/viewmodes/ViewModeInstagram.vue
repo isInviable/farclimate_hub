@@ -29,7 +29,11 @@
             <Icon name="mdi:share-outline" size="1.75rem" />
           </button>
           <div class="ml-auto">
-            <Pin>
+            <Pin
+              :pin-title="getTitle(hit.document)"
+              pin-type="result"
+              :pin-data="hit.document"
+            >
               <Icon
                 name="mdi:bookmark-outline"
                 size="1.75rem"

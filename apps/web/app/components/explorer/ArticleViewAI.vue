@@ -1,5 +1,20 @@
 <template>
   <div class=" mx-auto py-8 space-y-6" :class="{ 'w-full': showSidebar === true, 'max-w-3xl': showSidebar === false }">
+    <div
+      v-if="showPinDocumentToolbar"
+      class="flex flex-wrap justify-end gap-2"
+    >
+      <UButton
+        size="sm"
+        color="primary"
+        variant="soft"
+        icon="i-lucide-pin"
+        :loading="documentPinSaving"
+        @click="openDocumentPinDialog"
+      >
+        {{ t("pins.pinDocumentButton") }}
+      </UButton>
+    </div>
     <ArticleTextSelectionCapture source-view="article">
       <UTabs :items="tabItems" variant="link" :ui="{ trigger: 'grow' }" class="gap-4 w-full">
         <template #summary>
@@ -37,6 +52,17 @@
         </template>
       </UTabs>
     </ArticleTextSelectionCapture>
+
+    <PinCaptureDialog
+      v-model:open="documentPinDialogOpen"
+      body-kind="document"
+      :title="documentPinDialogTitle ?? undefined"
+      :preview="documentPinPreview"
+      :saving="documentPinSaving"
+      :error="documentPinError"
+      @save="saveDocumentPin"
+      @cancel="documentPinError = null"
+    />
   </div>
 </template>
 
@@ -46,6 +72,7 @@ import MarkdownIt from "markdown-it";
 import ArticleStructuredView from './ArticleStructuredView.vue';
 import ArticleSummaryView from './ArticleSummaryView.vue';
 import ArticleTextSelectionCapture from './ArticleTextSelectionCapture.vue';
+import PinCaptureDialog from './PinCaptureDialog.vue';
 import { useI18n } from 'vue-i18n';
 import { PinArticleContextKey } from './pinContext';
 
@@ -56,6 +83,9 @@ const md = new MarkdownIt({
 });
 
 const { locale, t } = useI18n();
+const { isAuthenticated } = useAccess();
+const { pinCapture } = usePin();
+const pinsApi = usePinsSupabase();
 
 const tabItems = [
   {
@@ -119,6 +149,51 @@ const pinDocumentLocation = computed<[number, number] | null>(() => {
   if (lat === 0 && lon === 0) return null;
   return [lat, lon];
 });
+
+const documentPinDialogOpen = ref(false);
+const documentPinSaving = ref(false);
+const documentPinError = ref<string | null>(null);
+
+const showPinDocumentToolbar = computed(
+  () => isAuthenticated.value && !!pinDocumentUid.value,
+);
+
+const documentPinDialogTitle = computed(() => pinDocumentTitle.value);
+
+const documentPinPreview = computed(() => {
+  const doc = props.document as { subtitle?: string } | null | undefined;
+  const s = doc?.subtitle;
+  return typeof s === "string" && s.trim() ? s.trim() : "";
+});
+
+function openDocumentPinDialog() {
+  documentPinError.value = null;
+  documentPinDialogOpen.value = true;
+}
+
+async function saveDocumentPin(note: string) {
+  if (!pinDocumentUid.value) return;
+  documentPinSaving.value = true;
+  documentPinError.value = null;
+  try {
+    const id = await pinCapture({
+      bodyKind: "document",
+      title: pinDocumentTitle.value ?? undefined,
+      data: {},
+      notes: note,
+      sourceDocumentUid: pinDocumentUid.value,
+      location: pinDocumentLocation.value,
+      animationElement: null,
+    });
+    if (!id) {
+      documentPinError.value = pinsApi.error.value ?? "Could not save pin";
+      return;
+    }
+    documentPinDialogOpen.value = false;
+  } finally {
+    documentPinSaving.value = false;
+  }
+}
 
 provide(PinArticleContextKey, {
   documentUid: pinDocumentUid,

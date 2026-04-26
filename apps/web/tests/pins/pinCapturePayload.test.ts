@@ -67,4 +67,21 @@ describe("buildPinCapturePayload", () => {
     expect(payload.source_document_uid).toBe("doc-uid-1");
     expect(payload.source_title_snapshot).toBe("Case study — Mind map");
   });
+
+  it("builds full-document pin with stable body.data marker", () => {
+    const payload = buildPinCapturePayload({
+      bodyKind: "document",
+      title: "Coastal adaptation plan",
+      data: {},
+      notes: "Read for the workshop",
+      sourceDocumentUid: "uid-abc",
+      location: null,
+    });
+
+    expect(payload.body_kind).toBe("document");
+    expect(payload.body.data).toEqual({ pinned_as: "full_document" });
+    expect(payload.source_document_uid).toBe("uid-abc");
+    expect(payload.source_title_snapshot).toBe("Coastal adaptation plan");
+    expect(payload.user_note).toBe("Read for the workshop");
+  });
 });

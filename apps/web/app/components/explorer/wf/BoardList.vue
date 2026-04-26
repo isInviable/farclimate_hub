@@ -223,6 +223,7 @@
 import { computed, ref } from 'vue'
 import { usePinnedSelectionStore } from '@/stores/selection'
 
+const { t } = useI18n()
 const localePath = useLocalePath()
 
 function explorerLinkForDocument(documentUid: string) {
@@ -255,29 +256,36 @@ const emptyCategoryMessage = computed(() => props.emptyCategoryMessage ?? 'Try s
 
 const selectionStore = usePinnedSelectionStore()
 
-const categories = [
+const categories = computed(() => [
   { label: 'All', value: 'all' },
   { label: 'Solutions', value: 'result' },
+  { label: t('pins.boardCategoryFullPapers'), value: 'document' },
   { label: 'Contacts', value: 'contact' },
   { label: 'Images', value: 'image' },
   { label: 'Websites', value: 'website' },
-  { label: 'Other Blocks', value: 'other' }
-]
+  { label: 'Other Blocks', value: 'other' },
+])
 
 const selectedCategory = ref('all')
 
 const filteredItems = computed(() => {
   if (selectedCategory.value === 'all') return props.items
+  if (selectedCategory.value === 'document') {
+    return props.items.filter((it) => it.body_kind === 'document')
+  }
   return props.items.filter((it) => it.type === selectedCategory.value)
 })
 
 const getCategoryCount = (categoryValue: string) => {
   if (categoryValue === 'all') return props.items.length
+  if (categoryValue === 'document') {
+    return props.items.filter((it) => it.body_kind === 'document').length
+  }
   return props.items.filter((it) => it.type === categoryValue).length
 }
 
 const getCategoryLabel = (categoryValue: string) => {
-  const category = categories.find(cat => cat.value === categoryValue)
+  const category = categories.value.find((cat) => cat.value === categoryValue)
   return category ? category.label : categoryValue
 }
 </script>

@@ -12,6 +12,7 @@ import PinRenderText from "./PinRenderText.vue";
 import PinRenderImage from "./PinRenderImage.vue";
 import PinRenderFallback from "./PinRenderFallback.vue";
 import PinRenderMarkmap from "./PinRenderMarkmap.client.vue";
+import PinRenderDocument from "./PinRenderDocument.vue";
 
 const props = defineProps<{
   bodyKind: string
@@ -22,6 +23,7 @@ const comp = computed(() => {
   const k = (props.bodyKind || "").toLowerCase();
   if (k === "chat") return PinRenderChat;
   if (k === "markmap") return PinRenderMarkmap;
+  if (k === "document") return PinRenderDocument;
   if (
     k === "text_segment" ||
     k === "selected_text" ||
@@ -30,7 +32,6 @@ const comp = computed(() => {
     k === "grid_compare_summary" ||
     k === "chat_response" ||
     k === "reference" ||
-    k === "document" ||
     k === "section"
   )
     return PinRenderText;

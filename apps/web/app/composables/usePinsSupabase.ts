@@ -115,16 +115,27 @@ export function usePinsSupabase() {
   const loading = useState<boolean>("human-pins-loading", () => false);
   const error = useState<string | null>("human-pins-error", () => null);
 
+  /** True when a **full-document** pin (`body_kind === "document"`) exists for this uid. */
   function isDocumentPinned(documentUid: string | undefined | null): boolean {
     if (!documentUid) return false;
-    return pins.value.some((p) => p.source_document_uid === documentUid);
+    return pins.value.some(
+      (p) =>
+        p.source_document_uid === documentUid && p.body_kind === "document",
+    );
   }
 
+  /**
+   * Pin id for unpinning the whole-document pin from search / explorer row.
+   * Fragment pins on the same `source_document_uid` are ignored.
+   */
   function findPinIdByDocumentUid(
-    documentUid: string | undefined | null
+    documentUid: string | undefined | null,
   ): string | null {
     if (!documentUid) return null;
-    const row = pins.value.find((p) => p.source_document_uid === documentUid);
+    const row = pins.value.find(
+      (p) =>
+        p.source_document_uid === documentUid && p.body_kind === "document",
+    );
     return row?.id ?? null;
   }
 

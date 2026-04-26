@@ -18,7 +18,7 @@
 
     <PinCaptureDialog
       v-model:open="isCaptureDialogOpen"
-      :body-kind="bodyKind"
+      :body-kind="captureDialogBodyKind"
       :title="pinTitle"
       :preview="capturePreview"
       :saving="pinBusy"
@@ -49,7 +49,7 @@ const emit = defineEmits<{
   (e: "unpinned"): void;
 }>();
 
-const { pinContent, unpinContent } = usePin();
+const { pinCapture, pinContent, unpinContent } = usePin();
 const pinsApi = usePinsSupabase();
 const pinWrapper = ref<HTMLElement | null>(null);
 const contentElement = ref<HTMLElement | null>(null);
@@ -94,12 +94,23 @@ const isPinnedUi = computed(() => {
   return !!adHocRowId.value;
 });
 
+/** DOM capture path for `pinContent` (fragments); not used for whole-document search rows. */
 const bodyKind = computed(() => {
   if (props.pinType === "website") return "website";
   if (props.pinType === "contact") return "contact";
   if (props.pinType === "image") return "image";
   return "text_segment";
 });
+
+/** Label shown in `PinCaptureDialog` — whole-document hits use `document`. */
+const captureDialogBodyKind = computed(() => {
+  if (props.pinType === "result" && documentUid.value) return "document";
+  return bodyKind.value;
+});
+
+const isFullDocumentResultPin = computed(
+  () => props.pinType === "result" && !!documentUid.value,
+);
 
 const pinTitle = computed(() => props.pinTitle?.trim() || undefined);
 
@@ -164,14 +175,25 @@ async function savePin(note: string) {
       !Array.isArray(props.pinData)
         ? (props.pinData as Record<string, unknown>)
         : undefined;
-    const id = await pinContent(contentElement.value, {
-      sourceDocumentUid: documentUid.value ?? null,
-      title: props.pinTitle,
-      type: props.pinType,
-      data: pinDataRecord,
-      notes: note,
-      location: documentLocation.value,
-    });
+
+    const id = isFullDocumentResultPin.value
+      ? await pinCapture({
+          bodyKind: "document",
+          title: props.pinTitle,
+          data: {},
+          notes: note,
+          sourceDocumentUid: documentUid.value ?? null,
+          location: documentLocation.value,
+          animationElement: contentElement.value,
+        })
+      : await pinContent(contentElement.value, {
+          sourceDocumentUid: documentUid.value ?? null,
+          title: props.pinTitle,
+          type: props.pinType,
+          data: pinDataRecord,
+          notes: note,
+          location: documentLocation.value,
+        });
     if (!id) {
       saveError.value = pinsApi.error.value ?? "Could not save pin";
       return;

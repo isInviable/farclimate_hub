@@ -9,6 +9,8 @@ export type PinCaptureBodyKind =
   | "contact"
   | "website"
   | "image"
+  /** Whole catalog document (search hit, explicit “Pin document”); not for excerpts. */
+  | "document"
   | (string & {});
 
 export interface PinCaptureRequest {

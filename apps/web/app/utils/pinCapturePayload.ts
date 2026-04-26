@@ -14,6 +14,11 @@ export function buildPinCapturePayload(
   input: PinCaptureRequest,
 ): BuiltPinCapturePayload {
   const data = { ...input.data };
+  if (input.bodyKind === "document") {
+    if (typeof data.pinned_as !== "string" || !data.pinned_as.trim()) {
+      data.pinned_as = "full_document";
+    }
+  }
   if (isValidPinLocation(input.location)) {
     data.location = input.location;
   }
