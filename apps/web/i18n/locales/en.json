@@ -63,7 +63,11 @@
       "save": "Add to board",
       "cancel": "Cancel",
       "saveFailed": "Could not save pin",
-      "chatResponseTitle": "AI response"
+      "chatResponseTitle": "AI response",
+      "mindmapPinButton": "Pin mind map",
+      "mindmapSnapshotSuffix": "Mind map",
+      "mindmapStandaloneTitle": "Explorer mind map",
+      "markmapPreviewHint": "Markdown source for this map (preview may be truncated):"
     },
     "kinds": {
       "chat": "Chat",
@@ -72,6 +76,7 @@
       "recipe_section": "Recipe section",
       "ai_summary": "AI summary",
       "grid_compare_summary": "Grid compare",
+      "markmap": "Mind map",
       "chat_response": "Chat response",
       "reference": "Reference",
       "document": "Document",

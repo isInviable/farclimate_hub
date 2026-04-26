@@ -45,4 +45,26 @@ describe("buildPinCapturePayload", () => {
       markdown: "Content",
     });
   });
+
+  it("builds markmap pin body with markdown and optional yaml", () => {
+    const payload = buildPinCapturePayload({
+      bodyKind: "markmap",
+      title: "Case study — Mind map",
+      data: {
+        markdown: "# Root\n\n## Branch",
+        yaml: "---\ntitle: t\n---\n",
+      },
+      notes: null,
+      sourceDocumentUid: "doc-uid-1",
+      location: null,
+    });
+
+    expect(payload.body_kind).toBe("markmap");
+    expect(payload.body.data).toEqual({
+      markdown: "# Root\n\n## Branch",
+      yaml: "---\ntitle: t\n---\n",
+    });
+    expect(payload.source_document_uid).toBe("doc-uid-1");
+    expect(payload.source_title_snapshot).toBe("Case study — Mind map");
+  });
 });

@@ -63,7 +63,11 @@
       "save": "Añadir al tablero",
       "cancel": "Cancelar",
       "saveFailed": "No se pudo guardar el marcador",
-      "chatResponseTitle": "Respuesta de IA"
+      "chatResponseTitle": "Respuesta de IA",
+      "mindmapPinButton": "Marcar mapa mental",
+      "mindmapSnapshotSuffix": "Mapa mental",
+      "mindmapStandaloneTitle": "Mapa mental del explorador",
+      "markmapPreviewHint": "Markdown de este mapa (la vista previa puede estar truncada):"
     },
     "kinds": {
       "chat": "Chat",
@@ -72,6 +76,7 @@
       "recipe_section": "Sección de receta",
       "ai_summary": "Resumen de IA",
       "grid_compare_summary": "Comparación en cuadrícula",
+      "markmap": "Mapa mental",
       "chat_response": "Respuesta de chat",
       "reference": "Referencia",
       "document": "Documento",

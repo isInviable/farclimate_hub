@@ -25,6 +25,8 @@ export interface HumanPinRow {
  *   view) derive markers from this field. Written only when the parent
  *   `document.location` passes the explorer's validity rules (finite lat in
  *   [-90, 90], finite lon in [-180, 180], excluding `[0, 0]`).
+ * - `markdown`, optional `yaml` — mind map pins (`body_kind` `markmap`):
+ *   markdown body and optional YAML front matter for `markmap-transform`.
  */
 export interface PinBodyV1 {
   v: 1

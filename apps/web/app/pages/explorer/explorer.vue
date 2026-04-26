@@ -195,6 +195,17 @@
             <UButton size="sm" variant="soft" @click="generateMindmap" :loading="isMindmapLoading">
               Regenerate
             </UButton>
+            <UButton
+              v-if="isAuthenticated"
+              size="sm"
+              color="primary"
+              variant="soft"
+              icon="i-lucide-pin"
+              :disabled="isMindmapLoading || !mindmapMarkdown.trim()"
+              @click="openMindmapPinCapture"
+            >
+              {{ $t("pins.capture.mindmapPinButton") }}
+            </UButton>
             <UButton size="sm" variant="outline" @click="isMindmapOpen = false">Close</UButton>
           </div>
         </div>
@@ -213,6 +224,17 @@
       </div>
     </template>
   </UModal>
+
+  <PinCaptureDialog
+    v-model:open="mindmapPinDialogOpen"
+    body-kind="markmap"
+    :title="mindmapPinTitle"
+    :preview="mindmapPinPreview"
+    :saving="mindmapPinSaving"
+    :error="mindmapPinError"
+    @save="saveMindmapPin"
+    @cancel="mindmapPinError = null"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -222,9 +244,15 @@ import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
 import { fetchCorpusMetadata } from "@/composables/useFacets";
 import type { ArticleDetail } from "@/types/search";
+import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
+import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
+import { isValidPinLocation } from "~/utils/pinBoardMap";
 
 // i18n composable for language detection
-const { locale } = useI18n();
+const { locale, t } = useI18n();
+const { isAuthenticated } = useAccess();
+const { pinCapture } = usePin();
+const pinsApi = usePinsSupabase();
 
 
 // Page metadata
@@ -327,7 +355,64 @@ const isInsightsOpen = ref(false);
 const isMindmapOpen = ref(false);
 const isMindmapLoading = ref(false);
 const mindmapMarkdown = ref<string>(`# markmap\n\n## Loading...`);
+const mindmapPinDialogOpen = ref(false);
+const mindmapPinSaving = ref(false);
+const mindmapPinError = ref<string | null>(null);
 const selection = useSearchSelectionStore();
+
+const mindmapPinTitle = computed(() => {
+  const docTitle = selectedDocument.value?.title?.trim();
+  if (docTitle) return `${docTitle} — ${t("pins.capture.mindmapSnapshotSuffix")}`;
+  return t("pins.capture.mindmapStandaloneTitle");
+});
+
+const mindmapPinPreview = computed(() => mindmapMarkdown.value.trim());
+
+const mindmapSourceDocumentUid = computed((): string | null => {
+  const d = selectedDocument.value;
+  if (!d) return null;
+  const uid = d.document_uid?.trim();
+  if (uid) return uid;
+  const id = typeof d.id === "string" ? d.id.trim() : "";
+  return id || null;
+});
+
+const mindmapPinLocation = computed((): [number, number] | null => {
+  const loc = selectedDocument.value?.location;
+  return isValidPinLocation(loc) ? loc : null;
+});
+
+function openMindmapPinCapture() {
+  if (!mindmapMarkdown.value.trim()) return;
+  mindmapPinError.value = null;
+  mindmapPinDialogOpen.value = true;
+}
+
+async function saveMindmapPin(note: string) {
+  mindmapPinSaving.value = true;
+  mindmapPinError.value = null;
+  try {
+    const id = await pinCapture({
+      bodyKind: "markmap",
+      title: mindmapPinTitle.value,
+      data: {
+        markdown: mindmapMarkdown.value,
+        yaml: DEFAULT_MARKMAP_YAML,
+      },
+      notes: note,
+      sourceDocumentUid: mindmapSourceDocumentUid.value,
+      location: mindmapPinLocation.value,
+      animationElement: null,
+    });
+    if (!id) {
+      mindmapPinError.value = pinsApi.error.value ?? "Could not save pin";
+      return;
+    }
+    mindmapPinDialogOpen.value = false;
+  } finally {
+    mindmapPinSaving.value = false;
+  }
+}
 
 // Map demo data for bubble view (from solutionsNakedAlt)
 const dummyData = ref<any[]>([]);

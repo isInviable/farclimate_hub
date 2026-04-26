@@ -16,6 +16,12 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    resolve: {
+      alias: {
+        "~": path.join(webRoot, "app"),
+        "@": path.join(webRoot, "app"),
+      },
+    },
     test: {
       include: ["tests/**/*.{test,spec}.ts"],
       environment: "node",

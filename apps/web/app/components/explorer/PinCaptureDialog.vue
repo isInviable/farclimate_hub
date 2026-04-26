@@ -9,11 +9,17 @@
           <h3 class="text-base font-semibold text-neutral-900">
             {{ title || $t("pins.noTitle") }}
           </h3>
+          <p
+            v-if="isMarkmap && previewDisplay"
+            class="text-xs text-neutral-500"
+          >
+            {{ $t("pins.capture.markmapPreviewHint") }}
+          </p>
           <div
-            v-if="previewText"
+            v-if="previewDisplay"
             class="max-h-40 overflow-y-auto rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-700 whitespace-pre-wrap"
           >
-            {{ previewText }}
+            {{ previewDisplay }}
           </div>
         </div>
 
@@ -82,6 +88,17 @@ const { t, te } = useI18n();
 const note = ref("");
 
 const previewText = computed(() => props.preview?.trim() ?? "");
+
+const isMarkmap = computed(() => props.bodyKind === "markmap");
+
+const previewDisplay = computed(() => {
+  const text = previewText.value;
+  if (!text) return "";
+  if (isMarkmap.value && text.length > 2000) {
+    return `${text.slice(0, 2000)}\n\n…`;
+  }
+  return text;
+});
 
 const bodyKindLabel = computed(() => {
   const key = `pins.kinds.${props.bodyKind}`;

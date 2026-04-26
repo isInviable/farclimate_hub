@@ -4,6 +4,7 @@ export type PinCaptureBodyKind =
   | "recipe_section"
   | "ai_summary"
   | "grid_compare_summary"
+  | "markmap"
   | "chat_response"
   | "contact"
   | "website"

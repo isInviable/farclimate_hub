@@ -41,6 +41,7 @@ function mapBodyKindToBoardType(
     kind === "recipe_section" ||
     kind === "ai_summary" ||
     kind === "grid_compare_summary" ||
+    kind === "markmap" ||
     kind === "chat_response" ||
     kind === "reference" ||
     kind === "document" ||
@@ -84,6 +85,11 @@ function boardDataFromPin(pin: HumanPinRow): Record<string, unknown> {
     const a = typeof d.data === "string" ? d.data.trim() : ""
     const b = typeof d.summary === "string" ? d.summary.trim() : ""
     d.markdown = [a, b].filter(Boolean).join("\n\n")
+  }
+
+  if (pin.body_kind === "markmap" && typeof d.markdown !== "string") {
+    const raw = typeof d.content === "string" ? d.content.trim() : ""
+    if (raw) d.markdown = raw
   }
 
   if (pin.body_kind === "image" && typeof d.src !== "string") {
