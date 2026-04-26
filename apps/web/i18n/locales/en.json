@@ -94,6 +94,8 @@
       "popupPinsHeader": "{count} pin(s) from this article",
       "noteTruncated": "…"
     },
+    "markmapOpenLinkedArticle": "Open linked article",
+    "markmapClose": "Close",
     "drawer": {
       "openArticle": "Open article",
       "pinsInArticleHeader": "Your pins from this article",

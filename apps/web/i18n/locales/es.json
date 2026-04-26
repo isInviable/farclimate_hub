@@ -86,6 +86,8 @@
       "contact": "Contacto",
       "unknown": "Otro"
     },
+    "markmapOpenLinkedArticle": "Abrir artículo enlazado",
+    "markmapClose": "Cerrar",
     "map": {
       "label": "Mapa",
       "emptyTooltip": "Aún no hay artículos marcados con ubicación. Marca artículos con coordenadas para poblar el mapa.",
