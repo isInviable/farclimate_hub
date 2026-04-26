@@ -296,12 +296,40 @@ async function main() {
 
     console.log(`[ES] ${sourceFile} -> translation`);
 
-    await upsertSummaryMultilang(documentId, "es", {
+    const transLang =
+      typeof trans.lang === "string" && trans.lang.trim().length > 0
+        ? trans.lang.trim()
+        : "es";
+
+    await upsertSummaryMultilang(documentId, transLang, {
       title: trans.title as string | undefined,
       subtitle: trans.subtitle as string | undefined,
       summary: trans.summary as string | undefined,
     });
-    await upsertFulltext(documentId, "es", (trans.fulltext as string) ?? null);
+    await upsertFulltext(documentId, transLang, (trans.fulltext as string) ?? null);
+
+    const recipe = trans.recipe as
+      | { lang?: string; ingredients?: Record<string, unknown> }
+      | undefined;
+    if (
+      recipe?.ingredients &&
+      typeof recipe.ingredients === "object" &&
+      !Array.isArray(recipe.ingredients)
+    ) {
+      if (recipeIngredientsHasContent(recipe.ingredients)) {
+        const recipeLang =
+          typeof recipe.lang === "string" && recipe.lang.trim().length > 0
+            ? recipe.lang.trim()
+            : transLang;
+        if (recipeLang !== transLang) {
+          console.warn(
+            `  [RECIPE] recipe.lang (${recipeLang}) != translation lang (${transLang}); skipping translated recipe upsert`,
+          );
+        } else {
+          await upsertRecipe(documentId, transLang, recipe.ingredients);
+        }
+      }
+    }
   }
 
   console.log(`\nDone. Pushed ${enFiles.length} documents with ${esFiles.length} translations.`);

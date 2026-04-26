@@ -1,8 +1,10 @@
 # Search API spec
 
+## Purpose
+
 Contract for the Nuxt server route `POST /api/search` that backs hybrid/keyword search. This spec reflects the current implementation (search tuning, debug, and filtering options).
 
----
+## Requirements
 
 ### Requirement: POST /api/search request body
 
@@ -11,9 +13,9 @@ The system SHALL provide a Nuxt server route at `/api/search` (POST) that accept
 
 | Parameter               | Type     | Default    | Description                                                                                                                                              |
 | ----------------------- | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `query`                 | string   | —          | Search text. If empty, the endpoint returns all documents for the given language (no embedding).                                                         |
+| `query`                 | string   | —          | Search text. If empty, the endpoint returns a bounded set of documents for the given language without generating an embedding.                            |
 | `lang`                  | string   | `'en'`     | Language filter (`en`, `es`, etc.).                                                                                                                      |
-| `limit`                 | number   | 30         | Maximum number of results to return (capped by RPC).                                                                                                     |
+| `limit`                 | number   | 30         | Maximum number of results to return.                                                                                                                     |
 | `mode`                  | string   | `'hybrid'` | `'hybrid'` or `'keyword'`. With `'keyword'`, no embedding is generated; only FTS is used.                                                                |
 | `debug`                 | boolean  | false      | If true, the response SHALL include a `debug` object (see below).                                                                                        |
 | `min_score`             | number   | 0.02       | Minimum RRF score; hits with `score < min_score` are excluded (server-side filter). Use 0 to disable.                                                    |
@@ -31,6 +33,8 @@ When `query` is non-empty and `mode` is `'hybrid'`, the endpoint SHALL generate 
 
 When `query` is non-empty and `mode` is `'keyword'`, the endpoint SHALL call `knowledge.keyword_search` only (no embedding) and return results with score set from the keyword rank, then apply the same facet filtering and fetch step when facet params are provided.
 
+When `query` is empty, the endpoint SHALL return a bounded set of documents for the given language up to `limit` and SHALL NOT generate an embedding. The endpoint SHALL NOT require returning the full corpus to support explorer totals; corpus totals SHALL come from `GET /api/explorer/corpus-metadata`.
+
 When embedding generation fails (e.g. API error or dimension mismatch), the endpoint SHALL fall back to keyword-only search and SHALL NOT return 500 for that reason alone.
 
 #### Scenario: Hybrid search with query
@@ -43,10 +47,15 @@ When embedding generation fails (e.g. API error or dimension mismatch), the endp
 - **WHEN** the client POSTs `{ "query": "flood", "lang": "en", "mode": "keyword" }`
 - **THEN** the endpoint SHALL NOT call Gemini; it SHALL call `keyword_search` only and return results with score from FTS rank
 
-#### Scenario: Load all documents
+#### Scenario: Bounded empty-query documents
 
-- **WHEN** the client POSTs `{ "query": "", "lang": "en" }`
-- **THEN** the endpoint SHALL return all documents for that language via `get_all_documents` without generating an embedding
+- **WHEN** the client POSTs `{ "query": "", "lang": "en", "limit": 30 }`
+- **THEN** the endpoint SHALL return no more than 30 documents for that language without generating an embedding
+
+#### Scenario: Empty-query totals are externalized
+
+- **WHEN** the client needs the total number of case studies in the corpus
+- **THEN** the client SHALL use `GET /api/explorer/corpus-metadata` rather than relying on `/api/search` with an empty query to return every document
 
 #### Scenario: Debug response
 
