@@ -30,4 +30,4 @@
 ## 6. Archive and main specs (after implementation)
 
 - [x] 6.1 Port delta specs from `openspec/changes/pinboard-download-artifact/specs/` into `openspec/specs/` (merge ADDED blocks into `human-artifacts`, `human-pins-frontend`; add `openspec/specs/pinboard-export/spec.md`).
-- [ ] 6.2 Run OpenSpec archive flow for this change when implementation is verified.
+- [x] 6.2 Run OpenSpec archive flow for this change when implementation is verified.
