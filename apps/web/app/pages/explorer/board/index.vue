@@ -10,13 +10,20 @@
       :enable-selection="true"
       :empty-all-message="$t('pins.boardEmpty')"
       :empty-category-message="$t('pins.boardEmptyCategory')"
-      :artifact-count="podcastArtifactsList.length"
+      :artifact-count="artifactCountTotal"
     >
       <template #artifacts>
         <PinBoardArtifactsView
           :podcasts="podcastArtifactsList"
           :loading="podcastArtifactsLoading"
           :error="podcastArtifactsError"
+          :pinboard-exports="pinboardExportsList"
+          :pinboard-exports-loading="pinboardExportsLoading"
+          :pinboard-exports-error="pinboardExportsError"
+          :generating-download="pinboardExportGenerating"
+          :can-generate-download="canGeneratePinboardDownload"
+          :generate-download-error="pinboardExportRequestError"
+          @generate-download="handleGeneratePinboardDownload"
         />
       </template>
     </PinBoardView>
@@ -84,8 +91,10 @@ import PodcastCreationWizard from '~/components/explorer/wf/PodcastCreationWizar
 
 const pinsApi = usePinsSupabase()
 const podcastArtifactsApi = usePodcastArtifacts()
+const pinboardExportsApi = usePinboardExportArtifacts()
 const projectsStore = useProjectsStore()
 const selectionStore = usePinnedSelectionStore()
+const { session, requireAuthForPersistence } = useAccess()
 
 const pinsList = computed(() => pinsApi.pins.value)
 const pinsLoading = computed(() => pinsApi.loading.value)
@@ -99,14 +108,84 @@ const podcastArtifactsList = computed(() =>
 const podcastArtifactsLoading = computed(() => podcastArtifactsApi.loading.value)
 const podcastArtifactsError = computed(() => podcastArtifactsApi.error.value ?? null)
 
+const pinboardExportsList = computed(() =>
+  pinboardExportsApi.artifacts.value.map((artifact) => ({
+    ...artifact,
+    source_pin_ids: [...artifact.source_pin_ids],
+  }))
+)
+const pinboardExportsLoading = computed(() => pinboardExportsApi.loading.value)
+const pinboardExportsError = computed(() => pinboardExportsApi.error.value ?? null)
+
+const artifactCountTotal = computed(
+  () => podcastArtifactsList.value.length + pinboardExportsList.value.length
+)
+
+const pinboardExportGenerating = ref(false)
+const pinboardExportRequestError = ref<string | null>(null)
+
+const canGeneratePinboardDownload = computed(
+  () =>
+    Boolean(projectsStore.currentProjectId) &&
+    !pinboardExportGenerating.value &&
+    Boolean(session.value?.access_token)
+)
+
+const hasPendingPinboardExport = computed(() =>
+  pinboardExportsList.value.some((a) => a.status === 'pending')
+)
+
+const { pause: pauseExportPoll, resume: resumeExportPoll } = useIntervalFn(
+  () => {
+    void pinboardExportsApi.fetchPinboardExports(projectsStore.currentProjectId)
+  },
+  3000,
+  { immediate: false }
+)
+
+watch(hasPendingPinboardExport, (pending) => {
+  if (pending) resumeExportPoll()
+  else pauseExportPoll()
+}, { immediate: true })
+
 watch(
   () => projectsStore.currentProjectId,
   (id) => {
     void pinsApi.loadPinsForProject(id)
     void podcastArtifactsApi.fetchPodcastArtifacts(id)
+    void pinboardExportsApi.fetchPinboardExports(id)
   },
   { immediate: true }
 )
+
+async function handleGeneratePinboardDownload() {
+  const projectId = projectsStore.currentProjectId
+  if (!projectId) return
+  if (!requireAuthForPersistence()) return
+  const token = session.value?.access_token
+  if (!token) {
+    pinboardExportRequestError.value = "Sign in to generate a download."
+    return
+  }
+  pinboardExportRequestError.value = null
+  pinboardExportGenerating.value = true
+  try {
+    await $fetch('/api/pinboard-export', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: { projectId },
+    })
+    await pinboardExportsApi.fetchPinboardExports(projectId)
+  } catch (e: unknown) {
+    const err = e as { data?: { message?: string }; message?: string }
+    const msg = err.data?.message || err.message || 'Request failed'
+    pinboardExportRequestError.value = msg
+  } finally {
+    pinboardExportGenerating.value = false
+  }
+}
 
 // Page metadata
 definePageMeta({

@@ -188,7 +188,18 @@
       "untitled": "Podcast sin título",
       "loadAudio": "Cargar audio",
       "refreshAudio": "Actualizar audio",
-      "download": "Descargar"
+      "download": "Descargar",
+      "downloadsTitle": "Descargas",
+      "downloadsDescription": "Instantáneas ZIP de este tablero (marcadores, notas, imágenes y artículos enlazados cuando existan).",
+      "generateDownload": "Generar nueva descarga",
+      "downloadGenerateError": "No se pudo iniciar la exportación",
+      "downloadsLoadError": "No se pudieron cargar las descargas",
+      "downloadsLoading": "Cargando descargas…",
+      "downloadsEmptyTitle": "Aún no hay descargas",
+      "downloadsEmptyDescription": "Genera una exportación ZIP de todo el tablero. Los tableros grandes pueden tardar un minuto mientras se recogen imágenes y artículos.",
+      "downloadUntitled": "Exportación del tablero",
+      "downloadStatusPending": "Preparando…",
+      "downloadStatusFailed": "Fallido"
     }
   },
   "header": {

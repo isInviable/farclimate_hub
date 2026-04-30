@@ -188,7 +188,18 @@
       "untitled": "Untitled podcast",
       "loadAudio": "Load audio",
       "refreshAudio": "Refresh audio",
-      "download": "Download"
+      "download": "Download",
+      "downloadsTitle": "Downloads",
+      "downloadsDescription": "ZIP snapshots of this pinboard (pins, notes, images, and linked articles when available).",
+      "generateDownload": "Generate new download",
+      "downloadGenerateError": "Could not start export",
+      "downloadsLoadError": "Could not load downloads",
+      "downloadsLoading": "Loading downloads…",
+      "downloadsEmptyTitle": "No downloads yet",
+      "downloadsEmptyDescription": "Generate a ZIP export of the whole pinboard. Large boards may take a minute while images and articles are collected.",
+      "downloadUntitled": "Pinboard export",
+      "downloadStatusPending": "Preparing…",
+      "downloadStatusFailed": "Failed"
     }
   },
   "header": {
