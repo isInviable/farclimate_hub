@@ -96,6 +96,86 @@
           </p>
         </div>
 
+        <div v-else-if="isFullPaperDocumentLayout" class="space-y-10">
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
+            >
+              {{ $t("pins.fullPaperSectionWhole") }}
+              <span class="text-sm font-normal text-neutral-500 ml-2">
+                ({{ fullPaperDocumentPins.length }})
+              </span>
+            </h2>
+            <p
+              v-if="fullPaperDocumentPins.length === 0"
+              class="text-sm text-neutral-500 mb-2"
+            >
+              {{ $t("pins.fullPaperWholeEmpty") }}
+            </p>
+            <div
+              v-else
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <PinBoardCard
+                v-for="pin in fullPaperDocumentPins"
+                :key="pin.id"
+                :pin="pin"
+                :enable-selection="enableSelection"
+                @open-article="openArticle"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2
+              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
+            >
+              {{ $t("pins.fullPaperSectionFragmentPapers") }}
+              <span class="text-sm font-normal text-neutral-500 ml-2">
+                ({{ fragmentBackedPaperGroups.length }})
+              </span>
+            </h2>
+            <p
+              v-if="fragmentBackedPaperGroups.length === 0"
+              class="text-sm text-neutral-500 mb-2"
+            >
+              {{ $t("pins.fullPaperFragmentPapersEmpty") }}
+            </p>
+            <div
+              v-else
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <div
+                v-for="g in fragmentBackedPaperGroups"
+                :key="g.source_document_uid"
+                class="relative group bg-white rounded-lg shadow-md overflow-hidden border border-neutral-100 p-6 flex flex-col gap-3"
+              >
+                <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
+                  {{ g.displayTitle }}
+                </h3>
+                <p class="text-sm text-neutral-600">
+                  {{
+                    $t("pins.fullPaperFragmentPinCount", {
+                      count: g.pins.length,
+                    })
+                  }}
+                </p>
+                <div class="mt-auto">
+                  <UButton
+                    size="sm"
+                    color="primary"
+                    variant="soft"
+                    icon="i-heroicons-document-text"
+                    @click="openArticle(g.source_document_uid)"
+                  >
+                    {{ $t("pins.drawer.openArticle") }}
+                  </UButton>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
         <div v-else class="space-y-10">
           <section v-if="showSavedSearchesBlock">
             <h2
@@ -158,8 +238,12 @@
 
 <script setup lang="ts">
 import type { HumanPinRow } from "~/types/pins";
-import { groupPinsByBodyKind } from "~/utils/pinBoardSections";
+import {
+  fullPaperDocumentPinsSorted,
+  groupFragmentPinsByDocumentUid,
+} from "~/utils/pinBoardFullPaperGroups";
 import { groupPinsForMap } from "~/utils/pinBoardMap";
+import { groupPinsByBodyKind } from "~/utils/pinBoardSections";
 import PinBoardCard from "./PinBoardCard.vue";
 import PinBoardSavedSearchCard from "./PinBoardSavedSearchCard.vue";
 import PinBoardMap from "./PinBoardMap.vue";
@@ -209,6 +293,18 @@ const selectedKind = ref<string>("all");
 const selectedView = ref<"grid" | "map">("grid");
 
 const sections = computed(() => groupPinsByBodyKind(props.pins));
+
+const fullPaperDocumentPins = computed(() =>
+  fullPaperDocumentPinsSorted(props.pins),
+);
+
+const fragmentBackedPaperGroups = computed(() =>
+  groupFragmentPinsByDocumentUid(props.pins),
+);
+
+const isFullPaperDocumentLayout = computed(
+  () => selectedView.value === "grid" && selectedKind.value === "document",
+);
 
 /**
  * Map view data source. Derived from the in-memory pin list only — no
@@ -269,6 +365,12 @@ const isGridEmpty = computed(() => {
   if (selectedKind.value === "all") {
     return pinCountInGrid.value === 0 && savedSearches.value.length === 0;
   }
+  if (selectedKind.value === "document") {
+    return (
+      fullPaperDocumentPins.value.length === 0 &&
+      fragmentBackedPaperGroups.value.length === 0
+    );
+  }
   return pinCountInGrid.value === 0;
 });
 
@@ -304,6 +406,12 @@ const summaryLine = computed(() => {
     const n = pinCountInGrid.value + savedSearches.value.length;
     return t("pins.summaryBoardTotal", { count: n });
   }
+  if (selectedKind.value === "document") {
+    return t("pins.summaryFullPaperView", {
+      whole: fullPaperDocumentPins.value.length,
+      papersWithFragments: fragmentBackedPaperGroups.value.length,
+    });
+  }
   const n = flatFilteredPins.value.length;
   return t("pins.summaryInSection", {
     count: n,
@@ -315,6 +423,9 @@ const emptyTitle = computed(() => {
   if (selectedKind.value === KIND_SAVED_SEARCHES) {
     return t("pins.emptySavedSearchesTitle");
   }
+  if (selectedKind.value === "document") {
+    return t("pins.emptyFullPaperTitle");
+  }
   return selectedKind.value === "all"
     ? t("pins.emptyBoardTitle")
     : t("pins.emptySectionTitle");
@@ -323,6 +434,9 @@ const emptyTitle = computed(() => {
 const emptyCategory = computed(() => {
   if (selectedKind.value === KIND_SAVED_SEARCHES) {
     return t("pins.savedSearchMenuEmpty");
+  }
+  if (selectedKind.value === "document") {
+    return t("pins.emptyFullPaperHint");
   }
   return selectedKind.value === "all"
     ? props.emptyAllMessage || t("pins.boardEmpty")
