@@ -53,6 +53,15 @@ Current setup includes:
    - Creates private Storage bucket **`human-pin-images`** (beta: **20 MiB** max object, MIME `image/jpeg`, `image/png`, `image/webp`, `image/gif`).
    - RLS on `storage.objects`: authenticated users may only read/write objects whose path’s **first segment** equals `auth.uid()` (convention `{uid}/{pin_id-or-segment}/{filename}`). Use a **server route or service role** to copy platform/knowledge images into this bucket when creating image pins.
 
+9. `08_human_artifacts.sql`
+   - Creates `human.artifacts` for generated user artifacts such as podcasts and pinboard ZIP exports (`kind` values like `podcast`, `pinboard_export`). Rows store metadata and Storage references only; binary files live in Storage.
+   - Creates private Storage bucket **`human-artifacts`** (beta: **50 MiB** max object; MIME examples include `audio/mpeg`, `audio/mp3`, `application/zip` for exports).
+   - Owner-only RLS on `human.artifacts` via `owner_user_id = auth.uid()` and project ownership checks. `anon` has no table access.
+   - RLS on `storage.objects`: authenticated users may only read/write objects whose path’s **first segment** equals `auth.uid()` (convention `{uid}/{project_id}/{artifact_id}/podcast.mp3` or `.../pinboard-export.zip`).
+
+10. `08_article_images_storage.sql`
+   - Creates public Storage bucket **`article-images`** for regenerable knowledge/article images written by the data pipeline.
+
 ## Usage
 
 From the repo root:
@@ -82,7 +91,7 @@ The SQL creates the Postgres function used by Supabase Auth, but the hosted proj
 
 Without that dashboard step, new JWTs will not include the `connected_admin` claim even though the function exists in the database.
 
-At the same time, the bootstrap SQL provisions `human.profiles`, `human.projects`, pinboards/pins, optional saved searches, and the pin-image bucket: authenticated users can persist profile metadata and preferences, own projects with an auto-created pinboard, curate pins under RLS, and use Storage for pin images under their UUID prefix — all with ownership enforced by RLS. The Storage bucket and policies are created entirely via SQL; no extra dashboard step is required for bucket creation on hosted Supabase beyond running bootstrap.
+At the same time, the bootstrap SQL provisions `human.profiles`, `human.projects`, pinboards/pins, optional saved searches, generated artifact metadata, and Storage buckets for pin images and generated artifacts: authenticated users can persist profile metadata and preferences, own projects with an auto-created pinboard, curate pins under RLS, store generated artifact metadata, and use Storage for pin images/artifacts under their UUID prefix — all with ownership enforced by RLS. The Storage buckets and policies are created entirely via SQL; no extra dashboard step is required for bucket creation on hosted Supabase beyond running bootstrap.
 
 ## Managing elevated users
 

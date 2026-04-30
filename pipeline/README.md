@@ -33,13 +33,15 @@ python pipeline/extract_from_html.py
 # 2c. Download every image referenced in gallery_images[] into pipeline/images/<slug>/
 python pipeline/download_images.py
 
-# 3. AI augmentation (geocoding, implementation years, cleanup) -> pipeline/augmented/
+# 3. AI augmentation (geocoding, years, recipe sections, cleanup) -> pipeline/augmented/
 python pipeline/augment_with_ai.py
 
-# 4. Translate augmented EN records into ES (or other target langs)
+# 4. Translate augmented EN records into ES (or other target langs):
+#    title, subtitle, summary, fulltext, and recipe.ingredients (cached separately)
 python pipeline/translate_augmented.py
+#    Optional: only some files, e.g. --pattern 'page_0_en_augmented.json' --lang es
 
-# 5. Push to Supabase: schema, documents, embeddings, and article images
+# 5. Push to Supabase: schema, documents, embeddings, article images, EN+ES recipe rows
 cd packages/db
 pnpm db:create          # once (or after schema changes); idempotent — see note below
 pnpm db:push            # reads pipeline/augmented/ + pipeline/images/<slug>/manifest.json
@@ -55,12 +57,14 @@ If the schema already exists and you just want to merge in new or updated conten
 ```bash
 python pipeline/extract_from_html.py   # if gallery_images[] changed
 python pipeline/download_images.py     # if new images need caching
+python pipeline/augment_with_ai.py      # if extracted JSON changed (includes recipe)
+python pipeline/translate_augmented.py  # if you need updated ES (or other) strings + recipe
 pnpm -F @farclimate/db db:push
 ```
 
 Per-row semantics of `db:push`:
 
-- `knowledge.documents`, `knowledge.summary`, `knowledge.summary_multilang`, `knowledge.fulltext`, `knowledge.recipe` — `INSERT … ON CONFLICT DO UPDATE`; existing rows are overwritten with the new values, missing rows are created, unrelated rows are left alone.
+- `knowledge.documents`, `knowledge.summary`, `knowledge.summary_multilang`, `knowledge.fulltext`, `knowledge.recipe` — `INSERT … ON CONFLICT DO UPDATE`; existing rows are overwritten with the new values, missing rows are created, unrelated rows are left alone. English augmented files upsert `recipe` with `lang = en`; matching `*_en_augmented_<lang>.json` translation files upsert `knowledge.recipe` for that `lang` when `recipe` is present and non-empty.
 - `knowledge.embeddings` — recomputed and replaced per document.
 - `knowledge.document_images` — for each document, `DELETE` + batched `INSERT` of the current manifest. Images present locally win; images that disappeared between runs are removed from the DB.
 - `article-images` Storage bucket — uploads with `upsert: true`, so object keys are overwritten in place. **Objects whose DB row was removed are not garbage-collected** — they linger in Storage (harmless, just wasted bytes). Clean them manually via the Supabase UI if you care.
@@ -235,7 +239,7 @@ Articles with no images still get a manifest with `"images": []` so Step 5 can t
 
 **Script:** `augment_with_ai.py`
 
-Reads JSON from `extracted/`, augments English records (geocoding, implementation years, preprocessing of references/contact). Writes `*_en_augmented.json` into `augmented/`. Uses Gemini and optional caches under `pipeline/caches/`. Requires `GEMINI_API_KEY` (and optionally `ARCGIS_API_KEY` for geocoding) in `pipeline/.env` or repo `.env`.
+Reads JSON from `extracted/`, augments English records (geocoding, implementation years, preprocessing of references/contact, **LLM “recipe” section extraction** from `fulltext`). Writes `*_en_augmented.json` into `augmented/`. Uses Gemini and optional caches under `pipeline/caches/` (including `recipe_extraction_cache.json`). Requires `GEMINI_API_KEY` (and optionally `ARCGIS_API_KEY` for geocoding) in `pipeline/.env` or repo `.env`.
 
 **From repo root:**
 
@@ -251,15 +255,18 @@ python pipeline/augment_with_ai.py
 
 **Script:** `translate_augmented.py`
 
-Reads `*_en_augmented.json` from `augmented/`, translates title, subtitle, summary, fulltext into the target language (e.g. Spanish). Writes `*_en_augmented_es.json` in the same directory. Uses Gemini; translations are cached. Requires `GEMINI_API_KEY`.
+Reads `*_en_augmented.json` from `augmented/`, translates **title, subtitle, summary, fulltext**, and (when the English file has a non-empty **`recipe.ingredients`**) the same canonical recipe section strings into the target language (e.g. Spanish). Writes `*_en_augmented_es.json` in the same directory with `recipe.lang` set to the target code. Uses Gemini; field strings are cached in `pipeline/caches/translation_cache.json`, and successful **recipe** translations are cached in `pipeline/caches/recipe_translation_cache.json`. Requires `GEMINI_API_KEY`.
 
 **From repo root:**
 
 ```bash
 python pipeline/translate_augmented.py
+# Examples:
+python pipeline/translate_augmented.py --lang es
+python pipeline/translate_augmented.py --input pipeline/augmented --pattern 'page_*_en_augmented.json' --lang es
 ```
 
-**Options:** `--input` (default `pipeline/augmented`), `--lang` (e.g. `es`), etc. See script help.
+**Options:** `--input` (default `pipeline/augmented`), `--pattern` (default `*_en_augmented.json`), `--lang` (default `es`). See `python pipeline/translate_augmented.py --help`.
 
 ---
 
@@ -272,7 +279,7 @@ cd packages/db && pnpm db:create   # create schema (once; destructive — drops 
 cd packages/db && pnpm db:push     # read pipeline/augmented/ + pipeline/images/, insert into DB
 ```
 
-`pnpm db:push` reads `pipeline/augmented/*_en_augmented.json` (and the matching `*_es` translations), upserts `knowledge.documents` / `knowledge.summary` / `knowledge.fulltext` / `knowledge.recipe`, computes embeddings, and **also**:
+`pnpm db:push` reads `pipeline/augmented/*_en_augmented.json` (and the matching `*_en_augmented_*.json` translation files, e.g. `*_en_augmented_es.json`), upserts `knowledge.documents` / `knowledge.summary` / `knowledge.summary_multilang` / `knowledge.fulltext` / `knowledge.recipe` (English row from augmented JSON; translated `recipe` row per target `lang` when the translation file includes it), computes embeddings, and **also**:
 
 1. Derives `<slug>` from each document's `source_url`.
 2. Reads `pipeline/images/<slug>/manifest.json` produced by Step 2c.

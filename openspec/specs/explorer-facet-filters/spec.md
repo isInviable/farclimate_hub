@@ -1,44 +1,50 @@
 # Explorer facet filters spec
 
+## Purpose
+
 Behaviour of the explorer filter UI for facets (Sector, Climate impacts, etc.) when driven by the facets API and applied to hybrid search. Reflects the implementation: fetch facets after search/load, dual stacked bars, and only active filters sent in the query.
 
----
+## Requirements
 
 ### Requirement: Facets fetched after search or load all
 
-The explorer SHALL request filter facets from `POST /api/facets` with the current result set document IDs whenever a search or "load all" completes successfully. The request body SHALL include `doc_ids` set to the array of hit IDs from the latest search response, so that the response contains both `global` and `for_result_set` facet counts.
+The explorer SHALL fetch corpus metadata independently from search result loading and SHALL fetch result-set facet counts after each successful search or empty-query load. On explorer initialization, the client SHALL request `GET /api/explorer/corpus-metadata` for corpus totals. When search/load returns hits, the client SHALL call `POST /api/facets` with the returned hit IDs so the filter UI can show current result-set counts in relation to corpus totals.
 
-#### Scenario: Facets requested after search
-- **WHEN** the user performs a hybrid or keyword search and the endpoint returns a non-empty `hits` array
-- **THEN** the client SHALL call `POST /api/facets` with `doc_ids` equal to the list of hit `id` values and SHALL use the response to drive filter options and counts
+#### Scenario: Corpus metadata requested on explorer load
+- **WHEN** the explorer initializes
+- **THEN** the client SHALL request `GET /api/explorer/corpus-metadata` and store the returned `globalFacets` for the filter UI
 
-#### Scenario: Facets requested after load all
-- **WHEN** the user triggers load all (empty query) and receives the full document list
-- **THEN** the client SHALL call `POST /api/facets` with `doc_ids` equal to the returned document IDs and SHALL use the response for filter data
+#### Scenario: Search refetches result-set facets
+- **WHEN** the user performs a hybrid or keyword search and the endpoint returns a `hits` array
+- **THEN** the client SHALL update displayed results and call `POST /api/facets` with `doc_ids` equal to the returned hit IDs
 
-#### Scenario: No results
+#### Scenario: Empty-query load does not require all corpus document IDs
+- **WHEN** the explorer requests initial empty-query results
+- **THEN** the client SHALL request only a bounded result set and SHALL use those returned hit IDs for result-set facet counts
+
+#### Scenario: No results keeps corpus facets available with empty overlays
 - **WHEN** a search returns zero hits
-- **THEN** the client MAY call `POST /api/facets` with empty `doc_ids` or omit the request; if called with empty or no `doc_ids`, `for_result_set` SHALL be empty arrays and the UI SHALL show global counts only or disable result-set counts
+- **THEN** the filter UI SHALL continue to show global corpus facet options and SHALL show zero or empty current counts for the result set
 
 ### Requirement: Filter components use real facet data
 
-The Sector, Hazards (climate impacts), and any Adaptation approaches or Keywords filter components SHALL be driven by the facets API response. Options (values) and counts SHALL come from the `global` and `for_result_set` structures returned by `POST /api/facets`, not from hardcoded lists. The mapping SHALL be: Sector → `sectors`, Hazards → `climate_impacts`, Adaptation approaches → `adaptation_approaches`, Keywords → `keywords`.
+The Sector, Hazards (climate impacts), and any Adaptation approaches or Keywords filter components SHALL be driven by real facet data. Options and corpus totals SHALL come from corpus metadata `globalFacets`. Current counts SHALL come from `for_result_set` facet data fetched with the current returned hit IDs. The mapping SHALL be: Sector → `sectors`, Hazards → `climate_impacts`, Adaptation approaches → `adaptation_approaches`, Keywords → `keywords`.
 
-#### Scenario: Sector filter shows API-driven options
-- **WHEN** facets have been fetched and the response includes `global.sectors` and `for_result_set.sectors`
-- **THEN** the Sector filter component SHALL display options and counts from that data (e.g. value and count per row, with for_result_set count or percentage when available)
+#### Scenario: Sector filter shows metadata-driven options
+- **WHEN** corpus metadata has been fetched and the response includes `globalFacets.sectors`
+- **THEN** the Sector filter component SHALL display sector options and corpus total counts from that data
 
-#### Scenario: Hazards filter shows API-driven options
-- **WHEN** facets have been fetched and the response includes `global.climate_impacts` and `for_result_set.climate_impacts`
-- **THEN** the Hazards (climate impacts) filter component SHALL display options and counts from that data
+#### Scenario: Hazards filter shows metadata-driven options
+- **WHEN** corpus metadata has been fetched and the response includes `globalFacets.climate_impacts`
+- **THEN** the Hazards (climate impacts) filter component SHALL display options and corpus total counts from that data
 
-#### Scenario: Dual stacked bars per facet option
-- **WHEN** the filter component has both global and for_result_set counts
-- **THEN** each facet option SHALL show two stacked bars (same row, same scale): one bar for the total/max count (how many items in the corpus have that facet value) and one bar for the current result set count (how many of those are in the current search results). The total bar SHALL not change with search; only the current bar SHALL update when results change. The UI MAY display the counts as "current / total" (e.g. "6 / 14") for clarity
+#### Scenario: Current over total count per facet option
+- **WHEN** the filter component renders a facet option
+- **THEN** it SHALL show the current-result-set count in relation to the corpus-wide count for that value, for example `6 / 14`, using dual bars where the corpus total is the background or total bar and the current result-set count is the foreground or current bar
 
-#### Scenario: Counts update after result set changes
+#### Scenario: Overlay counts update after result set changes
 - **WHEN** the user applies a new search or facet filter and the result set changes
-- **THEN** the client SHALL refetch facets with the new hit IDs and the filter components SHALL update to show the new for_result_set counts
+- **THEN** the current count and foreground bar SHALL update from `for_result_set` counts while the total count and background bar SHALL remain corpus-wide
 
 ### Requirement: Only active filters are sent in the query and facets
 
@@ -54,19 +60,19 @@ The client SHALL send facet parameters to `POST /api/search` only for filters th
 
 ### Requirement: Applying facet filters triggers search with facet params
 
-When the user applies one or more **active** facet filters (e.g. selects one or more sectors and/or climate impacts and the corresponding filter is enabled), the client SHALL perform a new request to `POST /api/search` with the same `query` and `lang` as the current context, plus the selected facet values in the corresponding body fields (`sectors`, `climate_impacts`, `adaptation_approaches`, `keywords`) only for those filters that are active. The client SHALL replace the current result set with the response hits and SHALL refetch facets with the new hit IDs so that the filter UI reflects the narrowed set.
+When the user applies one or more **active** facet filters (e.g. selects one or more sectors and/or climate impacts and the corresponding filter is enabled), the client SHALL perform a new request to `POST /api/search` with the same `query` and `lang` as the current context, plus the selected facet values in the corresponding body fields (`sectors`, `climate_impacts`, `adaptation_approaches`, `keywords`) only for those filters that are active. The client SHALL replace the current result set with the response hits and refetch result-set facet counts with the returned hit IDs.
 
 #### Scenario: User selects sector and applies
 - **WHEN** the user selects "Agriculture" in the Sector filter and applies (or confirms) the filter
-- **THEN** the client SHALL send `POST /api/search` with body including `sectors: ["Agriculture"]` (and current query/lang), and SHALL display the returned hits and update facet counts with a subsequent `POST /api/facets` call using the new hit IDs
+- **THEN** the client SHALL send `POST /api/search` with body including `sectors: ["Agriculture"]` (and current query/lang), display the returned hits, and refetch result-set facet counts with those hit IDs
 
 #### Scenario: User selects multiple facets and applies
 - **WHEN** the user selects one or more sectors and one or more climate impacts and applies
-- **THEN** the client SHALL send `POST /api/search` with `sectors` and `climate_impacts` arrays containing the selected values, and SHALL update results and facets as in the previous scenario
+- **THEN** the client SHALL send `POST /api/search` with `sectors` and `climate_impacts` arrays containing the selected values, display the returned hits, and refetch result-set facet counts with those hit IDs
 
 #### Scenario: User clears facet filters
 - **WHEN** the user clears one or all facet filters
-- **THEN** the client SHALL send `POST /api/search` without the cleared categories (or with empty arrays), and SHALL update results and refetch facets with the new hit IDs
+- **THEN** the client SHALL send `POST /api/search` without the cleared categories (or with empty arrays), display the returned hits, and refetch result-set facet counts with those hit IDs
 
 ### Requirement: Filter state and search context preserved
 
@@ -82,15 +88,15 @@ When sending `POST /api/search` with facet params, the client SHALL preserve the
 
 ### Requirement: Biogeographical regions filter uses real facet data
 
-A Biogeographical regions filter SHALL be available in the explorer, driven by the facets API. Options and counts SHALL come from `global.biogeographical_regions` and `for_result_set.biogeographical_regions` returned by `POST /api/facets`. The filter SHALL behave like the Sector and Hazards filters: same component pattern (e.g. BarChartFilter with dual stacked bars), only active filters sent in the query, and applying the filter SHALL trigger a search with the selected regions in the request body.
+A Biogeographical regions filter SHALL be available in the explorer. Options and corpus totals SHALL come from `globalFacets.biogeographical_regions`; current counts SHALL come from `for_result_set.biogeographical_regions`. The filter SHALL behave like the Sector and Hazards filters: same component pattern, only active filters sent in the query, and applying the filter SHALL trigger a search with the selected regions in the request body.
 
-#### Scenario: Biogeographical regions filter shows API-driven options
-- **WHEN** facets have been fetched and the response includes `global.biogeographical_regions` and `for_result_set.biogeographical_regions`
-- **THEN** the Biogeographical regions filter component SHALL display options and counts from that data (value and count per row, with for_result_set count or percentage when available)
+#### Scenario: Biogeographical regions filter shows metadata-driven options
+- **WHEN** corpus metadata has been fetched and the response includes `globalFacets.biogeographical_regions`
+- **THEN** the Biogeographical regions filter component SHALL display options and corpus totals from that data, with current counts from the latest result-set facets when available
 
 #### Scenario: Biogeographical regions filter uses same apply behaviour as other facets
 - **WHEN** the user selects one or more biogeographical regions and applies the filter
-- **THEN** the client SHALL send `POST /api/search` with body including `biogeographical_regions` set to the selected values (and current query/lang), and SHALL update results and refetch facets with the new hit IDs
+- **THEN** the client SHALL send `POST /api/search` with body including `biogeographical_regions` set to the selected values (and current query/lang), display the returned hits, and refetch result-set facet counts with those hit IDs
 
 #### Scenario: Disabled biogeographical regions filter not sent
 - **WHEN** the Biogeographical regions filter is disabled (even if regions were previously selected)

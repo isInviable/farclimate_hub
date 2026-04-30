@@ -42,8 +42,12 @@ The frontend SHALL query pins ordered primarily by `sort_order` (ascending) with
 The frontend SHALL render `body.data` according to `body_kind` using an application registry (extensible list). It SHALL display `user_note` when non-empty (same card or detail as the pin). Unknown `body_kind` values SHALL show a safe fallback (e.g. JSON snippet or generic card) without breaking the list.
 
 #### Scenario: Known kind renders structured content
-- **WHEN** `body_kind` matches a registered renderer (e.g. text segment, link, contact)
+- **WHEN** `body_kind` matches a registered renderer (e.g. text segment, link, contact, mind map)
 - **THEN** the UI SHALL show the appropriate layout using `body.v === 1` envelope
+
+#### Scenario: Mind map kind renders structured preview
+- **WHEN** `body_kind` is the mind-map dedicated value and `body.data.markdown` is a non-empty string
+- **THEN** the UI SHALL render a mind-map preview or embedded viewer using that markdown (and optional `yaml`) without executing untrusted scripts beyond the existing markmap stack
 
 ### Requirement: Chat pins render static thread
 For `body_kind` representing a saved chat, the UI SHALL render `body.data.messages` with a clear **sender** distinction per message (e.g. role / user / assistant labels). Real-time updates or live sync SHALL NOT be required in v1.
@@ -449,13 +453,46 @@ The pinboard frontend SHALL render body kinds introduced by this capture flow th
 
 #### Scenario: Known new body kind renders with appropriate preview
 
-- **WHEN** the board displays a pin created from selected text, a recipe section, an AI summary, or a chat response and a renderer exists for that `body_kind`
+- **WHEN** the board displays a pin created from selected text, a recipe section, an AI summary, a chat response, a grid compare summary, or a mind map and a renderer exists for that `body_kind`
 - **THEN** the card SHALL show an appropriate preview using `body.data` and SHALL still show `user_note` when non-empty
 
 #### Scenario: Unknown new body kind falls back safely
 
 - **WHEN** the board displays a pin whose `body_kind` has no specific renderer
 - **THEN** the card SHALL render a safe generic preview and keep board interactions usable
+
+### Requirement: Mind map pins use a dedicated body_kind
+
+The application SHALL support a dedicated `body_kind` for pins created from the Explorer mind map modal (e.g. `markmap`) that is distinct from `ai_summary`, `recipe_section`, and `grid_compare_summary`. Persisted `body.data` SHALL include at least the markdown string used to build the map (`markdown`). The client MAY also persist an optional `yaml` string when the front matter differs from the viewer default. The pinboard SHALL render this kind through an explicit renderer that can reconstruct the map from `body.data`.
+
+#### Scenario: Create pin from mind map modal
+
+- **WHEN** an authenticated user confirms saving the mind map from the Explorer mind map modal
+- **THEN** the insert SHALL set `body_kind` to the mind-map dedicated value and `body.data` SHALL include the `markdown` field (and `yaml` when applicable) sufficient for `MarkmapViewer` to render the same structure
+
+#### Scenario: Board lists mind map pin
+
+- **WHEN** the pinboard shows a pin with the mind-map `body_kind`
+- **THEN** the card SHALL render the pin body without error, SHALL show the appropriate localized kind label alongside other `body_kind` labels in that view, and SHALL show `user_note` when non-empty
+
+#### Scenario: Mind map pin with known explorer document links like other article-linked pins
+
+- **WHEN** a mind map pin is created while the Explorer has a resolvable parent knowledge `document_uid` for the active context
+- **THEN** the created row SHALL include that `document_uid` as `source_document_uid` and a `source_title_snapshot` that identifies the article and mind-map capture where product copy requires it
+
+### Requirement: Explorer mind map modal exposes pin capture for authenticated users
+
+The Explorer mind map fullscreen modal SHALL expose a capture action for authenticated project owners that opens the same optional-note pin capture flow used elsewhere. The action SHALL be hidden or disabled for unauthenticated users. Canceling the flow SHALL NOT insert a pin.
+
+#### Scenario: Authenticated user opens capture from mind map
+
+- **WHEN** an authenticated user activates the mind map pin control
+- **THEN** the application SHALL open the pin capture flow prefilled with the mind-map structured payload
+
+#### Scenario: Unauthenticated user does not get the control
+
+- **WHEN** the user is not signed in
+- **THEN** the mind map modal SHALL NOT offer a successful path to insert `human.pins` rows
 
 ### Requirement: Grid compare summary pins use a dedicated body_kind
 
@@ -480,3 +517,203 @@ When pin creation is initiated from the Explorer grid comparison view and the se
 - **WHEN** a grid compare pin is created with a known `document_uid`
 - **THEN** the pinboard SHALL offer the same “open in explorer” / document navigation behavior as other article-linked pins, subject to document resolution rules already defined for `human.pins` rows
 
+### Requirement: Pinboard integrates saved searches from human.saved_searches
+
+`PinBoardView` (or successor) SHALL fetch and display saved searches from `human.saved_searches` alongside `human.pins`, using dedicated UI (not `PinBoardCard` rows backed by `human.pins`). Sidebar counts for **All** MAY include saved searches plus pins per product copy. Legacy `human.pins` rows with `body_kind` `saved_search`, if any, MAY render through the generic fallback until removed.
+
+#### Scenario: Saved searches sidebar category
+
+- **WHEN** the pinboard loads for a project that has saved searches
+- **THEN** the sidebar SHALL include a **Saved searches** category with a correct count and the grid SHALL support filtering to that category
+
+### Requirement: Explorer floating action bar excludes saved-search UI
+
+`ActionBarExplorer` SHALL NOT import or render `SavedSearchMenu` (or an equivalent saved-search-only picker). Saved search access remains on the filter sidebar and pinboard.
+
+#### Scenario: Action bar template
+
+- **WHEN** the explorer page renders `ActionBarExplorer`
+- **THEN** its implementation SHALL not include saved-search menu components
+
+### Requirement: Full-paper pins use dedicated body_kind document
+
+The application SHALL persist pins that represent the **entire** catalog knowledge document with `body_kind` exactly `document`. Pins that represent excerpts, sections, selections, mind maps, AI blocks, recipe fragments, images, contacts, websites, chats, saved searches, or any other non-whole-document content SHALL NOT use `body_kind` `document`; they SHALL continue to use their existing kinds (including but not limited to `text_segment`, `selected_text`, `section`, `recipe_section`, `markmap`, `ai_summary`, `grid_compare_summary`, `chat_response`, `image`, `contact`, `website`, `saved_search`).
+
+#### Scenario: Document pin is not a text_segment
+
+- **WHEN** a user creates a pin intended to represent the whole document from an allowed write path in this change
+- **THEN** the inserted `human.pins` row SHALL have `body_kind` `document` and SHALL NOT have `body_kind` `text_segment` solely for that intent
+
+#### Scenario: Fragment pin remains a fragment kind
+
+- **WHEN** a user pins a paragraph, selection, markmap, or other in-document block
+- **THEN** the inserted row SHALL have a fragment-appropriate `body_kind` and SHALL NOT use `document`
+
+### Requirement: Document pins require source_document_uid and user_note
+
+For `body_kind` `document`, the client SHALL set `source_document_uid` to the catalog document's stable identifier. The client SHALL set `user_note` according to the same product rules as other pins that require a note on save (including empty string only if the product explicitly allows omitting validation for this kind). The `body` envelope SHALL remain `v: 1` with a `data` object; `data` MAY be empty or minimal if insert validation permits.
+
+#### Scenario: Search-created document pin carries document uid
+
+- **WHEN** a user pins a document from a search hit that includes `document_uid`
+- **THEN** the new pin SHALL have `body_kind` `document` and `source_document_uid` equal to that uid
+
+### Requirement: Search hit pinning uses pinCapture with document kind
+
+Pin creation from the **search results** pin affordance SHALL use the explicit capture API (`pinCapture` / `buildPinCapturePayload` or successor) with `bodyKind` `document` and structured fields. That flow SHALL NOT rely on the legacy `pinContent` DOM capture path for the purpose of persisting the pin body kind.
+
+#### Scenario: Search row pin does not use pinContent for body_kind
+
+- **WHEN** the user activates the pin control on a search result row that represents a whole document
+- **THEN** the application SHALL invoke the same capture pipeline used for explicit `pinCapture` requests with `bodyKind` `document`, not `pinContent`-driven segment capture for determining `body_kind`
+
+### Requirement: Document preview and full article expose Pin document
+
+The **document preview** layout and the **full article** layout each SHALL expose an explicit control (e.g. "Pin document" or equivalent localized label) that creates a pin with the same persisted shape as search-hit whole-document pinning (`body_kind` `document`, required fields above).
+
+#### Scenario: Preview and article both create document pins
+
+- **WHEN** an authenticated user uses Pin document from document preview and separately from full article for the same logical document
+- **THEN** each action SHALL insert a `human.pins` row with `body_kind` `document` and the correct `source_document_uid` for that document (multiple rows allowed; no deduplication required)
+
+### Requirement: Pin board list supports filtering full papers
+
+The pin board sidebar list (e.g. `BoardList.vue` or successor) SHALL provide a user-visible **filter or category** that restricts the list to pins where `body_kind === "document"`. The all-pins view SHALL remain available. Labels SHALL come from the application i18n system.
+
+#### Scenario: Filter shows only document pins
+
+- **WHEN** the user selects the full-paper filter
+- **THEN** every listed pin SHALL have `body_kind` `document` and pins with other kinds SHALL not appear in that filtered list
+
+#### Scenario: Localized kind label for document pins
+
+- **WHEN** the UI displays a localized label for `body_kind` `document` in the same contexts as other kinds (e.g. section header, card chrome)
+- **THEN** the UI SHALL resolve a `pins.kinds.*` key for `document` from locale files
+
+### Requirement: Document and fragment pins may coexist per document
+
+The same `source_document_uid` MAY appear on a `document` pin and on one or more fragment pins simultaneously. The application SHALL NOT require deduplication between `document` and fragment pins.
+
+#### Scenario: Document pin and excerpt pin both listed
+
+- **WHEN** a user has pinned the full document and also pinned a paragraph from that document
+- **THEN** both pins SHALL appear in the unfiltered pin list (subject to sort order) and the full-paper filter SHALL show only the `document` row
+
+### Requirement: Renderer registry supports document kind
+
+The pin body renderer registry used by the pinboard (e.g. `PinBoardCard` or successor) SHALL register `body_kind` `document` so cards do not fall through to the unknown-kind fallback. The card SHALL show `source_title_snapshot`, navigation to the document when resolvable, `user_note` when non-empty per existing rules, and standard overflow actions consistent with other document-linked pins.
+
+#### Scenario: Document pin is not unknown kind
+
+- **WHEN** a pin has `body_kind` `document` and valid envelope `body.v === 1`
+- **THEN** the pinboard SHALL NOT treat it as an unknown `body_kind` for rendering purposes
+
+### Requirement: Pinboard creates podcasts from selected pins
+
+The pinboard action bar SHALL replace the dummy "Create podcast" behavior with a guided podcast creation wizard for the current selected pins. The wizard SHALL show selected items before generation, collect optional extra prompt instructions, collect a podcast title, call the existing podcast summary endpoint, allow the user to edit the returned script, and call the existing podcast text-to-speech endpoint to create a podcast artifact.
+
+#### Scenario: User opens the podcast wizard
+
+- **WHEN** an authenticated user has selected one or more pins on `/explorer/board` and chooses "Create podcast" from the board action bar
+- **THEN** the application SHALL open a podcast creation wizard instead of the demo audio modal
+- **AND** the first step SHALL list the selected pins that will be included
+
+#### Scenario: Empty selection is blocked
+
+- **WHEN** the user chooses "Create podcast" with no selected pins
+- **THEN** the application SHALL prevent podcast generation and show an actionable validation message
+- **AND** no podcast endpoint request SHALL be sent
+
+#### Scenario: Selection exceeds frontend limits
+
+- **WHEN** the selected pins exceed the configured selected-item limit or selected text-size limit
+- **THEN** the wizard SHALL display a validation error that explains the exceeded limit
+- **AND** the wizard SHALL keep the user on the review step without calling the summarize endpoint
+
+#### Scenario: Summary generation returns editable script
+
+- **WHEN** the user submits valid selected pins, extra instructions, and title from the wizard
+- **THEN** the application SHALL call `POST /api/podcast-summarize` with structured selected source context and extra instructions
+- **AND** the wizard SHALL show a loading state while the request is pending
+- **AND** the returned script SHALL appear in an editable text area for user review
+
+#### Scenario: Reviewed script creates podcast artifact
+
+- **WHEN** the user clicks "Generate podcast" after reviewing the editable script
+- **THEN** the application SHALL call `POST /api/podcast-text-to-speech` with the active project id, reviewed script, title, selected source pin ids, and relevant metadata
+- **AND** the wizard SHALL tell the user that the audio will be available in the board Artifacts section after creation
+
+### Requirement: Podcast wizard sends useful selected source context
+
+The podcast wizard SHALL build selected source payloads from the loaded `human.pins` rows for the active board. Each selected source sent to the summarize endpoint MUST preserve source boundaries and include best-available pin context, including pin id, display title, body kind, source document uid, user note, and selected text or markdown extracted from the pin body.
+
+#### Scenario: Selected pin context preserves source boundaries
+
+- **WHEN** the user generates a summary from multiple selected pins
+- **THEN** the summarize request SHALL include one source item per selected pin
+- **AND** each source item SHALL include the pin id and available title, kind, source document uid, note, and text fields
+
+#### Scenario: User instructions are passed to summarization
+
+- **WHEN** the user enters extra podcast instructions in the wizard
+- **THEN** the summarize request SHALL include those instructions as `extraInstructions`
+
+### Requirement: Pinboard shows podcast artifacts
+
+The board page SHALL include an Artifacts section with a Podcasts subsection. The Podcasts subsection SHALL be visible for authenticated users of the active project even when no podcast artifacts exist, and SHALL list available ready podcast artifacts with controls to listen and download when they are available.
+
+#### Scenario: No podcasts available
+
+- **WHEN** the authenticated user opens `/explorer/board` for a project with no podcast artifacts
+- **THEN** the Artifacts section SHALL still show a Podcasts subsection
+- **AND** the subsection SHALL display help text explaining that generated podcasts will appear there
+
+#### Scenario: Podcasts are listed
+
+- **WHEN** the active project has ready `human.artifacts` rows with `kind = 'podcast'`
+- **THEN** the Podcasts subsection SHALL list those podcasts with their title or fallback label, creation metadata when available, and controls to listen and download
+
+#### Scenario: Podcast list refreshes after generation
+
+- **WHEN** the podcast text-to-speech endpoint returns a created podcast artifact
+- **THEN** the board SHALL refresh or update the Podcasts subsection so the new artifact is available without requiring a full page reload
+
+#### Scenario: Artifact access stays authenticated
+
+- **WHEN** the user listens to or downloads a podcast artifact
+- **THEN** the application SHALL use an authenticated private Storage access path for the artifact object
+- **AND** it SHALL NOT rely on bundled demo media or public static podcast files
+
+### Requirement: Pinboard artifacts include a Downloads section
+
+The board Artifacts UI SHALL include a **Downloads** subsection (alongside existing subsections such as Podcasts) for `human.artifacts` rows with `kind = 'pinboard_export'`. The subsection SHALL list export artifacts for the active project with status, title or fallback label, created time when available, and actions to download when `status = 'ready'`.
+
+#### Scenario: Downloads section is visible
+
+- **WHEN** an authenticated user opens `/explorer/board` with an active owned project
+- **THEN** the Artifacts area SHALL show a Downloads subsection even if no exports exist yet
+
+#### Scenario: Ready exports offer download
+
+- **WHEN** the project has a `ready` pinboard export artifact
+- **THEN** the Downloads list SHALL offer download using authenticated Storage access (e.g. signed URL) consistent with other artifacts
+
+#### Scenario: Pending exports show progress state
+
+- **WHEN** a pinboard export artifact is `pending`
+- **THEN** the UI SHALL show a non-ready state and SHALL poll or periodically refetch artifact list until the artifact becomes `ready` or `failed` or the user leaves the context
+
+### Requirement: User can generate a new pinboard download
+
+The Downloads subsection SHALL provide a control (e.g. button) **Generate new download** that calls the server export endpoint for the **whole** pinboard of the active project. The UI SHALL disable or guard the action when there is no project, when the user is not authenticated, or when a duplicate in-flight policy applies (implementation MAY allow parallel exports or throttle with clear feedback).
+
+#### Scenario: Generate triggers export job
+
+- **WHEN** the user activates Generate new download under valid conditions
+- **THEN** the client SHALL call the pinboard export API for the current project
+- **AND** a new `pending` artifact SHALL appear in the list without a full page reload
+
+#### Scenario: Failed export is visible
+
+- **WHEN** an export ends in `failed`
+- **THEN** the Downloads list SHALL show failure state and an actionable message where possible
