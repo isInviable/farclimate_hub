@@ -24,3 +24,4 @@ dist/
 .output/
 old/*
 pipeline/images/*
+apps/web/test-output/

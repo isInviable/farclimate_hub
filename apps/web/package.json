@@ -11,11 +11,14 @@
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
     "test:human-pins": "vitest run tests/human/pinboards.rls.test.ts",
+    "test:human-artifacts": "vitest run tests/human/artifacts.rls.test.ts",
+    "test:podcast-live": "vitest run tests/api/podcast-generation.live.test.ts",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.31",
     "@ai-sdk/vue": "^3.0.99",
+    "@google-cloud/text-to-speech": "^6.4.0",
     "@iconify-json/lucide": "^1.2.90",
     "@iconify-json/simple-icons": "^1.2.70",
     "@nuxt/image": "2.0.0",
