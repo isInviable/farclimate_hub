@@ -1,57 +1,16 @@
 <template>
   <div class="flex">
-    <aside class="w-64 mr-4 border-r border-gray-200 min-h-screen p-6 shrink-0">
-      <h3 class="font-semibold text-gray-800 mb-4">
-        {{ $t("pins.sectionsByKind") }}
-      </h3>
-      <div class="space-y-2">
-        <button
-          v-for="cat in sidebarCategories"
-          :key="cat.value"
-          type="button"
-          class="w-full text-left px-4 py-2 rounded-lg transition-colors"
-          :class="[
-            isKindSelected(cat.value)
-              ? 'bg-neutral-500 text-white'
-              : 'text-gray-700 hover:bg-gray-100',
-          ]"
-          @click="selectKind(cat.value)"
-        >
-          <div class="flex items-center justify-between gap-2">
-            <span class="truncate">{{ cat.label }}</span>
-            <span class="text-sm opacity-75 shrink-0">{{ cat.count }}</span>
-          </div>
-        </button>
-      </div>
-
-      <div class="mt-6 pt-4 border-t border-gray-200">
-        <button
-          type="button"
-          class="w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center justify-between gap-2"
-          :class="[
-            !mapEntryEnabled
-              ? 'text-gray-400 cursor-not-allowed'
-              : selectedView === 'map'
-              ? 'bg-neutral-500 text-white'
-              : 'text-gray-700 hover:bg-gray-100',
-          ]"
-          :disabled="!mapEntryEnabled"
-          :aria-disabled="!mapEntryEnabled"
-          :title="!mapEntryEnabled ? $t('pins.map.emptyTooltip') : undefined"
-          @click="selectMap"
-        >
-          <span class="flex items-center gap-2 truncate">
-            <Icon name="mdi:map-outline" class="shrink-0" />
-            <span class="truncate">{{ $t("pins.map.label") }}</span>
-          </span>
-          <span class="text-sm opacity-75 shrink-0">{{
-            mapArticleCount
-          }}</span>
-        </button>
-      </div>
-
-      <slot name="sidebar-after-map" />
-    </aside>
+    <PinBoardSidebar
+      :categories="sidebarCategories"
+      :selected-kind="selectedKind"
+      :selected-view="selectedView"
+      :map-entry-enabled="mapEntryEnabled"
+      :map-article-count="mapArticleCount"
+      :artifact-count="artifactCount"
+      @select-kind="selectKind"
+      @select-map="selectMap"
+      @select-artifacts="selectArtifacts"
+    />
 
     <main class="flex-1 p-8 min-w-0">
       <div class="mb-6">
@@ -83,6 +42,10 @@
         <div class="w-full h-[70vh] rounded-lg overflow-hidden border border-gray-200 bg-white">
           <PinBoardMap :pins="props.pins" @open-article="handleOpenArticleFromMap" />
         </div>
+      </template>
+
+      <template v-else-if="selectedView === 'artifacts'">
+        <slot name="artifacts" />
       </template>
 
       <template v-else>
@@ -249,6 +212,7 @@ import { groupPinsByBodyKind } from "~/utils/pinBoardSections";
 import PinBoardCard from "./PinBoardCard.vue";
 import PinBoardSavedSearchCard from "./PinBoardSavedSearchCard.vue";
 import PinBoardMap from "./PinBoardMap.vue";
+import PinBoardSidebar from "./PinBoardSidebar.vue";
 import ArticleSidePanel from "~/components/explorer/ArticleSidePanel.vue";
 import { useProjectsStore } from "@/stores/projects";
 
@@ -262,6 +226,7 @@ const props = withDefaults(
     enableSelection?: boolean
     emptyAllMessage?: string
     emptyCategoryMessage?: string
+    artifactCount?: number
   }>(),
   {
     loading: false,
@@ -269,6 +234,7 @@ const props = withDefaults(
     enableSelection: true,
     emptyAllMessage: "",
     emptyCategoryMessage: "",
+    artifactCount: 0,
   }
 );
 
@@ -292,7 +258,7 @@ const savedSearches = computed(() => savedSearchesApi.savedSearches.value);
  * filter, and switching back to a kind restores the grid automatically.
  */
 const selectedKind = ref<string>("all");
-const selectedView = ref<"grid" | "map">("grid");
+const selectedView = ref<"grid" | "map" | "artifacts">("grid");
 
 const sections = computed(() => groupPinsByBodyKind(props.pins));
 
@@ -395,7 +361,14 @@ function selectMap() {
   selectedView.value = "map";
 }
 
+function selectArtifacts() {
+  selectedView.value = "artifacts";
+}
+
 const summaryLine = computed(() => {
+  if (selectedView.value === "artifacts") {
+    return t("podcast.artifacts.description");
+  }
   if (selectedView.value === "map") {
     return t("pins.map.summary", { count: mapArticleCount.value });
   }

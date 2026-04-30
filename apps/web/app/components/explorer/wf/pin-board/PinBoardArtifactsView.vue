@@ -1,83 +1,5 @@
 <template>
-  <section
-    v-if="compact"
-    class="mt-6 border-t border-gray-200 pt-4"
-  >
-    <h3 class="mb-3 font-semibold text-gray-800">
-      {{ $t("podcast.artifacts.title") }}
-    </h3>
-    <div class="space-y-3">
-      <div class="flex items-center justify-between gap-2 px-4 py-2 text-gray-700">
-        <span class="flex items-center gap-2 truncate">
-          <UIcon name="i-heroicons-speaker-wave" class="shrink-0" />
-          <span class="truncate">{{ $t("podcast.artifacts.audioTitle") }}</span>
-        </span>
-        <span class="text-sm text-gray-500">{{ podcasts.length }}</span>
-      </div>
-
-      <p v-if="error" class="px-4 text-xs text-red-600">
-        {{ error }}
-      </p>
-
-      <div v-else-if="loading" class="flex items-center gap-2 px-4 text-xs text-gray-500">
-        <UIcon name="i-heroicons-arrow-path" class="h-4 w-4 animate-spin" />
-        <span>{{ $t("podcast.artifacts.loading") }}</span>
-      </div>
-
-      <p v-else-if="podcasts.length === 0" class="px-4 text-xs leading-5 text-gray-500">
-        {{ $t("podcast.artifacts.emptyDescription") }}
-      </p>
-
-      <div v-else class="space-y-3 px-4">
-        <article
-          v-for="podcast in podcasts"
-          :key="podcast.id"
-          class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
-        >
-          <h4 class="truncate text-sm font-medium text-gray-900">
-            {{ podcast.title || $t("podcast.artifacts.untitled") }}
-          </h4>
-          <p class="mt-1 text-xs text-gray-500">
-            {{ formatDate(podcast.created_at) }}
-          </p>
-
-          <ClientOnly>
-            <audio
-              v-if="audioUrls[podcast.id]"
-              :src="audioUrls[podcast.id]"
-              controls
-              class="mt-2 w-full"
-            />
-          </ClientOnly>
-
-          <div class="mt-2 flex flex-wrap gap-2">
-            <UButton
-              type="button"
-              size="xs"
-              variant="soft"
-              color="primary"
-              :loading="loadingLinks[podcast.id]"
-              @click="loadAudioUrl(podcast)"
-            >
-              {{ audioUrls[podcast.id] ? $t("podcast.artifacts.refreshAudio") : $t("podcast.artifacts.loadAudio") }}
-            </UButton>
-            <UButton
-              type="button"
-              size="xs"
-              variant="outline"
-              icon="i-heroicons-arrow-down-tray"
-              :loading="downloading[podcast.id]"
-              @click="downloadPodcast(podcast)"
-            >
-              {{ $t("podcast.artifacts.download") }}
-            </UButton>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section v-else class="mx-8 mb-24 mt-8">
+  <section class="space-y-6">
     <UCard>
       <template #header>
         <div>
@@ -94,8 +16,11 @@
         <div>
           <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900">
             <UIcon name="i-heroicons-speaker-wave" class="h-5 w-5 text-primary-500" />
-            {{ $t("podcast.artifacts.podcastsTitle") }}
+            {{ $t("podcast.artifacts.audioTitle") }}
           </h3>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ $t("podcast.artifacts.audioDescription") }}
+          </p>
         </div>
 
         <UAlert
@@ -186,7 +111,6 @@ const props = defineProps<{
   podcasts: readonly HumanArtifactRow[];
   loading?: boolean;
   error?: string | null;
-  compact?: boolean;
 }>();
 
 const podcastArtifacts = usePodcastArtifacts();

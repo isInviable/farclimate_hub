@@ -10,10 +10,10 @@
       :enable-selection="true"
       :empty-all-message="$t('pins.boardEmpty')"
       :empty-category-message="$t('pins.boardEmptyCategory')"
+      :artifact-count="podcastArtifactsList.length"
     >
-      <template #sidebar-after-map>
-        <PodcastArtifactsSection
-          compact
+      <template #artifacts>
+        <PinBoardArtifactsView
           :podcasts="podcastArtifactsList"
           :loading="podcastArtifactsLoading"
           :error="podcastArtifactsError"
@@ -79,7 +79,7 @@ import { usePinsSupabase } from '~/composables/usePinsSupabase'
 import { useProjectsStore } from '@/stores/projects'
 import { usePinnedSelectionStore } from '@/stores/selection'
 import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
-import PodcastArtifactsSection from '~/components/explorer/wf/PodcastArtifactsSection.vue'
+import PinBoardArtifactsView from '~/components/explorer/wf/pin-board/PinBoardArtifactsView.vue'
 import PodcastCreationWizard from '~/components/explorer/wf/PodcastCreationWizard.vue'
 
 const pinsApi = usePinsSupabase()
