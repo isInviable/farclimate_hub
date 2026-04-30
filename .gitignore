@@ -25,3 +25,6 @@ dist/
 old/*
 pipeline/images/*
 apps/web/test-output/
+
+*.mcp.json
+.cursor/mcp.json

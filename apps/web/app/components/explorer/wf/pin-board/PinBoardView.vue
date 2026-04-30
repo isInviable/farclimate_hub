@@ -49,6 +49,8 @@
           }}</span>
         </button>
       </div>
+
+      <slot name="sidebar-after-map" />
     </aside>
 
     <main class="flex-1 p-8 min-w-0">

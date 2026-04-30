@@ -10,7 +10,16 @@
       :enable-selection="true"
       :empty-all-message="$t('pins.boardEmpty')"
       :empty-category-message="$t('pins.boardEmptyCategory')"
-    />
+    >
+      <template #sidebar-after-map>
+        <PodcastArtifactsSection
+          compact
+          :podcasts="podcastArtifactsList"
+          :loading="podcastArtifactsLoading"
+          :error="podcastArtifactsError"
+        />
+      </template>
+    </PinBoardView>
 
     <!-- Floating Action Bar -->
     <ActionBarBoard
@@ -55,19 +64,12 @@
       </template>
     </UModal>
 
-    <UModal v-model:open="isPodcastOpen" title="Podcast summary">
-      <template #body>
-        <div class="max-w-3xl mx-auto">
-          <AudioPlayer embedded />
-        </div>
-      </template>
-      <template #footer>
-        <div class="flex gap-2 justify-end w-full">
-          <UButton variant="soft" icon="i-lucide-share-2" @click="shareMedia('/media/article_podcast.mp3', 'Podcast summary')">Share</UButton>
-          <UButton icon="i-lucide-download" color="primary" @click="downloadMedia('/media/article_podcast.mp3', 'podcast-summary.mp3')">Download</UButton>
-        </div>
-      </template>
-    </UModal>
+    <PodcastCreationWizard
+      v-model:open="isPodcastOpen"
+      :pins="pinsList"
+      :project-id="projectsStore.currentProjectId"
+      @generated="handlePodcastGenerated"
+    />
   </div>
 </template>
 
@@ -77,19 +79,31 @@ import { usePinsSupabase } from '~/composables/usePinsSupabase'
 import { useProjectsStore } from '@/stores/projects'
 import { usePinnedSelectionStore } from '@/stores/selection'
 import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
+import PodcastArtifactsSection from '~/components/explorer/wf/PodcastArtifactsSection.vue'
+import PodcastCreationWizard from '~/components/explorer/wf/PodcastCreationWizard.vue'
 
 const pinsApi = usePinsSupabase()
+const podcastArtifactsApi = usePodcastArtifacts()
 const projectsStore = useProjectsStore()
 const selectionStore = usePinnedSelectionStore()
 
 const pinsList = computed(() => pinsApi.pins.value)
 const pinsLoading = computed(() => pinsApi.loading.value)
 const pinsError = computed(() => pinsApi.error.value ?? null)
+const podcastArtifactsList = computed(() =>
+  podcastArtifactsApi.artifacts.value.map((artifact) => ({
+    ...artifact,
+    source_pin_ids: [...artifact.source_pin_ids],
+  }))
+)
+const podcastArtifactsLoading = computed(() => podcastArtifactsApi.loading.value)
+const podcastArtifactsError = computed(() => podcastArtifactsApi.error.value ?? null)
 
 watch(
   () => projectsStore.currentProjectId,
   (id) => {
     void pinsApi.loadPinsForProject(id)
+    void podcastArtifactsApi.fetchPodcastArtifacts(id)
   },
   { immediate: true }
 )
@@ -114,6 +128,10 @@ const handleOpenChat = () => {
 
 const handleOpenInsights = () => {
   isInsightsOpen.value = true
+}
+
+const handlePodcastGenerated = () => {
+  void podcastArtifactsApi.fetchPodcastArtifacts(projectsStore.currentProjectId)
 }
 
 // Compute selected solution hits for modals
