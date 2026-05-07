@@ -20,6 +20,9 @@
           :pinboard-exports="pinboardExportsList"
           :pinboard-exports-loading="pinboardExportsLoading"
           :pinboard-exports-error="pinboardExportsError"
+          :power-points="powerPointArtifactsList"
+          :power-points-loading="powerPointArtifactsLoading"
+          :power-points-error="powerPointArtifactsError"
           :generating-download="pinboardExportGenerating"
           :can-generate-download="canGeneratePinboardDownload"
           :generate-download-error="pinboardExportRequestError"
@@ -32,6 +35,7 @@
     <ActionBarBoard
       @open-chat="handleOpenChat"
       @open-insights="handleOpenInsights"
+      @open-powerpoint="isPowerPointOpen = true"
       @open-podcast="isPodcastOpen = true"
       @open-video="isVideoOpen = true"
     />
@@ -77,6 +81,13 @@
       :project-id="projectsStore.currentProjectId"
       @generated="handlePodcastGenerated"
     />
+
+    <PowerPointCreationWizard
+      v-model:open="isPowerPointOpen"
+      :pins="pinsList"
+      :project-id="projectsStore.currentProjectId"
+      @generated="handlePowerPointGenerated"
+    />
   </div>
 </template>
 
@@ -88,10 +99,12 @@ import { usePinnedSelectionStore } from '@/stores/selection'
 import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
 import PinBoardArtifactsView from '~/components/explorer/wf/pin-board/PinBoardArtifactsView.vue'
 import PodcastCreationWizard from '~/components/explorer/wf/PodcastCreationWizard.vue'
+import PowerPointCreationWizard from '~/components/explorer/wf/PowerPointCreationWizard.vue'
 
 const pinsApi = usePinsSupabase()
 const podcastArtifactsApi = usePodcastArtifacts()
 const pinboardExportsApi = usePinboardExportArtifacts()
+const powerPointArtifactsApi = usePowerPointArtifacts()
 const projectsStore = useProjectsStore()
 const selectionStore = usePinnedSelectionStore()
 const { session, requireAuthForPersistence } = useAccess()
@@ -108,6 +121,15 @@ const podcastArtifactsList = computed(() =>
 const podcastArtifactsLoading = computed(() => podcastArtifactsApi.loading.value)
 const podcastArtifactsError = computed(() => podcastArtifactsApi.error.value ?? null)
 
+const powerPointArtifactsList = computed(() =>
+  powerPointArtifactsApi.artifacts.value.map((artifact) => ({
+    ...artifact,
+    source_pin_ids: [...artifact.source_pin_ids],
+  }))
+)
+const powerPointArtifactsLoading = computed(() => powerPointArtifactsApi.loading.value)
+const powerPointArtifactsError = computed(() => powerPointArtifactsApi.error.value ?? null)
+
 const pinboardExportsList = computed(() =>
   pinboardExportsApi.artifacts.value.map((artifact) => ({
     ...artifact,
@@ -118,7 +140,10 @@ const pinboardExportsLoading = computed(() => pinboardExportsApi.loading.value)
 const pinboardExportsError = computed(() => pinboardExportsApi.error.value ?? null)
 
 const artifactCountTotal = computed(
-  () => podcastArtifactsList.value.length + pinboardExportsList.value.length
+  () =>
+    podcastArtifactsList.value.length +
+    powerPointArtifactsList.value.length +
+    pinboardExportsList.value.length
 )
 
 const pinboardExportGenerating = ref(false)
@@ -153,6 +178,7 @@ watch(
   (id) => {
     void pinsApi.loadPinsForProject(id)
     void podcastArtifactsApi.fetchPodcastArtifacts(id)
+    void powerPointArtifactsApi.fetchPowerPointArtifacts(id)
     void pinboardExportsApi.fetchPinboardExports(id)
   },
   { immediate: true }
@@ -199,6 +225,7 @@ const isChatOpen = ref(false)
 const isInsightsOpen = ref(false)
 const isVideoOpen = ref(false)
 const isPodcastOpen = ref(false)
+const isPowerPointOpen = ref(false)
 
 // Modal handlers
 const handleOpenChat = () => {
@@ -211,6 +238,10 @@ const handleOpenInsights = () => {
 
 const handlePodcastGenerated = () => {
   void podcastArtifactsApi.fetchPodcastArtifacts(projectsStore.currentProjectId)
+}
+
+const handlePowerPointGenerated = () => {
+  void powerPointArtifactsApi.fetchPowerPointArtifacts(projectsStore.currentProjectId)
 }
 
 // Compute selected solution hits for modals

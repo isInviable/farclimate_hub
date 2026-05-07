@@ -103,6 +103,96 @@
           </div>
         </div>
 
+        <!-- PowerPoint presentations -->
+        <div class="space-y-4 border-t border-gray-100 pt-8">
+          <div>
+            <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900">
+              <UIcon name="i-lucide-presentation" class="h-5 w-5 text-primary-500" />
+              {{ $t("powerpoint.artifacts.title") }}
+            </h3>
+            <p class="mt-1 text-sm text-gray-500">
+              {{ $t("powerpoint.artifacts.description") }}
+            </p>
+          </div>
+
+          <UAlert
+            v-if="powerPointsError"
+            color="error"
+            variant="soft"
+            :title="$t('powerpoint.artifacts.loadError')"
+            :description="powerPointsError"
+          />
+
+          <div
+            v-if="powerPointsLoading"
+            class="flex items-center gap-3 py-4 text-gray-600"
+          >
+            <UIcon name="i-heroicons-arrow-path" class="h-5 w-5 animate-spin" />
+            <span>{{ $t("powerpoint.artifacts.loading") }}</span>
+          </div>
+
+          <UAlert
+            v-else-if="powerPoints.length === 0"
+            color="neutral"
+            variant="soft"
+            icon="i-heroicons-information-circle"
+            :title="$t('powerpoint.artifacts.emptyTitle')"
+            :description="$t('powerpoint.artifacts.emptyDescription')"
+          />
+
+          <div v-else class="grid gap-4 md:grid-cols-2">
+            <UCard
+              v-for="ppt in powerPoints"
+              :key="ppt.id"
+              variant="subtle"
+            >
+              <div class="space-y-3">
+                <div>
+                  <h4 class="font-semibold text-gray-900">
+                    {{ ppt.title || $t("powerpoint.artifacts.untitled") }}
+                  </h4>
+                  <p class="text-xs text-gray-500">
+                    {{ formatDate(ppt.created_at) }}
+                    <span v-if="ppt.status === 'pending'">
+                      · {{ $t("powerpoint.artifacts.statusPending") }}
+                    </span>
+                    <span v-else-if="ppt.status === 'failed'">
+                      · {{ $t("powerpoint.artifacts.statusFailed") }}
+                    </span>
+                    <span v-else-if="ppt.byte_size">
+                      · {{ formatBytes(ppt.byte_size) }}
+                    </span>
+                  </p>
+                </div>
+
+                <UBadge
+                  v-if="ppt.status !== 'ready'"
+                  :color="ppt.status === 'failed' ? 'error' : 'warning'"
+                  variant="subtle"
+                >
+                  {{ ppt.status }}
+                </UBadge>
+
+                <div v-if="ppt.status === 'failed' && artifactFailureMessage(ppt)" class="text-sm text-red-700">
+                  {{ artifactFailureMessage(ppt) }}
+                </div>
+
+                <UButton
+                  v-if="ppt.status === 'ready'"
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  icon="i-heroicons-arrow-down-tray"
+                  :loading="downloadingPowerPoint[ppt.id]"
+                  @click="downloadPowerPoint(ppt)"
+                >
+                  {{ $t("podcast.artifacts.download") }}
+                </UButton>
+              </div>
+            </UCard>
+          </div>
+        </div>
+
         <!-- Downloads (pinboard ZIP exports) -->
         <div class="space-y-4 border-t border-gray-100 pt-8">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -229,6 +319,9 @@ const props = withDefaults(
     pinboardExports?: readonly HumanArtifactRow[]
     pinboardExportsLoading?: boolean
     pinboardExportsError?: string | null
+    powerPoints?: readonly HumanArtifactRow[]
+    powerPointsLoading?: boolean
+    powerPointsError?: string | null
     generatingDownload?: boolean
     canGenerateDownload?: boolean
     generateDownloadError?: string | null
@@ -237,6 +330,9 @@ const props = withDefaults(
     pinboardExports: () => [],
     pinboardExportsLoading: false,
     pinboardExportsError: null,
+    powerPoints: () => [],
+    powerPointsLoading: false,
+    powerPointsError: null,
     generatingDownload: false,
     canGenerateDownload: true,
     generateDownloadError: null,
@@ -249,11 +345,13 @@ const emit = defineEmits<{
 
 const podcastArtifacts = usePodcastArtifacts()
 const pinboardExportArtifacts = usePinboardExportArtifacts()
+const powerPointArtifacts = usePowerPointArtifacts()
 
 const audioUrls = ref<Record<string, string>>({})
 const loadingLinks = ref<Record<string, boolean>>({})
 const downloading = ref<Record<string, boolean>>({})
 const downloadingExport = ref<Record<string, boolean>>({})
+const downloadingPowerPoint = ref<Record<string, boolean>>({})
 
 watch(
   () => props.podcasts.map((podcast) => podcast.id).join(","),
@@ -271,6 +369,16 @@ watch(
     const ids = new Set(props.pinboardExports.map((e) => e.id))
     downloadingExport.value = Object.fromEntries(
       Object.entries(downloadingExport.value).filter(([id]) => ids.has(id))
+    )
+  }
+)
+
+watch(
+  () => props.powerPoints.map((ppt) => ppt.id).join(","),
+  () => {
+    const ids = new Set(props.powerPoints.map((ppt) => ppt.id))
+    downloadingPowerPoint.value = Object.fromEntries(
+      Object.entries(downloadingPowerPoint.value).filter(([id]) => ids.has(id))
     )
   }
 )
@@ -322,10 +430,34 @@ async function downloadExport(exp: HumanArtifactRow) {
   }
 }
 
+async function downloadPowerPoint(ppt: HumanArtifactRow) {
+  downloadingPowerPoint.value = { ...downloadingPowerPoint.value, [ppt.id]: true }
+  try {
+    const url = await powerPointArtifacts.signedUrlForPowerPoint(ppt, true)
+    if (!url) return
+    const base = (ppt.title || "powerpoint-presentation").replace(/[/\\?%*:|"<>]/g, "-")
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `${base}.pptx`
+    link.rel = "noopener"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } finally {
+    downloadingPowerPoint.value = { ...downloadingPowerPoint.value, [ppt.id]: false }
+  }
+}
+
 function exportFailureMessage(exp: HumanArtifactRow): string | null {
+  return artifactFailureMessage(exp)
+}
+
+function artifactFailureMessage(exp: HumanArtifactRow): string | null {
   const m = exp.metadata
   if (m && typeof m === "object" && !Array.isArray(m)) {
-    const err = (m as Record<string, unknown>).export_error
+    const err =
+      (m as Record<string, unknown>).export_error ??
+      (m as Record<string, unknown>).generation_error
     if (typeof err === "string" && err.trim()) return err.trim()
   }
   return null

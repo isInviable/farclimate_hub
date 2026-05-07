@@ -13,13 +13,27 @@ export const PRESENTATION_MAX_SELECTED_ITEMS = 12
 export const PRESENTATION_MAX_CONTEXT_CHARS = 60_000
 export const PRESENTATION_MAX_SLIDES = 10
 
+const optionalNonEmptyStringSchema = z.preprocess((value) => {
+  if (typeof value !== "string") return undefined
+  const trimmed = value.trim()
+  return trimmed || undefined
+}, z.string().min(1).optional())
+
 const debugSourceIdsSchema = z.array(z.string().trim().min(1)).optional()
 
-const imageReferenceSchema = z.object({
+const imageReferenceSchema = z.preprocess((value) => {
+  if (Array.isArray(value) && value.length === 1) {
+    const sourceId = stringFrom(value[0])
+    return sourceId ? { sourceId } : value
+  }
+  if (typeof value !== "string") return value
+  const sourceId = value.trim()
+  return sourceId ? { sourceId } : value
+}, z.object({
   sourceId: z.string().trim().min(1),
-  alt: z.string().trim().min(1).optional(),
-  caption: z.string().trim().min(1).optional(),
-}).strict()
+  alt: optionalNonEmptyStringSchema,
+  caption: optionalNonEmptyStringSchema,
+}).strict())
 
 export const presentationStructureSchema = z.object({
   title: z.string().trim().min(1),
@@ -345,7 +359,7 @@ export function buildPresentationPrompt(
   const imageInstructions = images.length
     ? `Image slide types are allowed only with these selected image sourceIds: ${images
         .map((image) => image.sourceId)
-        .join(", ")}.`
+        .join(", ")}. The image field must be a single object like { "sourceId": "selected-image-id" }, never a bare string and never an array. The image.sourceId field is a content handle, not a URL. Use exactly one of those ids. Do not emit src, url, path, data, or any other image location field. If alt or caption is unknown, omit the field instead of using null or an empty string.`
     : "Do not emit image-title or image-bullets slides because the selected sources do not include usable images."
   const requestedSlides = request.instructions.slideCount ?? PRESENTATION_MAX_SLIDES
   const instructionLines = [
@@ -393,6 +407,7 @@ Rules:
 - Prefer concise slide titles and bullets suitable for a PowerPoint deck.
 - debugSourceIds are for developers only and must refer to selected Source id values.
 - Never invent source ids, image source ids, URLs, coordinates, fonts, colors, dimensions, or PptxGenJS options.
+- Image slides must reference selected images as an image object with image.sourceId only. Do not set image to a string. The application will attach the actual image URL later.
 - ${imageInstructions}
 
 Selected sources:
@@ -405,6 +420,7 @@ export async function runPresentationStructureGeneration({
   generate,
 }: GeneratePresentationStructureParams): Promise<PresentationStructure> {
   const prompt = buildPresentationPrompt(request)
+  logPresentationDebug("request", request, prompt, modelName)
   const rawObject = generate
     ? await generate({ modelName, prompt })
     : await generatePresentationObject(modelName, prompt)
@@ -419,13 +435,83 @@ async function generatePresentationObject(
   modelName: string,
   prompt: string
 ): Promise<unknown> {
-  const { output } = await generateText({
-    model: google(modelName),
-    prompt,
-    output: Output.object({ schema: presentationStructureSchema }),
-  })
+  let output: unknown
+  try {
+    const result = await generateText({
+      model: google(modelName),
+      prompt,
+      output: Output.object({ schema: presentationStructureSchema }),
+    })
+    output = result.output
+  } catch (error) {
+    console.error("[presentation-structure] structured generation failed", {
+      modelName,
+      error: errorForLog(error),
+    })
+    throw error
+  }
   if (!output) {
     throw new Error("Model did not return structured presentation output")
   }
   return output
+}
+
+function logPresentationDebug(
+  event: string,
+  request: NormalizedPresentationStructureRequest,
+  prompt: string,
+  modelName: string
+) {
+  const imageSources = usablePresentationImages(request)
+  if (imageSources.length === 0 && process.env.NUXT_DEBUG_PRESENTATION_STRUCTURE !== "true") {
+    return
+  }
+  console.info(`[presentation-structure] ${event}`, {
+    modelName,
+    sourceCount: request.sources.length,
+    requestedSlideCount: request.instructions.slideCount,
+    imageSourceCount: imageSources.length,
+    imageSources,
+    sourceSummary: request.sources.map((source) => ({
+      id: source.id,
+      title: source.title,
+      bodyKind: source.bodyKind,
+      textLength: source.text.length,
+      hasImage: Boolean(source.image),
+      image: source.image,
+    })),
+    promptImageRule: imageSources.length
+      ? `allowed image sourceIds: ${imageSources.map((image) => image.sourceId).join(", ")}`
+      : "image slides disallowed",
+    promptLength: prompt.length,
+  })
+}
+
+function errorForLog(error: unknown): Record<string, unknown> {
+  if (!(error instanceof Error)) {
+    return { value: String(error) }
+  }
+  const row = error as Error & {
+    cause?: unknown
+    value?: unknown
+    response?: unknown
+  }
+  return {
+    name: row.name,
+    message: row.message,
+    cause: safeLogValue(row.cause),
+    value: safeLogValue(row.value),
+    response: safeLogValue(row.response),
+  }
+}
+
+function safeLogValue(value: unknown): unknown {
+  if (value === null || value === undefined) return value
+  if (typeof value === "string") return value.slice(0, 2_000)
+  if (typeof value === "number" || typeof value === "boolean") return value
+  try {
+    return JSON.stringify(value).slice(0, 2_000)
+  } catch {
+    return String(value).slice(0, 2_000)
+  }
 }

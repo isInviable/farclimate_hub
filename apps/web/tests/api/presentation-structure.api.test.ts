@@ -100,6 +100,18 @@ describe("presentation structure request validation", () => {
     expect(prompt).toContain("Audience: city planners")
     expect(prompt).toContain("Focus on implementation trade-offs.")
   })
+
+  it("describes selected images as source handles without exposing URLs", () => {
+    const request = normalizePresentationStructureRequest({
+      items: [textItem("source-1"), imageItem("image-1")],
+    })
+
+    const prompt = buildPresentationPrompt(request)
+    expect(prompt).toContain("selected image sourceIds: image-1")
+    expect(prompt).toContain("The image.sourceId field is a content handle, not a URL")
+    expect(prompt).toContain("The application will attach the actual image URL later")
+    expect(prompt).not.toContain("https://example.test/mangrove.jpg")
+  })
 })
 
 describe("presentation structure schema validation", () => {
@@ -136,6 +148,92 @@ describe("presentation structure schema validation", () => {
     )
 
     expect(result.ok).toBe(true)
+  })
+
+  it("accepts null or empty optional image metadata from the model", () => {
+    const request = normalizePresentationStructureRequest({
+      items: [imageItem("image-1")],
+    })
+    const result = validatePresentationStructure(
+      {
+        title: "Coastal adaptation",
+        slides: [
+          {
+            type: "image-title",
+            title: "Restoration site",
+            image: { sourceId: "image-1", alt: null, caption: "" },
+          },
+        ],
+      },
+      request
+    )
+
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      const slide = result.presentation.slides[0]
+      expect(slide.type).toBe("image-title")
+      if (slide.type === "image-title") {
+        expect(slide.image).toEqual({ sourceId: "image-1" })
+      }
+    }
+  })
+
+  it("normalizes bare image source ids from the model", () => {
+    const request = normalizePresentationStructureRequest({
+      items: [imageItem("image-1")],
+    })
+    const result = validatePresentationStructure(
+      {
+        title: "Coastal adaptation",
+        slides: [
+          {
+            type: "image-bullets",
+            title: "Restoration site",
+            image: "image-1",
+            bullets: ["Buffers waves"],
+          },
+        ],
+      },
+      request
+    )
+
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      const slide = result.presentation.slides[0]
+      expect(slide.type).toBe("image-bullets")
+      if (slide.type === "image-bullets") {
+        expect(slide.image).toEqual({ sourceId: "image-1" })
+      }
+    }
+  })
+
+  it("normalizes single-item image source id arrays from the model", () => {
+    const request = normalizePresentationStructureRequest({
+      items: [imageItem("image-1")],
+    })
+    const result = validatePresentationStructure(
+      {
+        title: "Coastal adaptation",
+        slides: [
+          {
+            type: "image-bullets",
+            title: "Restoration site",
+            image: ["image-1"],
+            bullets: ["Buffers waves"],
+          },
+        ],
+      },
+      request
+    )
+
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      const slide = result.presentation.slides[0]
+      expect(slide.type).toBe("image-bullets")
+      if (slide.type === "image-bullets") {
+        expect(slide.image).toEqual({ sourceId: "image-1" })
+      }
+    }
   })
 
   it("rejects layout and renderer fields", () => {

@@ -45,6 +45,7 @@ import { ref, watch } from "vue";
 import { usePinnedSelectionStore } from "@/stores/selection";
 
 const selectionStore = usePinnedSelectionStore();
+const { t } = useI18n();
 
 const selectedAction = ref("");
 
@@ -52,14 +53,15 @@ const selectedAction = ref("");
 const emit = defineEmits<{
   (e: "open-chat"): void;
   (e: "open-insights"): void;
+  (e: "open-powerpoint"): void;
   (e: "open-podcast"): void;
   (e: "open-video"): void;
 }>();
 
 // Action options for USelect
-const actionOptions = [
+const actionOptions = computed(() => [
   {
-    label: "Make presentation",
+    label: t("powerpoint.actions.makePresentation"),
     value: "presentation",
     icon: "mdi:presentation",
   },
@@ -73,7 +75,7 @@ const actionOptions = [
     value: "video",
     icon: "mdi:video",
   },
-];
+]);
 
 // Handle action selection
 watch(selectedAction, (value) => {
@@ -81,7 +83,7 @@ watch(selectedAction, (value) => {
 
   switch (value) {
     case "presentation":
-      navigateTo("/presentation");
+      emit("open-powerpoint");
       break;
     case "podcast":
       // Emit event so parent can open a Nuxt UI modal
