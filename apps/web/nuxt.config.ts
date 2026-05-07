@@ -44,6 +44,7 @@ export default defineNuxtConfig({
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     podcastArtifactBucket: process.env.NUXT_PODCAST_ARTIFACT_BUCKET || 'human-artifacts',
     podcastSummarizeModel: process.env.NUXT_PODCAST_SUMMARIZE_MODEL || 'gemini-3.1-flash-lite-preview',
+    slideshow_model_name: process.env.NUXT_SLIDESHOW_MODEL_NAME || 'gemini-3.1-flash-lite-preview',
     googleTtsApiKey: process.env.GOOGLE_TTS_API_KEY || process.env.NUXT_GOOGLE_TTS_API_KEY || '',
     podcastTtsLanguageCode: process.env.NUXT_PODCAST_TTS_LANGUAGE_CODE || 'en-US',
     podcastTtsVoiceName: process.env.NUXT_PODCAST_TTS_VOICE_NAME || '',
