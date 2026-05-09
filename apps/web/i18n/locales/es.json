@@ -400,13 +400,13 @@
     "example5": "¿Cuáles son las lecciones más importantes aprendidas de este artículo?"
   },
   "tabs": {
-    "summary": "Resumen",
+    "summary": "Vista general",
     "recipe": "Receta",
     "chat": "Chat"
   },
   "summary": {
     "slides": {
-      "main": "principal",
+      "main": "Resumen",
       "contacts": "Contactos y referencias",
       "map": "Mapa"
     }
@@ -456,6 +456,13 @@
     "map": {
       "emptyTitle": "Sin puntos en el mapa",
       "emptyDescription": "Este caso de estudio aún no tiene coordenadas geográficas en la base de datos."
+    },
+    "panelNav": {
+      "previousCase": "Caso anterior",
+      "nextCase": "Caso siguiente",
+      "keyboardHint": "Alt + ← → para navegar · Esc para cerrar",
+      "prevAria": "Abrir el caso anterior de la lista",
+      "nextAria": "Abrir el caso siguiente de la lista"
     }
   },
   "summaryHeaders": {

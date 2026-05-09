@@ -11,7 +11,7 @@
     >
       <div
         v-if="contactText"
-        class="prose prose-sm max-w-none"
+        class="prose prose-lg max-w-none"
         v-html="md.render(contactText)"
       />
       <p v-else class="text-sm text-muted">
@@ -58,7 +58,7 @@
     >
       <div
         v-if="referencesText"
-        class="prose prose-sm max-w-none"
+        class="prose prose-lg max-w-none"
         v-html="md.render(referencesText)"
       />
       <p v-else class="text-sm text-muted">

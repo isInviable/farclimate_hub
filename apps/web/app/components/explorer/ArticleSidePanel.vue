@@ -6,11 +6,7 @@
     :description="$t('common.documentPreview')"
     
     class="bg-neutral-lightest max-w-[calc(100vw-64px)] max-h-[calc(100vh-48px)] w-[calc(100vw-64px)] h-[calc(100vh-48px)]"
-    :ui="{
-      header: 'hidden',
-      footer: 'p-0',
-      overlay: 'bg-black/70',
-    }"
+    :ui="modalUi"
     :close="false"
     @update:open="(val) => !val && handleClose()"
   >
@@ -114,16 +110,79 @@
         </div>
       </div>
     </template>
+
+    <template v-if="showPanelNav" #footer>
+      <div
+        class="flex w-full items-center justify-between gap-4 px-9 py-[18px] border-t border-default bg-trust-blue-100/45"
+      >
+        <div class="flex min-w-0 flex-1 items-center gap-3.5">
+          <UButton
+            type="button"
+            icon="i-lucide-chevron-left"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            class="shrink-0 rounded-full"
+            :disabled="!prevNavTarget"
+            :aria-label="$t('article.panelNav.prevAria')"
+            @click="goPrev"
+          />
+          <div class="min-w-0">
+            <p
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted"
+            >
+              {{ $t("article.panelNav.previousCase") }}
+            </p>
+            <p class="truncate text-[13px] text-neutral-darkest">
+              {{ prevNavTarget?.title ?? "—" }}
+            </p>
+          </div>
+        </div>
+        <p
+          class="hidden shrink-0 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-muted sm:block text-center max-w-[min(280px,28vw)]"
+        >
+          {{ $t("article.panelNav.keyboardHint") }}
+        </p>
+        <div class="flex min-w-0 flex-1 items-center justify-end gap-3.5">
+          <div class="min-w-0 text-right">
+            <p
+              class="font-mono text-[9px] font-bold uppercase tracking-[0.18em] text-muted"
+            >
+              {{ $t("article.panelNav.nextCase") }}
+            </p>
+            <p class="truncate text-[13px] text-neutral-darkest">
+              {{ nextNavTarget?.title ?? "—" }}
+            </p>
+          </div>
+          <UButton
+            type="button"
+            icon="i-lucide-chevron-right"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            class="shrink-0 rounded-full"
+            :disabled="!nextNavTarget"
+            :aria-label="$t('article.panelNav.nextAria')"
+            @click="goNext"
+          />
+        </div>
+      </div>
+    </template>
   </UModal>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { DialogDescription, DialogTitle } from "reka-ui";
+import { useEventListener } from "@vueuse/core";
 import { useI18n } from "vue-i18n";
 import type { ArticleDetail } from "@/types/search";
 import type { HumanPinRow } from "@/types/pins";
 import ArticleViewAI from "./ArticleViewAI.vue";
+
+export interface ArticlePanelNavItem {
+  uid: string;
+  title: string;
+}
 
 const { t: $t, te } = useI18n();
 
@@ -133,10 +192,13 @@ const props = defineProps<{
   titleFallback?: string | null;
   pins?: HumanPinRow[];
   open: boolean;
+  /** Ordered list for preview footer prev/next; omit or &lt; 2 items to hide navigation. */
+  navigationItems?: ArticlePanelNavItem[] | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "close"): void;
+  close: [];
+  navigate: [uid: string];
 }>();
 
 if (import.meta.dev) {
@@ -160,6 +222,79 @@ const articleViewRef = ref<{
 } | null>(null);
 
 const pinSaving = ref(false);
+
+const showPanelNav = computed(
+  () => (props.navigationItems?.length ?? 0) >= 2,
+);
+
+const modalUi = computed(() => ({
+  header: "hidden" as const,
+  footer: showPanelNav.value ? ("p-0 shrink-0 sm:px-0" as const) : ("p-0 sm:px-0" as const),
+  overlay: "bg-black/70" as const,
+}));
+
+/** Stable id for matching against `navigationItems[].uid`. */
+const activeNavUid = computed<string | null>(() => {
+  const d = resolvedDocument.value;
+  if (d) {
+    const u = d.document_uid;
+    if (typeof u === "string" && u.trim()) return u.trim();
+    if (d.id != null && String(d.id).trim()) return String(d.id).trim();
+  }
+  const p = props.documentUid;
+  if (typeof p === "string" && p.trim()) return p.trim();
+  return null;
+});
+
+const navigationNavIndex = computed(() => {
+  const items = props.navigationItems;
+  if (!items?.length) return -1;
+  const uid = activeNavUid.value;
+  if (!uid) return -1;
+  return items.findIndex((x) => x.uid === uid);
+});
+
+/** Title shown on the left: the article you go to when pressing “previous”. */
+const prevNavTarget = computed<ArticlePanelNavItem | null>(() => {
+  const items = props.navigationItems;
+  const i = navigationNavIndex.value;
+  if (!items?.length || i < 0) return null;
+  return i > 0 ? items[i - 1]! : null;
+});
+
+/** Title on the right: the article you go to when pressing “next”. */
+const nextNavTarget = computed<ArticlePanelNavItem | null>(() => {
+  const items = props.navigationItems;
+  const i = navigationNavIndex.value;
+  if (!items?.length || i < 0) return null;
+  return i < items.length - 1 ? items[i + 1]! : null;
+});
+
+function goPrev(): void {
+  const t = prevNavTarget.value;
+  if (t) emit("navigate", t.uid);
+}
+
+function goNext(): void {
+  const t = nextNavTarget.value;
+  if (t) emit("navigate", t.uid);
+}
+
+useEventListener(
+  () => (typeof window !== "undefined" ? window : null),
+  "keydown",
+  (e: KeyboardEvent) => {
+    if (!props.open || !showPanelNav.value) return;
+    if (!e.altKey) return;
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goPrev();
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goNext();
+    }
+  },
+);
 
 watch(
   () => props.document,
@@ -198,7 +333,15 @@ watch(
   () => props.documentUid,
   (uid) => {
     if (!uid) return;
-    if (resolvedDocument.value?.document_uid === uid) return;
+    const d = resolvedDocument.value;
+    if (d) {
+      const du =
+        typeof d.document_uid === "string" && d.document_uid.trim()
+          ? d.document_uid.trim()
+          : null;
+      const idStr = d.id != null ? String(d.id).trim() : null;
+      if (uid === du || uid === idStr) return;
+    }
     resolvedDocument.value = null;
     void resolveByUid(uid);
   },

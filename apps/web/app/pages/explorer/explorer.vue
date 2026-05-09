@@ -151,8 +151,10 @@
   <!-- Article Side Panel -->
     <ArticleSidePanel
       :open="isSidePanelOpen"
-      v-if="selectedDocument!=null"
+      v-if="selectedDocument != null"
       :document="selectedDocument"
+      :navigation-items="sidePanelNavigationItems"
+      @navigate="handleSidePanelNavigate"
       @close="handlePanelClose"
     />
 
@@ -244,6 +246,7 @@ import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
 import { fetchCorpusMetadata } from "@/composables/useFacets";
 import type { ArticleDetail } from "@/types/search";
+import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel.vue";
 import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
@@ -597,6 +600,30 @@ const filteredPapers = computed(() => {
     return sectorMatch && hazardMatch && phaseMatch && scaleMatch;
   });
 });
+
+const sidePanelNavigationItems = computed<ArticlePanelNavItem[]>(() =>
+  filteredPapers.value
+    .map((hit: any) => {
+      const uid = String(
+        hit.document_uid ?? hit.document?.document_uid ?? hit.id ?? "",
+      ).trim();
+      const title = String(hit.document?.title ?? "").trim() || "—";
+      return { uid, title };
+    })
+    .filter((x: ArticlePanelNavItem) => x.uid.length > 0),
+);
+
+function handleSidePanelNavigate(uid: string) {
+  const hit = filteredPapers.value.find(
+    (h: any) =>
+      h.document_uid === uid ||
+      h.document?.document_uid === uid ||
+      String(h.id) === uid,
+  );
+  if (hit?.document) {
+    selectedDocument.value = hit.document as ArticleDetail;
+  }
+}
 
 // Lifecycle
 onMounted(async () => {

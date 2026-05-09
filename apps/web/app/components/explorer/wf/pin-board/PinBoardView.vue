@@ -196,6 +196,8 @@
       :document-uid="openedArticleUid"
       :title-fallback="titleFallback"
       :pins="openedArticlePins"
+      :navigation-items="pinBoardArticleNavigationItems"
+      @navigate="handleSidePanelNavigate"
       @close="openedArticleUid = null"
     />
   </div>
@@ -214,6 +216,7 @@ import PinBoardSavedSearchCard from "./PinBoardSavedSearchCard.vue";
 import PinBoardMap from "./PinBoardMap.vue";
 import PinBoardSidebar from "./PinBoardSidebar.vue";
 import ArticleSidePanel from "~/components/explorer/ArticleSidePanel.vue";
+import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel.vue";
 import { useProjectsStore } from "@/stores/projects";
 
 const KIND_SAVED_SEARCHES = "__saved_searches__";
@@ -320,6 +323,23 @@ const showSavedSearchesBlock = computed(() => {
 const flatFilteredPins = computed(() =>
   visiblePinSections.value.flatMap((s) => s.pins)
 );
+
+const pinBoardArticleNavigationItems = computed<ArticlePanelNavItem[]>(() => {
+  const seen = new Set<string>();
+  const out: ArticlePanelNavItem[] = [];
+  for (const pin of flatFilteredPins.value) {
+    const uid = pin.source_document_uid?.trim();
+    if (!uid || seen.has(uid)) continue;
+    seen.add(uid);
+    const title = pin.source_title_snapshot?.trim() || "—";
+    out.push({ uid, title });
+  }
+  return out;
+});
+
+function handleSidePanelNavigate(uid: string) {
+  openedArticleUid.value = uid;
+}
 
 const pinCountInGrid = computed(() =>
   visiblePinSections.value.reduce((acc, s) => acc + s.pins.length, 0)

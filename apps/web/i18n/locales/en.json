@@ -393,13 +393,13 @@
     "biodiversity": "Biodiversity"
   },
   "tabs": {
-    "summary": "Summary",
+    "summary": "Overview",
     "recipe": "Recipe",
     "chat": "Chat"
   },
   "summary": {
     "slides": {
-      "main": "main",
+      "main": "Summary",
       "contacts": "Contact & references",
       "map": "Map"
     }
@@ -456,6 +456,13 @@
     "map": {
       "emptyTitle": "No map points",
       "emptyDescription": "This case study does not yet have geographic coordinates in the database."
+    },
+    "panelNav": {
+      "previousCase": "Previous case",
+      "nextCase": "Next case",
+      "keyboardHint": "Alt + ← → to navigate · Esc to close",
+      "prevAria": "Open previous case in list",
+      "nextAria": "Open next case in list"
     }
   },
   "summaryHeaders": {
