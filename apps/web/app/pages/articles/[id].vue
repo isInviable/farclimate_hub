@@ -1,11 +1,11 @@
 <template>
-  <div class="container mx-auto py-8 px-4">
-    <div v-if="pending" class="space-y-4">
+  <div class="h-[calc(100vh-4rem)]">
+    <div v-if="pending" class="container mx-auto py-8 px-4 space-y-4">
       <USkeleton class="h-10 w-2/3 max-w-xl" />
       <USkeleton class="h-48 w-full max-w-4xl" />
       <USkeleton class="h-64 w-full max-w-4xl" />
     </div>
-    <ArticleViewAI v-else-if="article" :document="article" :show-sidebar="false" />
+    <ArticleViewAI v-else-if="article" :document="article" chrome="page" class="h-full" />
   </div>
 </template>
 

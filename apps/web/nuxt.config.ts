@@ -98,5 +98,16 @@ export default defineNuxtConfig({
       cookieKey: 'i18n_redirected',
       redirectOn: 'root'
     }
+  },
+  // Matches `--font-sans`, `--font-mono`, `--font-display` in app/assets/css/main.css
+  // https://google-fonts.nuxtjs.org/getting-started/setup
+  googleFonts: {
+    display: 'swap',
+    subsets: ['latin', 'latin-ext'],
+    families: {
+      Inter: [400, 500, 600, 700],
+      'Martian Mono': [300, 400, 500, 600, 700],
+      Outfit: [400, 500, 600, 700, 800, 900]
+    }
   }
 })

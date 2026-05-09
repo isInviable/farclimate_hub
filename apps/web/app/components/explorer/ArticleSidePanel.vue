@@ -1,93 +1,124 @@
 <template>
-  <USlideover :open="open" class="max-w-5xl" :overlay="false" :title="headerTitle" :modal="false">
-    <template #header>
-      <DialogTitle class="sr-only">
-        {{ headerTitle }}
-      </DialogTitle>
-      <DialogDescription class="sr-only">
-        Detailed article panel with summary, map, and metadata.
-      </DialogDescription>
+  <UModal
+  
+    :open="open"
+    
+    :description="$t('common.documentPreview')"
+    
+    class="bg-neutral-lightest max-w-[calc(100vw-64px)] max-h-[calc(100vh-48px)] w-[calc(100vw-64px)] h-[calc(100vh-48px)]"
+    :ui="{
+      header: 'hidden',
+      footer: 'p-0',
+      overlay: 'bg-black/70',
+    }"
+    :close="false"
+    @update:open="(val) => !val && handleClose()"
+  >
+    
 
-      <div class="flex gap-2 items-center">
-        <UButton
-          v-if="resolvedDocument?.id"
-          :to="`/articles/${resolvedDocument.id}`"
-          target="_blank"
-          variant="ghost"
-          :title="$t('common.openFullPage')"
-          icon="mdi:open-in-new"
-        />
-        <h2 class="font-semibold">{{ headerTitle }}</h2>
-        <UButton @click="handleClose" icon="mdi:close" variant="ghost" />
-      </div>
-    </template>
     <template #body>
-      <div v-if="isLoading" class="space-y-4 p-4">
-        <div class="flex items-center gap-3 text-sm text-neutral-500">
-          <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
-          <span>{{ $t("pins.drawer.loading") }}</span>
+       <div class="absolute top-4 right-8 z-30 flex items-center gap-1">
+          <UButton
+            v-if="canPinDocument"
+            type="button"
+            color="primary"
+            variant="outline"
+            size="sm"
+            icon="i-lucide-pin"
+            :aria-label="$t('pins.drawer.pinDocumentAria')"
+            :loading="pinSaving"
+            @click="handlePinClick"
+          />
+          <UButton
+            type="button"
+            color="neutral"
+            variant="outline"
+            size="md"
+            class="bg-transparent"
+            icon="i-lucide-x"
+            :aria-label="$t('common.close')"
+            @click="handleClose"
+          />
         </div>
-        <div class="space-y-2">
-          <div class="h-4 bg-neutral-200 rounded animate-pulse w-3/4" />
-          <div class="h-4 bg-neutral-200 rounded animate-pulse w-full" />
-          <div class="h-4 bg-neutral-200 rounded animate-pulse w-5/6" />
-          <div class="h-4 bg-neutral-200 rounded animate-pulse w-2/3" />
+        
+      <div class="relative h-full w-full flex flex-col">
+        <!-- Top-right header chrome: pin + close (per Figma) -->
+        
+
+        <div class="flex-1 min-h-0 overflow-hidden">
+          <div v-if="isLoading" class="space-y-4 p-6">
+            <div class="flex items-center gap-3 text-sm text-muted">
+              <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
+              <span>{{ $t("pins.drawer.loading") }}</span>
+            </div>
+            <div class="space-y-2">
+              <div class="h-4 bg-elevated rounded animate-pulse w-3/4" />
+              <div class="h-4 bg-elevated rounded animate-pulse w-full" />
+              <div class="h-4 bg-elevated rounded animate-pulse w-5/6" />
+              <div class="h-4 bg-elevated rounded animate-pulse w-2/3" />
+            </div>
+          </div>
+
+          <UAlert
+            v-else-if="loadError"
+            color="error"
+            variant="soft"
+            class="m-4"
+            icon="i-heroicons-exclamation-triangle"
+            :title="$t('pins.drawer.loadError')"
+            :description="loadError"
+          />
+
+          <ArticleViewAI
+            v-else-if="resolvedDocument"
+            ref="articleViewRef"
+            :document="resolvedDocument"
+            chrome="modal"
+            class="h-full"
+          >
+            <template #pins-after>
+              <section
+                v-if="pins && pins.length > 0"
+                class="mx-6 mt-4 mb-6 rounded-lg border border-teal-200 bg-teal-50/60 p-4"
+              >
+                <header class="mb-3 flex items-baseline gap-2">
+                  <h3 class="text-sm font-semibold text-default">
+                    {{ $t("pins.drawer.pinsInArticleHeader") }}
+                  </h3>
+                  <span class="text-xs text-muted">({{ pins.length }})</span>
+                </header>
+                <ul class="divide-y divide-teal-200/60">
+                  <li
+                    v-for="pin in pins"
+                    :key="pin.id"
+                    class="py-3 first:pt-0 last:pb-0"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="inline-block bg-teal-100 text-teal-800 text-[11px] px-2 py-0.5 rounded-full"
+                      >
+                        {{ pinKindLabel(pin.body_kind) }}
+                      </span>
+                    </div>
+                    <p
+                      v-if="pin.user_note?.trim()"
+                      class="mt-2 text-sm text-default whitespace-pre-wrap"
+                    >
+                      {{ pin.user_note }}
+                    </p>
+                  </li>
+                </ul>
+              </section>
+            </template>
+          </ArticleViewAI>
         </div>
       </div>
-
-      <UAlert
-        v-else-if="loadError"
-        color="error"
-        variant="soft"
-        class="m-4"
-        icon="i-heroicons-exclamation-triangle"
-        :title="$t('pins.drawer.loadError')"
-        :description="loadError"
-      />
-
-      <template v-else-if="resolvedDocument">
-        <ArticleViewAI :document="resolvedDocument" :show-sidebar="false" />
-
-        <section
-          v-if="pins && pins.length > 0"
-          class="mx-4 mt-6 mb-8 rounded-lg border border-teal-200 bg-teal-50/60 p-4"
-        >
-          <header class="mb-3 flex items-baseline gap-2">
-            <h3 class="text-sm font-semibold text-neutral-800">
-              {{ $t("pins.drawer.pinsInArticleHeader") }}
-            </h3>
-            <span class="text-xs text-neutral-500">({{ pins.length }})</span>
-          </header>
-
-          <ul class="divide-y divide-teal-200/60">
-            <li
-              v-for="pin in pins"
-              :key="pin.id"
-              class="py-3 first:pt-0 last:pb-0"
-            >
-              <div class="flex items-center gap-2">
-                <span
-                  class="inline-block bg-teal-100 text-teal-800 text-[11px] px-2 py-0.5 rounded-full"
-                >
-                  {{ pinKindLabel(pin.body_kind) }}
-                </span>
-              </div>
-              <p
-                v-if="pin.user_note?.trim()"
-                class="mt-2 text-sm text-neutral-700 whitespace-pre-wrap"
-              >
-                {{ pin.user_note }}
-              </p>
-            </li>
-          </ul>
-        </section>
-      </template>
     </template>
-  </USlideover>
+  </UModal>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { DialogDescription, DialogTitle } from "reka-ui";
 import { useI18n } from "vue-i18n";
 import type { ArticleDetail } from "@/types/search";
@@ -114,7 +145,7 @@ if (import.meta.dev) {
   if (hasDoc === hasUid) {
     console.warn(
       "[ArticleSidePanel] exactly one of `document` or `documentUid` must be provided",
-      { hasDocument: hasDoc, hasDocumentUid: hasUid }
+      { hasDocument: hasDoc, hasDocumentUid: hasUid },
     );
   }
 }
@@ -122,6 +153,13 @@ if (import.meta.dev) {
 const resolvedDocument = ref<ArticleDetail | null>(props.document ?? null);
 const loadError = ref<string | null>(null);
 const isLoading = ref(false);
+
+const articleViewRef = ref<{
+  openDocumentPinDialog?: () => void;
+  isAuthenticated?: { value: boolean };
+} | null>(null);
+
+const pinSaving = ref(false);
 
 watch(
   () => props.document,
@@ -131,16 +169,16 @@ watch(
       loadError.value = null;
       isLoading.value = false;
     }
-  }
+  },
 );
 
-async function resolveByUid(uid: string) {
+async function resolveByUid(uid: string): Promise<void> {
   isLoading.value = true;
   loadError.value = null;
   try {
     const res = await $fetch<{ document: ArticleDetail }>(
       "/api/document-by-uid",
-      { query: { uid } }
+      { query: { uid } },
     );
     if (res?.document) {
       resolvedDocument.value = res.document;
@@ -162,17 +200,21 @@ watch(
     if (!uid) return;
     if (resolvedDocument.value?.document_uid === uid) return;
     resolvedDocument.value = null;
-    resolveByUid(uid);
+    void resolveByUid(uid);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
-const headerTitle = computed(() => {
-  return (
+const headerTitle = computed(
+  () =>
     resolvedDocument.value?.title ||
     props.titleFallback ||
-    $t("common.documentPreview")
-  );
+    $t("common.documentPreview"),
+);
+
+const canPinDocument = computed<boolean>(() => {
+  const isAuthed = articleViewRef.value?.isAuthenticated?.value ?? false;
+  return isAuthed && !!resolvedDocument.value;
 });
 
 function pinKindLabel(kind: string): string {
@@ -180,38 +222,11 @@ function pinKindLabel(kind: string): string {
   return te(key) ? $t(key) : $t("pins.kinds.unknown");
 }
 
-function disableScroll() {
-  document.body.style.overflow = "hidden";
-  document.body.style.paddingRight = "15px";
+function handlePinClick(): void {
+  articleViewRef.value?.openDocumentPinDialog?.();
 }
 
-function enableScroll() {
-  document.body.style.overflow = "";
-  document.body.style.paddingRight = "";
-}
-
-function handleClose() {
-  enableScroll();
+function handleClose(): void {
   emit("close");
 }
-
-onMounted(() => {
-  disableScroll();
-});
-
-onBeforeUnmount(() => {
-  enableScroll();
-});
 </script>
-
-<style scoped>
-.side-panel-enter-active,
-.side-panel-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.side-panel-enter-from,
-.side-panel-leave-to {
-  transform: translateX(-100%);
-}
-</style>

@@ -127,7 +127,9 @@
       "openArticle": "Abrir artículo",
       "pinsInArticleHeader": "Tus marcadores de este artículo",
       "loadError": "No se pudo cargar el artículo. Inténtalo de nuevo.",
-      "loading": "Cargando artículo…"
+      "loading": "Cargando artículo…",
+      "pinDocumentAria": "Marcar este artículo",
+      "detailsDescription": "Vista detallada del artículo con resumen, receta y chat."
     }
   },
   "podcast": {
@@ -399,9 +401,15 @@
   },
   "tabs": {
     "summary": "Resumen",
-    "structured": "Receta",
-    "full": "Artículo original",
-    "chat": "Chat sobre este artículo"
+    "recipe": "Receta",
+    "chat": "Chat"
+  },
+  "summary": {
+    "slides": {
+      "main": "principal",
+      "contacts": "Contactos y referencias",
+      "map": "Mapa"
+    }
   },
   "recipe": {
     "emptyTitle": "Sin contenido de receta",
@@ -433,7 +441,22 @@
     "lightboxClose": "Cerrar",
     "openImageLightbox": "Ver imagen a tamaño completo",
     "viewOnClimateAdapt": "Ver en Climate-ADAPT",
-    "sourceLinkHint": "Abre el caso de estudio oficial en el sitio web Climate-ADAPT de la AEE."
+    "sourceLinkHint": "Abre el caso de estudio oficial en el sitio web Climate-ADAPT de la AEE.",
+    "contacts": {
+      "empty": "No hay información de contacto disponible.",
+      "allEmptyTitle": "Sin contactos ni referencias",
+      "allEmptyDescription": "Este caso de estudio aún no tiene personas de contacto, sitios web ni referencias científicas en la base de datos."
+    },
+    "websites": {
+      "empty": "No hay sitios web vinculados."
+    },
+    "references": {
+      "empty": "No hay referencias científicas disponibles."
+    },
+    "map": {
+      "emptyTitle": "Sin puntos en el mapa",
+      "emptyDescription": "Este caso de estudio aún no tiene coordenadas geográficas en la base de datos."
+    }
   },
   "summaryHeaders": {
     "shortDescription": "Descripción corta",
@@ -448,5 +471,13 @@
     "websites": "Sitios web",
     "scientificReferences": "Referencias científicas",
     "keywords": "Palabras clave"
+  },
+  "summaryLeft": {
+    "geographic": "Geográfico",
+    "bioregion": "Biorregión",
+    "authors": "Autores",
+    "source": "Fuente",
+    "authorsFallback": "Equipo de investigación EU-Adapt",
+    "sourceFallback": "Plataforma Europea de Adaptación al Cambio Climático"
   }
 } 

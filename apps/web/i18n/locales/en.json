@@ -127,7 +127,9 @@
       "openArticle": "Open article",
       "pinsInArticleHeader": "Your pins from this article",
       "loadError": "Could not load the article. Please try again.",
-      "loading": "Loading article…"
+      "loading": "Loading article…",
+      "pinDocumentAria": "Pin this article",
+      "detailsDescription": "Detailed article view with summary, recipe, and chat."
     }
   },
   "podcast": {
@@ -392,9 +394,15 @@
   },
   "tabs": {
     "summary": "Summary",
-    "structured": "Recipe",
-    "full": "Original Article",
-    "chat": "Chat with this article"
+    "recipe": "Recipe",
+    "chat": "Chat"
+  },
+  "summary": {
+    "slides": {
+      "main": "main",
+      "contacts": "Contact & references",
+      "map": "Map"
+    }
   },
   "recipe": {
     "emptyTitle": "No recipe content",
@@ -433,7 +441,22 @@
     "lightboxClose": "Close",
     "openImageLightbox": "View image full size",
     "viewOnClimateAdapt": "View on Climate-ADAPT",
-    "sourceLinkHint": "Opens the official case study on the EEA Climate-ADAPT website."
+    "sourceLinkHint": "Opens the official case study on the EEA Climate-ADAPT website.",
+    "contacts": {
+      "empty": "No contact information available.",
+      "allEmptyTitle": "No contacts or references on file",
+      "allEmptyDescription": "This case study does not yet have contact persons, websites, or scientific references in the database."
+    },
+    "websites": {
+      "empty": "No websites linked."
+    },
+    "references": {
+      "empty": "No scientific references available."
+    },
+    "map": {
+      "emptyTitle": "No map points",
+      "emptyDescription": "This case study does not yet have geographic coordinates in the database."
+    }
   },
   "summaryHeaders": {
     "shortDescription": "Short description",
@@ -448,5 +471,13 @@
     "websites": "Websites",
     "scientificReferences": "Scientific references",
     "keywords": "Keywords"
+  },
+  "summaryLeft": {
+    "geographic": "Geographic",
+    "bioregion": "Bioregion",
+    "authors": "Authors",
+    "source": "Source",
+    "authorsFallback": "EU-Adapt research team",
+    "sourceFallback": "European Climate Adaptation Platform"
   }
 } 
