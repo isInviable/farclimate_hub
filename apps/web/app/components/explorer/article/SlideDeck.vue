@@ -1,28 +1,29 @@
 <template>
   <div class="slide-deck relative flex flex-col h-full min-h-0">
     <!-- Slide viewport (secondary chrome lives in ArticleViewAI header) -->
-    <div class="slide-deck-viewport relative flex-1 min-h-0 overflow-hidden">
+    <div class="slide-deck-viewport relative flex-1 min-h-0">
       <div
-        class="slide-deck-track flex h-full w-full transition-transform duration-200 ease-out"
+        class="slide-deck-track flex w-full transition-transform duration-200 ease-out"
         :style="trackStyle"
       >
         <section
           v-for="(slide, idx) in slides"
           :id="`${panelId}-${slide.id}`"
           :key="slide.id"
-          class="slide-panel relative shrink-0 w-full h-full overflow-y-auto"
+          class="slide-panel relative shrink-0 w-full overflow-y-auto"
           :aria-hidden="idx !== activeIndex"
           :tabindex="idx === activeIndex ? 0 : -1"
         >
-          <div class="relative h-full px-1 pt-1 pb-6 md:px-2">
+          <div class="relative  px-1 pt-1 pb-6 md:px-2">
             <div class="relative min-h-full">
               <slot :name="slide.id" :slide="slide" :index="idx" />
             </div>
 
             <DecorativeCorner
-              v-if="slide.decoration"
+              v-if="!decorationContext && slide.decoration"
               :src="slide.decoration.src"
               :corner="slide.decoration.corner"
+              :size-class="slide.decoration.sizeClass"
             />
           </div>
         </section>
@@ -63,16 +64,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, inject, onUnmounted, watch } from "vue";
 import DecorativeCorner from "./DecorativeCorner.vue";
+import {
+  ArticleDecorationContextKey,
+  type ArticleDecoration,
+} from "./articleDecorationContext";
 
 export interface Slide {
   id: string;
   label: string;
-  decoration?: {
-    src: string;
-    corner?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
-  };
+  decoration?: ArticleDecoration;
 }
 
 const props = withDefaults(
@@ -94,13 +96,37 @@ const emit = defineEmits<{
   (e: "update:activeIndex", index: number): void;
 }>();
 
+const decorationContext = inject(ArticleDecorationContextKey, null);
+const decorationSource = Symbol("SlideDeckDecoration");
+
 const trackStyle = computed(() => ({
   transform: `translateX(-${props.activeIndex * 100}%)`,
 }));
 
+const activeSlideDecoration = computed<ArticleDecoration | null>(
+  () => props.slides[props.activeIndex]?.decoration ?? null,
+);
+
 const activeSlideLabel = computed<string>(
   () => props.slides[props.activeIndex]?.label ?? "",
 );
+
+watch(
+  activeSlideDecoration,
+  (decoration) => {
+    if (!decorationContext) return;
+    if (decoration) {
+      decorationContext.setDecoration(decorationSource, decoration);
+    } else {
+      decorationContext.clearDecoration(decorationSource);
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  decorationContext?.clearDecoration(decorationSource);
+});
 
 function clamp(idx: number): number {
   if (props.slides.length === 0) return 0;

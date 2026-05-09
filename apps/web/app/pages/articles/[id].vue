@@ -1,11 +1,11 @@
 <template>
-  <div class="h-[calc(100vh-4rem)]">
+  <div class="">
     <div v-if="pending" class="container mx-auto py-8 px-4 space-y-4">
       <USkeleton class="h-10 w-2/3 max-w-xl" />
       <USkeleton class="h-48 w-full max-w-4xl" />
       <USkeleton class="h-64 w-full max-w-4xl" />
     </div>
-    <ArticleViewAI v-else-if="article" :document="article" chrome="page" class="h-full" />
+    <ArticleViewAI v-else-if="article" :document="article" chrome="page" class="h-full w-full" />
   </div>
 </template>
 
@@ -24,6 +24,8 @@ const { data: article, error, pending } = await useFetch<ArticleDetail>(
   },
 )
 
+
+
 function statusFromError(e: unknown): number {
   if (!e || typeof e !== 'object') return 500
   const err = e as { statusCode?: number; status?: number }
@@ -37,6 +39,10 @@ watch(error, (e) => {
     showError({ statusCode: 404, statusMessage: 'Article not found' })
   }
 })
+definePageMeta({
+  layout: 'explorer',
+});
+
 
 useHead({
   title: () => article.value?.title || 'Article',

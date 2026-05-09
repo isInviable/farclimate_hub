@@ -1,9 +1,20 @@
 <template>
   <div
-    class="article-view relative flex flex-col h-full min-h-0"
-    :class="chrome === 'page' ? 'mx-auto max-w-6xl py-8 px-4' : 'p-6 pt-4'"
+    class="article-view relative isolate flex flex-col h-full min-h-0"
+    :class="chrome === 'page' ? 'mx-auto container' : 'overflow-hidden p-6 pt-4'"
   >
-    <ArticleTextSelectionCapture source-view="article">
+    <DecorativeCorner
+      v-if="activeDecoration"
+      :src="activeDecoration.src"
+      :corner="activeDecoration.corner"
+      :size-class="activeDecoration.sizeClass"
+      class="z-0"
+    />
+
+    <ArticleTextSelectionCapture
+      source-view="article"
+      class="relative z-10 min-h-0 flex-1"
+    >
       <!-- Row 1: Chat / Recipe / Summary rail + submenu + active slide title -->
       <header class="grid grid-cols-5 gap-4">
         <div class="col-span-1">
@@ -61,7 +72,7 @@
           </div>
           <div class="col-span-3 min-h-0 min-w-0 flex flex-col">
             <div
-              v-show="summaryIndex === 0"
+              v-if="summaryIndex === 0"
               class="flex min-h-0 flex-1 flex-col gap-4"
             >
               <div class="relative min-h-0 flex-1 overflow-y-auto">
@@ -73,16 +84,12 @@
               <SummaryMainGallery :document="document" />
             </div>
             <div
-              v-show="summaryIndex === 1"
+              v-if="summaryIndex === 1"
               class="relative min-h-0 flex-1 overflow-y-auto"
             >
-              <DecorativeCorner
-                src="/img/explorer/summary-contacts-corner.png"
-                corner="bottom-right"
-              />
               <SummaryContactsSlide :document="document" />
             </div>
-            <div v-show="summaryIndex === 2" class="relative min-h-0 flex-1">
+            <div v-if="summaryIndex === 2" class="relative min-h-0 flex-1">
               <SummaryMapSlide :map-points="mapPoints" />
             </div>
           </div>
@@ -90,7 +97,7 @@
 
         <!-- Recipe -->
         <div
-          v-show="activePrimaryId === 'recipe'"
+          v-if="activePrimaryId === 'recipe'"
           :id="`article-primary-recipe`"
           role="tabpanel"
           class="flex flex-1 min-h-0 min-w-0 gap-6 md:gap-8"
@@ -188,6 +195,10 @@ import RollingMenuRail from "./article/RollingMenuRail.vue";
 import SlideDeck, { type Slide } from "./article/SlideDeck.vue";
 import ArticleSecondarySlideNav from "./article/ArticleSecondarySlideNav.vue";
 import DecorativeCorner from "./article/DecorativeCorner.vue";
+import {
+  ArticleDecorationContextKey,
+  type ArticleDecoration,
+} from "./article/articleDecorationContext";
 import SummaryMainLeftColumn from "./article/SummaryMainLeftColumn.vue";
 import SummaryMainContent from "./article/SummaryMainContent.vue";
 import SummaryMainGallery from "./article/SummaryMainGallery.vue";
@@ -217,6 +228,24 @@ const { t } = useI18n();
 const { isAuthenticated } = useAccess();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
+
+// Nested slide components decide which decoration is active, but the image is
+// rendered here so absolute positioning is relative to the article viewport.
+const activeDecoration = ref<ArticleDecoration | null>(null);
+const activeDecorationSource = ref<symbol | null>(null);
+
+provide(ArticleDecorationContextKey, {
+  decoration: activeDecoration,
+  setDecoration(source, decoration) {
+    activeDecorationSource.value = source;
+    activeDecoration.value = decoration;
+  },
+  clearDecoration(source) {
+    if (activeDecorationSource.value !== source) return;
+    activeDecorationSource.value = null;
+    activeDecoration.value = null;
+  },
+});
 
 // --- Primary "rolling menu" state ---------------------------------------
 
@@ -285,11 +314,11 @@ const recipeSlides = computed<Slide[]>(() =>
       decoration:
         idx % 2 === 0
           ? {
-              src: "/img/explorer/recipe-corner-compass.png",
-              corner: "bottom-right",
+              src: "/img/explorer/bg_image_recipe.png",
+              corner: "middle-left",
             }
           : {
-              src: "/img/explorer/recipe-corner-paper.png",
+              src: "/img/explorer/bg_image_compass.png",
               corner: "bottom-right",
             },
     }),

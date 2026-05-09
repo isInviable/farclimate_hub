@@ -229,6 +229,7 @@ const showPanelNav = computed(
 
 const modalUi = computed(() => ({
   header: "hidden" as const,
+  body: "p-0 sm:p-0 flex-1 min-h-0 overflow-hidden" as const,
   footer: showPanelNav.value ? ("p-0 shrink-0 sm:px-0" as const) : ("p-0 sm:px-0" as const),
   overlay: "bg-black/70" as const,
 }));

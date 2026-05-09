@@ -78,10 +78,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, inject, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import MarkdownIt from "markdown-it";
 import CapturableBlock from "../CapturableBlock.vue";
+import {
+  ArticleDecorationContextKey,
+  type ArticleDecoration,
+} from "./articleDecorationContext";
 
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
@@ -94,6 +98,21 @@ const props = defineProps<{
     websites?: { url?: string | string[] } | null;
   };
 }>();
+
+const decorationContext = inject(ArticleDecorationContextKey, null);
+const decorationSource = Symbol("SummaryContactsSlideDecoration");
+const decoration: ArticleDecoration = {
+  src: "/img/explorer/bg_image_contact.png",
+  corner: "bottom-right",
+};
+
+onMounted(() => {
+  decorationContext?.setDecoration(decorationSource, decoration);
+});
+
+onUnmounted(() => {
+  decorationContext?.clearDecoration(decorationSource);
+});
 
 const contactText = computed<string>(() => {
   const raw = props.document?.contact;

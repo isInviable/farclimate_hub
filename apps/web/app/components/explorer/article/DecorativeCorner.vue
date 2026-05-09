@@ -4,7 +4,7 @@
     :src="resolvedSrc"
     :alt="''"
     aria-hidden="true"
-    class="pointer-events-none absolute select-none"
+    class="pointer-events-none absolute select-none z-0"
     :class="[positionClass, sizeClass]"
     @error="hasError = true"
   />
@@ -12,12 +12,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import type { ArticleDecorationCorner } from "./articleDecorationContext";
 
-type Corner =
-  | "top-left"
-  | "top-right"
-  | "bottom-left"
-  | "bottom-right";
+type Corner = ArticleDecorationCorner;
 
 const props = withDefaults(
   defineProps<{
@@ -29,7 +26,7 @@ const props = withDefaults(
   {
     src: null,
     corner: "bottom-right",
-    sizeClass: "max-w-[320px] max-h-[260px] w-auto h-auto",
+    sizeClass: "max-w-[400px] max-h-[400px] w-auto h-auto",
   },
 );
 
@@ -51,6 +48,10 @@ const positionClass = computed<string>(() => {
       return "top-0 right-0";
     case "bottom-left":
       return "bottom-0 left-0";
+    case "middle-left":
+      return "top-1/2 left-0 -translate-y-1/2";
+    case "middle-right":
+      return "top-1/2 right-0 -translate-y-1/2";
     case "bottom-right":
     default:
       return "bottom-0 right-0";
