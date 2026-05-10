@@ -1,262 +1,119 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-neutral-lightest">
     <DeliverableHeader />
 
-    <div class="w-11/12 lg:w-10/12 mx-auto py-8">
-      <div class="mb-8">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">
-              Projects Dashboard
-            </h1>
-            <p class="text-gray-600">
-              Manage your climate adaptation research projects and their pinned
-              items
-            </p>
-          </div>
+    <div class="explorer-dashboard-column">
+      <ProjectsDashboardHeader
+        description="Each project card opens your workspace in the explorer. Use Go to explorer at the bottom of a card (or click anywhere on the card) to browse case studies."
+      >
+        <template #actions>
           <UButton
             v-if="isAuthenticated"
-            @click="createNewProject"
-            icon="i-heroicons-plus"
             color="primary"
             size="lg"
+            icon="i-heroicons-plus"
+            @click="createNewProject"
           >
-            Create New Project
+            Create new project
           </UButton>
           <UButton
             v-else
             :to="loginLink"
-            icon="i-heroicons-arrow-right-on-rectangle"
             color="primary"
             size="lg"
+            icon="i-heroicons-arrow-right-on-rectangle"
           >
             Sign in to create projects
           </UButton>
-        </div>
-      </div>
+        </template>
+      </ProjectsDashboardHeader>
 
       <!-- Demo mode: sign-in prompt -->
-      <div
+      <ProjectsEmptyState
         v-if="!isAuthenticated"
-        class="col-span-full flex flex-col items-center justify-center py-12 text-center"
+        heading="Sign in to manage projects"
+        body="Projects are saved to your account. Sign in to create and manage projects across devices."
       >
-        <div class="bg-gray-100 rounded-full p-6 mb-4">
-          <Icon name="i-heroicons-folder-open" class="w-12 h-12 text-gray-400" />
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          Sign in to manage projects
-        </h3>
-        <p class="text-gray-600 mb-6 max-w-md">
-          Projects are saved to your account. Sign in to create and manage
-          projects across devices.
-        </p>
         <UButton :to="loginLink" color="primary" size="lg">
           Sign in
         </UButton>
-      </div>
+      </ProjectsEmptyState>
 
       <!-- Loading -->
       <div
         v-else-if="projectsStore.loading && projectsStore.projects.length === 0"
-        class="flex justify-center py-12"
+        class="flex justify-center py-16"
       >
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="size-8 animate-spin text-primary-600"
+        />
       </div>
 
-      <!-- Projects Grid (authenticated) -->
+      <!-- Projects grid (authenticated) -->
       <div
         v-else
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <div
+        <ProjectCard
           v-for="project in sortedProjects"
           :key="project.id"
-          class="relative group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-primary-300"
-          :class="{
-            'ring-2 ring-primary-400':
-              projectsStore.currentProjectId === project.id,
-            'cursor-pointer': projectsStore.currentProjectId !== project.id,
-          }"
-          @click="switchToProject(project.id)"
+          :project="project"
+          :pin-count="pinCountForProject(project)"
+          :is-current="projectsStore.currentProjectId === project.id"
+          :menu-items="getProjectMenuItems(project)"
+        />
+
+        <ProjectsEmptyState
+          v-if="
+            isAuthenticated &&
+              projectsStore.projects.length === 0 &&
+              !projectsStore.loading
+          "
+          heading="No projects yet"
+          body="Create your first project to start organizing your climate adaptation research and pinned items."
         >
-          <div
-            v-if="projectsStore.currentProjectId === project.id"
-            class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-semibold"
-          >
-            Current
-          </div>
-
-          <div class="p-6">
-            <div class="flex items-start justify-between mb-4">
-              <h3
-                class="text-lg font-semibold text-gray-900 truncate flex-1 mr-2"
-                :title="project.name"
-              >
-                {{ project.name }}
-              </h3>
-              <UDropdownMenu
-                :items="getProjectMenuItems(project)"
-                :ui="{ content: 'w-48' }"
-              >
-                <UButton
-                  variant="ghost"
-                  size="sm"
-                  icon="i-heroicons-ellipsis-vertical"
-                  class="opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-              </UDropdownMenu>
-            </div>
-
-            <div class="space-y-3">
-              <div class="flex items-center text-gray-600">
-                <UIcon name="mdi:pin" class="w-4 h-4 mr-2 text-primary-500" />
-                <span class="text-sm font-medium">
-                  {{ pinCountForProject(project) }}
-                  {{ pinCountForProject(project) === 1 ? "pin" : "pins" }}
-                </span>
-              </div>
-              <div class="flex items-center text-gray-500">
-                <Icon name="i-heroicons-calendar" class="w-4 h-4 mr-2" />
-                <span class="text-xs">
-                  Created {{ formatDate(project.created_at) }}
-                </span>
-              </div>
-              <div class="flex items-center text-gray-500">
-                <Icon name="i-heroicons-clock" class="w-4 h-4 mr-2" />
-                <span class="text-xs">
-                  Updated {{ formatDate(project.updated_at) }}
-                </span>
-              </div>
-            </div>
-
-            <div class="mt-4 pt-4 border-t border-gray-100">
-              <div class="flex gap-2">
-                <UButton
-                  v-if="projectsStore.currentProjectId !== project.id"
-                  @click.stop="switchToProject(project.id)"
-                  variant="soft"
-                  color="primary"
-                  size="sm"
-                  class="flex-1"
-                >
-                  Open Project
-                </UButton>
-                <UButton
-                  v-else
-                  variant="soft"
-                  color="neutral"
-                  size="sm"
-                  class="flex-1"
-                  disabled
-                >
-                  Active Project
-                </UButton>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty state (authenticated, no projects) -->
-        <div
-          v-if="isAuthenticated && projectsStore.projects.length === 0 && !projectsStore.loading"
-          class="col-span-full flex flex-col items-center justify-center py-12 text-center"
-        >
-          <div class="bg-gray-100 rounded-full p-6 mb-4">
-            <Icon name="i-heroicons-folder-open" class="w-12 h-12 text-gray-400" />
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            No projects yet
-          </h3>
-          <p class="text-gray-600 mb-6 max-w-md">
-            Create your first project to start organizing your climate
-            adaptation research and pinned items.
-          </p>
           <UButton
-            @click="createNewProject"
-            icon="i-heroicons-plus"
             color="primary"
             size="lg"
+            icon="i-heroicons-plus"
+            @click="createNewProject"
           >
-            Create Your First Project
+            Create your first project
           </UButton>
-        </div>
+        </ProjectsEmptyState>
       </div>
 
-      <!-- Project Statistics -->
-      <div v-if="isAuthenticated && projectsStore.projects.length > 0" class="mt-12">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">
-          Project Statistics
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-              <div class="bg-primary-100 rounded-full p-3 mr-4">
-                <Icon name="i-heroicons-folder" class="w-6 h-6 text-primary-600" />
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-600">Total Projects</p>
-                <p class="text-2xl font-bold text-gray-900">
-                  {{ projectsStore.projects.length }}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-              <div class="bg-green-100 rounded-full p-3 mr-4">
-                <UIcon name="mdi:pin" class="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-600">Total Pins</p>
-                <p class="text-2xl font-bold text-gray-900">{{ totalPins }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-              <div class="bg-blue-100 rounded-full p-3 mr-4">
-                <Icon name="i-heroicons-star" class="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p class="text-sm font-medium text-gray-600">
-                  Most Pinned Project
-                </p>
-                <p
-                  class="text-lg font-semibold text-gray-900 truncate"
-                  :title="mostActiveProject?.name"
-                >
-                  {{ mostActiveProject?.name || "N/A" }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProjectsStatisticsSection
+        v-if="isAuthenticated && projectsStore.projects.length > 0"
+        :total-projects="projectsStore.projects.length"
+        :total-pins="totalPins"
+        :most-active-name="mostActiveProject?.name ?? null"
+      />
     </div>
 
-    <UModal v-model:open="showCreateModal" title="Create New Project">
+    <UModal v-model:open="showCreateModal" title="Create new project">
       <template #body>
-        <div class="flex justify-center grow">
-          <UInput
-            class="w-full"
-            v-model="newProjectName"
-            placeholder="Enter project name..."
-            @keyup.enter="confirmCreateProject"
-          />
-        </div>
+        <UInput
+          v-model="newProjectName"
+          class="w-full"
+          variant="editorial"
+          placeholder="Enter project name…"
+          @keyup.enter="confirmCreateProject"
+        />
       </template>
       <template #footer>
-        <div class="flex justify-end gap-3 grow">
-          <UButton variant="ghost" @click="cancelCreateProject">
+        <div class="flex w-full justify-end gap-3">
+          <UButton variant="ghost" color="neutral" @click="cancelCreateProject">
             Cancel
           </UButton>
           <UButton
-            @click="confirmCreateProject"
+            color="primary"
             :disabled="!newProjectName.trim() || creating"
             :loading="creating"
-            color="primary"
+            @click="confirmCreateProject"
           >
-            Create Project
+            Create project
           </UButton>
         </div>
       </template>
@@ -268,6 +125,10 @@
 import { useProjectsStore } from "@/stores/projects";
 import { usePinsSupabase } from "~/composables/usePinsSupabase";
 import { useAccess } from "~/composables/useAccess";
+import ProjectCard from "~/components/explorer/projects/ProjectCard.vue";
+import ProjectsDashboardHeader from "~/components/explorer/projects/ProjectsDashboardHeader.vue";
+import ProjectsEmptyState from "~/components/explorer/projects/ProjectsEmptyState.vue";
+import ProjectsStatisticsSection from "~/components/explorer/projects/ProjectsStatisticsSection.vue";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Project } from "~/types/projects";
 
@@ -275,7 +136,7 @@ definePageMeta({
   title: "Projects Dashboard",
   description:
     "Manage your climate adaptation research projects and their pinned items.",
-  layout: 'explorer'
+  layout: "explorer",
 });
 
 useHead({
@@ -306,7 +167,10 @@ async function refreshPinCounts() {
 }
 
 const loginLink = computed(() => {
-  const returnTo = route?.fullPath && route.fullPath !== "/login" ? route.fullPath : "/explorer/projects";
+  const returnTo =
+    route?.fullPath && route.fullPath !== "/login"
+      ? route.fullPath
+      : "/explorer/projects";
   return `/login?returnTo=${encodeURIComponent(returnTo)}`;
 });
 
@@ -353,7 +217,9 @@ async function confirmCreateProject() {
   if (!newProjectName.value.trim()) return;
   creating.value = true;
   try {
-    const created = await projectsStore.createProject(newProjectName.value.trim());
+    const created = await projectsStore.createProject(
+      newProjectName.value.trim()
+    );
     if (created) {
       showCreateModal.value = false;
       newProjectName.value = "";
@@ -367,13 +233,6 @@ async function confirmCreateProject() {
 function cancelCreateProject() {
   showCreateModal.value = false;
   newProjectName.value = "";
-}
-
-function switchToProject(projectId: string) {
-  if (projectsStore.currentProjectId !== projectId) {
-    projectsStore.switchToProject(projectId);
-    navigateTo("/explorer/explorer");
-  }
 }
 
 async function renameProject(projectId: string) {
@@ -414,18 +273,6 @@ function getProjectMenuItems(project: Project): DropdownMenuItem[][] {
   ];
 }
 
-function formatDate(isoDate: string) {
-  const date = new Date(isoDate);
-  const now = new Date();
-  const diffInDays = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  if (diffInDays === 0) return "today";
-  if (diffInDays === 1) return "yesterday";
-  if (diffInDays < 7) return `${diffInDays} days ago`;
-  return date.toLocaleDateString();
-}
-
 watch(
   () => projectsStore.projects.map((p) => p.id).join(","),
   () => {
@@ -437,12 +284,3 @@ onMounted(() => {
   void projectsStore.initialize().then(() => refreshPinCounts());
 });
 </script>
-
-<style scoped>
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
-.transition-all {
-  transition: all 0.2s ease-in-out;
-}
-</style>
