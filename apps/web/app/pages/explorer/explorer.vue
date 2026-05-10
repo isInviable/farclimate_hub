@@ -167,9 +167,16 @@
   />
 
   <!-- Fullscreen Modals -->
-  <UModal v-model:open="isChatOpen" fullscreen>
+  <UModal
+    v-model:open="isChatOpen"
+    fullscreen
+    :ui="{
+      content: 'min-h-0 flex max-h-dvh flex-col',
+      body: 'flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6',
+    }"
+  >
     <template #body>
-      <div class="max-w-5xl mx-auto">
+      <div class="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
         <ViewModeChat :hits="searchStore.resultsData?.hits || []" />
       </div>
     </template>

@@ -393,6 +393,10 @@
     "biodiversity": "Biodiversidad"
   },
   "chat": {
+    "inputPlaceholder": "Pregunta sobre este caso de estudio…",
+    "submit": "PREGUNTAR →",
+    "typing": "La IA está escribiendo…",
+    "exampleQuestionsLabel": "Preguntas de ejemplo:",
     "example1": "¿Cuáles son los principales desafíos abordados en este proyecto?",
     "example2": "¿Quiénes son los actores clave involucrados y cuáles son sus roles?",
     "example3": "¿Puedes resumir el impacto económico y los principales costes?",

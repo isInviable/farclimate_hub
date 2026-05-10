@@ -13,10 +13,10 @@
 
     <ArticleTextSelectionCapture
       source-view="article"
-      class="relative z-10 min-h-0 flex-1"
+      class="relative z-10 flex min-h-0 flex-1 flex-col"
     >
       <!-- Row 1: Chat / Recipe / Summary rail + submenu + active slide title -->
-      <header class="grid grid-cols-5 gap-4">
+      <header class="grid shrink-0 grid-cols-5 gap-4">
         <div class="col-span-1">
           <div class="flex flex-col gap-2">
             <RollingMenuRail
@@ -49,15 +49,15 @@
       </header>
 
       <!-- Row 2: Summary uses grid (left metadata + col-span-4 slide); recipe/chat unchanged -->
-      <div class="mt-16">
+      <div class="min-h-0 flex-1 overflow-hidden">
         <!-- Summary: fixed left column + rotating slide in col-span-4 -->
         <div
           v-show="activePrimaryId === 'summary'"
           :id="`article-primary-summary`"
           role="tabpanel"
-          class="grid grid-cols-4  gap-40"
+          class="grid h-full min-h-0 grid-cols-4 gap-40 mt-16"
         >
-          <div class="col-span-1 min-h-0 min-w-0">
+          <div class="col-span-1 min-h-0 min-w-0 overflow-y-auto">
             <!-- basic info block-->
             <div>
               <div class="uppercase text-xs text-neutral-600 font-mono font-medium"> EXPLORER · CASE STUDY</div>
@@ -100,9 +100,9 @@
           v-if="activePrimaryId === 'recipe'"
           :id="`article-primary-recipe`"
           role="tabpanel"
-          class="flex flex-1 min-h-0 min-w-0 gap-6 md:gap-8"
+          class="flex h-full min-h-0 min-w-0 gap-6  mt-24"
         >
-          <aside class="w-48 md:w-56 shrink-0 min-h-0" aria-hidden="true" />
+          <aside class="w-48 md:w-1/4 shrink-0 min-h-0" aria-hidden="true" />
           <div class="flex-1 min-w-0 min-h-0 flex flex-col relative">
             <div v-if="recipeLoadError" class="space-y-2">
               <UAlert
@@ -159,10 +159,12 @@
           v-show="activePrimaryId === 'chat'"
           :id="`article-primary-chat`"
           role="tabpanel"
-          class="flex flex-1 min-h-0 min-w-0 gap-6 md:gap-8"
+          class="flex h-full min-h-0 min-w-0 gap-6 md:gap-8"
         >
           <aside class="w-48 md:w-56 shrink-0 min-h-0" aria-hidden="true" />
-          <div class="flex-1 min-w-0 min-h-0 overflow-y-auto">
+          <div
+            class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+          >
             <ViewModeChat :document="document" />
           </div>
         </div>

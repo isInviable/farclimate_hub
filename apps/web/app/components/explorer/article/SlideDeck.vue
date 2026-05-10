@@ -1,59 +1,35 @@
 <template>
   <div class="slide-deck relative flex flex-col h-full min-h-0">
     <!-- Slide viewport (secondary chrome lives in ArticleViewAI header) -->
-    <div class="slide-deck-viewport relative flex-1 min-h-0">
-      <div
-        class="slide-deck-track flex w-full transition-transform duration-200 ease-out"
-        :style="trackStyle"
+    <div
+      ref="viewport"
+      class="slide-deck-viewport scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-primary-600 scrollbar-track-neutral-100 relative flex-1 min-h-0 overflow-y-auto snap-y snap-proximity scroll-smooth"
+      @scroll.passive="onViewportScroll"
+    >
+      <section
+        v-for="(slide, idx) in slides"
+        :id="`${panelId}-${slide.id}`"
+        :key="slide.id"
+        class="slide-panel relative min-h-full w-full snap-start"
+        :aria-hidden="idx !== activeIndex"
       >
-        <section
-          v-for="(slide, idx) in slides"
-          :id="`${panelId}-${slide.id}`"
-          :key="slide.id"
-          class="slide-panel relative shrink-0 w-full overflow-y-auto"
-          :aria-hidden="idx !== activeIndex"
+        <div
+          class="relative min-h-full px-1 pt-1 pb-6 md:px-2"
           :tabindex="idx === activeIndex ? 0 : -1"
         >
-          <div class="relative  px-1 pt-1 pb-6 md:px-2">
-            <div class="relative min-h-full">
-              <slot :name="slide.id" :slide="slide" :index="idx" />
-            </div>
-
-            <DecorativeCorner
-              v-if="!decorationContext && slide.decoration"
-              :src="slide.decoration.src"
-              :corner="slide.decoration.corner"
-              :size-class="slide.decoration.sizeClass"
-            />
+          <div class="relative min-h-full">
+            <slot :name="slide.id" :slide="slide" :index="idx" />
           </div>
-        </section>
-      </div>
-    </div>
 
-    <UButton
-      icon="i-lucide-chevron-left"
-      color="primary"
-      variant="outline"
-      size="xl"
-      :ui="{ base: 'rounded-full' }"
-      class="absolute! left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 size-12 shadow-md z-10"
-      :aria-label="prevAriaLabel"
-      :disabled="activeIndex <= 0"
-      :aria-disabled="activeIndex <= 0 ? 'true' : undefined"
-      @click="prev"
-    />
-    <UButton
-      icon="i-lucide-chevron-right"
-      color="primary"
-      variant="outline"
-      size="xl"
-      :ui="{ base: 'rounded-full' }"
-      class="absolute! right-0 top-1/2 -translate-y-1/2 translate-x-1/2 size-12 shadow-md z-10"
-      :aria-label="nextAriaLabel"
-      :disabled="activeIndex >= slides.length - 1"
-      :aria-disabled="activeIndex >= slides.length - 1 ? 'true' : undefined"
-      @click="next"
-    />
+          <DecorativeCorner
+            v-if="!decorationContext && slide.decoration"
+            :src="slide.decoration.src"
+            :corner="slide.decoration.corner"
+            :size-class="slide.decoration.sizeClass"
+          />
+        </div>
+      </section>
+    </div>
 
     <div class="sr-only" aria-live="polite">
       <template v-if="activeSlideLabel">
@@ -64,7 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onUnmounted, watch } from "vue";
 import DecorativeCorner from "./DecorativeCorner.vue";
 import {
   ArticleDecorationContextKey,
@@ -98,10 +73,11 @@ const emit = defineEmits<{
 
 const decorationContext = inject(ArticleDecorationContextKey, null);
 const decorationSource = Symbol("SlideDeckDecoration");
-
-const trackStyle = computed(() => ({
-  transform: `translateX(-${props.activeIndex * 100}%)`,
-}));
+const viewport = ref<HTMLElement | null>(null);
+let scrollFrame: number | null = null;
+let scrollGuardTimeout: ReturnType<typeof setTimeout> | null = null;
+let isProgrammaticScroll = false;
+let isSyncingFromViewport = false;
 
 const activeSlideDecoration = computed<ArticleDecoration | null>(
   () => props.slides[props.activeIndex]?.decoration ?? null,
@@ -126,6 +102,12 @@ watch(
 
 onUnmounted(() => {
   decorationContext?.clearDecoration(decorationSource);
+  if (scrollFrame !== null) {
+    cancelAnimationFrame(scrollFrame);
+  }
+  if (scrollGuardTimeout) {
+    clearTimeout(scrollGuardTimeout);
+  }
 });
 
 function clamp(idx: number): number {
@@ -135,17 +117,68 @@ function clamp(idx: number): number {
   return idx;
 }
 
-function goTo(idx: number): void {
-  const next = clamp(idx);
+function clearScrollGuardAfterScroll(): void {
+  if (scrollGuardTimeout) clearTimeout(scrollGuardTimeout);
+  scrollGuardTimeout = setTimeout(() => {
+    isProgrammaticScroll = false;
+  }, 350);
+}
+
+function panelTop(idx: number): number {
+  const host = viewport.value;
+  const panel = host?.children.item(clamp(idx));
+  return panel instanceof HTMLElement ? panel.offsetTop : 0;
+}
+
+function scrollToIndex(idx: number, behavior: ScrollBehavior = "smooth"): void {
+  void nextTick(() => {
+    const host = viewport.value;
+    if (!host) return;
+
+    const targetTop = panelTop(idx);
+    if (Math.abs(host.scrollTop - targetTop) < 1) return;
+
+    isProgrammaticScroll = true;
+    host.scrollTo({ top: targetTop, behavior });
+    clearScrollGuardAfterScroll();
+  });
+}
+
+function syncIndexFromViewport(): void {
+  scrollFrame = null;
+
+  const host = viewport.value;
+  if (!host || isProgrammaticScroll || host.clientHeight <= 0) return;
+
+  const position = host.scrollTop + host.clientHeight * 0.25;
+  const panels = Array.from(host.children).filter(
+    (child): child is HTMLElement => child instanceof HTMLElement,
+  );
+  const next = clamp(
+    panels.reduce((active, panel, idx) => {
+      return panel.offsetTop <= position ? idx : active;
+    }, 0),
+  );
   if (next === props.activeIndex) return;
+
+  isSyncingFromViewport = true;
   emit("update:activeIndex", next);
+  void nextTick(() => {
+    isSyncingFromViewport = false;
+  });
 }
 
-function prev(): void {
-  goTo(props.activeIndex - 1);
+function onViewportScroll(): void {
+  if (scrollFrame !== null) return;
+  scrollFrame = requestAnimationFrame(syncIndexFromViewport);
 }
 
-function next(): void {
-  goTo(props.activeIndex + 1);
-}
+watch(
+  () => props.activeIndex,
+  (idx) => {
+    if (isSyncingFromViewport) return;
+    scrollToIndex(idx);
+  },
+  { immediate: true, flush: "post" },
+);
 </script>

@@ -427,6 +427,10 @@
     }
   },
   "chat": {
+    "inputPlaceholder": "Ask about this case study…",
+    "submit": "ASK →",
+    "typing": "AI is typing…",
+    "exampleQuestionsLabel": "Example questions:",
     "example1": "What are the main challenges addressed in this project?",
     "example2": "Who are the key stakeholders involved and what are their roles?",
     "example3": "Can you summarize the economic impact and main costs?",

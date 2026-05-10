@@ -4,8 +4,8 @@
     :src="resolvedSrc"
     :alt="''"
     aria-hidden="true"
-    class="pointer-events-none absolute select-none z-0"
-    :class="[positionClass, sizeClass]"
+    class="pointer-events-none absolute select-none z-0 transition-opacity duration-300"
+    :class="[positionClass, sizeClass, { 'opacity-0': !resolvedSrc }]"
     @error="hasError = true"
   />
 </template>

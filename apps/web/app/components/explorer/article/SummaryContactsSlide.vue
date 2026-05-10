@@ -1,80 +1,120 @@
 <template>
-  <div class="flex flex-col gap-6 max-w-4xl">
-    <CapturableBlock
-      :label="$t('summaryHeaders.contactPersons')"
-      icon="mdi:account-box-outline"
-      pin-kind="contact"
-      source-view="summary"
-      :payload="contactPinPayload"
-      :preview="contactText"
-      :chrome="false"
-    >
-      <div
-        v-if="contactText"
-        class="prose prose-lg max-w-none"
-        v-html="md.render(contactText)"
-      />
-      <p v-else class="text-sm text-muted">
-        {{ emptyContactsLabel }}
-      </p>
-    </CapturableBlock>
+  <div v-if="!isFullyEmpty" class="mx-auto grid max-w-6xl grid-cols-1 gap-10 pt-9 lg:grid-cols-2 lg:gap-16">
+    <!-- Left: contacts + websites (React SummaryContacts left column) -->
+    <section class="min-w-0">
+      <h3
+        class="border-b border-neutral-lighter pb-2 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-dark"
+      >
+        {{ $t("summaryHeaders.contactPersons") }}
+      </h3>
+      <CapturableBlock
+        :label="$t('summaryHeaders.contactPersons')"
+        icon="mdi:account-box-outline"
+        pin-kind="contact"
+        source-view="summary"
+        :payload="contactPinPayload"
+        :preview="contactText"
+        :chrome="false"
+      >
+        <div
+          v-if="contactText"
+          class="mt-3.5 border-t border-neutral-darkest pt-3.5"
+        >
+          <div
+            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-trust-blue-darkest prose-strong:text-neutral-darkest"
+            v-html="md.render(contactText)"
+          />
+        </div>
+        <p
+          v-else
+          class="mt-3.5 border-t border-neutral-darkest pt-3.5 text-sm text-neutral-dark"
+        >
+          {{ emptyContactsLabel }}
+        </p>
+      </CapturableBlock>
 
-    <CapturableBlock
-      :label="$t('summaryHeaders.websites')"
-      icon="mdi:web"
-      pin-kind="website"
-      source-view="summary"
-      :payload="websitePinPayload"
-      :preview="websiteUrl ?? ''"
-      :capture-enabled="!!websiteUrl"
-      :chrome="false"
-    >
-      <ul v-if="websiteUrls.length > 0" class="list-disc pl-5 space-y-1">
-        <li v-for="url in websiteUrls" :key="url">
-          <a
-            :href="url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary-600 underline break-all text-sm"
-          >
-            {{ url }}
-          </a>
-        </li>
-      </ul>
-      <p v-else class="text-sm text-muted">
-        {{ emptyWebsitesLabel }}
-      </p>
-    </CapturableBlock>
+      <h3
+        class="mt-10 border-b border-neutral-lighter pb-2 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-dark"
+      >
+        {{ $t("summaryHeaders.websites") }}
+      </h3>
+      <CapturableBlock
+        :label="$t('summaryHeaders.websites')"
+        icon="mdi:web"
+        pin-kind="website"
+        source-view="summary"
+        :payload="websitePinPayload"
+        :preview="websiteUrl ?? ''"
+        :capture-enabled="!!websiteUrl"
+        :chrome="false"
+      >
+        <ul
+          v-if="websiteUrls.length > 0"
+          class="mt-3.5 divide-y divide-neutral-lighter border-t border-neutral-darkest pt-3.5"
+        >
+          <li v-for="url in websiteUrls" :key="url" class="py-3.5 first:pt-0">
+            <a
+              :href="url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="break-all text-sm text-trust-blue-darkest underline-offset-2 hover:underline"
+            >
+              {{ url }}
+            </a>
+          </li>
+        </ul>
+        <p
+          v-else
+          class="mt-3.5 border-t border-neutral-darkest pt-3.5 text-sm text-neutral-dark"
+        >
+          {{ emptyWebsitesLabel }}
+        </p>
+      </CapturableBlock>
+    </section>
 
-    <CapturableBlock
-      :label="$t('summaryHeaders.scientificReferences')"
-      icon="mdi:book-open-outline"
-      pin-kind="reference"
-      source-view="summary"
-      :payload="referencesPinPayload"
-      :preview="referencesText"
-      :capture-enabled="!!referencesText"
-      :chrome="false"
-    >
-      <div
-        v-if="referencesText"
-        class="prose prose-lg max-w-none"
-        v-html="md.render(referencesText)"
-      />
-      <p v-else class="text-sm text-muted">
-        {{ emptyReferencesLabel }}
-      </p>
-    </CapturableBlock>
-
-    <UAlert
-      v-if="isFullyEmpty"
-      color="neutral"
-      variant="subtle"
-      icon="i-lucide-info"
-      :title="emptySlideTitle"
-      :description="emptySlideDescription"
-    />
+    <!-- Right: references (React SummaryContacts right column) -->
+    <section class="min-w-0">
+      <h3
+        class="border-b border-neutral-lighter pb-2 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-dark"
+      >
+        {{ $t("summaryHeaders.scientificReferences") }}
+      </h3>
+      <CapturableBlock
+        :label="$t('summaryHeaders.scientificReferences')"
+        icon="mdi:book-open-outline"
+        pin-kind="reference"
+        source-view="summary"
+        :payload="referencesPinPayload"
+        :preview="referencesText"
+        :capture-enabled="!!referencesText"
+        :chrome="false"
+      >
+        <div
+          v-if="referencesText"
+          class="mt-3.5 border-t border-neutral-darkest pt-3.5"
+        >
+          <div
+            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-trust-blue-darkest prose-ol:mt-0 prose-ul:mt-0 prose-li:my-0 prose-li:border-b prose-li:border-neutral-lighter prose-li:py-3 prose-li:marker:font-mono prose-li:marker:text-xs prose-li:marker:text-neutral-dark prose-li:last:border-b-0"
+            v-html="md.render(referencesText)"
+          />
+        </div>
+        <p
+          v-else
+          class="mt-3.5 border-t border-neutral-darkest pt-3.5 text-sm text-neutral-dark"
+        >
+          {{ emptyReferencesLabel }}
+        </p>
+      </CapturableBlock>
+    </section>
   </div>
+  <UAlert
+    v-else
+    color="neutral"
+    variant="subtle"
+    icon="i-lucide-info"
+    :title="emptySlideTitle"
+    :description="emptySlideDescription"
+  />
 </template>
 
 <script setup lang="ts">
@@ -164,5 +204,7 @@ const emptyContactsLabel = computed(() => $t("article.contacts.empty"));
 const emptyWebsitesLabel = computed(() => $t("article.websites.empty"));
 const emptyReferencesLabel = computed(() => $t("article.references.empty"));
 const emptySlideTitle = computed(() => $t("article.contacts.allEmptyTitle"));
-const emptySlideDescription = computed(() => $t("article.contacts.allEmptyDescription"));
+const emptySlideDescription = computed(() =>
+  $t("article.contacts.allEmptyDescription"),
+);
 </script>
