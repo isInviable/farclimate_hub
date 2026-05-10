@@ -52,7 +52,7 @@
         >
           <UButton
             type="button"
-            size="xs"
+            size="sm"
             color="neutral"
             variant="solid"
             icon="i-lucide-pin"

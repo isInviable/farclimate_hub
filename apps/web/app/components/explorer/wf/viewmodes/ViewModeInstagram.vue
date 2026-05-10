@@ -1,73 +1,25 @@
 <template>
-  <div class="max-w-xl mx-auto space-y-8">
-    <div v-for="hit in results" :key="hit.id">
-      <div class="bg-white border border-gray-200 rounded-lg shadow-md">
-        <!-- Post Header -->
-        <div class="flex items-center p-4 border-b border-gray-200">
-          <div class="ml-3 flex-1">
-            <span class="font-semibold text-sm">{{
-              getUsername(hit.document)
-            }}</span>
-            <p class="text-xs text-gray-500">{{ getLocation(hit.document) }}</p>
-          </div>
-          <button type="button" class="text-gray-500">
-            <Icon name="mdi:dots-horizontal" size="1.5rem" />
-          </button>
-        </div>
-
-        <ViewModeInstagramCarousel
-          :images="hit.document.images"
-          @activate="handleDocumentClick(hit.document)"
-        />
-
-        <!-- Post Actions -->
-        <div class="flex items-center p-3">
-          <button
-            type="button"
-            class="mr-4 text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            <Icon name="mdi:share-outline" size="1.75rem" />
-          </button>
-          <div class="ml-auto">
-            <Pin
-              :pin-title="getTitle(hit.document)"
-              pin-type="result"
-              :pin-data="hit.document"
-            >
-              <Icon
-                name="mdi:bookmark-outline"
-                size="1.75rem"
-                class="text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
-              />
-            </Pin>
-          </div>
-        </div>
-
-        <!-- Post Caption -->
-        <div class="px-4 pb-4">
-          <p class="text-sm text-gray-700 mt-1">
-            <span class="font-semibold block text-lg">{{
-              getTitle(hit.document)
-            }}</span>
-            {{ truncate(hit.document.subtitle, 200) }}
-          </p>
-          <button
-            type="button"
-            class="text-xs text-gray-500 mt-2 cursor-pointer hover:underline text-left"
-            @click="handleDocumentClick(hit.document)"
-          >
-            {{ t('viewModes.instagramViewMore') }}
-          </button>
-        </div>
+  <section class="relative bg-neutral-lightest">
+    <div class="max-w-xl mx-auto py-6 px-4 space-y-6">
+      <div v-for="hit in results" :key="hit.id">
+        <ViewModeGridHitContext :document="hit.document">
+          <ViewModeInstagramCard
+            :document="hit.document"
+            :username="getUsername(hit.document)"
+            :location="getLocation(hit.document)"
+            :title="getTitle(hit.document)"
+            :subtitle="truncate(hit.document.subtitle, 200)"
+            :pin-preview="instagramPinPreview(hit.document)"
+            @open="handleDocumentClick(hit.document)"
+          />
+        </ViewModeGridHitContext>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import type { ArticleDetail } from '~/types/search'
-
-const { t } = useI18n()
 
 defineProps<{
   results: { id: string; document: ArticleDetail }[]
@@ -108,12 +60,19 @@ const getLocation = (doc: ArticleDetail) => {
     if (doc.geographic_characterisation.countries)
       return doc.geographic_characterisation.countries
   }
-  return 'Unknown Location'
+  return ''
 }
 
 const getTitle = (doc: ArticleDetail) => {
   if (doc.title) return doc.title
   return 'Unknown Title'
+}
+
+function instagramPinPreview(doc: ArticleDetail): string {
+  const title = getTitle(doc)
+  const sub = doc.subtitle?.trim()
+  if (!sub) return title
+  return `${title}\n${truncate(sub, 200)}`
 }
 
 function handleDocumentClick(document: ArticleDetail) {

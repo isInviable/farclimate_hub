@@ -103,19 +103,23 @@
               </EditorialEyebrow>
             </div>
 
-            <Pin
-              :pin-id="hit.id"
-              :pin-title="hit.document?.title || ''"
-              pin-type="result"
-              :pin-data="hit.document"
-              class="block"
-            >
-              <h3
-                class="font-display font-bold text-[20px] leading-[1.2] text-neutral-darkest line-clamp-2"
+            <ViewModeGridHitContext :document="hit.document">
+              <CapturableBlock
+                pin-kind="text_segment"
+                :title="hit.document?.title ?? ''"
+                :preview="hit.document?.title ?? ''"
+                :payload="{ markdown: hit.document?.title ?? '' }"
+                :chrome="false"
+                source-view="explorer-list"
+                class="block w-full min-w-0"
               >
-                {{ hit.document?.title }}
-              </h3>
-            </Pin>
+                <h3
+                  class="font-display font-bold text-[20px] leading-[1.2] text-neutral-darkest line-clamp-2"
+                >
+                  {{ hit.document?.title }}
+                </h3>
+              </CapturableBlock>
+            </ViewModeGridHitContext>
 
             <div
               v-if="badgeVisible.length > 0"
