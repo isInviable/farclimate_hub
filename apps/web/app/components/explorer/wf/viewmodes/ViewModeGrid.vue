@@ -1,10 +1,10 @@
 <template>
-  <section class="relative p-4">
+  <section class="relative bg-neutral-lightest">
     <UAlert
       v-if="isOverAiArticleLimit"
       color="warning"
       variant="subtle"
-      class="mb-4"
+      class="mx-4 mt-4 rounded-none border border-neutral-darkest"
       :title="$t('viewModes.tooManyForAiTitle')"
     >
       {{
@@ -18,7 +18,7 @@
       }}
     </UAlert>
 
-    <div class="flex flex-col gap-4 mb-6">
+    <div class="flex flex-col gap-3 px-4 py-3 border-y border-neutral-darkest">
       <ExplorerResultsToolbar
         v-model:page="page"
         :total-count="totalCount"
@@ -67,7 +67,7 @@
           >
             {{ $t("viewModes.customCompareSubmit") }}
           </UButton>
-          <p v-if="customComparePrompt.trim() && !customCompareHasSubmitted" class="text-xs text-neutral-500">
+          <p v-if="customComparePrompt.trim() && !customCompareHasSubmitted" class="text-xs text-neutral-dark">
             {{ $t("viewModes.customCompareSubmitHint") }}
           </p>
         </div>
@@ -75,7 +75,7 @@
     </div>
 
     <div
-      class="w-full [column-gap:1.5rem] [column-fill:_balance] columns-1 md:columns-2 xl:columns-3"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 border-l border-t border-neutral-darkest"
     >
       <ViewModeGridHitContext
         v-for="hit in pagedItems"
@@ -84,10 +84,10 @@
       >
         <div
           :class="[
-            'break-inside-avoid mb-6 min-w-0 bg-white rounded-md shadow-sm transition-shadow overflow-hidden',
+            'border-r border-b border-neutral-darkest min-w-0 transition-colors flex flex-col min-h-[280px]',
             isSelected(hit.id)
-              ? 'ring-2 ring-primary-500 border border-primary-200'
-              : 'border border-neutral-200 hover:shadow-lg',
+              ? 'bg-neutral-300'
+              : 'bg-neutral-100 hover:bg-neutral-200',
           ]"
         >
           <CapturableBlock
@@ -101,8 +101,8 @@
             :capture-enabled="true"
             class="block h-full"
           >
-            <div class="h-full p-4 pr-10">
-              <div class="flex justify-start items-start gap-2 mb-2">
+            <div class="h-full p-5 pr-10 flex flex-col gap-3">
+              <div class="flex items-center gap-2">
                 <UCheckbox
                   :model-value="isSelected(hit.id)"
                   color="primary"
@@ -110,43 +110,77 @@
                   @update:model-value="() => toggleSelection(hit)"
                   @click.stop
                 />
-                <div
-                  class="cursor-pointer flex-1"
-                  role="button"
-                  tabindex="0"
-                  @click="handleDocumentClick(hit.document)"
-                  @keydown.enter.prevent="handleDocumentClick(hit.document)"
+                <EditorialEyebrow
+                  v-if="sectorOf(hit.document)"
+                  color="primary"
+                  size="2xs"
                 >
-                  <h3 class="font-semibold text-neutral-900 leading-tight text-sm mb-2 pr-1">
-                    {{ hit.document.title }}
-                  </h3>
+                  {{ sectorOf(hit.document) }}
+                </EditorialEyebrow>
+              </div>
 
-                  <div class="text-sm text-neutral-600">
-                    <div
-                      v-if="isLoading(hit.id)"
-                      class="flex items-center justify-center py-8"
-                    >
-                      <UIcon
-                        name="i-lucide-loader-2"
-                        class="size-6 animate-spin text-sky-500"
+              <div
+                class="cursor-pointer flex-1 flex flex-col gap-3"
+                role="button"
+                tabindex="0"
+                @click="handleDocumentClick(hit.document)"
+                @keydown.enter.prevent="handleDocumentClick(hit.document)"
+              >
+                <h3
+                  class="font-display text-xl leading-snug text-neutral-darkest line-clamp-3"
+                >
+                  {{ hit.document.title }}
+                </h3>
+
+                <div class="text-sm text-neutral-darker flex-1">
+                  <div
+                    v-if="isLoading(hit.id)"
+                    class="flex items-center justify-center py-8"
+                  >
+                    <UIcon
+                      name="i-lucide-loader-2"
+                      class="size-6 animate-spin text-primary-600"
+                    />
+                  </div>
+                  <template v-else>
+                    <div v-if="getSummary(hit.id)" class="space-y-2">
+                      <p
+                        class="text-sm text-neutral-darkest font-medium"
+                        v-html="renderMarkdown(getSummary(hit.id)?.data ?? '')"
+                      />
+                      <div
+                        class="prose prose-sm max-w-none text-neutral-darker"
+                        v-html="renderMarkdown(getSummary(hit.id)?.summary ?? '')"
                       />
                     </div>
-                    <template v-else>
-                      <div v-if="getSummary(hit.id)" class="space-y-2">
-                        <p
-                          class="text-sm text-neutral-800 font-medium"
-                          v-html="renderMarkdown(getSummary(hit.id)?.data ?? '')"
-                        />
-                        <div
-                          class="prose prose-sm max-w-none"
-                          v-html="renderMarkdown(getSummary(hit.id)?.summary ?? '')"
-                        />
-                      </div>
-                      <p v-else class="whitespace-pre-line text-neutral-700">
-                        {{ bodyFallback(hit) }}
-                      </p>
-                    </template>
-                  </div>
+                    <p
+                      v-else
+                      class="whitespace-pre-line text-neutral-darker line-clamp-4"
+                    >
+                      {{ bodyFallback(hit) }}
+                    </p>
+                  </template>
+                </div>
+
+                <div
+                  v-if="regionOf(hit.document) || yearOf(hit.document)"
+                  class="flex items-center justify-between gap-2 border-t border-neutral-darkest/15 pt-2 mt-auto"
+                >
+                  <EditorialEyebrow
+                    v-if="regionOf(hit.document)"
+                    color="muted"
+                    weight="normal"
+                    class="truncate"
+                  >
+                    {{ regionOf(hit.document) }}
+                  </EditorialEyebrow>
+                  <EditorialEyebrow
+                    v-if="yearOf(hit.document)"
+                    color="default"
+                    weight="bold"
+                  >
+                    {{ yearOf(hit.document) }}
+                  </EditorialEyebrow>
                 </div>
               </div>
             </div>
@@ -285,6 +319,25 @@ function toggleSelection(hit: SearchHit) {
 
 function handleDocumentClick(doc: GridHitDocument) {
   emit("document-selected", doc as ArticleDetail)
+}
+
+/** Helpers for editorial card meta. Tolerate missing/heterogeneous fields. */
+function sectorOf(doc: GridHitDocument): string {
+  const s = (doc as unknown as { sectors?: string | string[] }).sectors
+  if (!s) return ''
+  return Array.isArray(s) ? (s[0] ?? '') : String(s)
+}
+function yearOf(doc: GridHitDocument): string {
+  const y = (doc as unknown as { implementation_years?: { start_year?: number; end_year?: number } })
+    .implementation_years
+  const num = y?.start_year || y?.end_year
+  return num ? String(num) : ''
+}
+function regionOf(doc: GridHitDocument): string {
+  const geo = (doc as unknown as {
+    geographic_characterisation?: { city?: string; countries?: string }
+  }).geographic_characterisation
+  return [geo?.city, geo?.countries].filter(Boolean).join(', ')
 }
 
 function renderMarkdown(text: string) {

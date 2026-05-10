@@ -11,44 +11,48 @@
     @filter-apply="handleFilterApply"
   >
     <template #controls="{ value, isEnabled }">
-      <div class="space-y-2">
+      <div class="flex flex-col">
         <label
           v-for="item in items"
           :key="item.key"
-          class="group block rounded-md border px-2 py-2 cursor-pointer transition-all duration-150"
+          class="group flex flex-col gap-1.5 py-2 cursor-pointer select-none transition-colors"
           :class="[
             !isEnabled ? 'opacity-50' : '',
             isSelected(item.key)
-              ? 'border-slate-300 bg-slate-50'
-              : 'border-transparent hover:border-slate-200 hover:bg-slate-50/70'
+              ? 'text-neutral-darkest'
+              : 'text-neutral-darker hover:text-neutral-darkest',
           ]"
           @click="toggle(item.key)"
         >
-          <div class="mb-1.5 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
             <span
-              class="text-xs ml-0.5 underline-offset-2"
-              :class="isSelected(item.key) ? 'text-black font-medium' : 'text-slate-700 group-hover:underline'"
+              class="inline-flex shrink-0 items-center justify-center w-3 h-3 border border-neutral-darkest transition-colors"
+              :class="isSelected(item.key) ? 'bg-primary-600' : 'bg-transparent group-hover:bg-neutral-darkest/5'"
+              aria-hidden="true"
+            />
+            <span
+              class="font-mono text-xs flex-1 truncate"
+              :class="isSelected(item.key) ? 'font-semibold' : 'font-normal'"
             >
               {{ item.label }}
             </span>
-
-            <span
-              class="text-xs font-medium tabular-nums"
-              :class="isSelected(item.key) ? 'text-black' : 'text-slate-700'"
-            >
-              {{ getCurrentCount(item.label) }}{{ hasGlobalCounts ? ` / ${getGlobalCount(item.label)}` : '' }}
+            <span class="font-mono text-2xs text-neutral-dark tabular-nums whitespace-nowrap">
+              {{ getCurrentCount(item.label)
+              }}<span v-if="hasGlobalCounts" class="opacity-60"
+                >/{{ getGlobalCount(item.label) }}</span
+              >
             </span>
           </div>
 
-          <div class="relative h-2 w-full rounded-sm overflow-hidden ">
+          <div class="relative h-[3px] w-full overflow-hidden bg-neutral-darkest/8">
             <div
               v-if="hasGlobalCounts"
-              class="absolute left-0 top-0 h-full rounded-sm bg-slate-200"
+              class="absolute left-0 top-0 h-full bg-neutral-darkest/15"
               :style="{ width: `${getGlobalPercent(item.label)}%` }"
             />
             <div
-              class="absolute left-0 top-0 h-full rounded-sm"
-              :class="isSelected(item.key) ? 'bg-slate-800' : 'bg-slate-500'"
+              class="absolute left-0 top-0 h-full transition-colors"
+              :class="isSelected(item.key) ? 'bg-primary-600' : 'bg-neutral-darkest'"
               :style="{ width: `${getCurrentPercent(item.label)}%` }"
             />
           </div>

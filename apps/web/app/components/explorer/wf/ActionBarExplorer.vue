@@ -1,34 +1,58 @@
 <template>
   <ActionBarBase>
     <template #left>
-      <div class="flex items-center gap-3">
-        <UButton
-          variant="outline"
-          color="primary"
-          size="sm"
-          class="rounded-full group"
-          @click="selection.clear()"
-          trailing-icon="mdi:close"
-          :ui="{ trailingIcon: selection.count === 0 ? 'hidden' : 'opacity-50 group-hover:opacity-100' }"
-        >
-          {{ selection.count }}
-        </UButton>
-        <span class="hidden md:block text-xs">selected results</span>
-      </div>
+      <button
+        type="button"
+        class="flex items-center justify-center min-w-[28px] h-5 px-1.5 bg-primary-600 text-neutral-lightest font-mono text-2xs font-bold tabular-nums hover:bg-primary-500 transition-colors"
+        :aria-label="$t('viewModes.clearSelection', 'Clear selection')"
+        @click="selection.clear()"
+      >
+        {{ selection.count }}
+      </button>
+      <span class="hidden md:inline font-mono text-2xs uppercase tracking-[0.14em] text-neutral-lightest/80">
+        selected
+      </span>
+      <button
+        v-if="selection.count > 0"
+        type="button"
+        class="text-neutral-lightest/60 hover:text-neutral-lightest transition-colors"
+        :aria-label="$t('viewModes.clearSelection', 'Clear selection')"
+        @click="selection.clear()"
+      >
+        <Icon name="mdi:close" class="h-3.5 w-3.5" />
+      </button>
     </template>
 
-    <UButton variant="outline" @click="$emit('open-chat')">
-      <Icon name="mdi:chat-processing" class="mr-2 h-4 w-4" />
-      Chat with results
-    </UButton>
-    <UButton variant="outline" @click="$emit('open-insights')">
-      <Icon name="mdi:lightbulb-on" class="mr-2 h-4 w-4" />
-      Top insights
-    </UButton>
-    <UButton variant="outline" @click="$emit('open-mindmap')">
-      <Icon name="mdi:source-branch" class="mr-2 h-4 w-4" />
-      Mind map
-    </UButton>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-chat')"
+    >
+      <Icon name="mdi:chat-processing" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        Chat with results
+      </span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-insights')"
+    >
+      <Icon name="mdi:lightbulb-on" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        Top insights
+      </span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-mindmap')"
+    >
+      <Icon name="mdi:source-branch" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        Mind map
+      </span>
+    </button>
   </ActionBarBase>
 </template>
 

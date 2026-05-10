@@ -1,38 +1,57 @@
 <template>
   <ActionBarBase>
     <template #left>
-      <div class="flex items-center gap-3">
-        <uButton
-          variant="outline"
-          color="primary"
-          size="sm"
-          class="rounded-full group"
-          @click="selectionStore.clearSelection()"
-          trailing-icon="mdi:close"
-          :ui="{ trailingIcon: selectionStore.selectionCount === 0 ? 'hidden' : 'opacity-50 group-hover:opacity-100' }"
-        >
-          {{ selectionStore.selectionCount }}
-        </uButton>
-        <span class="hidden md:block text-xs">selected items</span>
-      </div>
+      <button
+        type="button"
+        class="flex items-center justify-center min-w-[28px] h-5 px-1.5 bg-primary-600 text-neutral-lightest font-mono text-2xs font-bold tabular-nums hover:bg-primary-500 transition-colors"
+        :aria-label="$t('viewModes.clearSelection', 'Clear selection')"
+        @click="selectionStore.clearSelection()"
+      >
+        {{ selectionStore.selectionCount }}
+      </button>
+      <span class="hidden md:inline font-mono text-2xs uppercase tracking-[0.14em] text-neutral-lightest/80">
+        selected
+      </span>
+      <button
+        v-if="selectionStore.selectionCount > 0"
+        type="button"
+        class="text-neutral-lightest/60 hover:text-neutral-lightest transition-colors"
+        :aria-label="$t('viewModes.clearSelection', 'Clear selection')"
+        @click="selectionStore.clearSelection()"
+      >
+        <Icon name="mdi:close" class="h-3.5 w-3.5" />
+      </button>
     </template>
 
-    <UButton variant="outline" @click="$emit('open-chat')">
-      <Icon name="mdi:chat-processing" class="mr-2 h-4 w-4" />
-      Chat with selection
-    </UButton>
-    <UButton variant="outline" @click="$emit('open-insights')">
-      <Icon name="mdi:lightbulb-on" class="mr-2 h-4 w-4" />
-      Top insights
-    </UButton>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-chat')"
+    >
+      <Icon name="mdi:chat-processing" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        Chat with selection
+      </span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-insights')"
+    >
+      <Icon name="mdi:lightbulb-on" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        Top insights
+      </span>
+    </button>
 
     <USelect
       v-model="selectedAction"
       :items="actionOptions"
       placeholder="More actions..."
       class="min-w-48"
-      variant="outline"
-      color="primary"
+      :ui="{
+        base: 'rounded-none bg-transparent border-0 text-neutral-lightest font-mono text-2xs uppercase tracking-[0.14em] hover:bg-neutral-lightest/10 focus:ring-0 h-11',
+      }"
       size="sm"
       arrow
     />
@@ -49,7 +68,6 @@ const { t } = useI18n();
 
 const selectedAction = ref("");
 
-// Define emits
 const emit = defineEmits<{
   (e: "open-chat"): void;
   (e: "open-insights"): void;
@@ -58,7 +76,6 @@ const emit = defineEmits<{
   (e: "open-video"): void;
 }>();
 
-// Action options for USelect
 const actionOptions = computed(() => [
   {
     label: t("powerpoint.actions.makePresentation"),
@@ -77,7 +94,6 @@ const actionOptions = computed(() => [
   },
 ]);
 
-// Handle action selection
 watch(selectedAction, (value) => {
   if (!value) return;
 
@@ -86,20 +102,13 @@ watch(selectedAction, (value) => {
       emit("open-powerpoint");
       break;
     case "podcast":
-      // Emit event so parent can open a Nuxt UI modal
-      // rather than using the legacy dialog store
-      // @ts-ignore - emit is available in script setup
       emit("open-podcast");
       break;
     case "video":
-      // @ts-ignore
       emit("open-video");
       break;
   }
 
-  // Reset selection
   selectedAction.value = "";
 });
-
-// Note: Video/Podcast modals are now handled by the parent page via Nuxt UI modals
 </script>

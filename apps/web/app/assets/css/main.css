@@ -2,26 +2,22 @@
 @import "@nuxt/ui";
 @plugin "@tailwindcss/typography";
 @plugin 'tailwind-scrollbar' {
-    nocompatible: true;
+  nocompatible: false;
 }
 
-
-
-
-@theme static{
-
-    --color-green-50: #EFFDF5;
-  --color-green-100: #D9FBE8;
-  --color-green-200: #B3F5D1;
-  --color-green-300: #75EDAE;
-  --color-green-400: #00DC82;
-  --color-green-500: #00C16A;
-  --color-green-600: #00A155;
-  --color-green-700: #007F45;
+@theme static {
+  --color-green-50: #effdf5;
+  --color-green-100: #d9fbe8;
+  --color-green-200: #b3f5d1;
+  --color-green-300: #75edae;
+  --color-green-400: #00dc82;
+  --color-green-500: #00c16a;
+  --color-green-600: #00a155;
+  --color-green-700: #007f45;
   --color-green-800: #016538;
-  --color-green-900: #0A5331;
-  --color-green-950: #052E16;
-/* de aqui para abajo es lo que usé en la home **/
+  --color-green-900: #0a5331;
+  --color-green-950: #052e16;
+  /* de aqui para abajo es lo que usé en la home **/
 
   --font-sans: "Inter", sans-serif;
   --font-mono: "Martian Mono", monospace;
@@ -42,8 +38,21 @@
   --color-neutral-darker: #403339;
   --color-neutral-darkest: #100007;
 
+  /* https://tailwind-palette-generator.mdelarue.dev */
+  --color-warm-neutral-50: oklch(0.9913 0.0029 84.3961);
+  --color-warm-neutral-100: oklch(0.9798 0.0046 78.2457);
+  --color-warm-neutral-200: oklch(0.9713 0.0063 75.3847);
+  --color-warm-neutral-300: oklch(0.9541 0.0108 76.5793);
+  --color-warm-neutral-400: oklch(0.9322 0.0104 81.7587);
+  --color-warm-neutral-500: oklch(0.8187 0.0095 78.2499);
+  --color-warm-neutral-600: oklch(0.7038 0.0068 75.3716);
+  --color-warm-neutral-700: oklch(0.5914 0.0058 67.7268);
+  --color-warm-neutral-800: oklch(0.4783 0.0049 91.4249);
+  --color-warm-neutral-900: oklch(0.3645 0.0022 67.781);
+  --color-warm-neutral-950: oklch(0.2516 0.0019 106.3644);
+
   /*** repetidos ***/
-    --color-trust-blue-lightest: #e8eff6;
+  --color-trust-blue-lightest: #e8eff6;
   --color-trust-blue-lighter: #d2e0ec;
   --color-trust-blue-light: #bbd0e3;
   --color-trust-blue: #78a1c7;
@@ -57,7 +66,6 @@
   --color-trust-blue-500: #4b82b5;
   --color-trust-blue-600: #1e63a2;
 
-  
   --color--grounded-green-lightest: #f5f5e7;
   --color--grounded-green-lighter: #ececd0;
   --color--grounded-green-light: #e2e2b8;
@@ -88,7 +96,7 @@
   --ui-warning: var(--color--resilient-yellow-dark);
   --ui-error: var(--color--community-pink-darkest);
   --ui-success: var(--color--grounded-green-dark);
-   --ui-radius: 0rem;
+  --ui-radius: 0rem;
 }
 
 @layer base {

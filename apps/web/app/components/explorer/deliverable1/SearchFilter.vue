@@ -10,48 +10,45 @@
     @filter-apply="handleFilterApply"
   >
     <template #controls="{ value, updateValue, isEnabled }">
-      <!-- Search Input -->
-      <div class="mb-4">
-        <div class="flex gap-2">
-          <UInput
-            icon="i-lucide-search"
-            size="md"
-            variant="outline"
-            class="grow"
-            placeholder="Search..."
-            :model-value="value"
-            @update:model-value="updateValue"
-            @keyup.enter="handleSearch"
-            :disabled="!isEnabled"
-          />
-          <UButton
-            @click="handleSearch"
-            :disabled="isSearching || !isEnabled"
-            size="sm"
-            variant="outline"
-            color="primary"
-          >
-            {{ isSearching ? "..." : "Search" }}
-          </UButton>
-        </div>
+      <!-- Search Input + joined Search button -->
+      <div class="mb-3 flex items-stretch -space-x-px">
+        <UInput
+          icon="i-lucide-search"
+          size="md"
+          variant="editorial"
+          class="grow"
+          placeholder="Search corpus…"
+          :model-value="value"
+          @update:model-value="updateValue"
+          @keyup.enter="handleSearch"
+          :disabled="!isEnabled"
+        />
+        <UButton
+          @click="handleSearch"
+          :disabled="isSearching || !isEnabled"
+          size="md"
+          variant="editorial-solid"
+        >
+          {{ isSearching ? "…" : "Search" }}
+        </UButton>
       </div>
 
-      <!-- Recommendation Pills -->
-      <div class="mb-4">
-        <div class="text-xs text-gray-600 mb-2">Example queries:</div>
-        <div class="flex gap-2 overflow-x-auto">
-          <UButton
+      <!-- Recommendation pills (editorial chip language) -->
+      <div>
+        <div class="font-mono uppercase text-2xs font-bold tracking-[0.16em] text-neutral-dark mb-2">
+          {{ $t('explorer.exampleQueries', 'Example queries') }}
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button
             v-for="pill in recommendationPills"
             :key="pill"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            @click="searchWithPill(pill)"
-            class="grow-0 shrink-0"
+            type="button"
+            class="inline-flex items-center px-2 py-1 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors disabled:opacity-40 disabled:cursor-not-allowed font-mono text-2xs uppercase tracking-widest"
             :disabled="!isEnabled"
+            @click="searchWithPill(pill)"
           >
             {{ $t(`pills.${pill}`) }}
-          </UButton>
+          </button>
         </div>
       </div>
     </template>

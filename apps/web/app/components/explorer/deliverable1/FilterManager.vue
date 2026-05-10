@@ -1,11 +1,12 @@
 <template>
   <div class="filter-manager">
     <!-- Active Filters Section -->
-    <div v-if="activeFilters.length > 0" class="mb-6">
-      <div class="flex items-center gap-2 mb-3">
-        <UIcon name="i-heroicons-funnel" class="text-primary-600" size="1.2rem" />
-        <h3 class="font-semibold text-gray-800">Active Filters</h3>
-        <span class="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded-full">
+    <div v-if="activeFilters.length > 0">
+      <div class="flex items-center gap-2 px-4 py-2 border-b  ">
+        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-darkest whitespace-nowrap">
+          Active Filters
+        </h3>
+        <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums">
           {{ activeFilters.length }}
         </span>
         <SavedSearchMenu
@@ -16,7 +17,7 @@
         />
       </div>
       
-      <div class="space-y-4">
+      <div>
         <!-- Search Filter (Active) -->
         <SearchFilter
           v-if="isFilterEnabled('search')"
@@ -79,10 +80,11 @@
 
     <!-- Available Filters Section -->
     <div v-if="availableFilters.length > 0">
-      <div class="flex items-center gap-2 mb-4">
-        <UIcon name="i-heroicons-adjustments-horizontal" class="text-gray-600" size="1.2rem" />
-        <h3 class="font-semibold text-gray-800">Available Filters</h3>
-        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+      <div class="flex items-center gap-2 px-4 py-2  border-b border-neutral-darkest ">
+        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-darkest whitespace-nowrap">
+          Available Filters
+        </h3>
+        <span class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
           {{ availableFilters.length }}
         </span>
         <SavedSearchMenu
@@ -94,7 +96,7 @@
         />
       </div>
       
-      <div class="space-y-4">
+      <div>
         <!-- Search Filter -->
         <SearchFilter
           v-if="isFilterAvailable('search')"
@@ -156,18 +158,21 @@
     </div>
 
     <!-- No Available Filters Message -->
-    <div v-else class="text-center py-8 text-gray-500">
-      <UIcon name="i-heroicons-check-circle" size="2rem" class="mx-auto mb-2 text-green-500" />
-      <p class="text-sm">All filters are active</p>
-      <p class="text-xs">Remove filters above to make them available again</p>
+    <div v-else class="text-center py-8 border-t border-neutral-darkest">
+      <UIcon name="i-heroicons-check-circle" class="mx-auto mb-2 text-primary-600 size-8" />
+      <p class="font-mono text-2xs font-bold uppercase tracking-[0.16em] text-neutral-darkest">
+        All filters are active
+      </p>
+      <p class="font-mono text-2xs text-neutral-dark mt-1">
+        Remove filters above to make them available again
+      </p>
     </div>
 
     <!-- Filter Actions -->
-    <div class="mt-6 pt-4 border-t border-gray-200">
+    <div class="mt-6 pt-4 border-t border-neutral-darkest">
       <div class="flex gap-2">
         <UButton
-          variant="outline"
-          color="neutral"
+          variant="editorial"
           size="sm"
           @click="clearAllFilters"
           :disabled="activeFilters.length === 0"
@@ -175,8 +180,7 @@
           Clear All
         </UButton>
         <UButton
-          variant="solid"
-          color="primary"
+          variant="editorial-solid"
           size="sm"
           @click="applyAllFilters"
           :disabled="activeFilters.length === 0"

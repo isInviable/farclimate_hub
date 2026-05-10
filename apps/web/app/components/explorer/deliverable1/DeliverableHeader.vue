@@ -1,135 +1,157 @@
 <template>
-  <header class="">
-    <div class="w-11/12 lg:w-10/12 mx-auto">
-      <div class="flex justify-between items-center py-0">
-        
+  <header class="border-b border-neutral-darkest bg-neutral-lightest">
+    <div class="flex items-center h-14 px-6 gap-3">
+      <!-- Project menu trigger -->
+      <UDropdownMenu :items="projectMenuItems" :ui="{ content: 'w-64' }">
+        <button
+          type="button"
+          class="inline-flex items-center justify-center w-7 h-7 border border-neutral-darkest text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors"
+          aria-label="Project menu"
+        >
+          <UIcon name="material-symbols-light:menu" class="w-4 h-4" />
+        </button>
+      </UDropdownMenu>
 
-        <!-- Left: Project Name with Edit -->
-        <div class="flex items-center space-x-2">
-          <div v-if="!isEditingProject" class="flex items-center space-x-2">
-             <UDropdownMenu :items="projectMenuItems" :ui="{ content: 'w-64' }">
-              <UButton
-                variant="subtle"
-                size="sm"
-                icon="material-symbols-light:menu"
-                class="text-primary-400 hover:text-primary-300"
-              />
-            </UDropdownMenu>
-            <h1
-              class="font-mono text-primary-400 text-md cursor-pointer hover:text-primary-300 transition-colors group"
-              @click="isDemoMode ? navigateTo(explorerLoginLink) : startEditingProject()"
-            >
-              {{ isDemoMode ? 'Sign in to use projects' : (projectsStore.currentProject?.name || 'Unnamed Project') }}
-              <UIcon v-if="!isDemoMode" name="mdi:pencil" class="w-4 h-4 group-hover:opacity-100 opacity-0 transition-opacity duration-500" />
-            </h1>
-           
-          </div>
-          <div v-else class="flex items-center space-x-2">
-            <input
-              ref="projectNameInput"
-              v-model="editingProjectName"
-              @blur="finishEditingProject"
-              @keyup.enter="finishEditingProject"
-              @keyup.escape="cancelEditingProject"
-              class="font-mono text-primary-400 text-md bg-transparent border-b border-primary-400 focus:outline-none focus:border-primary-300"
-            />
-          </div>
-        </div>
-        <!-- Left side: Logo -->
+      <!-- PROJECT eyebrow -->
+      <span class="font-mono uppercase text-2xs font-bold tracking-[0.18em] text-neutral-dark hidden sm:inline">
+        Project
+      </span>
+      <span class="hidden sm:inline-block w-px h-5 bg-neutral-darkest/20" aria-hidden="true" />
 
-
-        <!-- Right side: Language Switcher, Pins Board, and User Menu -->
-        <div class="flex items-center space-x-4">
-          <!-- Share Public Link (only on board, not in public view) -->
-          <UPopover v-if="showShareButton" :content="{ side: 'bottom', align: 'end', sideOffset: 8 }" arrow>
-            <UButton
-              variant="outline"
-              color="primary"
-              size="sm"
-              icon="mdi:link-variant"
-            >
-              Share board
-            </UButton>
-
-            <template #content>
-              <div class="p-4 w-80 space-y-2">
-                <div class="text-xs text-gray-500">This is a public board link. Anyone with the link can view.</div>
-                <div class="flex items-center gap-2">
-                  <UInput v-model="publicLink" readonly class="flex-1" @focus="selectAll" />
-                  <UButton size="sm" variant="solid" color="primary" @click="copyPublicLink">
-                    {{ copied ? 'Copied' : 'Copy' }}
-                  </UButton>
-                </div>
-              </div>
-            </template>
-          </UPopover>
-
-          <!-- Pin Counter -->
-          <uChip
-            :show="pinCount > 0"
-            :text="pinCount"
-            size="2xl"
+      <!-- Project name (editable) -->
+      <div v-if="!isEditingProject" class="flex items-center min-w-0">
+        <button
+          type="button"
+          class="group flex items-center gap-2 min-w-0 text-left"
+          @click="isDemoMode ? navigateTo(explorerLoginLink) : startEditingProject()"
+        >
+          <span
+            class="font-display font-bold text-[20px] leading-none text-neutral-darkest truncate"
           >
-            <uButton
-              variant="outline"
-              :to="pinsButtonLink"
-              :icon="pinsButtonIcon"
-              :label="pinsButtonLabel"
-              color="primary"
-            >
-            </uButton>
-          </uChip>
-          <!-- Language Switcher -->
-          <div class="flex gap-2">
-            <button
-              v-for="locale in availableLocales"
-              :key="locale.code"
-              @click="switchLanguage(locale.code)"
-              :class="[
-                'px-2 py-1 rounded text-xs font-semibold transition-colors',
-                currentLocale === locale.code
-                  ? 'bg-primary-500 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-sky-800',
-              ]"
-            >
-              {{ locale.code.toUpperCase() }}
-            </button>
-          </div>
-
-          <!-- Demo mode / Sign in or user + Log out (explorer header) -->
-          <template v-if="isDemoMode">
-            <UBadge color="neutral" variant="soft" size="xs" class="hidden sm:inline-flex">
-              Demo mode
-            </UBadge>
-            <UButton
-              :to="explorerLoginLink"
-              variant="outline"
-              color="primary"
-              size="sm"
-              icon="i-heroicons-arrow-right-on-rectangle"
-            >
-              Sign in
-            </UButton>
-          </template>
-          <template v-else>
-            <span
-              class="text-xs text-primary-400 truncate max-w-[140px]"
-              :title="user?.email"
-            >
-              {{ user?.email }}
-            </span>
-            <UButton
-              variant="ghost"
-              size="sm"
-              color="primary"
-              icon="i-heroicons-arrow-left-on-rectangle"
-              @click="handleLogout"
-            >
-              Log out
-            </UButton>
-          </template>
-        </div>
+            {{ isDemoMode ? 'Sign in to use projects' : (projectsStore.currentProject?.name || 'Unnamed Project') }}
+          </span>
+          <UIcon
+            v-if="!isDemoMode"
+            name="mdi:pencil"
+            class="w-3.5 h-3.5 text-neutral-dark opacity-0 group-hover:opacity-100 transition-opacity"
+          />
+        </button>
       </div>
+      <div v-else class="flex items-center">
+        <input
+          ref="projectNameInput"
+          v-model="editingProjectName"
+          @blur="finishEditingProject"
+          @keyup.enter="finishEditingProject"
+          @keyup.escape="cancelEditingProject"
+          class="font-display font-bold text-[20px] leading-none text-neutral-darkest bg-transparent border-b border-neutral-darkest focus:outline-none px-0 py-0.5"
+        />
+      </div>
+
+      <!-- Meta line (edited, indexed) -->
+      <span class="hidden md:inline-block w-px h-5 bg-neutral-darkest/20 ml-2" aria-hidden="true" />
+      <span class="hidden md:inline font-mono text-2xs text-neutral-dark tracking-[0.04em]">
+        {{ projectMetaLine }}
+      </span>
+
+      <div class="flex-1" />
+
+      <!-- Right cluster -->
+      <!-- Share board (only when applicable) -->
+      <UPopover v-if="showShareButton" :content="{ side: 'bottom', align: 'end', sideOffset: 8 }" arrow>
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
+        >
+          <UIcon name="mdi:link-variant" class="w-4 h-4" />
+          <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Share board</span>
+        </button>
+
+        <template #content>
+          <div class="p-4 w-80 space-y-2">
+            <div class="font-mono text-2xs text-neutral-dark uppercase tracking-widest">
+              Public board link — anyone with the link can view.
+            </div>
+            <div class="flex items-center gap-2">
+              <UInput v-model="publicLink" readonly class="flex-1" @focus="selectAll" />
+              <UButton size="sm" variant="solid" color="primary" @click="copyPublicLink">
+                {{ copied ? 'Copied' : 'Copy' }}
+              </UButton>
+            </div>
+          </div>
+        </template>
+      </UPopover>
+
+      <!-- Export (ghost, editorial) -->
+      <button
+        type="button"
+        class="hidden sm:inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
+      >
+        <UIcon name="mdi:arrow-top-right" class="w-4 h-4" />
+        <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Export</span>
+      </button>
+
+      <!-- Pins Board (primary ink button with count chip) -->
+      <NuxtLink
+        :to="pinsButtonLink"
+        class="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 border border-neutral-darkest bg-neutral-darkest text-neutral-lightest hover:bg-neutral-darker transition-colors"
+      >
+        <UIcon :name="pinsButtonIcon" class="w-4 h-4" />
+        <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">{{ pinsButtonLabel }}</span>
+        <span
+          class="inline-flex items-center justify-center min-w-[22px] h-[18px] px-1.5 ml-1 bg-neutral-lightest text-neutral-darkest font-mono text-2xs font-bold tabular-nums"
+        >
+          {{ pinCount }}
+        </span>
+      </NuxtLink>
+
+      <!-- Language Switcher (segmented EN/ES) -->
+      <div class="hidden sm:inline-flex items-stretch border border-neutral-darkest h-9">
+        <button
+          v-for="locale in availableLocales"
+          :key="locale.code"
+          type="button"
+          @click="switchLanguage(locale.code)"
+          :class="[
+            'px-2.5 flex items-center font-mono uppercase text-2xs font-bold tracking-widest transition-colors',
+            currentLocale === locale.code
+              ? 'bg-neutral-darkest text-neutral-lightest'
+              : 'bg-transparent text-neutral-dark hover:text-neutral-darkest',
+          ]"
+        >
+          {{ locale.code.toUpperCase() }}
+        </button>
+      </div>
+
+      <!-- Demo / user info -->
+      <template v-if="isDemoMode">
+        <span class="hidden lg:inline font-mono uppercase text-2xs font-bold tracking-[0.14em] text-neutral-dark">
+          Demo mode
+        </span>
+        <NuxtLink
+          :to="explorerLoginLink"
+          class="inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
+        >
+          <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />
+          <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Sign in</span>
+        </NuxtLink>
+      </template>
+      <template v-else>
+        <span
+          class="hidden lg:inline font-mono text-2xs text-neutral-dark truncate max-w-[160px]"
+          :title="user?.email"
+        >
+          {{ user?.email }}
+        </span>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 h-9 px-2 text-neutral-dark hover:text-neutral-darkest transition-colors"
+          @click="handleLogout"
+        >
+          <span class="font-mono uppercase text-2xs font-bold tracking-[0.14em]">Log out</span>
+          <UIcon name="mdi:arrow-top-right" class="w-3.5 h-3.5" />
+        </button>
+      </template>
     </div>
   </header>
 </template>
@@ -148,6 +170,34 @@ const { isDemoMode, isAuthenticated, user, signOut, requireAuthForPersistence } 
   useAccess();
 const route = useRoute();
 const router = useRouter();
+
+// Lightweight relative-time formatter for the project meta line
+function relativeTimeFromNow(input?: string | Date | null): string | null {
+  if (!input) return null;
+  const date = typeof input === 'string' ? new Date(input) : input;
+  if (Number.isNaN(date.getTime())) return null;
+  const diffMs = Date.now() - date.getTime();
+  const diffSec = Math.round(diffMs / 1000);
+  const diffMin = Math.round(diffSec / 60);
+  const diffHr = Math.round(diffMin / 60);
+  const diffDay = Math.round(diffHr / 24);
+  if (diffSec < 60) return 'just now';
+  if (diffMin < 60) return `edited ${diffMin}m ago`;
+  if (diffHr < 24) return `edited ${diffHr}h ago`;
+  if (diffDay < 30) return `edited ${diffDay}d ago`;
+  const diffMo = Math.round(diffDay / 30);
+  if (diffMo < 12) return `edited ${diffMo}mo ago`;
+  return `edited ${Math.round(diffMo / 12)}y ago`;
+}
+
+const projectMetaLine = computed(() => {
+  const project = projectsStore.currentProject as { updated_at?: string; created_at?: string } | null;
+  const stamp = relativeTimeFromNow(project?.updated_at || project?.created_at);
+  const pieces: string[] = [];
+  if (stamp) pieces.push(stamp);
+  if (pinCount.value > 0) pieces.push(`${pinCount.value} pinned`);
+  return pieces.join(' · ');
+});
 
 const explorerLoginLink = computed(() => {
   const returnTo = route?.fullPath && route.fullPath !== "/login" ? route.fullPath : "/explorer/explorer";

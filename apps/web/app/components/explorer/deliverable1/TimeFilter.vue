@@ -14,7 +14,9 @@
       <URadioGroup
         v-model="modelValue"
         orientation="horizontal"
-        variant="table"
+        variant="editorial"
+        color="neutral"
+        size="sm"
         :items="radioItems"
         @update:model-value="$event => onUpdate($event as string)"
         :disabled="!isEnabled"

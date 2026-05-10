@@ -1,6 +1,9 @@
 <template>
-  <section class="relative">
-    <div v-if="!isSearching && results.length > 0" class="px-4 py-2 mb-2">
+  <section class="relative bg-neutral-lightest">
+    <div
+      v-if="!isSearching && results.length > 0"
+      class=""
+    >
       <ExplorerResultsToolbar
         v-model:page="page"
         v-model:sort-key="sortKey"
@@ -15,86 +18,168 @@
         @bulk-toggle="toggleSelectAllOnPage"
       />
     </div>
-    <div class="flex">
-      <div class="flex-1">
-        <ul v-if="isSearching">
-          <li class="p-4 text-center">{{ $t("common.searching") }}</li>
-        </ul>
-        <template v-else-if="results && results.length > 0">
-          <ul v-if="activeTab === 'default'" class="space-y-2">
-            <li
-              v-for="{ hit, badgeVisible, badgeOverflow } in rowsWithBadges"
-              :key="hit.id"
-              :class="[
-                'cursor-pointer px-4 py-2 border-b-4 border-neutral-50',
-                isPinned(hit)
-                  ? 'bg-primary-50 hover:bg-primary-100'
-                  : 'bg-white hover:bg-neutral-100',
-              ]"
+
+    <ul v-if="isSearching">
+      <li class="p-4 text-center font-mono text-xs text-neutral-dark">
+        {{ $t("common.searching") }}
+      </li>
+    </ul>
+
+    <ul
+      v-else-if="results.length > 0 && activeTab === 'default'"
+      class="divide-y divide-neutral-darkest/15"
+    >
+      <li
+        v-for="({ hit, badgeVisible, badgeOverflow, meta }, index) in rowsWithBadges"
+        :key="hit.id"
+        :class="[
+          'group relative cursor-pointer transition-colors',
+          isPinned(hit)
+            ? 'bg-primary-50 hover:bg-primary-100'
+            : isSelected(hit.id)
+              ? 'bg-neutral-300'
+              : 'bg-neutral-100 hover:bg-neutral-200',
+        ]"
+        @click="handleDocumentClick(hit.document)"
+      >
+        <span
+          v-if="isSelected(hit.id)"
+          class="absolute left-0 top-0 bottom-0 w-[2px] bg-neutral-darkest"
+          aria-hidden="true"
+        />
+        <div
+          class="grid gap-4 px-4 py-3 sm:grid-cols-[32px_72px_minmax(0,1fr)_180px_96px] sm:items-start"
+        >
+          <div
+            class="flex flex-row sm:flex-col items-center sm:items-start gap-2 pt-0.5"
+            @click.stop
+          >
+            <UCheckbox
+              :model-value="isSelected(hit.id)"
+              color="primary"
+              size="xs"
+              @update:model-value="() => toggleSelection(hit)"
+            />
+            <span
+              class="font-mono text-2xs text-neutral-dark tabular-nums tracking-[0.08em]"
             >
-              <div
-                class="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3"
+              {{ String((page - 1) * pageSize + index + 1).padStart(3, "0") }}
+            </span>
+          </div>
+
+          <div v-if="meta.year" class="leading-none">
+            <span class="font-display font-bold text-[28px] leading-none text-neutral-darkest">
+              {{ meta.year }}
+            </span>
+            <EditorialEyebrow color="muted" class="block mt-1.5">
+              {{ $t("common.year", "Year") }}
+            </EditorialEyebrow>
+          </div>
+          <div v-else class="hidden sm:block" />
+
+          <div class="min-w-0">
+            <div
+              v-if="meta.sector || meta.solutionType"
+              class="flex items-center gap-2 mb-2 min-w-0"
+            >
+              <EditorialEyebrow
+                v-if="meta.sector"
+                color="primary"
+                class="truncate"
               >
-                <div class="flex min-w-0 flex-1 items-start gap-2">
-                  <UCheckbox
-                    :model-value="isSelected(hit.id)"
-                    @update:model-value="() => toggleSelection(hit)"
-                    color="primary"
-                    size="md"
-                    class="shrink-0 mt-0.5"
-                  />
-                  <Pin
-                    class="mr-1 mb-2 min-w-0 flex-1"
-                    :pin-id="hit.id"
-                    :pin-title="hit.document?.title || ''"
-                    pin-type="result"
-                    :pin-data="hit.document"
-                  >
-                    <div
-                      class="min-w-0 cursor-pointer text-sm font-mono"
-                      @click="handleDocumentClick(hit.document)"
-                    >
-                      <span class="line-clamp-2 sm:line-clamp-1">{{
-                        hit.document?.title
-                      }}</span>
-                    </div>
-                  </Pin>
-                </div>
-                <div
-                  v-if="badgeVisible.length > 0"
-                  class="flex flex-wrap gap-1 sm:basis-[20%] sm:max-w-[min(20vw,12rem)] sm:shrink-0 sm:justify-end"
-                  role="group"
-                  :aria-label="$t('viewModes.matchingFiltersAria')"
-                >
-                  <UBadge
-                    v-for="(b, i) in badgeVisible"
-                    :key="`${hit.id}-${b.kind}-${i}`"
-                    :color="b.color ?? 'neutral'"
-                    variant="subtle"
-                    size="xs"
-                    class="max-w-full truncate"
-                  >
-                    {{ b.label }}
-                  </UBadge>
-                  <UBadge
-                    v-if="badgeOverflow > 0"
-                    color="neutral"
-                    variant="outline"
-                    size="xs"
-                  >
-                    {{
-                      $t('viewModes.matchingFiltersMore', {
-                        count: badgeOverflow,
-                      })
-                    }}
-                  </UBadge>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </template>
-      </div>
-    </div>
+                {{ meta.sector }}
+              </EditorialEyebrow>
+              <span
+                v-if="meta.sector && meta.solutionType"
+                class="w-px h-3 bg-neutral-darkest/30 shrink-0"
+                aria-hidden="true"
+              />
+              <EditorialEyebrow
+                v-if="meta.solutionType"
+                color="muted"
+                class="truncate"
+              >
+                {{ meta.solutionType }}
+              </EditorialEyebrow>
+            </div>
+
+            <Pin
+              :pin-id="hit.id"
+              :pin-title="hit.document?.title || ''"
+              pin-type="result"
+              :pin-data="hit.document"
+              class="block"
+            >
+              <h3
+                class="font-display font-bold text-[20px] leading-[1.2] text-neutral-darkest line-clamp-2"
+              >
+                {{ hit.document?.title }}
+              </h3>
+            </Pin>
+
+            <div
+              v-if="badgeVisible.length > 0"
+              class="flex flex-wrap gap-1.5 mt-2"
+              role="group"
+              :aria-label="$t('viewModes.matchingFiltersAria')"
+            >
+              <UBadge
+                v-for="(b, i) in badgeVisible"
+                :key="`${hit.id}-${b.kind}-${i}`"
+                variant="editorial"
+                size="xs"
+                class="max-w-full truncate"
+              >
+                {{ b.label }}
+              </UBadge>
+              <UBadge
+                v-if="badgeOverflow > 0"
+                variant="editorial"
+                size="xs"
+                class="opacity-70"
+              >
+                {{
+                  $t("viewModes.matchingFiltersMore", { count: badgeOverflow })
+                }}
+              </UBadge>
+            </div>
+          </div>
+
+          <div
+            v-if="meta.region || meta.bioregion"
+            class="hidden sm:block min-w-0"
+          >
+            <template v-if="meta.region">
+              <EditorialEyebrow color="muted" class="block">
+                {{ $t("common.region", "Region") }}
+              </EditorialEyebrow>
+              <p class="text-sm text-neutral-darkest mt-1 truncate">
+                {{ meta.region }}
+              </p>
+            </template>
+            <template v-if="meta.bioregion">
+              <EditorialEyebrow
+                color="muted"
+                class="block"
+                :class="{ 'mt-3': meta.region }"
+              >
+                {{ $t("common.bioregion", "Bioregion") }}
+              </EditorialEyebrow>
+              <p class="font-mono text-xs font-semibold text-neutral-darkest mt-1 truncate">
+                {{ meta.bioregion }}
+              </p>
+            </template>
+          </div>
+          <div v-else class="hidden sm:block" />
+
+          <div class="hidden sm:flex flex-col items-end gap-2 pt-0.5">
+            <EditorialEyebrow size="2xs" color="default" class="opacity-70 group-hover:opacity-100">
+              {{ $t("viewModes.read", "Read") }} →
+            </EditorialEyebrow>
+          </div>
+        </div>
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -142,6 +227,24 @@ const sel = useSearchSelectionStore()
 const searchStore = useSearchStore()
 const isSelected = (id: string) => sel.isSelected(id)
 
+/** Editorial row metadata extracted from heterogeneous document shapes. */
+function buildMeta(doc: ArticleDetail | undefined) {
+  if (!doc) return { year: '', sector: '', solutionType: '', region: '', bioregion: '' }
+  const years = doc.implementation_years
+  const yearNum = years?.start_year || years?.end_year || null
+  const sectorRaw = Array.isArray(doc.sectors) ? doc.sectors[0] : doc.sectors
+  const approach = doc.adaptation_approaches?.[0]
+  const geo = doc.geographic_characterisation
+  const region = [geo?.city, geo?.countries].filter(Boolean).join(', ')
+  return {
+    year: yearNum ? String(yearNum) : '',
+    sector: sectorRaw ? String(sectorRaw) : '',
+    solutionType: approach ? String(approach) : '',
+    region,
+    bioregion: geo?.biogeographical_regions ?? '',
+  }
+}
+
 const rowsWithBadges = computed(() =>
   pagedItems.value.map((hit) => {
     const all = listMatchBadgesForDocument(
@@ -149,7 +252,12 @@ const rowsWithBadges = computed(() =>
       searchStore.explorerEffectiveFilters
     )
     const { visible, overflow } = visibleListMatchBadges(all)
-    return { hit, badgeVisible: visible, badgeOverflow: overflow }
+    return {
+      hit,
+      badgeVisible: visible,
+      badgeOverflow: overflow,
+      meta: buildMeta(hit.document),
+    }
   })
 )
 
@@ -183,15 +291,3 @@ function handleDocumentClick(document: ArticleDetail) {
   emit('document-selected', document)
 }
 </script>
-
-<style scoped>
-.side-panel-enter-active,
-.side-panel-leave-active {
-  transition: all 0.3s ease;
-}
-
-.side-panel-enter-from .main-content,
-.side-panel-leave-to .main-content {
-  margin-left: 0;
-}
-</style>

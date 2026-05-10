@@ -1,52 +1,112 @@
 <template>
-  <div class="flex flex-wrap justify-between items-center gap-4">
-    <div class="flex flex-wrap items-end gap-3 min-w-0">
-      <slot name="leading" />
-      <UFormField
-        v-if="showSort"
-        :label="$t('common.sortBy')"
-        class="w-48 min-w-40 shrink-0"
-      >
-        <USelectMenu
+  <div
+    class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 border-t border-b border-neutral-darkest bg-neutral-lightest"
+  >
+    <slot name="leading" />
+
+    <!-- Sort -->
+    <div v-if="showSort" class="flex items-center gap-2">
+      <span class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark">
+        {{ $t('common.sortBy') }}
+      </span>
+      <div class="relative">
+        <select
           v-model="sortKey"
-          :items="sortMenuItems"
-          value-key="value"
-          class="w-full"
-        />
-      </UFormField>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-3 justify-end">
-      <UButton
-        v-if="showBulkSelect"
-        variant="outline"
-        size="sm"
-        class="shrink-0"
-        @click="$emit('bulk-toggle')"
-      >
-        {{
-          allOnPageSelected
-            ? $t('viewModes.unselectOnPage')
-            : $t('viewModes.selectAllOnPage')
-        }}
-      </UButton>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <UPagination
-          v-if="showPagination && totalCount > 0 && hasMultiplePages"
-          v-model:page="page"
-          :items-per-page="pageSize"
-          :total="totalCount"
-          :max="maxPaginationButtons"
-        />
-        <span
-          class="text-sm text-neutral-600 tabular-nums whitespace-nowrap"
-          role="status"
+          class="appearance-none border border-neutral-darkest bg-neutral-lightest text-neutral-darkest font-mono text-xs leading-none pl-2.5 pr-7 py-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-darkest cursor-pointer"
         >
-          {{ summaryText }}
-        </span>
+          <option v-for="opt in sortMenuItems" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+        <UIcon
+          name="i-heroicons-chevron-down-20-solid"
+          class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-darkest"
+        />
       </div>
     </div>
+
+    <div class="flex-1" />
+
+    <!-- Bulk select -->
+    <button
+      v-if="showBulkSelect"
+      type="button"
+      class="inline-flex items-center h-8 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors font-mono uppercase text-2xs font-bold tracking-[0.12em]"
+      @click="$emit('bulk-toggle')"
+    >
+      {{
+        allOnPageSelected
+          ? $t('viewModes.unselectOnPage')
+          : $t('viewModes.selectAllOnPage')
+      }}
+    </button>
+
+    <!-- Pagination -->
+    <div
+      v-if="showPagination && totalCount > 0 && hasMultiplePages"
+      class="flex items-center"
+      role="navigation"
+      aria-label="Pagination"
+    >
+      <button
+        type="button"
+        :disabled="page <= 1"
+        class="w-8 h-8 border border-neutral-darkest bg-transparent text-neutral-darkest font-mono text-sm font-bold leading-none disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-darkest/5 transition-colors"
+        :aria-label="$t('common.firstPage', 'First page')"
+        @click="goTo(1)"
+      >
+        «
+      </button>
+      <button
+        type="button"
+        :disabled="page <= 1"
+        class="w-8 h-8 -ml-px border border-neutral-darkest bg-transparent text-neutral-darkest font-mono text-sm font-bold leading-none disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-darkest/5 transition-colors"
+        :aria-label="$t('common.previousPage', 'Previous page')"
+        @click="goTo(page - 1)"
+      >
+        ‹
+      </button>
+      <button
+        v-for="p in visiblePages"
+        :key="p"
+        type="button"
+        :aria-current="p === page ? 'page' : undefined"
+        :class="[
+          'w-8 h-8 -ml-px border border-neutral-darkest font-mono text-xs font-bold leading-none transition-colors',
+          p === page
+            ? 'bg-neutral-darkest text-neutral-lightest'
+            : 'bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5',
+        ]"
+        @click="goTo(p)"
+      >
+        {{ p }}
+      </button>
+      <button
+        type="button"
+        :disabled="page >= pageCount"
+        class="w-8 h-8 -ml-px border border-neutral-darkest bg-transparent text-neutral-darkest font-mono text-sm font-bold leading-none disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-darkest/5 transition-colors"
+        :aria-label="$t('common.nextPage', 'Next page')"
+        @click="goTo(page + 1)"
+      >
+        ›
+      </button>
+      <button
+        type="button"
+        :disabled="page >= pageCount"
+        class="w-8 h-8 -ml-px border border-neutral-darkest bg-transparent text-neutral-darkest font-mono text-sm font-bold leading-none disabled:opacity-30 disabled:cursor-not-allowed hover:bg-neutral-darkest/5 transition-colors"
+        :aria-label="$t('common.lastPage', 'Last page')"
+        @click="goTo(pageCount)"
+      >
+        »
+      </button>
+    </div>
+
+    <span
+      class="font-mono uppercase text-2xs tracking-[0.12em] text-neutral-dark tabular-nums whitespace-nowrap"
+      role="status"
+    >
+      {{ summaryText }}
+    </span>
   </div>
 </template>
 
@@ -91,12 +151,29 @@ const sortMenuItems = computed(() => [
   { label: t('common.budget'), value: 'budget' as const },
 ])
 
-/** More than one page of results (pagination UI hidden when false). */
-const hasMultiplePages = computed(() => {
-  const ps = props.pageSize
-  if (ps <= 0) return false
-  return props.totalCount > ps
+const pageCount = computed(() => {
+  if (props.pageSize <= 0) return 1
+  return Math.max(1, Math.ceil(props.totalCount / props.pageSize))
 })
+
+const hasMultiplePages = computed(() => pageCount.value > 1)
+
+/** Window of page numbers around the current page, capped by maxPaginationButtons. */
+const visiblePages = computed<number[]>(() => {
+  const max = Math.max(1, props.maxPaginationButtons)
+  const total = pageCount.value
+  if (total <= max) return Array.from({ length: total }, (_, i) => i + 1)
+  const half = Math.floor(max / 2)
+  let start = Math.max(1, page.value - half)
+  const end = Math.min(total, start + max - 1)
+  start = Math.max(1, end - max + 1)
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+})
+
+function goTo(p: number) {
+  const next = Math.min(pageCount.value, Math.max(1, p))
+  if (next !== page.value) page.value = next
+}
 
 const summaryText = computed(() => {
   const c = props.totalCount

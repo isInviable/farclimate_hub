@@ -1,94 +1,61 @@
 <template>
-  <div class="filter-component">
-    <!-- Filter Header -->
-    <div 
-      class="filter-header cursor-pointer p-3 rounded-lg border-2 transition-all duration-200"
-      :class="[
-        isEnabled ? 'border-neutral-400 bg-primary-50' : 'border-gray-200 bg-white hover:border-gray-300',
-        isExpanded ? 'rounded-b-none' : ''
-      ]"
+  <div class="filter-component border-t border-neutral-darkest bg-neutral-lightest">
+    <button
+      type="button"
+      class="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-neutral-darkest/3 transition-colors"
       @click="toggleExpanded"
     >
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <!-- Enable/Disable Toggle -->
-          <UButton
-            :icon="isEnabled ? 'i-heroicons-check' : 'i-heroicons-plus'"
-            :color="isEnabled ? 'neutral' : 'neutral'"
-            :variant="isEnabled ? 'solid' : 'outline'"
-            size="xs"
-            @click.stop="toggleEnabled"
-            class="shrink-0"
-          />
-          
-          <!-- Filter Icon -->
-          <div class="flex items-center gap-2">
-            <UIcon :name="icon" :class="isEnabled ? 'text-neutral-600' : 'text-gray-500'" size="1.2rem" />
-            <span class="font-medium text-sm" :class="isEnabled ? 'text-neutral-800' : 'text-gray-700'">
-              {{ title }}
-            </span>
-          </div>
-        </div>
-        
-        <!-- Expand/Collapse Icon -->
-        <UIcon 
-          :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'" 
-          class="text-gray-400" 
-          size="1rem" 
-        />
-      </div>
-      
-      <!-- Filter Status -->
-      <div v-if="isEnabled && filterValue" class="mt-2 text-xs text-neutral-600">
-        {{ getFilterStatus() }}
-      </div>
-    </div>
+      <UIcon
+        :name="icon"
+        class="size-3.5 shrink-0"
+        :class="isEnabled ? 'text-primary-600' : 'text-neutral-dark'"
+      />
+      <span
+        class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.16em] truncate"
+        :class="isEnabled ? 'text-neutral-darkest' : 'text-neutral-darker'"
+      >
+        {{ title }}
+      </span>
+      <span
+        v-if="isEnabled"
+        class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums"
+      >
+        {{ activeCountLabel }}
+      </span>
+      <UIcon
+        :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+        class="size-3.5 text-neutral-dark"
+      />
+    </button>
 
-    <!-- Filter Content -->
-    <div 
-      v-if="isExpanded"
-      class="filter-content border-2 border-t-0 rounded-b-lg p-4"
-      :class="isEnabled ? 'border-neutral-400 bg-white' : 'border-gray-200 bg-gray-50'"
-    >
-      <!-- Visualization Area -->
-      <div v-if="hasVisualization && isEnabled" class="mb-4">
-        <div class="text-xs font-medium text-gray-600 mb-2">{{ visualizationTitle }}</div>
-        <div class="visualization-container h-32 bg-white rounded border border-gray-200 p-2">
-          <slot name="visualization" :data="visualizationData" :filterValue="filterValue">
-            <!-- Default visualization placeholder -->
-            <div class="h-full flex items-center justify-center text-gray-400 text-sm">
-              {{ visualizationPlaceholder }}
-            </div>
-          </slot>
-        </div>
-      </div>
+    <div v-if="isExpanded" class="px-4 pb-4 pt-1">
+      <slot name="controls" :value="filterValue" :updateValue="updateFilterValue" :isEnabled="isEnabled">
+        <div class="font-mono text-2xs text-neutral-dark">No controls defined</div>
+      </slot>
 
-      <!-- Filter Controls -->
-      <div class="filter-controls">
-        <slot name="controls" :value="filterValue" :updateValue="updateFilterValue" :isEnabled="isEnabled">
-          <!-- Default filter controls -->
-          <div class="text-sm text-gray-500">No controls defined</div>
-        </slot>
-      </div>
-
-      <!-- Filter Actions -->
-      <div v-if="isEnabled" class="mt-4 flex gap-2">
+      <div v-if="isEnabled" class="mt-3 flex gap-2">
         <UButton
           size="xs"
-          variant="outline"
-          color="neutral"
+          variant="editorial"
           @click="clearFilter"
         >
           Clear
         </UButton>
         <UButton
+          v-if="!autoApply"
           size="xs"
-          variant="solid"
-          color="primary"
+          variant="editorial-solid"
           @click="applyFilter"
         >
           Apply
         </UButton>
+        <button
+          type="button"
+          class="ml-auto font-mono text-2xs uppercase tracking-[0.14em] text-neutral-dark hover:text-neutral-darkest transition-colors"
+          @click="toggleEnabled"
+        >
+          {{ isEnabled ? 'Disable' : 'Enable' }}
+        </button>
       </div>
     </div>
   </div>
@@ -105,6 +72,8 @@ interface FilterComponentProps {
   visualizationData?: any;
   initialValue?: any;
   enabled?: boolean;
+  /** Hide the per-section Apply button (FilterManager already auto-applies on change). */
+  autoApply?: boolean;
 }
 
 const props = withDefaults(defineProps<FilterComponentProps>(), {
@@ -113,7 +82,8 @@ const props = withDefaults(defineProps<FilterComponentProps>(), {
   visualizationPlaceholder: 'Visualization will appear here',
   visualizationData: null,
   initialValue: null,
-  enabled: false
+  enabled: false,
+  autoApply: true,
 });
 
 const emit = defineEmits<{
@@ -158,6 +128,16 @@ const applyFilter = () => {
   emit('filter-apply', props.filterKey, filterValue.value);
 };
 
+/** Compact count badge shown next to the title when filter is enabled. */
+const activeCountLabel = computed(() => {
+  const v = filterValue.value
+  if (!v) return '•'
+  if (typeof v === 'string') return v.trim() ? '1' : '•'
+  if (Array.isArray(v)) return String(v.length)
+  if (typeof v === 'object') return String(Object.values(v).filter(Boolean).length)
+  return '•'
+})
+
 const getFilterStatus = () => {
   if (!filterValue.value) return 'No filter applied';
   
@@ -191,16 +171,3 @@ watch(
 )
 </script>
 
-<style scoped>
-.filter-component {
-  margin-bottom: 1rem;
-}
-
-.transition-all {
-  transition: all 0.2s ease;
-}
-
-.bg-primary-25 {
-  background-color: rgba(var(--primary-500-rgb), 0.05);
-}
-</style>

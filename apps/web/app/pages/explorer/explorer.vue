@@ -1,22 +1,11 @@
 <template>
-  <div class="min-h-screen  bg-neutral-lightest px-8">
+  <div class="min-h-screen  bg-neutral-lightest">
     <!-- Global Header -->
     <DeliverableHeader />
-    <div class="grid grid-cols-12 gap-4">
+    <div class="grid grid-cols-12 relative">
       <!-- Left Sidebar - Filters (20%) -->
-      <aside class="col-span-3 bg-transparent border-r border-gray-200 p-6">
-        <div class="sticky top-8">
-          <!-- Results Counter -->
-          <div class="flex items-center mb-6">
-            <div class="bg-black border border-black px-2 py-1 text-xs font-mono">
-              <span class="text-white">
-                Showing <span class="font-medium">{{ filteredPapers.length }}</span>
-                of <span class="font-medium">{{ corpusTotalCount }}</span>
-                case studies
-              </span>
-            </div>
-          </div>
-
+      <aside class="col-span-3 bg-transparent  overflow-y-auto sticky top-0 h-screen scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-white">
+        <div class="">
           <!-- Filter Manager -->
           <FilterManager
             :search-results="searchStore.resultsData?.hits || []"
@@ -30,68 +19,42 @@
 
       <!-- Main Content Area (80%) -->
       <main class="col-span-9">
-        <!-- View Switcher -->
-        <div class="mb-6">
-          
-
-          <!-- View Options -->
-          <div class="grid grid-cols-3 gap-2">
-            <div class="col-span-2 flex gap-3">
-              <!-- top menu -->
-              <UButton
-                variant="soft"
-                color="neutral"
-                :class="viewMode === 'list' ? 'opacity-100' : 'opacity-40'"
-                @click="setViewMode('list')"
-                icon="mdi:view-list"
-                size="sm"
+        <!-- View Switcher (editorial tabs) -->
+        <div
+          class="flex items-center border-b border-neutral-darkest bg-neutral-lightest h-12"
+          role="tablist"
+          aria-label="View mode"
+        >
+          <div class="flex items-stretch h-full">
+            <button
+              v-for="tab in viewTabs"
+              :key="tab.id"
+              type="button"
+              role="tab"
+              :aria-selected="viewMode === tab.id"
+              :class="[
+                'group flex items-center gap-2 h-full px-4 border-b-2 -mb-px transition-colors',
+                viewMode === tab.id
+                  ? 'border-neutral-darkest text-neutral-darkest'
+                  : 'border-transparent text-neutral-dark hover:text-neutral-darkest hover:border-neutral-darkest/30',
+              ]"
+              @click="setViewMode(tab.id)"
+            >
+              <UIcon :name="tab.icon" class="w-4 h-4" />
+              <span
+                :class="[
+                  'font-mono uppercase text-2xs tracking-[0.14em]',
+                  viewMode === tab.id ? 'font-bold' : 'font-medium',
+                ]"
               >
-                list
-              </UButton>
-              <UButton
-                variant="soft"
-                color="neutral"
-                :class="viewMode === 'map' ? 'opacity-100' : 'opacity-40'"
-                @click="setViewMode('map')"
-                icon="mdi:map-outline"
-              >
-                map
-              </UButton>
-
-              <UButton
-                variant="soft"
-                color="neutral"
-                :class="viewMode === 'bubble' ? 'opacity-100' : 'opacity-40'"
-                @click="setViewMode('bubble')"
-                icon="mdi:chart-bubble"
-                size="sm"
-              >
-                by bioRegions
-              </UButton>
-
-              <UButton
-                variant="soft"
-                color="neutral"
-                :class="viewMode === 'grid' ? 'opacity-100' : 'opacity-40'"
-                @click="setViewMode('grid')"
-                icon="mdi:view-grid"
-                size="sm"
-              >
-                Compare
-              </UButton>
-
-              <UButton
-                variant="soft"
-                color="neutral"
-                :class="viewMode === 'instagram' ? 'opacity-100' : 'opacity-40'"
-                @click="setViewMode('instagram')"
-                icon="mdi:instagram"
-                size="sm"
-              >
-                images
-              </UButton>
-            </div>
+                {{ tab.label }}
+              </span>
+            </button>
           </div>
+          <div class="flex-1" />
+          <span class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark">
+            Showing {{ filteredPapers.length }} of {{ corpusTotalCount }} case studies
+          </span>
         </div>
 
         <!-- Results Display -->
@@ -295,6 +258,15 @@ const props = defineProps({
 
 // Reactive state
 const viewMode = ref("list");
+
+// Editorial view tabs (kept in same order/IDs as before to preserve behavior)
+const viewTabs = [
+  { id: "list", label: "List", icon: "mdi:view-list" },
+  { id: "grid", label: "Compare", icon: "mdi:view-grid" },
+  { id: "map", label: "Map", icon: "mdi:map-outline" },
+  { id: "bubble", label: "By bioRegions", icon: "mdi:chart-bubble" },
+  { id: "instagram", label: "Images", icon: "mdi:image-multiple-outline" },
+] as const;
 const searchStore = useSearchStore();
 const route = useRoute();
 const router = useRouter();
