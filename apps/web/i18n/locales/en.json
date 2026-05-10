@@ -15,7 +15,17 @@
     "openFullPage": "Open full page view",
     "tableOfContents": "Table of Contents",
     "noData": "No data available",
-    "articleNoFulltext": "No full text available for this article."
+    "articleNoFulltext": "No full text available for this article.",
+    "year": "Year",
+    "region": "Region",
+    "bioregion": "Bioregion",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
+  },
+  "explorer": {
+    "exampleQueries": "Example queries"
   },
   "pins": {
     "notesPlaceholder": "Add notes to this pin",
@@ -27,6 +37,7 @@
     "openInExplorer": "Open in explorer",
     "sectionsByKind": "Pins by kind",
     "boardTitle": "Pinboard",
+    "boardEyebrow": "03 · Pinboard",
     "loadError": "Could not load pins",
     "filterAll": "All",
     "summaryTotal": "{count} pin(s) total",
@@ -381,7 +392,9 @@
     "tooManyForAiScopeGrid": "all articles on this page in the grid",
     "tooManyForAiScopeSelected": "articles selected",
     "matchingFiltersAria": "Matches active search filters",
-    "matchingFiltersMore": "+{count} more"
+    "matchingFiltersMore": "+{count} more",
+    "read": "Read",
+    "clearSelection": "Clear selection"
   },
   "pills": {
     "forestry": "Forestry",

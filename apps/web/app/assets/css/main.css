@@ -459,6 +459,11 @@
   .font-textsecondarytinylight {
     @apply font-sans text-xs font-light leading-4;
   }
+
+  /* Explorer dashboard pages — shared content width (projects, etc.) */
+  .explorer-dashboard-column {
+    @apply w-11/12 lg:w-10/12 mx-auto py-8;
+  }
 }
 
 /* Responsive handled via Tailwind variants in @apply above */

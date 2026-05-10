@@ -15,7 +15,17 @@
     "openFullPage": "Abrir en vista completa",
     "tableOfContents": "Tabla de contenidos",
     "noData": "No hay datos disponibles",
-    "articleNoFulltext": "No hay texto completo disponible para este artículo."
+    "articleNoFulltext": "No hay texto completo disponible para este artículo.",
+    "year": "Año",
+    "region": "Región",
+    "bioregion": "Biorregión",
+    "firstPage": "Primera página",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "lastPage": "Última página"
+  },
+  "explorer": {
+    "exampleQueries": "Consultas de ejemplo"
   },
   "pins": {
     "notesPlaceholder": "Añade notas a este marcador",
@@ -27,6 +37,7 @@
     "openInExplorer": "Abrir en el explorador",
     "sectionsByKind": "Marcadores por tipo",
     "boardTitle": "Tablero",
+    "boardEyebrow": "03 · Tablero",
     "loadError": "No se pudieron cargar los marcadores",
     "filterAll": "Todos",
     "summaryTotal": "{count} marcador(es) en total",
@@ -376,7 +387,9 @@
     "tooManyForAiScopeGrid": "todos los artículos de esta página en la cuadrícula",
     "tooManyForAiScopeSelected": "artículos seleccionados",
     "matchingFiltersAria": "Coincide con filtros de búsqueda activos",
-    "matchingFiltersMore": "+{count} más"
+    "matchingFiltersMore": "+{count} más",
+    "read": "Leer",
+    "clearSelection": "Quitar selección"
   },
     "listActions": {
       "default": "Por defecto",
