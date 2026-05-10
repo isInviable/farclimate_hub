@@ -10,22 +10,22 @@
       "
     >
       <div class="flex items-center h-16 md:h-20 px-6 gap-3">
-        <NuxtLink to="/" class="font-display font-bold text-xl shrink-0">
+        <NuxtLinkLocale to="/" class="font-display font-bold text-xl shrink-0">
           <img src="/img/logo.svg" alt="Logo" class="h-6" v-if="mode" />
           <div class="font-display font-bold text-xs leading-tight" v-else>
             FarClimate <br /> Transformation Hub
           </div>
-        </NuxtLink>
+        </NuxtLinkLocale>
 
         <nav
           class="hidden md:flex items-center gap-10 text-[13px] font-mono ml-6"
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
-          <NuxtLink to="#about">Solutions</NuxtLink>
-          <NuxtLink to="#stories">Stories</NuxtLink>
-          <NuxtLink to="/skills">Skills</NuxtLink>
-          <NuxtLink to="/connected/dashboard">Connected Action</NuxtLink>
-          <NuxtLink to="#about">About</NuxtLink>
+          <NuxtLinkLocale to="/explorer/">Solutions</NuxtLinkLocale>
+          <NuxtLinkLocale to="#stories">Stories</NuxtLinkLocale>
+          <NuxtLinkLocale to="/skills">Skills</NuxtLinkLocale>
+          <NuxtLinkLocale to="/connected/dashboard">Connected Action</NuxtLinkLocale>
+          <NuxtLinkLocale to="#about">About</NuxtLinkLocale>
         </nav>
 
         <div class="flex-1" />
@@ -57,7 +57,7 @@
 
         <!-- Demo / user info -->
         <template v-if="isDemoMode">
-          <NuxtLink
+          <NuxtLinkLocale
             :to="explorerLoginLink"
             class="inline-flex items-center gap-2 h-9 px-3 border transition-colors"
             :class="
@@ -68,7 +68,7 @@
           >
             <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />
             <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Sign in</span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </template>
         <template v-else>
           <span

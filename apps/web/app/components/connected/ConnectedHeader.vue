@@ -19,7 +19,7 @@
         <nav
           class="col-span-4 flex items-end border-b border-white/20 gap-0 flex-col"
         >
-          <NuxtLink
+          <NuxtLinkLocale
             v-for="item in connectedNav"
             :key="item.to"
             :to="item.to"
@@ -32,7 +32,7 @@
           >
             <UIcon v-if="item.icon" :name="item.icon" class="size-4 shrink-0" />
             {{ item.label }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </nav>
       </div>
     </div>

@@ -85,7 +85,7 @@
       
 
       <!-- Pins Board (primary ink button with count chip) -->
-      <NuxtLink
+      <NuxtLinkLocale
         :to="pinsButtonLink"
         class="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 border border-neutral-darkest bg-neutral-darkest text-neutral-lightest hover:bg-neutral-darker transition-colors"
       >
@@ -96,7 +96,7 @@
         >
           {{ pinCount }}
         </span>
-      </NuxtLink>
+      </NuxtLinkLocale>
 
     </div>
   </header>

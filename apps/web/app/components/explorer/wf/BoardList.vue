@@ -84,14 +84,14 @@
 
           <!-- Content based on type -->
           <div class="p-6">
-            <NuxtLink
+            <NuxtLinkLocale
               v-if="item.source_document_uid"
               :to="explorerLinkForDocument(item.source_document_uid)"
               class="mb-3 inline-flex items-center gap-1 text-sm text-teal-600 hover:text-teal-800 underline-offset-2 hover:underline"
             >
               <Icon name="mdi:open-in-new" size="1rem" />
               {{ $t('pins.openInExplorer') }}
-            </NuxtLink>
+            </NuxtLinkLocale>
             <!-- Article/Solution Type -->
             <div v-if="item.type === 'result'" class="space-y-3">
               <h3 class="font-bold text-lg text-gray-800 line-clamp-2">

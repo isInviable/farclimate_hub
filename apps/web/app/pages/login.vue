@@ -419,12 +419,12 @@ onUnmounted(() => {
       </template>
 
       <div class="text-center">
-        <NuxtLink
+        <NuxtLinkLocale
           to="/"
           class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
           ← Back to home
-        </NuxtLink>
+        </NuxtLinkLocale>
       </div>
     </div>
   </div>

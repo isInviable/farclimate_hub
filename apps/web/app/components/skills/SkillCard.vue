@@ -38,7 +38,7 @@ defineProps<{
       </p>
     </div>
 
-    <NuxtLink
+    <NuxtLinkLocale
       :to="item.url"
       class="flex items-center gap-4 bg-neutral-darkest pl-4 shrink-0"
     >
@@ -46,6 +46,6 @@ defineProps<{
       <div class="bg-[#9e9e14] flex items-center justify-center size-10 shrink-0">
         <UIcon name="i-heroicons-arrow-down" class="size-6 text-white" />
       </div>
-    </NuxtLink>
+    </NuxtLinkLocale>
   </article>
 </template>
