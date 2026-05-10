@@ -66,24 +66,24 @@
   --color-trust-blue-500: #4b82b5;
   --color-trust-blue-600: #1e63a2;
 
-  --color--grounded-green-lightest: #f5f5e7;
-  --color--grounded-green-lighter: #ececd0;
-  --color--grounded-green-light: #e2e2b8;
-  --color--grounded-green: #cece89;
-  --color--grounded-green-dark: #9e9e14;
-  --color--grounded-green-darkest: #76760e;
-  --color--resilient-yellow-lightest: #fffee6;
-  --color--resilient-yellow-lighter: #fffdcd;
-  --color--resilient-yellow-light: #fffc9b;
-  --color--resilient-yellow: #fff837;
-  --color--resilient-yellow-dark: #fff705;
-  --color--resilient-yellow-darkest: #dabd03;
-  --color--community-pink-lightest: #ffe6f2;
-  --color--community-pink-lighter: #ffcde4;
-  --color--community-pink-light: #ff9cc9;
-  --color--community-pink: #ff6aae;
-  --color--community-pink-dark: #ff0777;
-  --color--community-pink-darkest: #ca1768;
+  --color-grounded-green-lightest: #f5f5e7;
+  --color-grounded-green-lighter: #ececd0;
+  --color-grounded-green-light: #e2e2b8;
+  --color-grounded-green: #cece89;
+  --color-grounded-green-dark: #9e9e14;
+  --color-grounded-green-darkest: #76760e;
+  --color-resilient-yellow-lightest: #fffee6;
+  --color-resilient-yellow-lighter: #fffdcd;
+  --color-resilient-yellow-light: #fffc9b;
+  --color-resilient-yellow: #fff837;
+  --color-resilient-yellow-dark: #fff705;
+  --color-resilient-yellow-darkest: #dabd03;
+  --color-community-pink-lightest: #ffe6f2;
+  --color-community-pink-lighter: #ffcde4;
+  --color-community-pink-light: #ff9cc9;
+  --color-community-pink: #ff6aae;
+  --color-community-pink-dark: #ff0777;
+  --color-community-pink-darkest: #ca1768;
 }
 
 :root {
@@ -91,11 +91,11 @@
 
   --ui-container: 62rem;
   --ui-primary: var(--color-trust-blue-darkest);
-  /* @theme uses double hyphen: --color--grounded-green (Figma export); single-dash names are undefined */
-  --ui-secondary: var(--color--grounded-green-darkest);
-  --ui-warning: var(--color--resilient-yellow-dark);
-  --ui-error: var(--color--community-pink-darkest);
-  --ui-success: var(--color--grounded-green-dark);
+  /* @theme uses double hyphen: --color-grounded-green (Figma export); single-dash names are undefined */
+  --ui-secondary: var(--color-grounded-green-darkest);
+  --ui-warning: var(--color-resilient-yellow-dark);
+  --ui-error: var(--color-community-pink-darkest);
+  --ui-success: var(--color-grounded-green-dark);
   --ui-radius: 0rem;
 }
 
@@ -162,14 +162,14 @@
   }
 
   .editorial-warning-chip {
-    @apply inline-flex items-center gap-1 px-2 py-1 border border-amber-700 bg-amber-50 font-mono text-2xs font-bold uppercase tracking-[0.14em] text-amber-800;
+    @apply inline-flex items-center gap-1 px-2 py-1 border border-amber-700 bg-amber-50 font-mono text-2xs font-bold uppercase tracking-wide text-amber-800;
   }
 
   .sidebar-row {
-    @apply flex items-center w-full px-4 py-3 border-b border-neutral-lightest text-left transition-colors hover:bg-neutral-lightest;
+    @apply flex items-center w-full px-4 py-3 border-b border-neutral-200 text-left transition-colors hover:bg-neutral-500 cursor-pointer font-semibold font-mono text-xs text-black;
   }
   .sidebar-row-active {
-    @apply bg-warm-neutral-300;
+    @apply  bg-primary-600 text-white hover:bg-primary-600 font-bold;
   }
 
   .font-headingh1 {

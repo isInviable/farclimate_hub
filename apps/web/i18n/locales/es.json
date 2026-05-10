@@ -113,6 +113,10 @@
     "savedSearchCancel": "Cancelar",
     "savedSearchSave": "Guardar",
     "deleteSavedSearchAria": "Eliminar búsqueda guardada",
+    "savedSearchCardMenuAria": "Acciones de la búsqueda guardada",
+    "savedSearchRemoveConfirmTitle": "¿Eliminar búsqueda guardada?",
+    "savedSearchRemoveConfirmDescription": "Se eliminará «{name}» de tus búsquedas guardadas. Podrás volver a guardar los filtros del explorador más adelante.",
+    "savedSearchRemoveConfirmFailed": "No se pudo eliminar la búsqueda guardada",
     "markmapOpenLinkedArticle": "Abrir artículo enlazado",
     "markmapClose": "Cerrar",
     "map": {

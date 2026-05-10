@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-12 relative">
     <aside
-      class="col-span-3 bg-neutral-lightest sticky top-0 h-screen overflow-y-auto border-r border-neutral-darkest scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-neutral-lightest"
+      class="col-span-3 bg-neutral-200 sticky top-0 h-screen overflow-y-auto border-r border-neutral-darkest scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-neutral-lightest"
     >
       <PinBoardSidebar
         :categories="sidebarCategories"
@@ -16,7 +16,7 @@
       />
     </aside>
 
-    <main class="col-span-9 min-w-0">
+    <main class="col-span-9 min-w-0 bg-warm-neutral-300">
       <header class="px-8 py-9">
         <EditorialEyebrow color="muted" class="tracking-[0.2em]">
           {{ $t("pins.boardEyebrow", "03 · Pinboard") }}
@@ -165,6 +165,7 @@
                   v-for="s in savedSearches"
                   :key="s.id"
                   :saved-search="s"
+                  :enable-selection="enableSelection"
                   class="editorial-cell"
                 />
               </div>
@@ -228,6 +229,8 @@ import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel
 import { useProjectsStore } from "@/stores/projects";
 
 const KIND_SAVED_SEARCHES = "__saved_searches__";
+/** Legacy `body_kind` for pins; saved filters use `saved_searches` + sidebar `KIND_SAVED_SEARCHES` instead. */
+const LEGACY_SAVED_SEARCH_BODY_KIND = "saved_search";
 
 const props = withDefaults(
   defineProps<{
@@ -300,6 +303,7 @@ const sidebarCategories = computed(() => {
     { value: "all", label: t("pins.filterAll"), count: nPins + nSaved },
   ];
   for (const s of sections.value) {
+    if (s.bodyKind === LEGACY_SAVED_SEARCH_BODY_KIND) continue;
     const key = `pins.kinds.${s.bodyKind}`;
     rows.push({
       value: s.bodyKind,
@@ -317,8 +321,13 @@ const sidebarCategories = computed(() => {
 
 const visiblePinSections = computed(() => {
   if (selectedKind.value === KIND_SAVED_SEARCHES) return [];
-  if (selectedKind.value === "all") return sections.value;
-  return sections.value.filter((s) => s.bodyKind === selectedKind.value);
+  const withoutLegacySavedSearch = sections.value.filter(
+    (s) => s.bodyKind !== LEGACY_SAVED_SEARCH_BODY_KIND
+  );
+  if (selectedKind.value === "all") return withoutLegacySavedSearch;
+  return withoutLegacySavedSearch.filter(
+    (s) => s.bodyKind === selectedKind.value
+  );
 });
 
 const showSavedSearchesBlock = computed(() => {

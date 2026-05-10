@@ -43,11 +43,13 @@
       class="absolute top-4 left-5 z-20"
       :class="{ 'pr-10': enableSelection }"
     >
-      <EditorialEyebrow
-        class="inline-flex items-center gap-1 px-2 py-1 border border-neutral-darkest bg-warm-neutral-200"
-      >
-        {{ bodyKindLabel }}
-      </EditorialEyebrow>
+      <UBadge
+        :label="bodyKindLabel"
+        :color="bodyKindBadgeColor"
+        variant="solid"
+        size="sm"
+        class="rounded-none px-2 font-mono uppercase tracking-wide text-2xs"
+      />
     </div>
 
     <UModal v-model:open="isDeleteConfirmOpen" :title="deleteModalTitle">
@@ -229,6 +231,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 import type { HumanPinRow } from "~/types/pins";
+import { pinBodyKindBadgeColor } from "~/utils/pinBodyKindBadge";
 import { pinToSelectionItem } from "~/utils/pinSelection";
 import PinBodyRenderer from "./PinBodyRenderer.vue";
 import MarkmapViewer from "~/components/explorer/MarkmapViewer.client.vue";
@@ -372,6 +375,10 @@ const bodyKindLabel = computed(() => {
   const key = `pins.kinds.${k}`;
   return te(key) ? t(key) : t("pins.kinds.unknown");
 });
+
+const bodyKindBadgeColor = computed(() =>
+  pinBodyKindBadgeColor(props.pin.body_kind)
+);
 
 function handleBodyClick() {
   if (typeof window !== "undefined") {

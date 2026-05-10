@@ -113,6 +113,10 @@
     "savedSearchCancel": "Cancel",
     "savedSearchSave": "Save",
     "deleteSavedSearchAria": "Delete saved search",
+    "savedSearchCardMenuAria": "Saved search actions",
+    "savedSearchRemoveConfirmTitle": "Delete saved search?",
+    "savedSearchRemoveConfirmDescription": "This removes “{name}” from your saved searches. You can save the current explorer filters again later.",
+    "savedSearchRemoveConfirmFailed": "Could not delete saved search",
     "map": {
       "label": "Map",
       "emptyTooltip": "No pinned articles have a location yet. Pin articles with coordinates to populate the map.",
