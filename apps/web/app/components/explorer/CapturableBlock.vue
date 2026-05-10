@@ -58,7 +58,7 @@
             icon="i-lucide-pin"
             :loading="isSaving"
             :aria-label="$t('pins.capture.buttonAria')"
-            class="bg-white/95 shadow-md opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+            class=" opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 cursor-pointer hover:bg-primary-600"
             :class="{ 'opacity-100 text-primary': isPinned }"
             @click.stop="openCapture"
           />

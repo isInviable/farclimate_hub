@@ -10,9 +10,9 @@
       "
     >
       <div class="flex items-center h-16 md:h-20 px-6 gap-3">
-        <NuxtLinkLocale to="/" class="font-display font-bold text-xl shrink-0">
-          <img src="/img/logo.svg" alt="Logo" class="h-6" v-if="mode" />
-          <div class="font-display font-bold text-xs leading-tight" v-else>
+        <NuxtLinkLocale to="/" class="font-display font-bold text-xl shrink-0 flex items-center gap-2">
+          <img src="/img/icono-farclimate.png" alt="Logo" class="h-7"  />
+          <div class="font-display font-bold text-xs leading-tight" v-if="!mode">
             FarClimate <br /> Transformation Hub
           </div>
         </NuxtLinkLocale>
