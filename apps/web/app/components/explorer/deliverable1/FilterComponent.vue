@@ -1,32 +1,47 @@
 <template>
-  <div class="filter-component border-t border-neutral-darkest bg-neutral-lightest">
-    <button
-      type="button"
-      class="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-neutral-darkest/3 transition-colors"
-      @click="toggleExpanded"
+  <div
+    class="filter-component border-t border-neutral-darkest border-l-2 transition-colors"
+    :class="isEnabled ? 'border-l-primary-600 bg-neutral-200' : 'border-l-transparent bg-white'"
+  >
+    <div
+      class="w-full flex items-center gap-2 px-4 py-3 hover:bg-neutral-darkest/3 transition-colors"
     >
-      <UIcon
-        :name="icon"
-        class="size-3.5 shrink-0"
-        :class="isEnabled ? 'text-primary-600' : 'text-neutral-dark'"
+      <USwitch
+        :model-value="isEnabled"
+        size="xs"
+        color="primary"
+        :aria-label="isEnabled ? `Disable ${title} filter` : `Enable ${title} filter`"
+        @click.stop
+        @update:model-value="setEnabled"
       />
-      <span
-        class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.16em] truncate"
-        :class="isEnabled ? 'text-neutral-darkest' : 'text-neutral-darker'"
+      <button
+        type="button"
+        class="flex-1 flex items-center gap-2 text-left min-w-0"
+        @click="toggleExpanded"
       >
-        {{ title }}
-      </span>
-      <span
-        v-if="isEnabled"
-        class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums"
-      >
-        {{ activeCountLabel }}
-      </span>
-      <UIcon
-        :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-        class="size-3.5 text-neutral-dark"
-      />
-    </button>
+        <UIcon
+          :name="icon"
+          class="size-3.5 shrink-0"
+          :class="isEnabled ? 'text-primary-600' : 'text-neutral-dark'"
+        />
+        <span
+          class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.16em] truncate"
+          :class="isEnabled ? 'text-neutral-darkest' : 'text-neutral-dark'"
+        >
+          {{ title }}
+        </span>
+        <span
+          v-if="isEnabled"
+          class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums"
+        >
+          {{ activeCountLabel }}
+        </span>
+        <UIcon
+          :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+          class="size-3.5 text-neutral-dark"
+        />
+      </button>
+    </div>
 
     <div v-if="isExpanded" class="px-4 pb-4 pt-1">
       <slot name="controls" :value="filterValue" :updateValue="updateFilterValue" :isEnabled="isEnabled">
@@ -49,13 +64,6 @@
         >
           Apply
         </UButton>
-        <button
-          type="button"
-          class="ml-auto font-mono text-2xs uppercase tracking-[0.14em] text-neutral-dark hover:text-neutral-darkest transition-colors"
-          @click="toggleEnabled"
-        >
-          {{ isEnabled ? 'Disable' : 'Enable' }}
-        </button>
       </div>
     </div>
   </div>
@@ -98,9 +106,9 @@ const isExpanded = ref(true);
 const filterValue = ref(props.initialValue);
 
 // Methods
-const toggleEnabled = () => {
-  isEnabled.value = !isEnabled.value;
-  emit('filter-change', props.filterKey, filterValue.value, isEnabled.value);
+const setEnabled = (val: boolean) => {
+  isEnabled.value = val;
+  emit('filter-change', props.filterKey, filterValue.value, val);
 };
 
 const toggleExpanded = () => {

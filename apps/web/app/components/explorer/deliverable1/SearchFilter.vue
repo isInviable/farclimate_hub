@@ -21,11 +21,10 @@
           :model-value="value"
           @update:model-value="updateValue"
           @keyup.enter="handleSearch"
-          :disabled="!isEnabled"
         />
         <UButton
           @click="handleSearch"
-          :disabled="isSearching || !isEnabled"
+          :disabled="isSearching"
           size="md"
           variant="editorial-solid"
         >
@@ -44,7 +43,6 @@
             :key="pill"
             type="button"
             class="inline-flex items-center px-2 py-1 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors disabled:opacity-40 disabled:cursor-not-allowed font-mono text-2xs uppercase tracking-widest"
-            :disabled="!isEnabled"
             @click="searchWithPill(pill)"
           >
             {{ $t(`pills.${pill}`) }}

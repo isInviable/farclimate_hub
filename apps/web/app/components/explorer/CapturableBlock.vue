@@ -59,7 +59,7 @@
             :loading="isSaving"
             :aria-label="$t('pins.capture.buttonAria')"
             class=" opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 cursor-pointer hover:bg-primary-600"
-            :class="{ 'opacity-100 text-primary': isPinned }"
+            :class="{ 'opacity-60 bg-transparent text-black ': isPinned }"
             @click.stop="openCapture"
           />
         </slot>
