@@ -226,6 +226,7 @@ import {
   validatePodcastSelection,
 } from "~/utils/podcastSelection";
 import { usePinnedSelectionStore } from "@/stores/selection";
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
 const props = defineProps<{
   pins: HumanPinRow[];
@@ -397,7 +398,7 @@ function resetWizard() {
 }
 
 async function loadSelectedDocumentTexts() {
-  const lang = locale.value === "es" ? "es" : "en";
+  const lang = knowledgeApiLang(locale.value);
   const missingUids = [...new Set(selectedDocumentUids.value)].filter(
     (uid) => !documentTextByUid.value[uid] && !loadingDocumentUids.value.has(uid)
   );

@@ -110,6 +110,7 @@
 
 <script setup lang="ts">
 import MarkdownIt from "markdown-it";
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 import CapturableBlock from "./CapturableBlock.vue";
 
 const RECIPE_SECTION_KEYS = [
@@ -204,7 +205,7 @@ async function loadRecipe() {
   resolvedIngredients.value = null;
 
   try {
-    const lang = locale.value === "es" ? "es" : "en";
+    const lang = knowledgeApiLang(locale.value);
     const res = await $fetch<{ recipe_ingredients: unknown }>("/api/document-recipe", {
       query: { documentId: props.documentId, lang },
     });
@@ -219,7 +220,7 @@ async function loadRecipe() {
 }
 
 watch(
-  () => [props.documentId, props.recipeIngredients] as const,
+  () => [props.documentId, props.recipeIngredients, locale.value] as const,
   () => {
     void loadRecipe();
   },

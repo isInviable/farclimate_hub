@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import type { ArticleDetail } from '@/types/search'
 import ArticleViewAI from '@/components/explorer/ArticleViewAI.vue'
+import { knowledgeApiLang } from '@/utils/knowledgeApiLang'
 
 const route = useRoute()
 const { locale } = useI18n()
@@ -19,7 +20,9 @@ const { locale } = useI18n()
 const { data: article, error, pending } = await useFetch<ArticleDetail>(
   () => `/api/articles/${String(route.params.id ?? '')}`,
   {
-    query: { lang: locale },
+    query: computed(() => ({
+      lang: knowledgeApiLang(locale.value),
+    })),
     watch: [locale, () => route.params.id],
   },
 )

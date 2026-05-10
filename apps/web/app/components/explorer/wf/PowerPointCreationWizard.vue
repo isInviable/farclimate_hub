@@ -222,6 +222,7 @@ import {
   type PowerPointImageAsset,
 } from "~/utils/powerPointDeck"
 import { usePinnedSelectionStore } from "@/stores/selection"
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang"
 
 const props = defineProps<{
   pins: HumanPinRow[]
@@ -434,14 +435,16 @@ function resetWizard() {
   generatedModel.value = null
   deckTitle.value = t("powerpoint.wizard.defaultTitle")
   tone.value = ""
-  language.value = locale.value === "es" ? "Spanish" : "English"
+  const kl = knowledgeApiLang(locale.value)
+  language.value =
+    kl === "es" ? "Spanish" : kl === "it" ? "Italian" : "English"
   audience.value = ""
   extraInstructions.value = ""
   slideCount.value = 6
 }
 
 async function loadSelectedDocumentTexts() {
-  const lang = locale.value === "es" ? "es" : "en"
+  const lang = knowledgeApiLang(locale.value)
   const missingUids = [...new Set(selectedDocumentUids.value)].filter(
     (uid) => !documentTextByUid.value[uid] && !loadingDocumentUids.value.has(uid)
   )

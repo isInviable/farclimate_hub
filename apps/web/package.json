@@ -13,7 +13,8 @@
     "test:human-pins": "vitest run tests/human/pinboards.rls.test.ts",
     "test:human-artifacts": "vitest run tests/human/artifacts.rls.test.ts",
     "test:podcast-live": "vitest run tests/api/podcast-generation.live.test.ts",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "i18n:unused": "node scripts/find-unused-i18n-keys.mjs"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.31",

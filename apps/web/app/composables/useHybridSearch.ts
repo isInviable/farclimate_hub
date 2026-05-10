@@ -1,6 +1,7 @@
 import { useSearchStore } from "@/stores/search";
 import { fetchFacets } from "@/composables/useFacets";
 import type { ArticleDetail, SearchFacetParams } from "@/types/search";
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
 export interface SearchHit {
   id: string;
@@ -25,7 +26,7 @@ export function useHybridSearch() {
   const facetFilters = ref<SearchFacetParams>({});
 
   function getLang(): string {
-    return locale.value === "es" ? "es" : "en";
+    return knowledgeApiLang(locale.value);
   }
 
   function buildSearchBody(query: string, limit: number) {

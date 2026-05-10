@@ -220,6 +220,7 @@ import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel
 import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
 // i18n composable for language detection
 const { locale, t } = useI18n();
@@ -314,7 +315,7 @@ async function openDocumentFromQueryParam(uid: string) {
       handleDocumentSelected(hit.document as ArticleDetail);
       await stripDocumentQueryFromUrl();
     } else {
-      const lang = locale.value === "es" ? "es" : "en";
+      const lang = knowledgeApiLang(locale.value);
       const res = await $fetch<{ document: ArticleDetail }>("/api/document-by-uid", {
         query: { uid, lang },
       });

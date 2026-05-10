@@ -1,4 +1,5 @@
 import { computed, ref, watch, type Ref } from "vue";
+import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
 /**
  * Canonical recipe section keys, in the fixed order required by
@@ -101,7 +102,7 @@ export function useArticleRecipe(
     resolvedIngredients.value = null;
 
     try {
-      const lang = locale.value === "es" ? "es" : "en";
+      const lang = knowledgeApiLang(locale.value);
       const res = await $fetch<{ recipe_ingredients: unknown }>(
         "/api/document-recipe",
         { query: { documentId: id, lang } },
@@ -117,7 +118,7 @@ export function useArticleRecipe(
   }
 
   watch(
-    () => [documentId.value, recipeIngredients.value] as const,
+    () => [documentId.value, recipeIngredients.value, locale.value] as const,
     () => {
       void loadRecipe();
     },
