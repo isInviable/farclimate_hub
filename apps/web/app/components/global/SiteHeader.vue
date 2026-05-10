@@ -6,37 +6,100 @@
       :class="
         mode
           ? 'bg-linear-to-t from-transparent to-black/60'
-          : 'bg-neutral-lightest'
+          : 'bg-neutral-lightest border-b border-neutral-darkest'
       "
     >
-      <UContainer class="h-16 md:h-20 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <NuxtLink
-            to="/"
-            class="font-display font-bold text-xl"
-          >
-            <img src="/img/logo.svg" alt="Logo" class="h-6" v-if="mode" />
-            <div class="font-display font-bold text-xs" v-else>
-              FarClimate <br /> Transformation Hub
-            </div>
-          </NuxtLink>
-        </div>
+      <div class="flex items-center h-16 md:h-20 px-6 gap-3">
+        <NuxtLink to="/" class="font-display font-bold text-xl shrink-0">
+          <img src="/img/logo.svg" alt="Logo" class="h-6" v-if="mode" />
+          <div class="font-display font-bold text-xs leading-tight" v-else>
+            FarClimate <br /> Transformation Hub
+          </div>
+        </NuxtLink>
+
         <nav
-          class="hidden md:flex items-center gap-10 text-[13px] font-mono"
+          class="hidden md:flex items-center gap-10 text-[13px] font-mono ml-6"
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
-          <NuxtLink to="#about">About</NuxtLink>
-          <NuxtLink to="/explorer/explorer">Solutions</NuxtLink>
+          <NuxtLink to="#about">Solutions</NuxtLink>
           <NuxtLink to="#stories">Stories</NuxtLink>
           <NuxtLink to="/skills">Skills</NuxtLink>
           <NuxtLink to="/connected/dashboard">Connected Action</NuxtLink>
+          <NuxtLink to="#about">About</NuxtLink>
         </nav>
-      </UContainer>
+
+        <div class="flex-1" />
+
+        <!-- Language Switcher (segmented EN/ES) -->
+        <div
+          class="hidden sm:inline-flex items-stretch h-9 border"
+          :class="mode ? 'border-neutral-lightest' : 'border-neutral-darkest'"
+        >
+          <button
+            v-for="loc in availableLocales"
+            :key="loc.code"
+            type="button"
+            @click="switchLanguage(loc.code)"
+            :class="[
+              'px-2.5 flex items-center font-mono uppercase text-2xs font-bold tracking-widest transition-colors',
+              currentLocale === loc.code
+                ? mode
+                  ? 'bg-neutral-lightest text-neutral-darkest'
+                  : 'bg-neutral-darkest text-neutral-lightest'
+                : mode
+                  ? 'bg-transparent text-neutral-lightest/70 hover:text-neutral-lightest'
+                  : 'bg-transparent text-neutral-dark hover:text-neutral-darkest',
+            ]"
+          >
+            {{ loc.code.toUpperCase() }}
+          </button>
+        </div>
+
+        <!-- Demo / user info -->
+        <template v-if="isDemoMode">
+          <NuxtLink
+            :to="explorerLoginLink"
+            class="inline-flex items-center gap-2 h-9 px-3 border transition-colors"
+            :class="
+              mode
+                ? 'border-neutral-lightest text-neutral-lightest hover:bg-neutral-lightest/10'
+                : 'border-neutral-darkest text-neutral-darkest hover:bg-neutral-darkest/5'
+            "
+          >
+            <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />
+            <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Sign in</span>
+          </NuxtLink>
+        </template>
+        <template v-else>
+          <span
+            class="hidden lg:inline font-mono text-2xs truncate max-w-[160px]"
+            :class="mode ? 'text-neutral-lightest/80' : 'text-neutral-dark'"
+            :title="user?.email"
+          >
+            {{ user?.email }}
+          </span>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 h-9 px-2 transition-colors"
+            :class="
+              mode
+                ? 'text-neutral-lightest/80 hover:text-neutral-lightest'
+                : 'text-neutral-dark hover:text-neutral-darkest'
+            "
+            @click="handleLogout"
+          >
+            <span class="font-mono uppercase text-2xs font-bold tracking-[0.14em]">Log out</span>
+            <UIcon name="mdi:arrow-top-right" class="w-3.5 h-3.5" />
+          </button>
+        </template>
+      </div>
     </div>
   </header>
 </template>
 
 <script lang="ts" setup>
+import { useAccess } from "~/composables/useAccess";
+
 const props = withDefaults(
   defineProps<{
     mode?: boolean;
@@ -45,6 +108,34 @@ const props = withDefaults(
     mode: false,
   }
 );
-</script>
 
-<style></style>
+const { isDemoMode, user, signOut } = useAccess();
+const route = useRoute();
+const router = useRouter();
+
+const explorerLoginLink = computed(() => {
+  const returnTo =
+    route?.fullPath && route.fullPath !== "/login"
+      ? route.fullPath
+      : "/explorer/explorer";
+  return `/login?returnTo=${encodeURIComponent(returnTo)}`;
+});
+
+async function handleLogout() {
+  await signOut();
+  await router.push("/explorer/explorer");
+}
+
+const { locale, locales } = useI18n();
+const switchLocalePath = useSwitchLocalePath();
+
+const currentLocale = computed(() => locale.value);
+const availableLocales = computed(() => locales.value);
+
+function switchLanguage(localeCode: "en" | "es") {
+  const path = switchLocalePath(localeCode);
+  if (path) {
+    navigateTo(path);
+  }
+}
+</script>

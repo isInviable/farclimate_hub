@@ -105,53 +105,6 @@
         </span>
       </NuxtLink>
 
-      <!-- Language Switcher (segmented EN/ES) -->
-      <div class="hidden sm:inline-flex items-stretch border border-neutral-darkest h-9">
-        <button
-          v-for="locale in availableLocales"
-          :key="locale.code"
-          type="button"
-          @click="switchLanguage(locale.code)"
-          :class="[
-            'px-2.5 flex items-center font-mono uppercase text-2xs font-bold tracking-widest transition-colors',
-            currentLocale === locale.code
-              ? 'bg-neutral-darkest text-neutral-lightest'
-              : 'bg-transparent text-neutral-dark hover:text-neutral-darkest',
-          ]"
-        >
-          {{ locale.code.toUpperCase() }}
-        </button>
-      </div>
-
-      <!-- Demo / user info -->
-      <template v-if="isDemoMode">
-        <span class="hidden lg:inline font-mono uppercase text-2xs font-bold tracking-[0.14em] text-neutral-dark">
-          Demo mode
-        </span>
-        <NuxtLink
-          :to="explorerLoginLink"
-          class="inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
-        >
-          <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />
-          <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Sign in</span>
-        </NuxtLink>
-      </template>
-      <template v-else>
-        <span
-          class="hidden lg:inline font-mono text-2xs text-neutral-dark truncate max-w-[160px]"
-          :title="user?.email"
-        >
-          {{ user?.email }}
-        </span>
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 h-9 px-2 text-neutral-dark hover:text-neutral-darkest transition-colors"
-          @click="handleLogout"
-        >
-          <span class="font-mono uppercase text-2xs font-bold tracking-[0.14em]">Log out</span>
-          <UIcon name="mdi:arrow-top-right" class="w-3.5 h-3.5" />
-        </button>
-      </template>
     </div>
   </header>
 </template>
@@ -166,10 +119,8 @@ import { useAccess } from "~/composables/useAccess";
 const pinsApi = usePinsSupabase();
 const pinCount = computed(() => pinsApi.pins.value.length);
 const projectsStore = useProjectsStore();
-const { isDemoMode, isAuthenticated, user, signOut, requireAuthForPersistence } =
-  useAccess();
+const { isDemoMode, isAuthenticated, requireAuthForPersistence } = useAccess();
 const route = useRoute();
-const router = useRouter();
 
 // Lightweight relative-time formatter for the project meta line
 function relativeTimeFromNow(input?: string | Date | null): string | null {
@@ -204,11 +155,6 @@ const explorerLoginLink = computed(() => {
   return `/login?returnTo=${encodeURIComponent(returnTo)}`;
 });
 
-async function handleLogout() {
-  await signOut();
-  await router.push("/explorer/explorer");
-}
-
 // Project editing state
 const isEditingProject = ref(false);
 const editingProjectName = ref('');
@@ -227,14 +173,6 @@ watch(
   },
   { immediate: true }
 );
-
-// i18n composables
-const { locale, locales } = useI18n();
-const localePath = useLocalePath();
-const switchLocalePath = useSwitchLocalePath();
-
-const currentLocale = computed(() => locale.value);
-const availableLocales = computed(() => locales.value);
 
 // Dynamic pins button based on current route
 const pinsButtonLink = computed(() => {
@@ -377,14 +315,6 @@ async function createNewProject() {
   const newProject = await projectsStore.createProject('New Project');
   if (newProject) {
     nextTick(() => startEditingProject());
-  }
-}
-
-// Switch language function
-function switchLanguage(localeCode: "en" | "es") {
-  const path = switchLocalePath(localeCode);
-  if (path) {
-    navigateTo(path);
   }
 }
 </script>
