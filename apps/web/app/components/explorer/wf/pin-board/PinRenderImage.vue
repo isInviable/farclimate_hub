@@ -4,9 +4,9 @@
       v-if="src"
       :src="src"
       :alt="alt || $t('pins.imageAlt')"
-      class="w-full max-h-64 object-contain rounded-md border border-neutral-100 bg-neutral-50"
+      class="w-full max-h-64 object-contain border border-neutral-darkest bg-warm-neutral-100"
     />
-    <p v-else class="text-sm text-neutral-600">
+    <p v-else class="font-sans text-sm text-neutral-dark">
       {{ $t("pins.imagePlaceholder") }}
     </p>
   </div>

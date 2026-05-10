@@ -1,6 +1,6 @@
 <template>
-  <div
-    class="relative group bg-white rounded-lg shadow-md overflow-hidden border border-neutral-100"
+  <article
+    class="relative group flex flex-col min-h-[220px]"
   >
     <div v-if="enableSelection" class="absolute top-3 right-3 z-30">
       <UDropdownMenu :items="cardMenuItems" :ui="{ content: 'w-48' }">
@@ -9,7 +9,6 @@
           size="sm"
           color="neutral"
           icon="i-heroicons-ellipsis-vertical"
-          class="bg-white/90 shadow-sm hover:bg-white"
           :aria-label="$t('pins.cardMenuAria')"
         />
       </UDropdownMenu>
@@ -18,7 +17,7 @@
     <button
       v-if="enableSelection"
       type="button"
-      class="absolute bottom-3 right-3 z-20 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+      class="absolute bottom-3 right-3 z-20 p-1 bg-neutral-lightest border border-neutral-darkest opacity-0 group-hover:opacity-100 transition-opacity"
       :class="{ 'opacity-100': selectionStore.isSelected(pin.id) }"
       @click="selectionStore.toggleSelection(selectionItem)"
     >
@@ -28,30 +27,27 @@
             ? 'mdi:check-circle'
             : 'mdi:plus-circle-outline'
         "
-        size="1.75rem"
+        size="1.5rem"
         :class="{
-          'text-blue-500': selectionStore.isSelected(pin.id),
-          'text-gray-500': !selectionStore.isSelected(pin.id),
+          'text-primary-600': selectionStore.isSelected(pin.id),
+          'text-neutral-dark': !selectionStore.isSelected(pin.id),
         }"
       />
     </button>
     <div
-      v-if="enableSelection"
-      class="absolute inset-0 rounded-lg border-2 pointer-events-none z-10"
-      :class="
-        selectionStore.isSelected(pin.id)
-          ? 'border-blue-500'
-          : 'border-transparent'
-      "
+      v-if="enableSelection && selectionStore.isSelected(pin.id)"
+      class="absolute inset-0 border-2 border-primary-600 pointer-events-none z-10"
     />
 
     <div
-      class="absolute top-3 left-3 z-20"
+      class="absolute top-4 left-5 z-20"
       :class="{ 'pr-10': enableSelection }"
     >
-      <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">
+      <EditorialEyebrow
+        class="inline-flex items-center gap-1 px-2 py-1 border border-neutral-darkest bg-warm-neutral-200"
+      >
         {{ bodyKindLabel }}
-      </span>
+      </EditorialEyebrow>
     </div>
 
     <UModal v-model:open="isDeleteConfirmOpen" :title="deleteModalTitle">
@@ -184,25 +180,22 @@
       </template>
     </UModal>
 
-    <div class="p-6 pt-14 space-y-3">
-     
-      
-
+    <div class="p-6 pt-14 space-y-3 flex-1 flex flex-col">
       <p
         v-if="
           !pin.source_document_uid &&
           (pin.body_kind === 'text_segment' || pin.body_kind === 'document')
         "
-        class="text-xs text-amber-800 bg-amber-50 rounded px-2 py-1"
+        class="editorial-warning-chip self-start"
       >
         {{ $t("pins.sourceMissing") }}
       </p>
 
       <div
         :class="[
-          'space-y-3 -mx-2 px-2 py-1 rounded',
+          'space-y-3',
           pin.source_document_uid || markmapBodyClickable
-            ? 'cursor-pointer hover:bg-neutral-50 transition-colors'
+            ? 'cursor-pointer hover:bg-warm-neutral-100 -mx-2 px-2 py-1 transition-colors'
             : '',
         ]"
         :role="pin.source_document_uid || markmapBodyClickable ? 'button' : undefined"
@@ -211,7 +204,7 @@
         @keydown.enter.prevent="handleBodyClick"
         @keydown.space.prevent="handleBodyClick"
       >
-        <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
+        <h3 class="font-display font-bold text-lg text-neutral-darkest line-clamp-2">
           {{ pin.source_title_snapshot?.trim() || $t("pins.noTitle") }}
         </h3>
 
@@ -220,17 +213,17 @@
           :data="bodyData"
         />
 
-        <div v-if="pin.user_note?.trim()" class="pt-2 border-t border-neutral-100">
-          <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">
+        <div v-if="pin.user_note?.trim()" class="pt-2 border-t border-neutral-darkest/15">
+          <EditorialEyebrow color="muted" class="block">
             {{ $t("pins.userNote") }}
-          </p>
-          <p class="text-sm text-neutral-700 whitespace-pre-wrap">
+          </EditorialEyebrow>
+          <p class="font-sans text-sm text-neutral-darker whitespace-pre-wrap mt-1">
             {{ pin.user_note }}
           </p>
         </div>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">

@@ -1,32 +1,34 @@
 <template>
-  <div
-    class="relative group bg-white rounded-lg shadow-md overflow-hidden border border-neutral-100"
-  >
-    <div class="absolute top-3 left-3 z-20">
-      <span class="bg-teal-100 text-teal-800 text-xs px-2 py-1 rounded-full">
+  <article class="relative group flex flex-col min-h-[220px]">
+    <div class="absolute top-4 left-5 z-20">
+      <EditorialEyebrow
+        class="inline-flex items-center gap-1 px-2 py-1 border border-neutral-darkest bg-warm-neutral-200"
+      >
         {{ $t("pins.kinds.saved_search") }}
-      </span>
+      </EditorialEyebrow>
     </div>
 
-    <div class="p-6 pt-14 space-y-3">
-      <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
+    <div class="p-6 pt-14 space-y-3 flex-1 flex flex-col">
+      <h3 class="font-display font-bold text-lg text-neutral-darkest line-clamp-2">
         {{ savedSearch.name }}
       </h3>
-      <p class="text-sm text-neutral-600">
+      <p class="font-sans text-sm text-neutral-dark">
         {{ $t("pins.savedSearchCardHint") }}
       </p>
-      <UButton
-        v-if="isAuthenticated"
-        type="button"
-        color="primary"
-        size="sm"
-        icon="i-heroicons-magnifying-glass"
-        @click="onRun"
-      >
-        {{ $t("pins.savedSearchRunSearch") }}
-      </UButton>
-      <div v-if="isAuthenticated" class="pt-1">
+      <div class="mt-auto flex items-center gap-2 flex-wrap">
         <UButton
+          v-if="isAuthenticated"
+          type="button"
+          color="primary"
+          variant="editorial-solid"
+          size="sm"
+          icon="i-heroicons-magnifying-glass"
+          @click="onRun"
+        >
+          {{ $t("pins.savedSearchRunSearch") }}
+        </UButton>
+        <UButton
+          v-if="isAuthenticated"
           type="button"
           variant="ghost"
           color="error"
@@ -39,7 +41,7 @@
         </UButton>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">

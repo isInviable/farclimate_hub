@@ -1,10 +1,10 @@
 <template>
-  <div class="prose prose-sm max-w-none text-neutral-800 [&_p]:my-1">
+  <div class="prose prose-sm max-w-none text-neutral-darker [&_p]:my-1">
     <div v-if="html" v-html="html" />
     <p v-else-if="plain" class="whitespace-pre-wrap font-mono text-sm">
       {{ plain }}
     </p>
-    <p v-else class="text-sm text-neutral-500 italic">{{ $t("pins.textEmpty") }}</p>
+    <p v-else class="font-sans text-sm text-neutral-dark italic">{{ $t("pins.textEmpty") }}</p>
   </div>
 </template>
 

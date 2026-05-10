@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-2">
-    <p class="text-xs text-neutral-500">
+    <EditorialEyebrow color="muted">
       {{ $t("pins.fallbackKind", { kind: bodyKind }) }}
-    </p>
-    <div class="rounded-md bg-neutral-50 border border-neutral-200 p-3 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+    </EditorialEyebrow>
+    <div class="bg-warm-neutral-100 border border-neutral-darkest p-3 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
       <pre class="whitespace-pre-wrap break-words">{{ preview }}</pre>
     </div>
   </div>

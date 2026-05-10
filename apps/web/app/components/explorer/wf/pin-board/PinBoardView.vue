@@ -1,193 +1,201 @@
 <template>
-  <div class="flex">
-    <PinBoardSidebar
-      :categories="sidebarCategories"
-      :selected-kind="selectedKind"
-      :selected-view="selectedView"
-      :map-entry-enabled="mapEntryEnabled"
-      :map-article-count="mapArticleCount"
-      :artifact-count="artifactCount"
-      @select-kind="selectKind"
-      @select-map="selectMap"
-      @select-artifacts="selectArtifacts"
-    />
+  <div class="grid grid-cols-12 relative">
+    <aside
+      class="col-span-3 bg-neutral-lightest sticky top-0 h-screen overflow-y-auto border-r border-neutral-darkest scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-neutral-lightest"
+    >
+      <PinBoardSidebar
+        :categories="sidebarCategories"
+        :selected-kind="selectedKind"
+        :selected-view="selectedView"
+        :map-entry-enabled="mapEntryEnabled"
+        :map-article-count="mapArticleCount"
+        :artifact-count="artifactCount"
+        @select-kind="selectKind"
+        @select-map="selectMap"
+        @select-artifacts="selectArtifacts"
+      />
+    </aside>
 
-    <main class="flex-1 p-8 min-w-0">
-      <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+    <main class="col-span-9 min-w-0">
+      <header class="px-8 py-9">
+        <EditorialEyebrow color="muted" class="tracking-[0.2em]">
+          {{ $t("pins.boardEyebrow", "03 · Pinboard") }}
+        </EditorialEyebrow>
+        <h1 class="font-display font-bold text-5xl mt-2 text-neutral-darkest">
           {{ $t("pins.boardTitle") }}
         </h1>
-        <p class="text-gray-600">
+        <p class="font-sans text-neutral-dark mt-2">
           {{ summaryLine }}
         </p>
-      </div>
+      </header>
 
-      <UAlert
-        v-if="error"
-        color="error"
-        variant="soft"
-        class="mb-4"
-        :title="$t('pins.loadError')"
-        :description="error"
-      />
-
-      <div v-if="loading" class="flex justify-center py-16">
-        <UIcon
-          name="i-heroicons-arrow-path"
-          class="w-10 h-10 animate-spin text-primary-500"
+      <div class="px-8 pb-24">
+        <UAlert
+          v-if="error"
+          color="error"
+          variant="soft"
+          class="mb-4"
+          :title="$t('pins.loadError')"
+          :description="error"
         />
-      </div>
 
-      <template v-else-if="selectedView === 'map'">
-        <div class="w-full h-[70vh] rounded-lg overflow-hidden border border-gray-200 bg-white">
-          <PinBoardMap :pins="props.pins" @open-article="handleOpenArticleFromMap" />
-        </div>
-      </template>
-
-      <template v-else-if="selectedView === 'artifacts'">
-        <slot name="artifacts" />
-      </template>
-
-      <template v-else>
-        <div
-          v-if="isGridEmpty"
-          class="text-center py-12">
-          <Icon name="mdi:pin-off" size="4rem" class="mx-auto text-gray-400 mb-4" />
-          <h3 class="text-xl font-semibold text-gray-600 mb-2">
-            {{ emptyTitle }}
-          </h3>
-          <p class="text-gray-500">
-            {{ emptyCategory }}
-          </p>
+        <div v-if="loading" class="flex justify-center py-16">
+          <UIcon
+            name="i-heroicons-arrow-path"
+            class="w-10 h-10 animate-spin text-primary-600"
+          />
         </div>
 
-        <div v-else-if="isFullPaperDocumentLayout" class="space-y-10">
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
-            >
-              {{ $t("pins.fullPaperSectionWhole") }}
-              <span class="text-sm font-normal text-neutral-500 ml-2">
-                ({{ fullPaperDocumentPins.length }})
-              </span>
-            </h2>
-            <p
-              v-if="fullPaperDocumentPins.length === 0"
-              class="text-sm text-neutral-500 mb-2"
-            >
-              {{ $t("pins.fullPaperWholeEmpty") }}
-            </p>
-            <div
-              v-else
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <PinBoardCard
-                v-for="pin in fullPaperDocumentPins"
-                :key="pin.id"
-                :pin="pin"
-                :enable-selection="enableSelection"
-                @open-article="openArticle"
-              />
-            </div>
-          </section>
+        <template v-else-if="selectedView === 'map'">
+          <div class="w-full h-[70vh] overflow-hidden border border-neutral-darkest bg-neutral-lightest">
+            <PinBoardMap :pins="props.pins" @open-article="handleOpenArticleFromMap" />
+          </div>
+        </template>
 
-          <section>
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
-            >
-              {{ $t("pins.fullPaperSectionFragmentPapers") }}
-              <span class="text-sm font-normal text-neutral-500 ml-2">
-                ({{ fragmentBackedPaperGroups.length }})
-              </span>
-            </h2>
-            <p
-              v-if="fragmentBackedPaperGroups.length === 0"
-              class="text-sm text-neutral-500 mb-2"
-            >
-              {{ $t("pins.fullPaperFragmentPapersEmpty") }}
+        <template v-else-if="selectedView === 'artifacts'">
+          <slot name="artifacts" />
+        </template>
+
+        <template v-else>
+          <div
+            v-if="isGridEmpty"
+            class="text-center py-12">
+            <Icon name="mdi:pin-off" size="4rem" class="mx-auto text-neutral mb-4" />
+            <h3 class="font-display font-semibold text-xl text-neutral-darkest mb-2">
+              {{ emptyTitle }}
+            </h3>
+            <p class="text-neutral-dark">
+              {{ emptyCategory }}
             </p>
-            <div
-              v-else
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <div
-                v-for="g in fragmentBackedPaperGroups"
-                :key="g.source_document_uid"
-                class="relative group bg-white rounded-lg shadow-md overflow-hidden border border-neutral-100 p-6 flex flex-col gap-3"
+          </div>
+
+          <div v-else-if="isFullPaperDocumentLayout" class="space-y-12">
+            <section>
+              <header class="flex items-baseline gap-3 mb-4">
+                <h2 class="font-display font-bold text-2xl text-neutral-darkest">
+                  {{ $t("pins.fullPaperSectionWhole") }}
+                </h2>
+                <span class="font-mono text-xs text-neutral-dark tabular-nums">
+                  ({{ fullPaperDocumentPins.length }})
+                </span>
+              </header>
+              <p
+                v-if="fullPaperDocumentPins.length === 0"
+                class="font-sans text-sm text-neutral-dark mb-2"
               >
-                <h3 class="font-bold text-lg text-gray-900 line-clamp-2">
-                  {{ g.displayTitle }}
-                </h3>
-                <p class="text-sm text-neutral-600">
-                  {{
-                    $t("pins.fullPaperFragmentPinCount", {
-                      count: g.pins.length,
-                    })
-                  }}
-                </p>
-                <div class="mt-auto">
-                  <UButton
-                    size="sm"
-                    color="primary"
-                    variant="soft"
-                    icon="i-heroicons-document-text"
-                    @click="openArticle(g.source_document_uid)"
-                  >
-                    {{ $t("pins.drawer.openArticle") }}
-                  </UButton>
-                </div>
+                {{ $t("pins.fullPaperWholeEmpty") }}
+              </p>
+              <div
+                v-else
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 editorial-frame"
+              >
+                <PinBoardCard
+                  v-for="pin in fullPaperDocumentPins"
+                  :key="pin.id"
+                  :pin="pin"
+                  :enable-selection="enableSelection"
+                  class="editorial-cell"
+                  @open-article="openArticle"
+                />
               </div>
-            </div>
-          </section>
-        </div>
+            </section>
 
-        <div v-else class="space-y-10">
-          <section v-if="showSavedSearchesBlock">
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
-            >
-              {{ $t("pins.sidebarSavedSearches") }}
-              <span class="text-sm font-normal text-neutral-500 ml-2">
-                ({{ savedSearches.length }})
-              </span>
-            </h2>
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <PinBoardSavedSearchCard
-                v-for="s in savedSearches"
-                :key="s.id"
-                :saved-search="s"
-              />
-            </div>
-          </section>
+            <section>
+              <header class="flex items-baseline gap-3 mb-4">
+                <h2 class="font-display font-bold text-2xl text-neutral-darkest">
+                  {{ $t("pins.fullPaperSectionFragmentPapers") }}
+                </h2>
+                <span class="font-mono text-xs text-neutral-dark tabular-nums">
+                  ({{ fragmentBackedPaperGroups.length }})
+                </span>
+              </header>
+              <p
+                v-if="fragmentBackedPaperGroups.length === 0"
+                class="font-sans text-sm text-neutral-dark mb-2"
+              >
+                {{ $t("pins.fullPaperFragmentPapersEmpty") }}
+              </p>
+              <div
+                v-else
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 editorial-frame"
+              >
+                <article
+                  v-for="g in fragmentBackedPaperGroups"
+                  :key="g.source_document_uid"
+                  class="editorial-cell relative group p-6 flex flex-col gap-3 min-h-[200px]"
+                >
+                  <h3 class="font-display font-bold text-lg text-neutral-darkest line-clamp-2">
+                    {{ g.displayTitle }}
+                  </h3>
+                  <p class="font-sans text-sm text-neutral-dark">
+                    {{
+                      $t("pins.fullPaperFragmentPinCount", {
+                        count: g.pins.length,
+                      })
+                    }}
+                  </p>
+                  <div class="mt-auto">
+                    <UButton
+                      size="sm"
+                      color="primary"
+                      variant="editorial"
+                      icon="i-heroicons-document-text"
+                      @click="openArticle(g.source_document_uid)"
+                    >
+                      {{ $t("pins.drawer.openArticle") }}
+                    </UButton>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
 
-          <section
-            v-for="section in visiblePinSections"
-            :key="section.bodyKind"
-          >
-            <h2
-              class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-neutral-200"
+          <div v-else class="space-y-12">
+            <section v-if="showSavedSearchesBlock">
+              <header class="flex items-baseline gap-3 mb-4">
+                <h2 class="font-display font-bold text-2xl text-neutral-darkest">
+                  {{ $t("pins.sidebarSavedSearches") }}
+                </h2>
+                <span class="font-mono text-xs text-neutral-dark tabular-nums">
+                  ({{ savedSearches.length }})
+                </span>
+              </header>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 editorial-frame">
+                <PinBoardSavedSearchCard
+                  v-for="s in savedSearches"
+                  :key="s.id"
+                  :saved-search="s"
+                  class="editorial-cell"
+                />
+              </div>
+            </section>
+
+            <section
+              v-for="section in visiblePinSections"
+              :key="section.bodyKind"
             >
-              {{ sectionLabel(section.bodyKind) }}
-              <span class="text-sm font-normal text-neutral-500 ml-2">
-                ({{ section.pins.length }})
-              </span>
-            </h2>
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <PinBoardCard
-                v-for="pin in section.pins"
-                :key="pin.id"
-                :pin="pin"
-                :enable-selection="enableSelection"
-                @open-article="openArticle"
-              />
-            </div>
-          </section>
-        </div>
-      </template>
+              <header class="flex items-baseline gap-3 mb-4">
+                <h2 class="font-display font-bold text-2xl text-neutral-darkest">
+                  {{ sectionLabel(section.bodyKind) }}
+                </h2>
+                <span class="font-mono text-xs text-neutral-dark tabular-nums">
+                  ({{ section.pins.length }})
+                </span>
+              </header>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 editorial-frame">
+                <PinBoardCard
+                  v-for="pin in section.pins"
+                  :key="pin.id"
+                  :pin="pin"
+                  :enable-selection="enableSelection"
+                  class="editorial-cell"
+                  @open-article="openArticle"
+                />
+              </div>
+            </section>
+          </div>
+        </template>
+      </div>
     </main>
 
     <ArticleSidePanel

@@ -82,14 +82,7 @@
         </template>
       </UPopover>
 
-      <!-- Export (ghost, editorial) -->
-      <button
-        type="button"
-        class="hidden sm:inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
-      >
-        <UIcon name="mdi:arrow-top-right" class="w-4 h-4" />
-        <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Export</span>
-      </button>
+      
 
       <!-- Pins Board (primary ink button with count chip) -->
       <NuxtLink

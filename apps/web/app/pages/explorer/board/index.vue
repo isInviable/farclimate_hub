@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-100 px-8">
+  <div class="min-h-screen bg-neutral-lightest">
     <DeliverableHeader />
 
     <!-- Main Content -->

@@ -3,10 +3,10 @@
     <UCard>
       <template #header>
         <div>
-          <h2 class="text-xl font-semibold text-gray-900">
+          <h2 class="font-display font-bold text-2xl text-neutral-darkest">
             {{ $t("podcast.artifacts.title") }}
           </h2>
-          <p class="text-sm text-gray-500">
+          <p class="font-sans text-sm text-neutral-dark mt-1">
             {{ $t("podcast.artifacts.description") }}
           </p>
         </div>
@@ -16,11 +16,11 @@
         <!-- Podcasts -->
         <div class="space-y-4">
           <div>
-            <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900">
-              <UIcon name="i-heroicons-speaker-wave" class="h-5 w-5 text-primary-500" />
+            <h3 class="flex items-center gap-2 text-lg font-medium text-neutral-darkest">
+              <UIcon name="i-heroicons-speaker-wave" class="h-5 w-5 text-primary-600" />
               {{ $t("podcast.artifacts.podcastsTitle") }}
             </h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-neutral-dark">
               {{ $t("podcast.artifacts.audioDescription") }}
             </p>
           </div>
@@ -33,7 +33,7 @@
             :description="error"
           />
 
-          <div v-if="loading" class="flex items-center gap-3 py-6 text-gray-600">
+          <div v-if="loading" class="flex items-center gap-3 py-6 text-neutral-dark">
             <UIcon name="i-heroicons-arrow-path" class="h-5 w-5 animate-spin" />
             <span>{{ $t("podcast.artifacts.loading") }}</span>
           </div>
@@ -55,10 +55,10 @@
             >
               <div class="space-y-3">
                 <div>
-                  <h4 class="font-semibold text-gray-900">
+                  <h4 class="font-semibold text-neutral-darkest">
                     {{ podcast.title || $t("podcast.artifacts.untitled") }}
                   </h4>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-neutral-dark">
                     {{ formatDate(podcast.created_at) }}
                     <span v-if="podcast.byte_size">
                       · {{ formatBytes(podcast.byte_size) }}
@@ -90,7 +90,8 @@
                   <UButton
                     type="button"
                     size="sm"
-                    variant="outline"
+                    variant="editorial"
+                    color="neutral"
                     icon="i-heroicons-arrow-down-tray"
                     :loading="downloading[podcast.id]"
                     @click="downloadPodcast(podcast)"
@@ -104,13 +105,13 @@
         </div>
 
         <!-- PowerPoint presentations -->
-        <div class="space-y-4 border-t border-gray-100 pt-8">
+        <div class="space-y-4 border-t border-neutral-darkest/15 pt-8">
           <div>
-            <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900">
-              <UIcon name="i-lucide-presentation" class="h-5 w-5 text-primary-500" />
+            <h3 class="flex items-center gap-2 text-lg font-medium text-neutral-darkest">
+              <UIcon name="i-lucide-presentation" class="h-5 w-5 text-primary-600" />
               {{ $t("powerpoint.artifacts.title") }}
             </h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-neutral-dark">
               {{ $t("powerpoint.artifacts.description") }}
             </p>
           </div>
@@ -125,7 +126,7 @@
 
           <div
             v-if="powerPointsLoading"
-            class="flex items-center gap-3 py-4 text-gray-600"
+            class="flex items-center gap-3 py-4 text-neutral-dark"
           >
             <UIcon name="i-heroicons-arrow-path" class="h-5 w-5 animate-spin" />
             <span>{{ $t("powerpoint.artifacts.loading") }}</span>
@@ -148,10 +149,10 @@
             >
               <div class="space-y-3">
                 <div>
-                  <h4 class="font-semibold text-gray-900">
+                  <h4 class="font-semibold text-neutral-darkest">
                     {{ ppt.title || $t("powerpoint.artifacts.untitled") }}
                   </h4>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-neutral-dark">
                     {{ formatDate(ppt.created_at) }}
                     <span v-if="ppt.status === 'pending'">
                       · {{ $t("powerpoint.artifacts.statusPending") }}
@@ -173,7 +174,7 @@
                   {{ ppt.status }}
                 </UBadge>
 
-                <div v-if="ppt.status === 'failed' && artifactFailureMessage(ppt)" class="text-sm text-red-700">
+                <div v-if="ppt.status === 'failed' && artifactFailureMessage(ppt)" class="font-sans text-sm text-error-600">
                   {{ artifactFailureMessage(ppt) }}
                 </div>
 
@@ -181,7 +182,8 @@
                   v-if="ppt.status === 'ready'"
                   type="button"
                   size="sm"
-                  variant="outline"
+                  variant="editorial"
+                  color="neutral"
                   icon="i-heroicons-arrow-down-tray"
                   :loading="downloadingPowerPoint[ppt.id]"
                   @click="downloadPowerPoint(ppt)"
@@ -194,20 +196,21 @@
         </div>
 
         <!-- Downloads (pinboard ZIP exports) -->
-        <div class="space-y-4 border-t border-gray-100 pt-8">
+        <div class="space-y-4 border-t border-neutral-darkest/15 pt-8">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h3 class="flex items-center gap-2 text-lg font-medium text-gray-900">
-                <UIcon name="i-lucide-archive" class="h-5 w-5 text-primary-500" />
+              <h3 class="flex items-center gap-2 text-lg font-medium text-neutral-darkest">
+                <UIcon name="i-lucide-archive" class="h-5 w-5 text-primary-600" />
                 {{ $t("podcast.artifacts.downloadsTitle") }}
               </h3>
-              <p class="mt-1 text-sm text-gray-500">
+              <p class="mt-1 text-sm text-neutral-dark">
                 {{ $t("podcast.artifacts.downloadsDescription") }}
               </p>
             </div>
             <UButton
               type="button"
               color="primary"
+              variant="editorial-solid"
               icon="i-heroicons-arrow-down-tray"
               :loading="generatingDownload"
               :disabled="!canGenerateDownload"
@@ -236,7 +239,7 @@
 
           <div
             v-if="pinboardExportsLoading"
-            class="flex items-center gap-3 py-4 text-gray-600"
+            class="flex items-center gap-3 py-4 text-neutral-dark"
           >
             <UIcon name="i-heroicons-arrow-path" class="h-5 w-5 animate-spin" />
             <span>{{ $t("podcast.artifacts.downloadsLoading") }}</span>
@@ -259,10 +262,10 @@
             >
               <div class="space-y-3">
                 <div>
-                  <h4 class="font-semibold text-gray-900">
+                  <h4 class="font-semibold text-neutral-darkest">
                     {{ exp.title || $t("podcast.artifacts.downloadUntitled") }}
                   </h4>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-neutral-dark">
                     {{ formatDate(exp.created_at) }}
                     <span v-if="exp.status === 'pending'">
                       · {{ $t("podcast.artifacts.downloadStatusPending") }}
@@ -284,7 +287,7 @@
                   {{ exp.status }}
                 </UBadge>
 
-                <div v-if="exp.status === 'failed' && exportFailureMessage(exp)" class="text-sm text-red-700">
+                <div v-if="exp.status === 'failed' && exportFailureMessage(exp)" class="font-sans text-sm text-error-600">
                   {{ exportFailureMessage(exp) }}
                 </div>
 
@@ -292,7 +295,8 @@
                   v-if="exp.status === 'ready'"
                   type="button"
                   size="sm"
-                  variant="outline"
+                  variant="editorial"
+                  color="neutral"
                   icon="i-heroicons-arrow-down-tray"
                   :loading="downloadingExport[exp.id]"
                   @click="downloadExport(exp)"

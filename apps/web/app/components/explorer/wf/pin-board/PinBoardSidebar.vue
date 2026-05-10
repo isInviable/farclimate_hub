@@ -1,69 +1,86 @@
 <template>
-  <aside class="w-64 mr-4 border-r border-gray-200 min-h-screen p-6 shrink-0">
-    <h3 class="font-semibold text-gray-800 mb-4">
-      {{ $t("pins.sectionsByKind") }}
-    </h3>
+  <aside class="w-full">
+    <div class="px-5 py-5">
+      <h3 class="font-display font-semibold text-lg text-neutral-darkest">
+        {{ $t("pins.sectionsByKind") }}
+      </h3>
+    </div>
 
-    <div class="space-y-2">
+    <nav class="border-t border-neutral-darkest">
       <button
         v-for="cat in categories"
         :key="cat.value"
         type="button"
-        class="w-full text-left px-4 py-2 rounded-lg transition-colors"
-        :class="[
-          isKindSelected(cat.value)
-            ? 'bg-neutral-500 text-white'
-            : 'text-gray-700 hover:bg-gray-100',
-        ]"
+        class="sidebar-row"
+        :class="isKindSelected(cat.value) && 'sidebar-row-active'"
         @click="$emit('select-kind', cat.value)"
       >
-        <div class="flex items-center justify-between gap-2">
-          <span class="truncate">{{ cat.label }}</span>
-          <span class="text-sm opacity-75 shrink-0">{{ cat.count }}</span>
-        </div>
+        <EditorialEyebrow
+          class="flex-1 truncate"
+          :weight="isKindSelected(cat.value) ? 'bold' : 'medium'"
+        >
+          {{ cat.label }}
+        </EditorialEyebrow>
+        <span
+          class="font-mono text-xs tabular-nums shrink-0"
+          :class="isKindSelected(cat.value) ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+        >
+          {{ cat.count }}
+        </span>
       </button>
-    </div>
+    </nav>
 
-    <div class="mt-6 pt-4 border-t border-gray-200 space-y-2">
+    <div class="h-6" />
+
+    <nav class="border-t border-neutral-darkest">
       <button
         type="button"
-        class="w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center justify-between gap-2"
+        class="sidebar-row"
         :class="[
-          !mapEntryEnabled
-            ? 'text-gray-400 cursor-not-allowed'
-            : selectedView === 'map'
-              ? 'bg-neutral-500 text-white'
-              : 'text-gray-700 hover:bg-gray-100',
+          !mapEntryEnabled && 'opacity-50 cursor-not-allowed hover:bg-transparent',
+          mapEntryEnabled && selectedView === 'map' && 'sidebar-row-active',
         ]"
         :disabled="!mapEntryEnabled"
         :aria-disabled="!mapEntryEnabled"
         :title="!mapEntryEnabled ? $t('pins.map.emptyTooltip') : undefined"
         @click="$emit('select-map')"
       >
-        <span class="flex items-center gap-2 truncate">
-          <Icon name="mdi:map-outline" class="shrink-0" />
-          <span class="truncate">{{ $t("pins.map.label") }}</span>
+        <Icon name="mdi:map-outline" class="shrink-0 mr-3 text-neutral-dark" />
+        <EditorialEyebrow
+          class="flex-1 truncate"
+          :weight="selectedView === 'map' ? 'bold' : 'medium'"
+        >
+          {{ $t("pins.map.label") }}
+        </EditorialEyebrow>
+        <span
+          class="font-mono text-xs tabular-nums shrink-0"
+          :class="selectedView === 'map' ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+        >
+          {{ mapArticleCount }}
         </span>
-        <span class="text-sm opacity-75 shrink-0">{{ mapArticleCount }}</span>
       </button>
 
       <button
         type="button"
-        class="w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center justify-between gap-2"
-        :class="[
-          selectedView === 'artifacts'
-            ? 'bg-neutral-500 text-white'
-            : 'text-gray-700 hover:bg-gray-100',
-        ]"
+        class="sidebar-row"
+        :class="selectedView === 'artifacts' && 'sidebar-row-active'"
         @click="$emit('select-artifacts')"
       >
-        <span class="flex items-center gap-2 truncate">
-          <Icon name="i-heroicons-archive-box" class="shrink-0" />
-          <span class="truncate">{{ $t("podcast.artifacts.title") }}</span>
+        <Icon name="i-heroicons-archive-box" class="shrink-0 mr-3 text-neutral-dark" />
+        <EditorialEyebrow
+          class="flex-1 truncate"
+          :weight="selectedView === 'artifacts' ? 'bold' : 'medium'"
+        >
+          {{ $t("podcast.artifacts.title") }}
+        </EditorialEyebrow>
+        <span
+          class="font-mono text-xs tabular-nums shrink-0"
+          :class="selectedView === 'artifacts' ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+        >
+          {{ artifactCount }}
         </span>
-        <span class="text-sm opacity-75 shrink-0">{{ artifactCount }}</span>
       </button>
-    </div>
+    </nav>
   </aside>
 </template>
 

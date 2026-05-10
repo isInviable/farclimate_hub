@@ -152,6 +152,26 @@
     @apply rounded-full bg-neutral-darkest text-neutral-lightest flex items-center justify-center;
   }
 
+  /* Editorial card grid — top + left on the wrapper, right + bottom on each cell
+     yields a single 1px ink hairline frame with no double borders. */
+  .editorial-frame {
+    @apply border-t border-l border-neutral-darkest;
+  }
+  .editorial-cell {
+    @apply bg-neutral-lightest border-r border-b border-neutral-darkest;
+  }
+
+  .editorial-warning-chip {
+    @apply inline-flex items-center gap-1 px-2 py-1 border border-amber-700 bg-amber-50 font-mono text-2xs font-bold uppercase tracking-[0.14em] text-amber-800;
+  }
+
+  .sidebar-row {
+    @apply flex items-center w-full px-4 py-3 border-b border-neutral-lightest text-left transition-colors hover:bg-neutral-lightest;
+  }
+  .sidebar-row-active {
+    @apply bg-warm-neutral-300;
+  }
+
   .font-headingh1 {
     @apply font-display text-7xl font-bold leading-tight tracking-normal;
   }

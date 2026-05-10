@@ -1,5 +1,5 @@
 <template>
-  <p class="text-sm text-neutral-600">
+  <p class="font-sans text-sm text-neutral-dark">
     {{ $t("pins.documentPinBodyHint") }}
   </p>
 </template>
