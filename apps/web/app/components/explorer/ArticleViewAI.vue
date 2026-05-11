@@ -37,7 +37,7 @@
           <h2 v-if="headerShowTitle" class="leading-tight scroll-mt-4">
             <span
               v-if="headerNumberPrefix"
-              class="text-muted font-mono mr-1 text-4xl md:text-5xl font-semibold"
+              class="text-neutral-700 font-mono mr-1 text-4xl md:text-5xl font-semibold"
               >{{ headerNumberPrefix }}</span
             >
             <span

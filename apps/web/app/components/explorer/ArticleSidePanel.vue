@@ -14,6 +14,16 @@
 
     <template #body>
        <div class="absolute top-4 right-8 z-30 flex items-center gap-1">
+          <NuxtLinkLocale
+            v-if="articleFullPageUrl"
+            :to="articleFullPageUrl"
+            class="u-button u-button--primary u-button--soft u-button--sm flex items-center gap-1 border border-primary-600 p-2"
+            :aria-label="$t('common.openFullPageAria')"
+            target="_blank"
+          >
+            <UIcon name="i-lucide-external-link" class="w-4 h-4" />
+          </NuxtLinkLocale>
+  
           <UButton
             v-if="canPinDocument"
             type="button"
@@ -221,6 +231,14 @@ const articleViewRef = ref<{
   isAuthenticated?: { value: boolean };
 } | null>(null);
 
+const articleFullPageUrl = computed(() => {
+  const d = resolvedDocument.value;
+  if (d) {
+    return `/articles/${d.id}`;
+  }
+  return null;
+});
+
 const pinSaving = ref(false);
 
 const showPanelNav = computed(
@@ -233,6 +251,7 @@ const modalUi = computed(() => ({
   footer: showPanelNav.value ? ("p-0 shrink-0 sm:px-0" as const) : ("p-0 sm:px-0" as const),
   overlay: "bg-black/70" as const,
 }));
+
 
 /** Stable id for matching against `navigationItems[].uid`. */
 const activeNavUid = computed<string | null>(() => {

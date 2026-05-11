@@ -3,7 +3,7 @@
     <!-- Slide viewport (secondary chrome lives in ArticleViewAI header) -->
     <div
       ref="viewport"
-      class="slide-deck-viewport  scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-white relative flex-1 min-h-0 overflow-y-auto snap-y snap-proximity scroll-smooth"
+      class="slide-deck-viewport  scrollbar scrollbar-thumb-black  scrollbar-track-white relative flex-1 min-h-0 overflow-y-auto snap-y snap-proximity scroll-smooth"
       @scroll.passive="onViewportScroll"
     >
       <section

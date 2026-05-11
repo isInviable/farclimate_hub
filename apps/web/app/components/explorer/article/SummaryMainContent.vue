@@ -9,7 +9,7 @@
       :capture-enabled="false"
       class="col-span-3"
     >
-      <p class="text-xl text-default leading-relaxed font-medium max-w-3xl
+      <p class="text-xl text-neutral-darkest leading-relaxed font-medium max-w-3xl
       ">
         {{ document.subtitle }}
       </p>
@@ -24,7 +24,7 @@
         icon="i-lucide-external-link"
         :label="$t('article.viewOnClimateAdapt')"
       />
-      <p class="text-xs text-muted mt-1">
+      <p class="text-xs text-neutral-700 mt-1">
         {{ $t("article.sourceLinkHint") }}
       </p>
     </div>
@@ -32,7 +32,7 @@
     
 
     <div v-if="parsedDocument.sectorsArray?.length">
-      <p class="font-mono text-xs text-muted uppercase tracking-wide mb-1">
+      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
         {{ $t("summaryHeaders.sector") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -49,7 +49,7 @@
     </div>
 
     <div v-if="parsedDocument.hazardsArray?.length">
-      <p class="font-mono text-xs text-muted uppercase tracking-wide mb-1">
+      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
         {{ $t("summaryHeaders.hazards") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -66,7 +66,7 @@
     </div>
 
     <div v-if="parsedDocument.adaptationApproachesArray?.length">
-      <p class="font-mono text-xs text-muted uppercase tracking-wide mb-1">
+      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
         {{ $t("summaryHeaders.typeOfSolution") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -83,7 +83,7 @@
     </div>
 
     <div v-if="parsedDocument.keywordsArray?.length">
-      <p class="font-mono text-xs text-muted uppercase tracking-wide mb-1">
+      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
         {{ $t("summaryHeaders.keywords") }}
       </p>
       <div class="flex flex-wrap gap-2">
