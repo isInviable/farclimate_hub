@@ -221,6 +221,7 @@ import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
 import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
+import { resolveExplorerInitialSearchFromRoute } from "~/composables/explorerRouteSearch";
 
 // i18n composable for language detection
 const { locale, t } = useI18n();
@@ -471,6 +472,23 @@ async function loadAllArticles() {
   await loadAll();
 }
 
+/**
+ * URL search bootstrap — precedence: explicit `query` → legacy `type` → passthrough `sector` (trimmed; `all` = empty).
+ * Does not toggle facet checkboxes; only sets free-text store and loads results.
+ */
+async function applyExplorerRouteSearchBootstrap() {
+  const { text } = resolveExplorerInitialSearchFromRoute(
+    route.query as Record<string, unknown>
+  );
+  if (text) {
+    searchQuery.value = text;
+    await search();
+  } else {
+    searchStore.setSearchQuery("");
+    await loadAllArticles();
+  }
+}
+
 async function loadCorpusMetadata() {
   try {
     const metadata = await fetchCorpusMetadata();
@@ -609,17 +627,7 @@ function handleSidePanelNavigate(uid: string) {
 onMounted(async () => {
   await loadCorpusMetadata();
 
-  // Check for URL parameters
-  const typeParam = route.query.type;
-  if (typeParam) {
-    const searchTerm = Array.isArray(typeParam) ? typeParam[0] : typeParam;
-    if (searchTerm) {
-      searchQuery.value = searchTerm;
-      await search();
-    }
-  } else {
-    await loadAllArticles();
-  }
+  await applyExplorerRouteSearchBootstrap();
 
   const docUid = getDocumentUidFromQuery(route.query);
   if (docUid) {
@@ -670,6 +678,16 @@ watch(locale, () => {
     loadAllArticles();
   }
 });
+
+/** Re-run URL search bootstrap when query/type/sector change (client navigation from landing). */
+watch(
+  () =>
+    `${String(route.query.query ?? "")}\t${String(route.query.type ?? "")}\t${String(route.query.sector ?? "")}`,
+  async (_next, prev) => {
+    if (prev === undefined) return;
+    await applyExplorerRouteSearchBootstrap();
+  }
+);
 
 // Deep link: /explorer/explorer?document=<document_uid> (e.g. from pin board)
 watch(

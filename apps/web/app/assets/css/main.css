@@ -106,6 +106,16 @@
   }
 }
 
+@layer components {
+  .explorer-editorial-panel {
+    @apply bg-white border border-neutral-darkest;
+  }
+
+  .explorer-mono-eyebrow {
+    @apply font-mono uppercase text-2xs font-bold tracking-widest text-neutral-dark;
+  }
+}
+
 @layer utilities {
   /* Display for hero headings (approx 72px => 7xl) */
   .typo-display {

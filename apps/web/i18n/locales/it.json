@@ -25,7 +25,21 @@
     "lastPage": "Ultima pagina"
   },
   "explorer": {
-    "exampleQueries": "Esempi di ricerca"
+    "exampleQueries": "Esempi di ricerca",
+    "index": {
+      "metaTitle": "Soluzioni di adattamento climatico",
+      "metaDescription": "Esplora strategie di adattamento climatico nei settori forestale, della pesca e agricolo.",
+      "heroTitle": "Soluzioni di adattamento climatico",
+      "aboutTitle": "Informazioni sulla piattaforma",
+      "aboutBody": "Questa piattaforma è una risorsa per professionisti, ricercatori e decisori politici che cercano soluzioni basate su evidenze alle sfide climatiche. Abbiamo selezionato soluzioni dai settori forestale, della pesca e agricolo, ciascuna con approcci per costruire resilienza climatica.",
+      "sectorForestry": "Forestazione",
+      "sectorFishery": "Pesca",
+      "sectorAgriculture": "Agricoltura",
+      "viewAll": "Vedi tutto",
+      "searchHint": "Puoi anche iniziare con una ricerca testuale:",
+      "searchPlaceholder": "Cerca…",
+      "footerHint": "Clicca un settore per esplorare le soluzioni di adattamento oppure visualizza tutte le soluzioni tra i settori."
+    }
   },
   "pins": {
     "notesPlaceholder": "Aggiungi note a questo pin",

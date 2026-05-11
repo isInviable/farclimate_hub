@@ -5,11 +5,12 @@
     filter-key="search"
     :has-visualization="false"
     :enabled="isSearchEnabled"
+    :initial-value="searchStore.searchQuery"
     @filter-change="handleFilterChange"
     @filter-clear="handleFilterClear"
     @filter-apply="handleFilterApply"
   >
-    <template #controls="{ value, updateValue, isEnabled }">
+    <template #controls="{ updateValue }">
       <!-- Search Input + joined Search button -->
       <div class="mb-3 flex items-stretch -space-x-px">
         <UInput
@@ -18,8 +19,8 @@
           variant="editorial"
           class="grow"
           placeholder="Search corpus…"
-          :model-value="value"
-          @update:model-value="updateValue"
+          :model-value="searchStore.searchQuery"
+          @update:model-value="(v) => onSearchInput(v, updateValue)"
           @keyup.enter="handleSearch"
         />
         <UButton
@@ -34,7 +35,7 @@
 
       <!-- Recommendation pills (editorial chip language) -->
       <div>
-        <div class="font-mono uppercase text-2xs font-bold tracking-[0.16em] text-neutral-dark mb-2">
+        <div class="font-mono uppercase text-2xs font-bold tracking-widest text-neutral-dark mb-2">
           {{ $t('explorer.exampleQueries', 'Example queries') }}
         </div>
         <div class="flex flex-wrap gap-1.5">
@@ -76,7 +77,6 @@ const { search: hybridSearch, isSearching: hybridSearching, error: searchError }
 
 const isSearchEnabled = computed(() => props.enabled || false);
 const isSearching = computed(() => hybridSearching.value);
-const searchQuery = ref('');
 
 const recommendationPills = ref([
   "forestry",
@@ -92,31 +92,36 @@ const recommendationPills = ref([
   "biodiversity",
 ]);
 
+function onSearchInput(v: string | number, updateValue: (val: unknown) => void) {
+  const s = String(v ?? "");
+  searchStore.setSearchQuery(s);
+  updateValue(s);
+}
+
 const handleFilterChange = (key: string, value: any, enabled: boolean) => {
-  if (enabled && value) {
-    searchQuery.value = value;
+  if (enabled && value !== undefined && value !== null && typeof value === "string") {
+    searchStore.setSearchQuery(value);
   }
 };
 
 const handleFilterClear = (key: string) => {
-  searchQuery.value = '';
   searchStore.setSearchQuery('');
   searchStore.setResultsData(null);
 };
 
 const handleFilterApply = (key: string, value: any) => {
-  searchQuery.value = value;
+  if (typeof value === "string") searchStore.setSearchQuery(value);
   handleSearch();
 };
 
 const handleSearch = async () => {
-  if (!searchQuery.value.trim()) return;
+  if (!searchStore.searchQuery.trim()) return;
 
   if (!isSearchEnabled.value) {
-    emit('filter-change', 'search', searchQuery.value, true);
+    emit('filter-change', 'search', searchStore.searchQuery, true);
   }
 
-  await hybridSearch(searchQuery.value);
+  await hybridSearch(searchStore.searchQuery);
 
   if (searchError.value) {
     emit('search-error', searchError.value);
@@ -126,14 +131,15 @@ const handleSearch = async () => {
 };
 
 const searchWithPill = (pill: string) => {
-  const currentQuery = searchQuery.value.trim();
+  const currentQuery = searchStore.searchQuery.trim();
   const translatedTerm = t(`pills.${pill}`);
 
   if (currentQuery.toLowerCase().includes(translatedTerm.toLowerCase())) {
     return;
   }
 
-  searchQuery.value = currentQuery ? `${currentQuery} ${translatedTerm}` : translatedTerm;
+  const next = currentQuery ? `${currentQuery} ${translatedTerm}` : translatedTerm;
+  searchStore.setSearchQuery(next);
   handleSearch();
 };
 </script>

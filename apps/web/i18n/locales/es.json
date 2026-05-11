@@ -25,7 +25,21 @@
     "lastPage": "Última página"
   },
   "explorer": {
-    "exampleQueries": "Consultas de ejemplo"
+    "exampleQueries": "Consultas de ejemplo",
+    "index": {
+      "metaTitle": "Soluciones de adaptación climática",
+      "metaDescription": "Explore estrategias de adaptación climática en silvicultura, pesca y agricultura.",
+      "heroTitle": "Soluciones de adaptación climática",
+      "aboutTitle": "Acerca de esta plataforma",
+      "aboutBody": "Esta plataforma es un recurso para profesionales, investigadores y responsables políticos que buscan soluciones basadas en evidencia frente al cambio climático. Hemos reunido soluciones de los sectores forestal, pesquero y agrícola, cada una con enfoques para fortalecer la resiliencia climática.",
+      "sectorForestry": "Silvicultura",
+      "sectorFishery": "Pesca",
+      "sectorAgriculture": "Agricultura",
+      "viewAll": "Ver todo",
+      "searchHint": "También puede empezar con una búsqueda por texto:",
+      "searchPlaceholder": "Buscar…",
+      "footerHint": "Pulse un sector para explorar soluciones de adaptación o vea todas las soluciones entre sectores."
+    }
   },
   "pins": {
     "notesPlaceholder": "Añade notas a este marcador",

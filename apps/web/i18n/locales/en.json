@@ -25,7 +25,21 @@
     "lastPage": "Last page"
   },
   "explorer": {
-    "exampleQueries": "Example queries"
+    "exampleQueries": "Example queries",
+    "index": {
+      "metaTitle": "Climate Adaptation Solutions",
+      "metaDescription": "Explore climate adaptation strategies across forestry, fishery, and agriculture sectors.",
+      "heroTitle": "Climate Adaptation Solutions",
+      "aboutTitle": "About This Platform",
+      "aboutBody": "This platform serves as a comprehensive resource for climate adaptation professionals, researchers, and policymakers seeking evidence-based solutions to climate challenges. We have curated solutions from forestry, fishery, and agriculture sectors, each offering unique approaches to building climate resilience.",
+      "sectorForestry": "Forestry",
+      "sectorFishery": "Fishery",
+      "sectorAgriculture": "Agriculture",
+      "viewAll": "View all",
+      "searchHint": "You can start with a text search too:",
+      "searchPlaceholder": "Search…",
+      "footerHint": "Click a sector above to explore adaptation solutions, or view all solutions across sectors for a comprehensive overview."
+    }
   },
   "pins": {
     "notesPlaceholder": "Add notes to this pin",

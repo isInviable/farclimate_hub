@@ -342,6 +342,21 @@ function getEffectiveFilters() {
   );
 }
 
+/** Mirror `searchStore.searchQuery` into local filter state without emitting (typing updates the store each keystroke; emitting would re-trigger hybrid search). Explorer runs `search()` after URL bootstrap. */
+watch(
+  () => searchStore.searchQuery,
+  (q) => {
+    const trimmed = q.trim();
+    if (trimmed) {
+      filters.search = trimmed;
+      enabledFilters.search = true;
+    } else {
+      delete filters.search;
+      enabledFilters.search = false;
+    }
+  }
+);
+
 const handleFilterChange = (key: string, value: any, enabled: boolean) => {
   filters[key] = value;
   enabledFilters[key] = enabled;
