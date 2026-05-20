@@ -437,7 +437,8 @@
   "tabs": {
     "summary": "Vista general",
     "recipe": "Receta",
-    "chat": "Chat"
+    "chat": "Chat",
+    "contacts": "Contactos"
   },
   "summary": {
     "slides": {
@@ -447,6 +448,10 @@
     }
   },
   "recipe": {
+    "nav": {
+      "summaryPlus": "Resumen+",
+      "map": "Mapa"
+    },
     "emptyTitle": "Sin contenido de receta",
     "emptyDescription": "No hay una receta estructurada en la base de datos para este caso de estudio en el idioma actual. Si esperabas datos, aplica el SQL actualizado de get_documents_by_ids (recipe_ingredients) y asegúrate de que el pipeline haya cargado filas en knowledge.recipe.",
     "loadErrorTitle": "No se pudo cargar la receta",
@@ -469,6 +474,7 @@
     }
   },
   "article": {
+    "caseStudyKicker": "Explorador · Caso de estudio",
     "imageNumber": "Imagen {n}",
     "imageAlt": "Imagen del artículo {n}",
     "noImagesInGallery": "No hay imágenes vinculadas para este artículo.",

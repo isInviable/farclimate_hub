@@ -15,7 +15,6 @@
       source-view="article"
       class="relative z-10 flex min-h-0 flex-1 flex-col"
     >
-      <!-- Row 1: Chat / Recipe / Summary rail + submenu + active slide title -->
       <header class="grid shrink-0 grid-cols-5 gap-4">
         <div class="col-span-1">
           <div class="flex flex-col gap-2">
@@ -27,151 +26,194 @@
             />
           </div>
         </div>
-        <div class="col-span-4 flex justify-between flex-col gap-4">
+        <div class="col-span-4 flex flex-col justify-between gap-4">
           <ArticleSecondarySlideNav
             v-if="showSecondaryNav"
-            :slides="secondaryNavSlides"
-            :active-index="activeSecondaryIndex"
-            @update:active-index="onSecondaryIndex"
+            :slides="recipeNavSlides"
+            :active-index="activeRecipeSegmentIndex"
+            @update:active-index="onRecipeSegmentNavClick"
           />
-          <h2 v-if="headerShowTitle" class="leading-tight scroll-mt-4">
+          <h2
+            v-if="headerShowTitle"
+            class="leading-tight scroll-mt-4"
+          >
             <span
               v-if="headerNumberPrefix"
               class="text-neutral-700 font-mono mr-1 text-4xl md:text-5xl font-semibold"
-              >{{ headerNumberPrefix }}</span
-            >
+            >{{ headerNumberPrefix }}</span>
             <span
               class="text-4xl md:text-6xl text-primary-600 font-display capitalize font-bold"
-              >{{ headerSlideLabel }}</span
-            >
+            >{{ headerSlideLabel }}</span>
           </h2>
         </div>
       </header>
 
-      <!-- Row 2: Summary uses grid (left metadata + col-span-4 slide); recipe/chat unchanged -->
       <div class="min-h-0 flex-1 overflow-hidden">
-        <!-- Summary: fixed left column + rotating slide in col-span-4 -->
+        <!-- Recipe: scroll stack (Summary+ → sections → map); submenu scroll-spy in script -->
         <div
-          v-show="activePrimaryId === 'summary'"
-          :id="`article-primary-summary`"
+          v-show="activePrimaryId === 'recipe'"
+          id="article-primary-recipe"
           role="tabpanel"
-          class="grid h-full min-h-0 grid-cols-4 gap-40 mt-16"
+          class="mt-16 flex h-full min-h-0 min-w-0 flex-col"
         >
-          <div class="col-span-1 min-h-0 min-w-0 overflow-y-auto">
-            <!-- basic info block-->
-            <div>
-              <div class="uppercase text-xs text-neutral-600 font-mono font-medium"> EXPLORER · CASE STUDY</div>
-              <h2
-                class="font-display text-black text-2xl font-bold leading-tight tracking-tight "
-              >
-                {{ paperTitle }}
-              </h2>
-             
-            </div>
-            <SummaryMainLeftColumn :document="document" />
-          </div>
-          <div class="col-span-3 min-h-0 min-w-0 flex flex-col">
-            <div
-              v-if="summaryIndex === 0"
-              class="flex min-h-0 flex-1 flex-col gap-4"
+          <div
+            v-if="recipeLoadError"
+            class="mb-4 shrink-0 space-y-2"
+          >
+            <UAlert
+              color="error"
+              variant="subtle"
+              :title="t('recipe.loadErrorTitle')"
+              :description="t('recipe.loadErrorDescription')"
+            />
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="soft"
+              @click="loadRecipe"
             >
-              <div class="relative min-h-0 flex-1 overflow-y-auto">
+              {{ t("recipe.retry") }}
+            </UButton>
+          </div>
+
+          <div
+            v-else-if="recipeLoading"
+            class="shrink-0 space-y-4 py-2"
+          >
+            <USkeleton class="h-8 w-2/3 rounded" />
+            <USkeleton class="h-32 w-full rounded-lg" />
+            <USkeleton class="h-24 w-full rounded-lg" />
+          </div>
+
+          <div
+            v-else
+            ref="recipeScrollRoot"
+            class="recipe-scroll-stack scrollbar scrollbar-thumb-black scrollbar-track-white min-h-0 flex-1 overflow-y-auto scroll-smooth pb-8"
+            @scroll.passive="onRecipeScrollAreaScroll"
+          >
+            <!-- Summary+ -->
+            <section
+              data-testid="article-recipe-segment-summary-plus"
+              data-recipe-segment-index="0"
+              class="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-6 border-b border-default/15 pb-12 lg:grid-cols-7"
+            >
+              <aside
+                class="w-full max-w-sm shrink-0 self-start lg:sticky lg:top-4 lg:col-span-2"
+              >
+                <div class="uppercase text-xs text-neutral-600 font-mono font-medium">
+                  {{ t("article.caseStudyKicker") }}
+                </div>
+                <h3
+                  class="font-display text-black text-2xl font-bold leading-tight tracking-tight"
+                >
+                  {{ paperTitle }}
+                </h3>
+                <SummaryMainLeftColumn :document="document" />
+              </aside>
+              <div class="flex min-w-0 flex-col gap-4 lg:col-span-5">
                 <SummaryMainContent
                   :document="document"
                   :parsed-document="parsedDocument"
                 />
+                <SummaryMainGallery :document="document" />
+                <UAlert
+                  v-if="recipeSections.length === 0"
+                  color="neutral"
+                  variant="subtle"
+                  :title="t('recipe.emptyTitle')"
+                  :description="t('recipe.emptyDescription')"
+                  class="max-w-prose"
+                />
               </div>
-              <SummaryMainGallery :document="document" />
-            </div>
-            <div
-              v-if="summaryIndex === 1"
-              class="relative min-h-0 flex-1 overflow-y-auto"
+            </section>
+
+            <!-- Markdown sections -->
+            <section
+              v-for="(section, idx) in recipeSections"
+              :key="section.key"
+              :data-testid="`article-recipe-segment-${section.key}`"
+              :data-recipe-segment-index="1 + idx"
+              class="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-6 border-b border-default/15 py-12 last:border-b-0 lg:grid-cols-7"
             >
-              <SummaryContactsSlide :document="document" />
-            </div>
-            <div v-if="summaryIndex === 2" class="relative min-h-0 flex-1">
-              <SummaryMapSlide :map-points="mapPoints" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Recipe -->
-        <div
-          v-if="activePrimaryId === 'recipe'"
-          :id="`article-primary-recipe`"
-          role="tabpanel"
-          class="flex h-full min-h-0 min-w-0 gap-6  mt-24"
-        >
-          <aside class="w-48 md:w-1/4 shrink-0 min-h-0" aria-hidden="true" />
-          <div class="flex-1 min-w-0 min-h-0 flex flex-col relative">
-            <div v-if="recipeLoadError" class="space-y-2">
-              <UAlert
-                color="error"
-                variant="subtle"
-                :title="t('recipe.loadErrorTitle')"
-                :description="t('recipe.loadErrorDescription')"
-              />
-              <UButton
-                size="sm"
-                color="neutral"
-                variant="soft"
-                @click="loadRecipe"
+              <aside
+                class="relative flex min-h-40 w-full max-w-sm shrink-0 items-center justify-center self-start overflow-hidden rounded-lg bg-elevated/30 lg:sticky lg:top-4 lg:col-span-2"
+                aria-hidden="true"
               >
-                {{ t("recipe.retry") }}
-              </UButton>
-            </div>
-
-            <div v-else-if="recipeLoading" class="space-y-4">
-              <USkeleton class="h-8 w-2/3 rounded" />
-              <USkeleton class="h-32 w-full rounded-lg" />
-              <USkeleton class="h-24 w-full rounded-lg" />
-            </div>
-
-            <UAlert
-              v-else-if="recipeSlides.length === 0"
-              color="neutral"
-              variant="subtle"
-              :title="t('recipe.emptyTitle')"
-              :description="t('recipe.emptyDescription')"
-            />
-
-            <SlideDeck
-              v-else
-              class="flex-1 min-h-0"
-              :slides="recipeSlides"
-              :active-index="recipeIndex"
-              panel-id="recipe-slide"
-              @update:active-index="recipeIndex = $event"
-            >
-              <template
-                v-for="section in recipeSections"
-                :key="section.key"
-                #[section.key]
-              >
+                <div class="relative flex h-44 w-full items-center justify-center">
+                  <!-- <DecorativeCorner
+                    :src="decorationForMarkdownIndex(idx).src"
+                    :corner="decorationForMarkdownIndex(idx).corner"
+                    size-class="max-w-[220px] max-h-[220px] w-auto h-auto opacity-90"
+                  /> -->
+                  <!-- <UIcon
+                    :name="section.icon"
+                    class="pointer-events-none absolute bottom-3 right-3 size-16 text-primary-500/25"
+                  /> -->
+                </div>
+              </aside>
+              <div class="min-w-0 lg:col-span-5  min-h-[50vh]">
                 <RecipeSlideBody :section="section" />
-              </template>
-            </SlideDeck>
+              </div>
+            </section>
+
+            <!-- Map -->
+            <section
+              data-testid="article-recipe-segment-map"
+              :data-recipe-segment-index="mapSegmentIndex"
+              class="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-6 pt-8 lg:grid-cols-3"
+            >
+              <aside
+                class="flex w-full max-w-sm shrink-0 items-center justify-center self-start lg:sticky lg:top-4 lg:w-56"
+                aria-hidden="true"
+              >
+                <UIcon
+                  name="i-lucide-map"
+                  class="size-20 text-primary-400/80"
+                />
+              </aside>
+              <div class="min-h-0 min-w-0">
+                <SummaryMapSlide :map-points="mapPoints" />
+              </div>
+            </section>
           </div>
         </div>
 
         <!-- Chat -->
         <div
           v-show="activePrimaryId === 'chat'"
-          :id="`article-primary-chat`"
+          id="article-primary-chat"
           role="tabpanel"
           class="flex h-full min-h-0 min-w-0 gap-6 md:gap-8"
         >
-          <aside class="w-48 md:w-56 shrink-0 min-h-0" aria-hidden="true" />
+          <aside
+            class="w-48 md:w-56 shrink-0 min-h-0"
+            aria-hidden="true"
+          />
           <div
             class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
           >
             <ViewModeChat :document="document" />
           </div>
         </div>
+
+        <!-- Contacts -->
+        <div
+          v-show="activePrimaryId === 'contacts'"
+          id="article-primary-contacts"
+          role="tabpanel"
+          class="flex h-full min-h-0 min-w-0 gap-6 md:gap-8"
+        >
+          <aside
+            class="w-48 md:w-56 shrink-0 min-h-0"
+            aria-hidden="true"
+          />
+          <div class="relative min-h-0 min-w-0 flex-1 overflow-y-auto">
+            <SummaryContactsSlide :document="document" />
+          </div>
+        </div>
       </div>
     </ArticleTextSelectionCapture>
 
-    <!-- Pinned items list (kept inline below; only used by side panel modal) -->
     <slot name="pins-after" />
 
     <PinCaptureDialog
@@ -188,18 +230,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, watch } from "vue";
+import { computed, onUnmounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ArticleTextSelectionCapture from "./ArticleTextSelectionCapture.vue";
 import PinCaptureDialog from "./PinCaptureDialog.vue";
 import { PinArticleContextKey } from "./pinContext";
 import RollingMenuRail from "./article/RollingMenuRail.vue";
-import SlideDeck, { type Slide } from "./article/SlideDeck.vue";
+import type { Slide } from "./article/SlideDeck.vue";
 import ArticleSecondarySlideNav from "./article/ArticleSecondarySlideNav.vue";
 import DecorativeCorner from "./article/DecorativeCorner.vue";
 import {
   ArticleDecorationContextKey,
   type ArticleDecoration,
+  type ArticleDecorationCorner,
 } from "./article/articleDecorationContext";
 import SummaryMainLeftColumn from "./article/SummaryMainLeftColumn.vue";
 import SummaryMainContent from "./article/SummaryMainContent.vue";
@@ -209,7 +252,7 @@ import SummaryMapSlide from "./article/SummaryMapSlide.vue";
 import RecipeSlideBody from "./article/RecipeSlideBody.vue";
 import { useArticleRecipe } from "@/composables/useArticleRecipe";
 
-type PrimaryId = "chat" | "recipe" | "summary";
+type PrimaryId = "recipe" | "chat" | "contacts";
 
 const props = withDefaults(
   defineProps<{
@@ -231,8 +274,6 @@ const { isAuthenticated } = useAccess();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
 
-// Nested slide components decide which decoration is active, but the image is
-// rendered here so absolute positioning is relative to the article viewport.
 const activeDecoration = ref<ArticleDecoration | null>(null);
 const activeDecorationSource = ref<symbol | null>(null);
 
@@ -249,39 +290,29 @@ provide(ArticleDecorationContextKey, {
   },
 });
 
-// --- Primary "rolling menu" state ---------------------------------------
-
-// Canonical order: Chat, Recipe, Summary. Rendering rule (active at bottom)
-// is owned by `RollingMenuRail`; this list is the source of truth.
 const primaryItems = computed(() => [
-  { id: "chat", label: t("tabs.chat") },
   { id: "recipe", label: t("tabs.recipe") },
-  { id: "summary", label: t("tabs.summary") },
+  { id: "chat", label: t("tabs.chat") },
+  { id: "contacts", label: t("tabs.contacts") },
 ]);
 
-const activePrimaryId = ref<PrimaryId>("summary");
+const activePrimaryId = ref<PrimaryId>("recipe");
 
 function onPrimaryChange(id: string): void {
-  if (id !== "summary" && id !== "recipe" && id !== "chat") return;
+  if (id !== "recipe" && id !== "chat" && id !== "contacts") return;
   activePrimaryId.value = id;
-  // Reset secondary slide state on primary change (per spec).
-  summaryIndex.value = 0;
-  recipeIndex.value = 0;
+  if (id === "recipe") {
+    activeDecoration.value = null;
+    activeDecorationSource.value = null;
+    activeRecipeSegmentIndex.value = 0;
+  }
 }
 
-// --- Summary slides ------------------------------------------------------
+const recipeScrollRoot = ref<HTMLElement | null>(null);
+const activeRecipeSegmentIndex = ref(0);
+let recipeScrollRaf = 0;
 
-const summaryIndex = ref(0);
-
-const summarySlides = computed<Slide[]>(() => [
-  { id: "main", label: t("summary.slides.main") },
-  { id: "contacts", label: t("summary.slides.contacts") },
-  { id: "map", label: t("summary.slides.map") },
-]);
-
-// --- Recipe slides -------------------------------------------------------
-
-const recipeIndex = ref(0);
+/** Optional IntersectionObserver-based spy was considered (openspec design); scroll-driven index is enough for now. */
 
 const documentIdRef = computed<string | null>(() => {
   const id = (props.document as { id?: unknown })?.id;
@@ -308,120 +339,121 @@ const {
   loadRecipe,
 } = useArticleRecipe(documentIdRef, recipeIngredientsRef);
 
-const recipeSlides = computed<Slide[]>(() =>
-  recipeSections.value.map(
-    (section, idx): Slide => ({
-      id: section.key,
-      label: section.title,
-      decoration:
-        idx % 2 === 0
-          ? {
-              src: "/img/explorer/bg_image_recipe.png",
-              corner: "middle-left",
-            }
-          : {
-              src: "/img/explorer/bg_image_compass.png",
-              corner: "bottom-right",
-            },
-    }),
-  ),
+const mapSegmentIndex = computed(
+  () => 1 + recipeSections.value.length,
 );
 
-// Reset recipe slide index if section list shrinks below current index.
-watch(recipeSections, (sections) => {
-  if (recipeIndex.value >= sections.length) {
-    recipeIndex.value = 0;
+const recipeNavSlides = computed<Slide[]>(() => {
+  const slides: Slide[] = [
+    { id: "summary-plus", label: t("recipe.nav.summaryPlus") },
+  ];
+  for (const section of recipeSections.value) {
+    slides.push({ id: section.key, label: section.title });
   }
+  slides.push({ id: "map", label: t("recipe.nav.map") });
+  return slides;
 });
 
-// --- Header: secondary nav + title (aligned with Figma two-row layout) ---
+watch(
+  () => recipeNavSlides.value.length,
+  (len) => {
+    if (activeRecipeSegmentIndex.value >= len) {
+      activeRecipeSegmentIndex.value = Math.max(0, len - 1);
+    }
+  },
+);
 
 const showSecondaryNav = computed(
   () =>
-    (activePrimaryId.value === "summary" && summarySlides.value.length > 0) ||
-    (activePrimaryId.value === "recipe" &&
-      !recipeLoading.value &&
-      !recipeLoadError.value &&
-      recipeSlides.value.length > 0),
+    activePrimaryId.value === "recipe" &&
+    !recipeLoading.value &&
+    !recipeLoadError.value &&
+    recipeNavSlides.value.length > 0,
 );
 
-const secondaryNavSlides = computed<Slide[]>(() => {
-  if (activePrimaryId.value === "summary") return summarySlides.value;
-  if (activePrimaryId.value === "recipe") return recipeSlides.value;
-  return [];
-});
-
-const activeSecondaryIndex = computed(() =>
-  activePrimaryId.value === "summary"
-    ? summaryIndex.value
-    : activePrimaryId.value === "recipe"
-      ? recipeIndex.value
-      : 0,
-);
-
-function onSecondaryIndex(idx: number): void {
-  if (activePrimaryId.value === "summary") summaryIndex.value = idx;
-  else if (activePrimaryId.value === "recipe") recipeIndex.value = idx;
+function decorationForMarkdownIndex(idx: number): {
+  src: string;
+  corner: ArticleDecorationCorner;
+} {
+  return idx % 2 === 0
+    ? {
+        src: "/img/explorer/bg_image_recipe.png",
+        corner: "middle-left",
+      }
+    : {
+        src: "/img/explorer/bg_image_compass.png",
+        corner: "bottom-right",
+      };
 }
 
-const headerShowTitle = computed(() => {
-  if (activePrimaryId.value === "chat") return true;
-  if (activePrimaryId.value === "summary")
-    return summarySlides.value.length > 0;
-  if (activePrimaryId.value === "recipe") {
-    if (recipeLoading.value || recipeLoadError.value) return false;
-    return recipeSlides.value.length > 0;
+function onRecipeSegmentNavClick(idx: number): void {
+  const clamped = Math.max(
+    0,
+    Math.min(idx, recipeNavSlides.value.length - 1),
+  );
+  activeRecipeSegmentIndex.value = clamped;
+  const root = recipeScrollRoot.value;
+  if (!root) return;
+  const el = root.querySelector(
+    `[data-recipe-segment-index="${clamped}"]`,
+  ) as HTMLElement | null;
+  el?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function onRecipeScrollAreaScroll(): void {
+  if (activePrimaryId.value !== "recipe") return;
+  if (recipeScrollRaf) cancelAnimationFrame(recipeScrollRaf);
+  recipeScrollRaf = requestAnimationFrame(() => {
+    recipeScrollRaf = 0;
+    syncActiveSegmentFromScroll();
+  });
+}
+
+function syncActiveSegmentFromScroll(): void {
+  const root = recipeScrollRoot.value;
+  if (!root || recipeNavSlides.value.length === 0) return;
+  const rootRect = root.getBoundingClientRect();
+  const line = rootRect.top + 96;
+  let chosen = 0;
+  for (let i = 0; i < recipeNavSlides.value.length; i++) {
+    const el = root.querySelector(
+      `[data-recipe-segment-index="${i}"]`,
+    ) as HTMLElement | null;
+    if (!el) continue;
+    if (el.getBoundingClientRect().top <= line) chosen = i;
   }
-  return false;
+  if (activeRecipeSegmentIndex.value !== chosen) {
+    activeRecipeSegmentIndex.value = chosen;
+  }
+}
+
+onUnmounted(() => {
+  if (recipeScrollRaf) cancelAnimationFrame(recipeScrollRaf);
+});
+
+const headerShowTitle = computed(() => {
+  if (activePrimaryId.value !== "recipe") return false;
+  if (recipeLoading.value || recipeLoadError.value) return false;
+  return recipeNavSlides.value.length > 0;
 });
 
 const headerSlideLabel = computed(() => {
-  if (activePrimaryId.value === "chat") return t("tabs.chat");
-  if (activePrimaryId.value === "summary") {
-    return summarySlides.value[summaryIndex.value]?.label ?? "";
-  }
-  if (activePrimaryId.value === "recipe") {
-    return recipeSlides.value[recipeIndex.value]?.label ?? "";
-  }
-  return "";
+  if (activePrimaryId.value !== "recipe") return "";
+  return (
+    recipeNavSlides.value[activeRecipeSegmentIndex.value]?.label ?? ""
+  );
 });
 
-/** Zero-padded slide index (01., 02., …) for summary/recipe; chat has no prefix. */
 const headerNumberPrefix = computed(() => {
-  if (activePrimaryId.value === "chat") return "";
-  if (activePrimaryId.value === "summary") {
-    if (!summarySlides.value.length) return "";
-    return `${String(summaryIndex.value + 1).padStart(2, "0")}.`;
-  }
-  if (activePrimaryId.value === "recipe") {
-    if (recipeLoading.value || recipeLoadError.value) return "";
-    if (!recipeSlides.value.length) return "";
-    return `${String(recipeIndex.value + 1).padStart(2, "0")}.`;
-  }
-  return "";
+  if (activePrimaryId.value !== "recipe") return "";
+  if (recipeLoading.value || recipeLoadError.value) return "";
+  if (!recipeNavSlides.value.length) return "";
+  return `${String(activeRecipeSegmentIndex.value + 1).padStart(2, "0")}.`;
 });
 
 const paperTitle = computed(() => {
   return props.document.title;
 });
-
-const geographicLocationString = computed(() => {
-  return (
-    props.document.geographic_characterisation?.city +
-    ", " +
-    props.document.geographic_characterisation?.countries
-  );
-});
-
-const yearString = computed(() => {
-  return (
-    props.document.implementation_years?.start_year +
-    " - " +
-    props.document.implementation_years?.end_year
-  );
-});
-
-// --- Pin context (shared with selectable / capturable blocks) ----------
 
 const pinDocumentUid = computed<string | null>(() => {
   const doc = props.document as { document_uid?: unknown; id?: unknown } | null;
@@ -453,8 +485,6 @@ provide(PinArticleContextKey, {
   title: pinDocumentTitle,
   location: pinDocumentLocation,
 });
-
-// --- Document-level pin dialog (kept for parity with previous toolbar) -
 
 const documentPinDialogOpen = ref(false);
 const documentPinSaving = ref(false);
@@ -492,8 +522,6 @@ async function saveDocumentPin(note: string): Promise<void> {
   }
 }
 
-// Expose a way for an external chrome (e.g. the modal pin icon) to open the
-// document pin dialog without re-mounting the dialog elsewhere.
 defineExpose({
   openDocumentPinDialog: () => {
     documentPinError.value = null;
@@ -501,8 +529,6 @@ defineExpose({
   },
   isAuthenticated,
 });
-
-// --- Parsed metadata for the Main slide --------------------------------
 
 const parsedDocument = computed(() => {
   if (!props.document) return {};
@@ -536,8 +562,6 @@ const parsedDocument = computed(() => {
       : "",
   };
 });
-
-// --- Map points ---------------------------------------------------------
 
 const mapPoints = computed(() => {
   const doc = props.document as Record<string, any>;

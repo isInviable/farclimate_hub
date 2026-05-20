@@ -158,7 +158,7 @@
       "loadError": "Impossibile caricare l’articolo. Riprova.",
       "loading": "Caricamento articolo…",
       "pinDocumentAria": "Aggiungi questo articolo",
-      "detailsDescription": "Vista articolo dettagliata con sintesi, ricetta e chat."
+      "detailsDescription": "Vista articolo dettagliata con ricetta (panoramica e sezioni), chat e contatti."
     }
   },
   "podcast": {
@@ -426,7 +426,8 @@
   "tabs": {
     "summary": "Panoramica",
     "recipe": "Ricetta",
-    "chat": "Chat"
+    "chat": "Chat",
+    "contacts": "Contatti"
   },
   "summary": {
     "slides": {
@@ -436,6 +437,10 @@
     }
   },
   "recipe": {
+    "nav": {
+      "summaryPlus": "Sintesi+",
+      "map": "Mappa"
+    },
     "emptyTitle": "Nessun contenuto ricetta",
     "emptyDescription": "Non è presente una ricetta strutturata nel database per questo caso studio nella lingua corrente. Se ti aspetti dati qui, applica l’ultima SQL per get_documents_by_ids (recipe_ingredients) e verifica che la pipeline abbia inviato le righe knowledge.recipe.",
     "loadErrorTitle": "Impossibile caricare la ricetta",
@@ -469,6 +474,7 @@
     "example5": "Quali sono le lezioni più importanti tratte da questo articolo?"
   },
   "article": {
+    "caseStudyKicker": "Explorer · Caso di studio",
     "imageNumber": "Immagine {n}",
     "imageAlt": "Immagine articolo {n}",
     "noImagesInGallery": "Nessuna immagine è collegata a questo articolo.",

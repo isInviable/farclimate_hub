@@ -426,7 +426,8 @@
   "tabs": {
     "summary": "Overview",
     "recipe": "Recipe",
-    "chat": "Chat"
+    "chat": "Chat",
+    "contacts": "Contacts"
   },
   "summary": {
     "slides": {
@@ -436,6 +437,10 @@
     }
   },
   "recipe": {
+    "nav": {
+      "summaryPlus": "Summary+",
+      "map": "Map"
+    },
     "emptyTitle": "No recipe content",
     "emptyDescription": "There is no structured recipe in the database for this case study in the current language. If you expect data here, apply the latest SQL for get_documents_by_ids (recipe_ingredients) and ensure the pipeline has pushed knowledge.recipe rows.",
     "loadErrorTitle": "Could not load recipe",
@@ -469,6 +474,7 @@
     "example5": "What are the most important lessons learned from this article?"
   },
   "article": {
+    "caseStudyKicker": "Explorer · Case study",
     "imageNumber": "Image {n}",
     "imageAlt": "Article image {n}",
     "noImagesInGallery": "No images are linked for this article.",
