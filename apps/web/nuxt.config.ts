@@ -4,6 +4,7 @@ import path from 'path'
 
 export default defineNuxtConfig({
   modules: [
+    '@nuxt/content',
     '@nuxt/eslint',
     '@nuxt/ui',
     '@nuxt/image',

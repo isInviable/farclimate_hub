@@ -1,0 +1,73 @@
+{
+  "newsletter": {
+    "description": "Join our newsletter to stay up to date on features and releases.",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "consent": "By subscribing you agree to our Privacy Policy."
+  },
+  "mainMenu": {
+    "title": "Main menu",
+    "links": [
+      {
+        "label": "About",
+        "to": "#about"
+      },
+      {
+        "label": "Stories",
+        "to": "#stories"
+      },
+      {
+        "label": "Solutions",
+        "to": "/explorer/"
+      },
+      {
+        "label": "Skills",
+        "to": "/skills"
+      },
+      {
+        "label": "Connected Action",
+        "to": "/connected/dashboard"
+      }
+    ]
+  },
+  "followUs": {
+    "title": "Follow Us",
+    "links": [
+      {
+        "label": "Facebook",
+        "href": "#"
+      },
+      {
+        "label": "Instagram",
+        "href": "#"
+      },
+      {
+        "label": "X",
+        "href": "#"
+      },
+      {
+        "label": "LinkedIn",
+        "href": "#"
+      },
+      {
+        "label": "Youtube",
+        "href": "#"
+      }
+    ]
+  },
+  "copyright": "© 2025 Transformation HUB. All rights reserved.",
+  "legal": [
+    {
+      "label": "Privacy Policy",
+      "href": "#"
+    },
+    {
+      "label": "Terms of Service",
+      "href": "#"
+    },
+    {
+      "label": "Cookies Settings",
+      "href": "#"
+    }
+  ]
+}

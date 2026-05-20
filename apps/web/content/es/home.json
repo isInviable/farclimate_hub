@@ -1,0 +1,135 @@
+{
+  "hero": {
+    "titleLine1": "Bienvenido al",
+    "titleLine2": "Transformation HUB",
+    "subtitle": "Aprende de experiencias aplicadas, comparte soluciones y conéctate con personas que afrontan los mismos retos en sus territorios",
+    "cta": "SABER MÁS",
+    "scrollLabel": "Desplazarse al contenido"
+  },
+  "sections": {
+    "inspiration": {
+      "number": "01.",
+      "title": "Inspiración y aprendizaje",
+      "intro": "Formamos parte de una comunidad afectada por el cambio climático, con un cierto grado de conocimiento técnico",
+      "problemSpace": {
+        "title": "Nuestro espacio problemático",
+        "description": "El cambio climático impacta nuestros territorios de múltiples formas. Para comprenderlo mejor, consideramos tres dimensiones clave"
+      },
+      "dimensions": [
+        {
+          "title": "Actividad de peligros",
+          "description": "Incendios, sequías, inundaciones, plagas.",
+          "icon": "/img/icons/hazard.svg"
+        },
+        {
+          "title": "Agentes del hábitat",
+          "description": "Ecosistemas, especies, actividades humanas",
+          "icon": "/img/icons/habitat.svg"
+        },
+        {
+          "title": "Escala territorial",
+          "description": "Local, regional, biorregional",
+          "icon": "/img/icons/location.svg"
+        }
+      ],
+      "sectors": {
+        "title": "Sectores económicos",
+        "description": "Actualmente, la plataforma se centra en tres sectores económicos donde estos impactos son más visibles. En el futuro se añadirán nuevos sectores a medida que el cambio climático se extienda y evolucionen las necesidades de adaptación",
+        "cards": [
+          {
+            "title": "Pesca",
+            "description": "Calentamiento oceánico, sobrepesca, erosión costera",
+            "image": "/img/fisheries@2x.png",
+            "titleClass": "text-trust-blue-darkest",
+            "sector": "fisheries",
+            "buttonLabel": "Buscar"
+          },
+          {
+            "title": "Agricultura",
+            "description": "Sequías, degradación del suelo, plagas, escasez de agua",
+            "image": "/img/agriculture@2x.png",
+            "titleClass": "text-grounded-green-dark",
+            "sector": "agriculture",
+            "buttonLabel": "Buscar"
+          },
+          {
+            "title": "Silvicultura",
+            "description": "Incendios, pérdida de biodiversidad, especies invasoras",
+            "image": "/img/forestry@2x.png",
+            "titleClass": "text-community-pink-darkest",
+            "sector": "forestry",
+            "buttonLabel": "Buscar"
+          }
+        ]
+      }
+    },
+    "whyMatters": {
+      "number": "02.",
+      "title": "¿Por qué importa?",
+      "intro": "Internet está lleno de informes, plataformas y estudios, pero quienes trabajan en el territorio necesitan acceso práctico a",
+      "items": [
+        {
+          "text": "Tecnologías y prácticas probadas en contextos reales",
+          "icon": "/img/home/why-gesture.png"
+        },
+        {
+          "text": "Modelos organizativos y de gobernanza que funcionan",
+          "icon": "/img/home/why-verified.png"
+        },
+        {
+          "text": "Enfoques de sostenibilidad empresarial",
+          "icon": "/img/home/why-eco.png"
+        },
+        {
+          "text": "Oportunidades de financiación",
+          "icon": "/img/home/why-funding.png"
+        },
+        {
+          "text": "Experiencias de otras biorregiones",
+          "icon": "/img/home/why-landscape.png"
+        },
+        {
+          "text": "Personas y redes con las que conectar",
+          "icon": "/img/home/why-network.png"
+        }
+      ]
+    },
+    "platform": {
+      "number": "03.",
+      "title": "¿Cómo funciona esta plataforma?",
+      "steps": [
+        {
+          "key": "understand",
+          "title": "Para comprender",
+          "body": "Exploro conocimiento útil para entender mejor los retos e identificar posibles soluciones.",
+          "cta": "CÓMO CREAR UNA RECETA",
+          "image": "/img/home/platform-understand.png",
+          "imageAlt": "Diagrama de conocimiento útil e inspiración alrededor del HUB"
+        },
+        {
+          "key": "discover",
+          "title": "Para descubrir",
+          "body": "Encuentro lo que otros ya han hecho, me conecto con ellos y accedo a recursos como financiación o formación.",
+          "cta": "CÓMO CREAR UNA RECETA",
+          "image": "/img/home/platform-discover.png",
+          "imageAlt": "Diagrama de conexión de conocimiento entre sectores"
+        },
+        {
+          "key": "inspired",
+          "title": "Para inspirarse",
+          "body": "Transformo el conocimiento, lo adapto a mi contexto y creo mi propia red de recursos.",
+          "cta": "CÓMO CREAR UNA RECETA",
+          "image": "/img/home/platform-inspired.png",
+          "imageAlt": "Diagrama de creación de recursos propios a partir de la inspiración"
+        }
+      ]
+    },
+    "recipe": {
+      "number": "04.",
+      "title": "La receta",
+      "intro": "Cada receta destila un caso real de adaptación climática—problema, contexto, actores y soluciones—en un formato práctico para inspirar, comparar y adaptar",
+      "image": "/img/home/recipe-screenshot.png",
+      "imageAlt": "Captura de una página de receta en la plataforma"
+    }
+  }
+}

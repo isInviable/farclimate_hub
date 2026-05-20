@@ -1,24 +1,37 @@
 <template>
-  <div>
+  <div v-if="home">
     <!-- Hero -->
-    <section class="relative h-[80vh] min-h-[560px] flex items-center text-white inset-0 bg-[url('/img/hero.png')] bg-cover bg-center" 
+    <section
+      class="relative min-h-[560px] h-[80vh] flex items-center text-white bg-cover bg-center"
+      style="background-image: url('/img/hero.png')"
     >
-      
-      
+      <div class="absolute inset-0 bg-black/40" aria-hidden="true" />
       <UContainer class="relative z-10 pt-16">
-        <div class="text-center">
+        <div class="text-center max-w-4xl mx-auto">
           <h1 class="typo-display">
-            <span class="block">Welcome to the</span>
-            <span class="block">Transformation HUB</span>
+            <span class="block">{{ home.hero.titleLine1 }}</span>
+            <span class="block">{{ home.hero.titleLine2 }}</span>
           </h1>
-          <p class="font-textmediumnormal mt-6  opacity-90">
-            Learn from applied experiences, share solutions, and connect with
-            peers tackling the same challenges in their territories
+          <p class="font-mono text-lg mt-6 opacity-90 max-w-3xl mx-auto">
+            {{ home.hero.subtitle }}
           </p>
-          <div class="mt-8 flex items-center gap-2 justify-center">
+          <div class="mt-8 flex items-center justify-center">
             <UFieldGroup>
-              <UButton color="neutral" variant="outline" size="xl">FIND OUT MORE</UButton>
-              <UButton color="primary" aria-label="Scroll down" size="xl">
+              <UButton
+                color="neutral"
+                variant="outline"
+                size="xl"
+                class="bg-white text-neutral-900 border-white"
+                @click="scrollToContent"
+              >
+                {{ home.hero.cta }}
+              </UButton>
+              <UButton
+                color="primary"
+                size="xl"
+                :aria-label="home.hero.scrollLabel"
+                @click="scrollToContent"
+              >
                 <UIcon name="material-symbols:arrow-downward" />
               </UButton>
             </UFieldGroup>
@@ -28,115 +41,133 @@
     </section>
 
     <!-- 01. Inspiration & Learning -->
-    <section class="py-20 md:py-24 bg-white">
+    <section id="inspiration" class="py-20 md:py-24 bg-white">
       <UContainer>
-        <div class="flex items-baseline gap-4">
-          <span class="text-neutral-dark font-mono! text-6xl t">01.</span>
-          <h2 class="typo-h1 text-neutral-900">Inspiration & Learning</h2>
-        </div>
-        <p class="font-textmediumnormal mt-6 text-neutral-700 text-center">
-          We are part of a community affected by climate change, with a certain
-          degree of technical knowledge
-        </p>
+        <HomeSectionHeading
+          :number="home.sections.inspiration.number"
+          :title="home.sections.inspiration.title"
+          :intro="home.sections.inspiration.intro"
+        />
 
-        <div class="mt-28 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div class="md:col-span-1">
-            <h3 class="typo-h4">Our problem space</h3>
+            <h3 class="typo-h4 text-neutral-900">
+              {{ home.sections.inspiration.problemSpace.title }}
+            </h3>
           </div>
           <div class="md:col-span-2">
-            <p class="typo-body text-neutral-700">
-              Climate change impacts our territories in multiple ways. To better
-              understand them, we consider three key dimensions:
+            <p class="font-mono text-base font-light text-neutral-900">
+              {{ home.sections.inspiration.problemSpace.description }}
             </p>
           </div>
         </div>
 
-        <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div class="flex flex-col items-start gap-3">
-            <img
-              src="/img/icons/hazard.svg"
-              alt="Hazard activity"
-              class="w-24 h-24"
-            />
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div
+            v-for="dim in home.sections.inspiration.dimensions"
+            :key="dim.title"
+            class="flex flex-col items-start gap-6"
+          >
+            <img :src="dim.icon" :alt="dim.title" class="size-24" />
             <div>
-              <p class="font-mono font-semibold">Hazard activity</p>
-              <p class="font-textsmalllight">Fires, droughts, floods, pests.</p>
-            </div>
-          </div>
-          <div class="flex flex-col items-start gap-3">
-            <img
-              src="/img/icons/habitat.svg"
-              alt="Habitat agents"
-              class="w-24 h-24"
-            />
-            <div>
-              <p class="font-mono font-semibold">Habitat agents</p>
-              <p class="font-textsmalllight">
-                Ecosystems, species, human activities
+              <p class="font-mono font-bold text-lg text-neutral-900">{{ dim.title }}</p>
+              <p class="font-mono text-sm font-light text-neutral-900 mt-2">
+                {{ dim.description }}
               </p>
             </div>
           </div>
-          <div class="flex flex-col items-start gap-3">
-            <img
-              src="/img/icons/location.svg"
-              alt="Location scale"
-              class="w-24 h-24"
-            />
-            <div>
-              <p class="font-mono font-semibold">Location scale</p>
-              <p class="font-textsmalllight">Local, regional, bioregional</p>
-            </div>
-          </div>
         </div>
       </UContainer>
     </section>
 
-    <!-- 02. Economic sectors (cards) -->
-    <section class="bg-neutral-lighter py-20">
+    <!-- Economic sectors -->
+    <section class="bg-neutral-100 py-20">
       <UContainer>
-        <!-- Title row -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
           <div class="md:col-span-1">
-            <h3 class="typo-h4">Economic sectors</h3>
+            <h3 class="typo-h4 text-neutral-900">
+              {{ home.sections.inspiration.sectors.title }}
+            </h3>
           </div>
           <div class="md:col-span-2">
-            <p class="typo-body text-neutral-700">
-              Currently, the platform focuses on three economic sectors where
-              these impacts are most visible. In the future, new economic
-              sectors will be added as climate impacts spread and adaptation
-              needs evolve
+            <p class="font-mono text-base text-neutral-900">
+              {{ home.sections.inspiration.sectors.description }}
             </p>
           </div>
         </div>
 
-        <!-- Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <HomeCard
-            title="Fisheries"
-            img-src="/img/fisheries@2x.png"
-            description="Ocean warming, overfishing, coastal erosion"
-            title-class="text-trust-blue-darkest"
-          />
-          <HomeCard
-            title="Agriculture"
-            img-src="/img/agriculture@2x.png"
-            description="Droughts, soil degradation, pests, water scarcity"
-            title-class="text-grounded-green-dark"
-          />
-          <HomeCard
-            title="Forestry"
-            img-src="/img/forestry@2x.png"
-            description="Fires, biodiversity loss, invasive species"
-            title-class="text-community-pink-darkest"
+            v-for="card in home.sections.inspiration.sectors.cards"
+            :key="card.sector"
+            :title="card.title"
+            :img-src="card.image"
+            :description="card.description"
+            :title-class="card.titleClass"
+            :button-label="card.buttonLabel"
+            :to="sectorExplorerLink(card.sector)"
           />
         </div>
       </UContainer>
     </section>
+
+    <!-- 02. Why this matters -->
+    <section class="bg-neutral-50 py-20">
+      <UContainer>
+        <HomeSectionHeading
+          :number="home.sections.whyMatters.number"
+          :title="home.sections.whyMatters.title"
+          :intro="home.sections.whyMatters.intro"
+        />
+        <HomeWhyMattersGrid :items="home.sections.whyMatters.items" />
+      </UContainer>
+    </section>
+
+    <!-- 03. How this platform works -->
+    <section class="bg-white py-20">
+      <UContainer>
+        <HomeSectionHeading
+          :number="home.sections.platform.number"
+          :title="home.sections.platform.title"
+        />
+        <HomePlatformStep
+          v-for="(step, index) in home.sections.platform.steps"
+          :key="step.key"
+          :title="step.title"
+          :body="step.body"
+          :cta="step.cta"
+          :image="step.image"
+          :image-alt="step.imageAlt"
+          :reverse="index % 2 === 1"
+          cta-to="#recipe"
+        />
+      </UContainer>
+    </section>
+
+    <!-- 04. The Recipe -->
+    <HomeRecipeSection
+      :number="home.sections.recipe.number"
+      :title="home.sections.recipe.title"
+      :intro="home.sections.recipe.intro"
+      :image="home.sections.recipe.image"
+      :image-alt="home.sections.recipe.imageAlt"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import HomeCard from '~/components/home/HomeCard.vue';
-</script>
+const localePath = useLocalePath()
+const { home } = await useHomeContent()
 
-<style></style>
+function scrollToContent() {
+  const el = document.getElementById('inspiration')
+  el?.scrollIntoView({ behavior: 'smooth' })
+}
+
+function sectorExplorerLink(sector: string) {
+  return localePath({
+    path: '/explorer/explorer',
+    query: { sector },
+  })
+}
+</script>

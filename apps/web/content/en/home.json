@@ -1,0 +1,135 @@
+{
+  "hero": {
+    "titleLine1": "Welcome to the",
+    "titleLine2": "Transformation HUB",
+    "subtitle": "Learn from applied experiences, share solutions, and connect with peers tackling the same challenges in their territories",
+    "cta": "FIND OUT MORE",
+    "scrollLabel": "Scroll to content"
+  },
+  "sections": {
+    "inspiration": {
+      "number": "01.",
+      "title": "Inspiration & Learning",
+      "intro": "We are part of a community affected by climate change, with a certain degree of technical knowledge",
+      "problemSpace": {
+        "title": "Our problem space",
+        "description": "Climate change impacts our territories in multiple ways. To better understand them, we consider three key dimensions"
+      },
+      "dimensions": [
+        {
+          "title": "Hazard activity",
+          "description": "Fires, droughts, floods, pests.",
+          "icon": "/img/icons/hazard.svg"
+        },
+        {
+          "title": "Habitat agents",
+          "description": "Ecosystems, species, human activities",
+          "icon": "/img/icons/habitat.svg"
+        },
+        {
+          "title": "Location scale",
+          "description": "Local, regional, bioregional",
+          "icon": "/img/icons/location.svg"
+        }
+      ],
+      "sectors": {
+        "title": "Economic sectors",
+        "description": "Currently, the platform focuses on three economic sectors where these impacts are most visible. In the future, new economic sectors will be added as climate impacts spread and adaptation needs evolve",
+        "cards": [
+          {
+            "title": "Fisheries",
+            "description": "Ocean warming, overfishing, coastal erosion",
+            "image": "/img/fisheries@2x.png",
+            "titleClass": "text-trust-blue-darkest",
+            "sector": "fisheries",
+            "buttonLabel": "Search"
+          },
+          {
+            "title": "Agriculture",
+            "description": "Droughts, soil degradation, pests, water scarcity",
+            "image": "/img/agriculture@2x.png",
+            "titleClass": "text-grounded-green-dark",
+            "sector": "agriculture",
+            "buttonLabel": "Search"
+          },
+          {
+            "title": "Forestry",
+            "description": "Fires, biodiversity loss, invasive species",
+            "image": "/img/forestry@2x.png",
+            "titleClass": "text-community-pink-darkest",
+            "sector": "forestry",
+            "buttonLabel": "Search"
+          }
+        ]
+      }
+    },
+    "whyMatters": {
+      "number": "02.",
+      "title": "Why this matters?",
+      "intro": "The internet is full of papers, platforms and reports, but practitioners need practical access to",
+      "items": [
+        {
+          "text": "Technologies and practices tested in real contexts",
+          "icon": "/img/home/why-gesture.png"
+        },
+        {
+          "text": "Organizational and governance models that work",
+          "icon": "/img/home/why-verified.png"
+        },
+        {
+          "text": "Business sustainability approaches",
+          "icon": "/img/home/why-eco.png"
+        },
+        {
+          "text": "Funding opportunities",
+          "icon": "/img/home/why-funding.png"
+        },
+        {
+          "text": "Experiences from other bioregions",
+          "icon": "/img/home/why-landscape.png"
+        },
+        {
+          "text": "People and networks to connect with",
+          "icon": "/img/home/why-network.png"
+        }
+      ]
+    },
+    "platform": {
+      "number": "03.",
+      "title": "How this platform works?",
+      "steps": [
+        {
+          "key": "understand",
+          "title": "To Understand",
+          "body": "I explore useful knowledge to understand challenges better and identify possible solutions.",
+          "cta": "HOW TO BUILD A RECIPE",
+          "image": "/img/home/platform-understand.png",
+          "imageAlt": "Diagram showing useful knowledge and inspiration around the HUB"
+        },
+        {
+          "key": "discover",
+          "title": "To Discover",
+          "body": "I find what others have already done, connect with them, and access resources like funding or training.",
+          "cta": "HOW TO BUILD A RECIPE",
+          "image": "/img/home/platform-discover.png",
+          "imageAlt": "Diagram showing connecting knowledge across sectors"
+        },
+        {
+          "key": "inspired",
+          "title": "To Get inspired",
+          "body": "I transform knowledge, adapt it to my context, and create my own network of resources.",
+          "cta": "HOW TO BUILD A RECIPE",
+          "image": "/img/home/platform-inspired.png",
+          "imageAlt": "Diagram showing creating own resources from inspiration"
+        }
+      ]
+    },
+    "recipe": {
+      "number": "04.",
+      "title": "The Recipe",
+      "intro": "Each recipe distills a real case of climate adaptation—problem, context, actors, and solutions—into a practical format to inspire, compare, and adapt",
+      "image": "/img/home/recipe-screenshot.png",
+      "imageAlt": "Screenshot of a recipe page in the platform"
+    }
+  }
+}
