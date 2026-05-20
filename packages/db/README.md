@@ -6,9 +6,15 @@ For one-time Supabase environment bootstrap work such as auth/RBAC setup, use th
 
 ## Scripts
 
-- **`pnpm db:create`** — Creates the knowledge schema and all tables/functions by running the SQL files in `sql/` (documents, summary, summary_multilang, fulltext, embeddings, search and facet functions). Run once per environment or after schema changes.
-- **`pnpm db:push`** — Reads JSON from `pipeline/augmented/`: `*_en_augmented.json` and `*_en_augmented_<lang>.json`. Inserts/updates `knowledge.documents`, `knowledge.summary`, `knowledge.summary_multilang`, `knowledge.fulltext`, and computes+upserts embeddings in `knowledge.embeddings`. Use after running the pipeline (fetch → extract → augment → translate).
-- **`pnpm db:embed`** — Regenerates embeddings for all existing documents from their title/summary/fulltext in the DB (no pipeline files). Use if you changed the embedding model or need to backfill.
+- **`pnpm db:create`** — Creates the knowledge schema and all tables/functions by running the SQL files in `sql/` (documents, summary, summary_multilang, fulltext, embeddings, search and facet functions). Run once per environment or after schema changes. After changing `sql/04_search_functions.sql` (e.g. new FTS language), run this or apply the function definitions in that file to the target database.
+- **`pnpm db:push`** — Reads JSON from `pipeline/augmented/`: for each `*_en_augmented.json` (English) it upserts documents, images, `summary`, `summary_multilang` / `fulltext` / `recipe` for `en`, and computes a **`composed`** embedding for `lang = 'en'`. It then processes **every** `*_en_augmented_<code>.json` translation file (e.g. `_es`, `_it`, …), upserting `summary_multilang`, `fulltext`, optional `recipe`, and a **`composed`** embedding for that `lang`. Translated text cost scales with **number of documents × number of languages** (each language triggers embedding API calls, with local cache in `pipeline/caches/embeddings_cache.json`).
+
+  **Prerequisite for a new language:** run the pipeline translation step first, e.g. `python pipeline/translate_augmented.py --lang it`, so `*_en_augmented_it.json` files exist beside the English JSON; then `db:push` will pick them up without code changes.
+
+- **`pnpm db:embed`** — Regenerates **`composed`** embeddings from rows already in the database (no pipeline JSON). By default it selects **every distinct `lang`** in `knowledge.summary_multilang` and recomputes embeddings for each. Limit languages with an argument:  
+  `pnpm db:embed -- --langs=en,it`  
+  Use after changing `GEMINI_EMBEDDING_MODEL` / dimensions, or to backfill embeddings if push did not complete.
+
 - **`pnpm db:drop`** — Drops the knowledge schema (destructive). Use when you want to remove all knowledge tables and functions (e.g. tear down the env or start completely fresh).
 - **`pnpm db:truncate`** — Truncates knowledge tables, keeps schema. Use when you want to empty data but keep tables/functions, then run `db:push` to reload (e.g. reload same pipeline output without recreating schema).
 - **`pnpm db:reset`** — drop + create + push in one go. Use when you want a full reset: wipe schema, recreate it, and reload from `pipeline/augmented/`.

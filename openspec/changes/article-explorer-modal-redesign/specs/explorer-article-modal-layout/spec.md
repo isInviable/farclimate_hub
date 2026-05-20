@@ -1,90 +1,182 @@
 # Explorer article modal layout (change spec)
 
-Requirements for the blocking explorer article modal, slide decks, vertical primary tabs, and global article tab set. This file is the delta for the new capability `explorer-article-modal-layout` introduced by change `article-explorer-modal-redesign`.
+Requirements for the near-fullscreen blocking explorer article modal, the rolling-menu primary tabs, the horizontal slide decks, and the unified article view layout shared between the explorer modal and full-page article routes. This file is the delta for the new capability `explorer-article-modal-layout` introduced by change `article-explorer-modal-redesign`.
 
 ---
 
 ## ADDED Requirements
 
-### Requirement: Explorer article uses a blocking modal shell
+### Requirement: Explorer article uses a near-fullscreen blocking modal shell
 
-The explorer SHALL present the article detail experience in a **blocking modal** when opened from explorer flows that today use `ArticleSidePanel.vue` (or its successor). The modal SHALL trap focus while open, render a visible **modal overlay** behind content, and SHALL NOT allow interaction with the explorer canvas or lists behind it until the user dismisses the modal. The implementation SHALL use Nuxt UI modal primitives (e.g. `UModal`) where they meet accessibility defaults, or document any deviation.
+The explorer SHALL present the article detail experience in a **near-fullscreen blocking modal** when opened from any explorer flow that today uses `ArticleSidePanel.vue` (or its successor). The modal SHALL trap focus while open, render a visible dimmed overlay, scroll **internally** when its content overflows the viewport, and SHALL NOT allow interaction with the explorer canvas, lists, or map behind it until the user dismisses the modal. The implementation SHALL use Nuxt UI modal primitives (e.g. `UModal`) where they meet accessibility defaults, or document any deviation.
+
+The modal header chrome SHALL consist of exactly two icon controls anchored to the top-right of the modal: a **pin** action and a **close (×)** action. No additional header chrome (no document title row, no in-modal "open original" button) SHALL be added — the outbound source-URL link required by `explorer-article-source-link` lives inside the body on the Summary → Main slide.
 
 #### Scenario: User dismisses modal
 
-- **WHEN** the user activates the primary close control or the platform-appropriate dismiss action supported by the modal component (e.g. Escape when enabled)
+- **WHEN** the user activates the close (×) control or the platform-appropriate dismiss action supported by the modal component (e.g. Escape when enabled)
 - **THEN** the modal SHALL close, focus SHALL return to a sensible trigger element, and the explorer behind the overlay SHALL become interactive again
 
-### Requirement: Primary navigation is vertical summary, recipe, and chat
+#### Scenario: Content longer than the viewport
 
-The modal body SHALL expose **exactly three** primary sections: **summary**, **structured recipe**, and **chat**, selected via a **vertical tab rail** on the top-left of the modal content area (Figma “rolling menu” placement). Labels SHALL use existing i18n keys where they exist (`tabs.summary`, structured/recipe label, `tabs.chat`) or new keys added for consistency. **Animations on the tab rail are out of scope for the initial implementation** but the DOM structure SHALL not prevent adding motion later.
+- **WHEN** the active slide's content is taller than the modal's available height
+- **THEN** the modal body (or the slide container within it) SHALL scroll internally and the page behind the modal SHALL NOT scroll
 
-#### Scenario: User switches primary tab
+### Requirement: Article view replaces the previous tab layout in every caller
 
-- **WHEN** the user selects a different primary tab
-- **THEN** only the corresponding section content is visible in the main content region and horizontal slide index resets to the first slide for that tab unless the implementation explicitly preserves per-tab slide state (either behavior is acceptable if documented in tasks; default: reset to first slide)
+The article view component (`ArticleViewAI` or its replacement) SHALL render exclusively with the two-level navigation defined in this spec — a primary "rolling menu" of three sections (Chat, Recipe, Summary) plus a secondary horizontal slide submenu. The previous `UTabs`-based four-tab layout (summary / recipe / fulltext / chat) SHALL be removed.
 
-### Requirement: ArticleViewAI exposes only summary, recipe, and chat
+The same article view component SHALL be used by the explorer blocking modal AND by full-page article routes; the only difference between contexts SHALL be the absence of the modal shell on full-page routes. There SHALL NOT be a parallel "non-modal" article layout.
 
-The `ArticleViewAI` component SHALL NOT expose a tab, slot, or navigation item for viewing **`document.fulltext`** as markdown in the UI. All usages of `ArticleViewAI` (including full-page article routes) SHALL offer **summary**, **structured recipe**, and **chat** only.
+The article view SHALL NOT expose a tab, slide, or navigation item for rendering `document.fulltext` inline. Access to the original article SHALL be via the outbound `source_url` link required by `explorer-article-source-link`, surfaced from the Summary → Main slide.
 
-#### Scenario: Full-page article view
+#### Scenario: Full-page article route
 
-- **WHEN** the user opens a full-page article view that embeds `ArticleViewAI`
-- **THEN** the UI SHALL show at most the three primary tabs above and SHALL NOT show a “full article” or raw fulltext tab
+- **WHEN** the user navigates to a full-page article route that embeds the article view component
+- **THEN** the article SHALL render with the rolling menu + slide deck (no `UTabs`), without the explorer blocking-modal shell, and SHALL NOT expose a fulltext tab or slide
 
-### Requirement: Summary horizontal slides and content
+#### Scenario: No fulltext UI anywhere
 
-Within the **summary** primary tab, the modal SHALL provide **horizontal slides** in this order: **main**, **contacts and references**, **map**. Each slide SHALL occupy the full width of the summary content area and SHALL scroll **vertically** when its content exceeds the available height.
+- **WHEN** any caller mounts the article view component
+- **THEN** the rendered output SHALL NOT contain a "full article" / "original" / fulltext tab or slide and SHALL NOT inline-render `document.fulltext` as Markdown
 
-The **main** slide SHALL include article fields appropriate to the “hero” summary (e.g. subtitle, external source link as today) and SHALL present gallery images as a **horizontal strip** (single row, horizontally scrollable or wrapping per design) rather than a multi-column grid. Other summary blocks that belong to main per Figma SHALL live on this slide.
+### Requirement: Primary navigation is a rolling-menu vertical rail
 
-The **contacts and references** slide SHALL present contact and reference content that today appears in the summary flow, using empty states when data is missing.
+The article view SHALL expose **exactly three** primary sections: **Chat**, **Recipe**, **Summary**, presented as a vertical "rolling menu" anchored to the top-left of the body content area. The canonical order SHALL be `[Chat, Recipe, Summary]`.
 
-The **map** slide SHALL present the same map visualization and points as the summary map today, with an empty state when there are no map points.
+The **active item SHALL always be rendered at the bottom** of the rail in a large, near-black, heading-weight style. The two **inactive items** SHALL render above the active item, retaining their canonical relative order (i.e. when Recipe is active the rail reads top→bottom: Chat, Summary, Recipe; when Chat is active: Recipe, Summary, Chat). Inactive labels SHALL use the **`primary` Tailwind UI scale** ("trust-blue") at the smaller, link-style weight; the active label SHALL use the project's near-black foreground token at heading weight.
+
+The rail SHALL expose tablist ARIA semantics (`role="tablist"` with `role="tab"` items, `aria-selected`, `aria-controls`). Animations are out of scope for v1; the DOM SHALL not preclude adding motion later.
+
+Labels SHALL come from the application i18n system: existing `tabs.summary` and `tabs.chat` keys SHALL be reused; a `tabs.recipe` key SHALL be added if not already present.
+
+#### Scenario: Active item is at the bottom
+
+- **WHEN** the article view renders with any of Chat, Recipe, or Summary as the active primary section
+- **THEN** that section's label SHALL be the bottom-most item in the rolling menu, rendered in the active style, and the other two SHALL render above it in canonical relative order in the inactive `primary`-scale style
+
+#### Scenario: User switches primary section
+
+- **WHEN** the user activates a different primary section
+- **THEN** only the corresponding section content SHALL be visible in the main content region, the slide deck for that section SHALL reset to its first slide, and the rolling menu SHALL re-render with the newly active item at the bottom
+
+### Requirement: Secondary slide deck uses submenu and prev/next arrows only
+
+For every horizontal slide deck inside the article view (Summary and Recipe), the user SHALL navigate between slides using:
+
+1. A horizontal **submenu** at the top of the slide content area listing slide labels for the active primary section, with the active label styled in near-black/bold and inactive labels in the `primary` scale, and
+2. **Previous** and **next** circular icon buttons positioned outside the slide content padding at the left and right edges of the modal body, vertically centered against the slide.
+
+The system SHALL NOT rely on touch swipe, drag, or horizontal scroll-snap as the **primary** means of changing slides. Vertical scrolling **inside** a slide and horizontal scrolling within secondary widgets (e.g. the Main slide gallery strip) are allowed.
+
+#### Scenario: First and last slide
+
+- **WHEN** the first slide is active
+- **THEN** the previous arrow SHALL be visually disabled and SHALL not change the slide if activated; the submenu SHALL still indicate the active slide
+- **WHEN** the last slide is active
+- **THEN** the next arrow SHALL be visually disabled and SHALL not change the slide if activated
+
+#### Scenario: Submenu jump
+
+- **WHEN** the user activates a non-active label in the submenu
+- **THEN** the deck SHALL switch directly to that slide without traversing intermediate slides
+
+### Requirement: Slide title pattern in the body
+
+Each slide body SHALL open with a heading in the form `NN. Section name`, where:
+
+- `NN` is the **1-based index** of the slide in the active submenu, rendered in a muted/grey numeric style (per Figma); and
+- `Section name` is **the same string** used for that slide in the submenu.
+
+The implementation SHALL derive the heading text and the submenu label from a single source so the two SHALL NOT drift.
+
+#### Scenario: Numbering reflects submenu order
+
+- **WHEN** the user views the second slide in the active primary section's submenu
+- **THEN** the slide body heading SHALL begin with `02.` followed by the same label shown in the submenu for that slide
+
+### Requirement: Summary slide composition
+
+Within the Summary primary section, the article view SHALL render exactly **three** horizontal slides in this order:
+
+1. **Main** — SHALL include the article's hero subtitle / short description; an optional **left detail column** showing Date, Geographic Characterisation, and Bio geographical region rendered only when the corresponding `ArticleDetail` fields are non-empty; the sectors / hazards / type-of-solution / keywords tag groups; and the outbound source-URL link mandated by `explorer-article-source-link`. The article gallery SHALL render as a **single bottom-anchored horizontal strip** spanning the full slide width, scrolling horizontally on overflow. A multi-column gallery grid SHALL NOT be used in this layout.
+
+2. **Contacts and references** — SHALL present contact persons, websites, and references derived from the canonical `ArticleDetail`, with empty states when those fields are missing.
+
+3. **Map** — SHALL present the same map widget and points used today by the summary map, with an empty state when the document has no map points.
+
+Each slide SHALL occupy the full width of the slide content area and SHALL scroll **vertically** when its content exceeds the available height. The optional left detail column on the Main slide is **per-slide**, not a persistent rail across the deck; it SHALL NOT appear on the Contacts and references or Map slides.
 
 #### Scenario: Map has no points
 
 - **WHEN** the document has no map points for the summary map
-- **THEN** the map slide SHALL still be reachable via horizontal navigation and SHALL show a clear empty state without errors
+- **THEN** the Map slide SHALL still be reachable via submenu and arrows, and SHALL show a clear empty state without errors
 
-### Requirement: Horizontal slide navigation uses submenu and arrows only
+#### Scenario: No contacts, websites, or references
 
-For every horizontal slide deck inside the modal (summary and recipe), the user SHALL navigate between slides using:
+- **WHEN** the document has none of contact persons, websites, or references
+- **THEN** the Contacts and references slide SHALL still be reachable and SHALL show a clear empty state without errors
 
-1. A **horizontal submenu** listing slide titles (or section names) for the active primary tab, and
-2. **Previous** and **next** arrow controls.
+#### Scenario: Sparse Main metadata
 
-The system SHALL **not** rely on touch swipe, drag, or horizontal scroll-snap as the **primary** means of changing slides. Secondary overflow scrolling inside a slide (e.g. image strip) is allowed.
+- **WHEN** the document has no Date, Geographic Characterisation, or Bio geographical region values
+- **THEN** the Main slide SHALL render without the optional left detail column, with no broken layout
 
-#### Scenario: First slide
+### Requirement: Recipe renders as one slide per non-empty canonical section
 
-- **WHEN** the first slide is active
-- **THEN** the “previous” control SHALL be disabled or inert and the subsection menu SHALL still indicate the active slide
+Within the Recipe primary section, the article view SHALL render **one horizontal slide per non-empty canonical recipe section** as defined by `explorer-structured-recipe`. Slide ordering SHALL follow the canonical key order from that capability. Submenu labels SHALL match the canonical section names. Markdown rendering, the underlying `/api/document-recipe` fetch behavior, and key ordering SHALL be unchanged by this layout.
 
-### Requirement: Decorative slide backgrounds
+When the structured recipe has zero non-empty sections, the Recipe primary section SHALL show a single empty-state placeholder reachable as a degenerate one-slide deck.
 
-Selected slides MAY render **decorative** background imagery in corners as in Figma, using Tailwind layout utilities and files served from `apps/web/public/img/explorer/`. Decorative layers SHALL use `pointer-events-none` and `aria-hidden="true"`. Foreground text SHALL remain readable (use scrims or solid overlays as needed).
+#### Scenario: Recipe section ordering
 
-#### Scenario: Asset missing
+- **WHEN** the user opens the Recipe primary section
+- **THEN** the submenu SHALL list the non-empty canonical recipe sections in the order defined by `explorer-structured-recipe` and the body of each slide SHALL render that section's Markdown content using the existing rendering rules
 
-- **WHEN** a referenced decorative asset is not present in `public/img/explorer`
-- **THEN** the slide SHALL still render content without broken layout; decoration MAY be omitted
+### Requirement: Decorative backgrounds limited to text-heavy slides
+
+Decorative corner imagery (e.g. compass, wax-seal/papers illustrations) MAY render on text-heavy slides — specifically the Summary → Contacts and references slide and the Recipe section slides. Decorative imagery SHALL NOT render on slides whose primary content is its own visual: the Summary → Main slide (which carries the gallery strip) and the Summary → Map slide.
+
+Decorative layers SHALL be served from `apps/web/public/img/explorer/`, SHALL use `pointer-events-none` and `aria-hidden="true"`, and SHALL be positioned so foreground text remains readable (with scrim/overlay where needed). When a referenced asset is missing the slide SHALL still render content without broken layout; decoration MAY be omitted.
+
+#### Scenario: Decoration on text-heavy slide
+
+- **WHEN** the user views the Summary → Contacts and references slide or any Recipe section slide and the corresponding decorative asset is present
+- **THEN** the decorative imagery SHALL render in its specified corner without intercepting pointer events and SHALL be hidden from assistive tech
+
+#### Scenario: Decoration suppressed on visual slides
+
+- **WHEN** the user views the Summary → Main slide or the Summary → Map slide
+- **THEN** no decorative corner imagery SHALL render
+
+### Requirement: Per-tab slide state resets on primary section switch
+
+When the user switches the active primary section, the secondary slide index for the newly active section SHALL reset to slide 1. Within a single primary section, while the modal stays open, the secondary slide index SHALL be preserved across other interactions (e.g. switching back to a previously visited primary section restarts that section at slide 1, not at the previously visited slide).
+
+#### Scenario: Re-entering a primary section
+
+- **WHEN** the user opens Recipe, navigates to slide 3, switches to Summary, then switches back to Recipe
+- **THEN** Recipe SHALL re-open on slide 1
 
 ### Requirement: Pin capture and text selection parity
 
-The explorer path that opens the article modal SHALL preserve **human pin capture** and **article text selection capture** behavior equivalent to the pre-change explorer article panel: wrapping components and pin kinds that worked from summary, recipe, and chat SHALL continue to work from the corresponding modal tabs and slides without requiring users to use a different pin flow.
+The new article view SHALL preserve **human pin capture** and **article text selection capture** behavior equivalent to the pre-change explorer article panel: wrapping components and pin kinds that worked from the prior summary, recipe, and chat tabs SHALL continue to work from the corresponding slides and primary sections in the new layout, without requiring users to use a different pin flow.
 
-#### Scenario: Pin from summary block
+#### Scenario: Pin from a Summary slide block
 
-- **WHEN** the user initiates pin capture from a selectable summary block inside the modal
+- **WHEN** the user initiates pin capture from a selectable block on any Summary slide
 - **THEN** the pin dialog and saved pin SHALL behave the same as before this change relative to document identity and payload shape
 
-### Requirement: ArticleViewAI remains non-modal full layout elsewhere
+#### Scenario: Pin from a Recipe slide
 
-Routes and views that embed `ArticleViewAI` outside the explorer blocking modal SHALL continue to use a **full-width page layout** (not the modal shell). Only the explorer article entry point SHALL use the blocking modal described here.
+- **WHEN** the user initiates pin capture from selectable text on a Recipe section slide
+- **THEN** the pin dialog and saved pin SHALL behave the same as before this change
 
-#### Scenario: Dedicated article page
+### Requirement: Color tokens for primary and secondary navigation
 
-- **WHEN** the user navigates to a full-page article route that uses `ArticleViewAI`
-- **THEN** the article UI SHALL not be wrapped in the explorer blocking modal component
+Inactive primary-tab labels and inactive submenu labels SHALL be styled using the **`primary`** Tailwind UI scale ("trust-blue") configured in `apps/web/app/app.config.ts`. Active primary-tab and active submenu labels SHALL use the project's near-black foreground token at the appropriate heading or body-bold weight per Figma. Component code SHALL NOT introduce raw hex colors for these states.
+
+#### Scenario: Inactive label color
+
+- **WHEN** any inactive primary-tab or submenu label is rendered
+- **THEN** its text color SHALL be derived from the `primary` Tailwind UI scale and SHALL NOT be a hard-coded hex
