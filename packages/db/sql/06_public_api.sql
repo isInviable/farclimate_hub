@@ -2,6 +2,7 @@
 -- PostgREST exposes public schema by default; these delegate to knowledge schema.
 -- Drop existing functions so return types can change across migrations (e.g. adding health_impact).
 DROP FUNCTION IF EXISTS public.hybrid_search(text, text, int, text, text, float, float, int);
+DROP FUNCTION IF EXISTS public.hybrid_search(text, text, int, text, text, float, float, int, float);
 DROP FUNCTION IF EXISTS public.keyword_search(text, int, text);
 DROP FUNCTION IF EXISTS public.get_all_documents(text);
 DROP FUNCTION IF EXISTS public.get_documents_by_ids(uuid[], text);
@@ -17,7 +18,8 @@ CREATE OR REPLACE FUNCTION public.hybrid_search(
   filter_content_type text DEFAULT 'composed',
   full_text_weight float DEFAULT 1,
   semantic_weight float DEFAULT 1,
-  rrf_k int DEFAULT 50
+  rrf_k int DEFAULT 50,
+  match_threshold float DEFAULT 0.0
 )
 RETURNS TABLE (
   id uuid,
@@ -38,7 +40,8 @@ AS $$
     filter_content_type,
     full_text_weight,
     semantic_weight,
-    rrf_k
+    rrf_k,
+    match_threshold
   );
 $$;
 

@@ -45,7 +45,7 @@ if not GEMINI_API_KEY:
     sys.exit(1)
 
 # Normalise model ID for google-genai (strip provider prefix like 'gemini/')
-_raw_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+_raw_model = os.getenv("GEMINI_MODEL_TRANSLATE", "gemini-2.5-flash")
 GEMINI_MODEL = _raw_model.split("/")[-1]
 
 genai_client = genai.Client(api_key=GEMINI_API_KEY)
@@ -55,7 +55,25 @@ CACHE_DIR = PIPELINE_DIR / "caches"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 TRANSLATION_CACHE_FILE = CACHE_DIR / "translation_cache.json"
 RECIPE_TRANSLATION_CACHE_FILE = CACHE_DIR / "recipe_translation_cache.json"
-RECIPE_TRANSLATION_CACHE_VERSION = "v1"
+RECIPE_TRANSLATION_CACHE_VERSION = "v2"
+
+# ISO 639-1 → English name for prompts. Bare codes like "it" confuse LLMs (ambiguous vs. English "it").
+TARGET_LANGUAGE_LABELS: dict[str, str] = {
+    "en": "English",
+    "es": "Spanish",
+    "it": "Italian",
+    "fr": "French",
+    "de": "German",
+    "pt": "Portuguese",
+    "nl": "Dutch",
+    "pl": "Polish",
+}
+
+
+def _target_language_label(code: str) -> str:
+    c = (code or "").strip().lower()
+    return TARGET_LANGUAGE_LABELS.get(c, f"the language with ISO 639-1 code {c!r}")
+
 
 # Canonical keys (must match augment_with_ai.RECIPE_CANONICAL_KEYS / knowledge.recipe).
 RECIPE_CANONICAL_KEYS: tuple[str, ...] = (
@@ -190,10 +208,11 @@ def _finalize_translated_recipe_ingredients(parsed: dict) -> dict[str, str]:
 
 def _translate_recipe_ingredients_structured(en: dict[str, str], target_lang: str) -> dict[str, str] | None:
     en_json = json.dumps({k: en.get(k, "") for k in RECIPE_CANONICAL_KEYS}, ensure_ascii=False, indent=2)
+    lang_label = _target_language_label(target_lang)
     prompt = (
         f"You translate climate adaptation case study 'recipe' sections (markdown strings per field).\n"
-        f"Target language code: {target_lang}.\n"
-        f"- Translate each non-empty English value into natural {target_lang}.\n"
+        f"Target language: {lang_label} (ISO 639-1: {target_lang}).\n"
+        f"- Translate each non-empty English value into natural {lang_label}.\n"
         "- Preserve markdown structure (headings, lists, bold) as much as possible.\n"
         "- If the English value for a key is empty or whitespace-only, the output for that key MUST be an empty string.\n"
         "- Do not add or remove keys. Do not add title, short_description, or sdgs.\n"
@@ -280,7 +299,8 @@ def _translate_text(text: str, target_lang: str, field: str) -> str:
     if len(src) > 20000:
         src = src[:20000]
 
-    cache_version = "v1"
+    # v2: prompts use explicit language names (v1 used bare codes like "it" and caused wrong languages).
+    cache_version = "v2"
     cache_key = f"{cache_version}:{target_lang}:{field}:{src}"
     if cache_key in global_translation_cache:
         return global_translation_cache[cache_key]
@@ -302,8 +322,9 @@ def _translate_text(text: str, target_lang: str, field: str) -> str:
         extra = "- Keep formatting minimal; plain text is fine.\n"
         length_hint = "- Preserve meaning and nuance; do not add explanations.\n"
 
+    lang_label = _target_language_label(target_lang)
     prompt = (
-        f"Translate the following {field} from English to {target_lang}.\n"
+        f"Translate the following {field} from English into {lang_label} (ISO 639-1 language code: {target_lang}).\n"
         "- The text comes from a climate change adaptation case study.\n"
         f"{extra}"
         f"{length_hint}"

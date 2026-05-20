@@ -50,6 +50,7 @@ BEGIN
   CASE filter_lang
     WHEN 'en' THEN ts_config := 'english';
     WHEN 'es' THEN ts_config := 'spanish';
+    WHEN 'it' THEN ts_config := 'italian';
     ELSE ts_config := 'simple';
   END CASE;
 
@@ -98,6 +99,7 @@ BEGIN
   CASE filter_lang
     WHEN 'en' THEN ts_config := 'english';
     WHEN 'es' THEN ts_config := 'spanish';
+    WHEN 'it' THEN ts_config := 'italian';
     ELSE ts_config := 'simple';
   END CASE;
 

@@ -35,6 +35,23 @@ function readJson(filePath: string): Record<string, unknown> {
   return JSON.parse(readFileSync(filePath, "utf-8"));
 }
 
+/** `page_0_en_augmented_es.json` → `es`; base `*_en_augmented.json` does not match. */
+const TRANSLATION_FILE_RE = /^(.+)_en_augmented_([a-z]{2})\.json$/i;
+
+function listTranslationFilenames(allJsonBasenames: string[]): string[] {
+  const out: string[] = [];
+  for (const f of allJsonBasenames) {
+    const m = f.match(TRANSLATION_FILE_RE);
+    if (m) out.push(f);
+  }
+  return out.sort();
+}
+
+function langCodeFromTranslationFilename(filename: string): string | null {
+  const m = filename.match(TRANSLATION_FILE_RE);
+  return m ? (m[2] as string).toLowerCase() : null;
+}
+
 /** True if at least one ingredient has non-blank string content (matches UI / explorer behavior). */
 function recipeIngredientsHasContent(ingredients: Record<string, unknown>): boolean {
   for (const v of Object.values(ingredients)) {
@@ -209,10 +226,10 @@ async function main() {
 
   const allFiles = readdirSync(AUGMENTED_DIR).filter((f) => f.endsWith(".json"));
   const enFiles = allFiles.filter((f) => f.match(/_en_augmented\.json$/));
-  const esFiles = allFiles.filter((f) => f.match(/_en_augmented_es\.json$/));
+  const translationFiles = listTranslationFilenames(allFiles);
 
   console.log(`Found ${enFiles.length} EN augmented files`);
-  console.log(`Found ${esFiles.length} ES translation files\n`);
+  console.log(`Found ${translationFiles.length} translation file(s) (*_en_augmented_<xx>.json)\n`);
 
   // Build a map: source_file (e.g. "page_101.html") -> document UUID
   const sourceFileToId = new Map<string, string>();
@@ -282,24 +299,37 @@ async function main() {
     }
   }
 
-  // --- Pass 2: Process ES translation files ---
-  for (const filename of esFiles) {
+  // --- Pass 2: Process all translation files (es, it, fr, …) ---
+  for (const filename of translationFiles) {
     const filePath = resolve(AUGMENTED_DIR, filename);
     const trans = readJson(filePath);
     const sourceFile = trans.source_file as string;
 
     const documentId = sourceFileToId.get(sourceFile);
     if (!documentId) {
-      console.warn(`  [WARN] No document found for ${sourceFile}, skipping ES translation`);
+      console.warn(`  [WARN] No document found for ${sourceFile}, skipping translation ${filename}`);
       continue;
     }
 
-    console.log(`[ES] ${sourceFile} -> translation`);
+    const codeFromName = langCodeFromTranslationFilename(filename);
+    if (!codeFromName) {
+      console.warn(`  [WARN] ${filename}: could not parse language code; skipping`);
+      continue;
+    }
 
-    const transLang =
-      typeof trans.lang === "string" && trans.lang.trim().length > 0
-        ? trans.lang.trim()
-        : "es";
+    const transLangRaw =
+      typeof trans.lang === "string" && trans.lang.trim().length > 0 ? trans.lang.trim() : "";
+    const transLang = transLangRaw || codeFromName;
+    if (!transLangRaw && codeFromName) {
+      console.warn(`  [WARN] ${filename}: missing trans.lang; using filename code "${codeFromName}"`);
+    }
+    if (codeFromName && transLangRaw && codeFromName !== transLangRaw.toLowerCase()) {
+      console.warn(
+        `  [WARN] ${filename}: filename lang "${codeFromName}" != JSON lang "${transLangRaw}"; using JSON lang for DB`,
+      );
+    }
+
+    console.log(`[${transLang}] ${sourceFile} -> translation`);
 
     await upsertSummaryMultilang(documentId, transLang, {
       title: trans.title as string | undefined,
@@ -330,9 +360,33 @@ async function main() {
         }
       }
     }
+
+    const embeddingText = composeEmbeddingText(
+      trans.title as string | undefined,
+      trans.summary as string | undefined,
+      trans.fulltext as string | undefined,
+    );
+    if (embeddingText) {
+      try {
+        const { embedding, cached } = await computeEmbedding(embeddingText);
+        await upsertEmbedding(
+          documentId,
+          transLang,
+          "composed",
+          EMBEDDING_MODEL,
+          EMBEDDING_DIMENSIONS,
+          embedding,
+        );
+        console.log(`  [EMB] ${transLang} ${sourceFile} -> ${cached ? "cached" : "computed"}`);
+      } catch (err) {
+        console.warn(`  [EMB] Failed for ${transLang} ${sourceFile}:`, err);
+      }
+    } else {
+      console.warn(`  [EMB] Skipping ${transLang} ${sourceFile}: no text to embed`);
+    }
   }
 
-  console.log(`\nDone. Pushed ${enFiles.length} documents with ${esFiles.length} translations.`);
+  console.log(`\nDone. Pushed ${enFiles.length} documents with ${translationFiles.length} translation file(s).`);
   await sql.end();
 }
 
