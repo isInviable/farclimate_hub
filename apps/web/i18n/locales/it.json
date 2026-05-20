@@ -104,6 +104,7 @@
       "cancel": "Annulla",
       "saveFailed": "Impossibile salvare il pin",
       "chatResponseTitle": "Risposta IA",
+      "conversationTitle": "Conversazione chat",
       "mindmapPinButton": "Aggiungi mappa mentale",
       "mindmapSnapshotSuffix": "Mappa mentale",
       "mindmapStandaloneTitle": "Mappa mentale esploratore",
@@ -471,7 +472,10 @@
     "example2": "Chi sono gli stakeholder chiave e quali sono i loro ruoli?",
     "example3": "Puoi riassumere l’impatto economico e i costi principali?",
     "example4": "Quali soluzioni o misure di adattamento sono state attuate?",
-    "example5": "Quali sono le lezioni più importanti tratte da questo articolo?"
+    "example5": "Quali sono le lezioni più importanti tratte da questo articolo?",
+    "saveConversation": "Salva conversazione",
+    "referencesCount": "{count} articolo/i",
+    "referencesLoading": "Ricerca fonti…"
   },
   "article": {
     "caseStudyKicker": "Explorer · Caso di studio",

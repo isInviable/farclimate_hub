@@ -104,6 +104,7 @@
       "cancel": "Cancelar",
       "saveFailed": "No se pudo guardar el marcador",
       "chatResponseTitle": "Respuesta de IA",
+      "conversationTitle": "Conversación de chat",
       "mindmapPinButton": "Marcar mapa mental",
       "mindmapSnapshotSuffix": "Mapa mental",
       "mindmapStandaloneTitle": "Mapa mental del explorador",
@@ -432,7 +433,10 @@
     "example2": "¿Quiénes son los actores clave involucrados y cuáles son sus roles?",
     "example3": "¿Puedes resumir el impacto económico y los principales costes?",
     "example4": "¿Qué soluciones o medidas de adaptación se implementaron?",
-    "example5": "¿Cuáles son las lecciones más importantes aprendidas de este artículo?"
+    "example5": "¿Cuáles son las lecciones más importantes aprendidas de este artículo?",
+    "saveConversation": "Guardar conversación",
+    "referencesCount": "{count} artículo(s)",
+    "referencesLoading": "Buscando fuentes…"
   },
   "tabs": {
     "summary": "Vista general",

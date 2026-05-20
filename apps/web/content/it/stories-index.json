@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "title": "Stories of Change",
+    "subtitle": "Discover how communities across Europe are adapting to climate challenges through practical, place-based action.",
+    "backgroundImage": "/img/stories/hero.png"
+  },
+  "cards": [
+    {
+      "slug": "restoring-forest-resilience",
+      "tag": "Forestry",
+      "title": "Restoring forest resilience in the Pyrenees",
+      "date": "24 Nov. 2025",
+      "readTime": "3 min. read",
+      "author": {
+        "name": "Maria López",
+        "organization": "FarClimate",
+        "avatar": "/img/stories/avatar.png"
+      },
+      "excerpt": "A participatory approach to reforest degraded slopes while strengthening local governance and fire-risk planning.",
+      "image": "/img/stories/card-1.png",
+      "readLabel": "Read"
+    },
+    {
+      "slug": "sustainable-fisheries-galicia",
+      "tag": "Fisheries",
+      "title": "Sustainable fisheries in Galicia",
+      "date": "18 Oct. 2025",
+      "readTime": "4 min. read",
+      "author": {
+        "name": "João Silva",
+        "organization": "FarClimate",
+        "avatar": "/img/stories/avatar.png"
+      },
+      "excerpt": "Fishers, scientists, and policymakers co-design monitoring tools to balance livelihoods with ecosystem recovery.",
+      "image": "/img/stories/card-2.png",
+      "readLabel": "Read"
+    },
+    {
+      "slug": "water-smart-agriculture-extremadura",
+      "tag": "Agriculture",
+      "title": "Water-smart agriculture in Extremadura",
+      "date": "5 Sep. 2025",
+      "readTime": "5 min. read",
+      "author": {
+        "name": "Elena Rossi",
+        "organization": "FarClimate",
+        "avatar": "/img/stories/avatar.png"
+      },
+      "excerpt": "Irrigation cooperatives pilot soil-moisture sensors and drought-tolerant varieties to secure harvests under heat stress.",
+      "image": "/img/stories/card-3.png",
+      "readLabel": "Read"
+    }
+  ]
+}

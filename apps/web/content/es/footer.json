@@ -14,7 +14,7 @@
       },
       {
         "label": "Historias",
-        "to": "#stories"
+        "to": "/stories"
       },
       {
         "label": "Soluciones",

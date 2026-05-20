@@ -1,0 +1,186 @@
+{
+  "slug": "kitchen-sink",
+  "hero": {
+    "backLabel": "Back to Stories",
+    "tags": ["Kitchen sink", "Component showcase"],
+    "title": "Story detail component showcase",
+    "subtitle": "All reusable blocks for story pages, driven entirely from Nuxt Content JSON.",
+    "date": "1 Jan. 2026",
+    "readTime": "10 min. read",
+    "author": {
+      "name": "FarClimate Team",
+      "organization": "FarClimate",
+      "avatar": "/img/stories/avatar.png"
+    },
+    "backgroundImage": "/img/stories/hero.png"
+  },
+  "showcase": {
+    "metaBar": {
+      "shareLabel": "Share",
+      "items": [
+        { "icon": "material-symbols:eco", "label": "SDG 13 Climate action" },
+        { "icon": "material-symbols:water-drop", "label": "SDG 6 Clean water" },
+        { "icon": "material-symbols:groups", "label": "SDG 17 Partnerships" }
+      ]
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "number": "01.",
+        "title": "Overview",
+        "overview": {
+          "period": { "label": "Period", "value": "2022 – 2025" },
+          "status": { "label": "Status", "value": "In progress" },
+          "participants": {
+            "label": "Participants",
+            "logos": [
+              "/img/stories/avatar.png",
+              "/img/stories/avatar.png",
+              "/img/stories/avatar.png"
+            ]
+          },
+          "mapImage": "/img/stories/map-overview.png",
+          "mapAlt": "Project region map",
+          "paragraphs": [
+            "This overview block combines metadata, a map placeholder, and narrative copy.",
+            "Replace with real story content when publishing."
+          ]
+        }
+      },
+      {
+        "id": "gallery",
+        "number": "02.",
+        "title": "Gallery",
+        "gallery": {
+          "images": [
+            { "src": "/img/stories/gallery-large.png", "alt": "Field workshop" },
+            { "src": "/img/stories/gallery-small-1.png", "alt": "Community meeting" },
+            { "src": "/img/stories/gallery-small-2.png", "alt": "Monitoring station" }
+          ]
+        }
+      },
+      {
+        "id": "stats",
+        "number": "03.",
+        "title": "Key stats",
+        "stats": {
+          "stats": [
+            {
+              "value": "12",
+              "label": "Pilot sites",
+              "description": "Territories testing adaptation measures across three bioregions."
+            },
+            {
+              "value": "340+",
+              "label": "Participants",
+              "description": "Farmers, fishers, foresters, and local officials engaged in co-design."
+            },
+            {
+              "value": "18",
+              "label": "Tools adopted",
+              "description": "Decision-support resources integrated into local planning workflows."
+            }
+          ]
+        }
+      },
+      {
+        "id": "dataTable",
+        "number": "04.",
+        "title": "Indicators",
+        "dataTable": {
+          "headers": ["Indicator", "Baseline", "Target"],
+          "rows": [
+            ["Soil moisture retention", "42%", "58%"],
+            ["Community training hours", "120 h", "400 h"],
+            ["Governance agreements signed", "2", "8"]
+          ]
+        }
+      },
+      {
+        "id": "quote",
+        "number": "05.",
+        "title": "Lessons learned",
+        "quote": {
+          "quote": "When local knowledge leads the design, adaptation stops being a report on a shelf and becomes shared practice in the territory.",
+          "attribution": "— Participatory workshop facilitator"
+        }
+      },
+      {
+        "id": "linkList",
+        "number": "06.",
+        "title": "Evidence & resources",
+        "linkList": {
+          "links": [
+            { "label": "Project brief (PDF)", "href": "#" },
+            { "label": "Monitoring protocol", "href": "#" },
+            { "label": "EU Climate Adaptation platform", "href": "#" },
+            { "label": "Open dataset repository", "href": "#" }
+          ],
+          "columns": 2
+        }
+      },
+      {
+        "id": "team",
+        "number": "07.",
+        "title": "Approach team",
+        "team": {
+          "members": [
+            {
+              "name": "Alex Morgan",
+              "role": "Process facilitator",
+              "avatar": "/img/stories/avatar.png"
+            },
+            {
+              "name": "Sofia Neri",
+              "role": "Ecological advisor",
+              "avatar": "/img/stories/avatar.png"
+            },
+            {
+              "name": "Tom Becker",
+              "role": "Data steward",
+              "avatar": "/img/stories/avatar.png"
+            },
+            {
+              "name": "Elena Rossi",
+              "role": "Community liaison",
+              "avatar": "/img/stories/avatar.png"
+            }
+          ],
+          "stats": [
+            {
+              "value": "6",
+              "label": "Workshops",
+              "description": "Facilitated sessions across pilot territories."
+            },
+            {
+              "value": "3",
+              "label": "Bioregions",
+              "description": "Geographic scopes covered by the approach."
+            }
+          ]
+        }
+      },
+      {
+        "id": "donuts",
+        "number": "08.",
+        "title": "Results",
+        "donuts": {
+          "donuts": [
+            { "value": 72, "label": "Participation rate" },
+            { "value": 54, "label": "Tool uptake" }
+          ]
+        }
+      },
+      {
+        "id": "timeline",
+        "number": "09.",
+        "title": "Approach timeline",
+        "timeline": {
+          "years": ["2022", "2023", "2024", "2025"],
+          "activeYear": "2024",
+          "mapImage": "/img/stories/map-timeline.png"
+        }
+      }
+    ]
+  }
+}

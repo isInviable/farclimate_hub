@@ -104,6 +104,7 @@
       "cancel": "Cancel",
       "saveFailed": "Could not save pin",
       "chatResponseTitle": "AI response",
+      "conversationTitle": "Chat conversation",
       "mindmapPinButton": "Pin mind map",
       "mindmapSnapshotSuffix": "Mind map",
       "mindmapStandaloneTitle": "Explorer mind map",
@@ -471,7 +472,10 @@
     "example2": "Who are the key stakeholders involved and what are their roles?",
     "example3": "Can you summarize the economic impact and main costs?",
     "example4": "What solutions or adaptation measures were implemented?",
-    "example5": "What are the most important lessons learned from this article?"
+    "example5": "What are the most important lessons learned from this article?",
+    "saveConversation": "Save conversation",
+    "referencesCount": "{count} article(s)",
+    "referencesLoading": "Finding sources…"
   },
   "article": {
     "caseStudyKicker": "Explorer · Case study",

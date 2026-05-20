@@ -1,0 +1,18 @@
+{
+  "slug": "restoring-forest-resilience",
+  "hero": {
+    "backLabel": "Back to Stories",
+    "tags": ["Forestry"],
+    "title": "Restoring Forest Resilience",
+    "subtitle": "In Castilla y León, a community-based program combined controlled burns, reforestation with native species.",
+    "date": "24 Nov. 2025",
+    "readTime": "3 min. read",
+    "author": {
+      "name": "María González",
+      "organization": "FarClimate",
+      "avatar": "/img/stories/avatar.png"
+    },
+    "backgroundImage": "/img/stories/card-1.png"
+  },
+  "comingSoon": "Full story content is being prepared and will be available soon."
+}
