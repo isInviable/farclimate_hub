@@ -47,13 +47,18 @@
       fullscreen
       title="Chat about the selected solutions"
       :ui="{
-        content: 'min-h-0 flex max-h-dvh flex-col',
+        content: 'flex h-dvh max-h-dvh min-h-0 flex-col',
         body: 'flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6',
       }"
     >
       <template #body>
-        <div class="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col">
-          <ViewModeChat :hits="selectedSolutionsHits" />
+        <div class="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col">
+          <ArticleTextSelectionCapture source-view="chat">
+            <ViewModeChat
+              :hits="selectedSolutionsHits"
+              @open-article="handleChatOpenArticle"
+            />
+          </ArticleTextSelectionCapture>
         </div>
       </template>
     </UModal>
@@ -250,6 +255,16 @@ const handlePodcastGenerated = () => {
 
 const handlePowerPointGenerated = () => {
   void powerPointArtifactsApi.fetchPowerPointArtifacts(projectsStore.currentProjectId)
+}
+
+const localePath = useLocalePath();
+
+function handleChatOpenArticle(documentUid: string) {
+  const uid = documentUid.trim();
+  if (!uid) return;
+  void navigateTo(
+    localePath({ path: "/explorer/explorer", query: { document: uid } }),
+  );
 }
 
 // Compute selected solution hits for modals

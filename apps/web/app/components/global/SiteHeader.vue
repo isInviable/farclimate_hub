@@ -22,7 +22,7 @@
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
           <NuxtLinkLocale to="/explorer/">Solutions</NuxtLinkLocale>
-          <NuxtLinkLocale to="#stories">Stories</NuxtLinkLocale>
+          <NuxtLinkLocale to="/stories">Stories</NuxtLinkLocale>
           <NuxtLinkLocale to="/skills">Skills</NuxtLinkLocale>
           <NuxtLinkLocale to="/connected/dashboard">Connected Action</NuxtLinkLocale>
           <NuxtLinkLocale to="#about">About</NuxtLinkLocale>

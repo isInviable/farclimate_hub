@@ -35,6 +35,10 @@ export default defineNuxtConfig({
     {
       path: '~/components/skills',
       pathPrefix: false
+    },
+    {
+      path: '~/components/stories',
+      pathPrefix: false
     }
   ],
   devtools: {

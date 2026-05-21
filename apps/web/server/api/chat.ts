@@ -1,11 +1,19 @@
 import { google } from "@ai-sdk/google";
 import {
   convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
   smoothStream,
   streamText,
   type UIMessage,
 } from "ai";
 import { defineEventHandler, readBody } from "h3";
+import {
+  getLastUserMessageText,
+  normalizeCatalog,
+  parseChatMode,
+} from "../utils/chatCatalog";
+import { extractChatCitations } from "../utils/chatCitations";
 
 export default defineEventHandler(async (event) => {
   if (event.method !== "POST") {
@@ -17,6 +25,9 @@ export default defineEventHandler(async (event) => {
   if (!messages || !Array.isArray(messages)) {
     return { status: 400, body: "Missing or invalid 'messages' array" };
   }
+
+  const mode = parseChatMode(body.mode);
+  const catalog = normalizeCatalog(body.catalog);
 
   let context = "";
   if (documents && Array.isArray(documents) && documents.length > 0) {
@@ -36,16 +47,60 @@ export default defineEventHandler(async (event) => {
   }
 
   const modelMessages = await convertToModelMessages(messages as UIMessage[]);
+  const userQuestion = getLastUserMessageText(messages);
 
-  const result = streamText({
-    model: google("gemini-3.1-flash-lite-preview"),
-    system,
-    messages: modelMessages,
-    // Re-chunk provider output so the UI updates in smaller steps (word ≈ ChatGPT-like; use "line" for newline-based chunks).
-    experimental_transform: smoothStream({ chunking: "word" }),
+  const stream = createUIMessageStream({
+    originalMessages: messages as UIMessage[],
+    execute: async ({ writer }) => {
+      const result = streamText({
+        model: google("gemini-3.1-flash-lite-preview"),
+        system,
+        messages: modelMessages,
+        experimental_transform: smoothStream({ chunking: "word" }),
+      });
+
+      const uiStream = result.toUIMessageStream({ sendFinish: false });
+      const reader = uiStream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          writer.write(value);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      const assistantText = await result.text;
+
+      if (mode === "corpus" && catalog.length > 0 && assistantText.trim()) {
+        try {
+          const citations = await extractChatCitations({
+            userQuestion,
+            assistantText,
+            catalog,
+          });
+          writer.write({
+            type: "data-citations",
+            id: "citations",
+            data: { citations },
+          });
+        } catch (err) {
+          console.warn("[chat] citation extraction failed", err);
+          writer.write({
+            type: "data-citations",
+            id: "citations",
+            data: { citations: [] },
+          });
+        }
+      }
+
+      writer.write({ type: "finish", finishReason: "stop" });
+    },
   });
 
-  return result.toUIMessageStreamResponse({
+  return createUIMessageStreamResponse({
+    stream,
     onError: (err) => {
       if (err == null) return "An error occurred.";
       if (typeof err === "string") return err;

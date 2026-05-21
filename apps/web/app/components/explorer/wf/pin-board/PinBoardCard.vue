@@ -96,6 +96,37 @@
       </template>
     </UModal>
 
+    <UModal
+      v-model:open="isChatFullscreenOpen"
+      fullscreen
+      :ui="{
+        content: 'flex h-dvh max-h-dvh min-h-0 flex-col',
+        body: 'flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6',
+      }"
+    >
+      <template #body>
+        <div class="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-1 flex-col">
+          <div class="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-2">
+            <h2 class="font-display text-xl font-bold text-neutral-darkest">
+              {{ pin.source_title_snapshot?.trim() || $t("pins.capture.conversationTitle") }}
+            </h2>
+            <UButton
+              size="sm"
+              variant="outline"
+              color="neutral"
+              class="rounded-none"
+              @click="isChatFullscreenOpen = false"
+            >
+              {{ $t("pins.chatClose") }}
+            </UButton>
+          </div>
+          <div class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+            <PinRenderChat :data="bodyData" :preview="false" />
+          </div>
+        </div>
+      </template>
+    </UModal>
+
     <UModal v-model:open="isMarkmapFullscreenOpen" fullscreen>
       <template #body>
         <div class="max-w-6xl mx-auto py-6 px-4">
@@ -196,12 +227,20 @@
       <div
         :class="[
           'space-y-3',
-          pin.source_document_uid || markmapBodyClickable
+          pin.source_document_uid || markmapBodyClickable || chatBodyClickable
             ? 'cursor-pointer hover:bg-warm-neutral-100 -mx-2 px-2 py-1 transition-colors'
             : '',
         ]"
-        :role="pin.source_document_uid || markmapBodyClickable ? 'button' : undefined"
-        :tabindex="pin.source_document_uid || markmapBodyClickable ? 0 : undefined"
+        :role="
+          pin.source_document_uid || markmapBodyClickable || chatBodyClickable
+            ? 'button'
+            : undefined
+        "
+        :tabindex="
+          pin.source_document_uid || markmapBodyClickable || chatBodyClickable
+            ? 0
+            : undefined
+        "
         @click="handleBodyClick"
         @keydown.enter.prevent="handleBodyClick"
         @keydown.space.prevent="handleBodyClick"
@@ -234,6 +273,7 @@ import type { HumanPinRow } from "~/types/pins";
 import { pinBodyKindBadgeColor } from "~/utils/pinBodyKindBadge";
 import { pinToSelectionItem } from "~/utils/pinSelection";
 import PinBodyRenderer from "./PinBodyRenderer.vue";
+import PinRenderChat from "./PinRenderChat.vue";
 import MarkmapViewer from "~/components/explorer/MarkmapViewer.client.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { usePinnedSelectionStore } from "@/stores/selection";
@@ -254,6 +294,7 @@ const pinsApi = usePinsSupabase();
 const enableSelection = computed(() => props.enableSelection ?? false);
 
 const isDeleteConfirmOpen = ref(false);
+const isChatFullscreenOpen = ref(false);
 const isMarkmapFullscreenOpen = ref(false);
 const isEditNoteOpen = ref(false);
 const editNoteDraft = ref("");
@@ -267,6 +308,12 @@ const bodyData = computed(() => {
   if (d && typeof d === "object" && !Array.isArray(d))
     return d as Record<string, unknown>;
   return {};
+});
+
+const chatBodyClickable = computed(() => {
+  if (props.pin.body_kind !== "chat") return false;
+  const raw = bodyData.value.messages;
+  return Array.isArray(raw) && raw.length > 0;
 });
 
 const markmapBodyClickable = computed(() => {
@@ -384,6 +431,10 @@ function handleBodyClick() {
   if (typeof window !== "undefined") {
     const selection = window.getSelection?.();
     if (selection && selection.toString().length > 0) return;
+  }
+  if (chatBodyClickable.value) {
+    isChatFullscreenOpen.value = true;
+    return;
   }
   if (markmapBodyClickable.value) {
     isMarkmapFullscreenOpen.value = true;

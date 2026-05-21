@@ -68,6 +68,46 @@ describe("buildPinCapturePayload", () => {
     expect(payload.source_title_snapshot).toBe("Case study — Mind map");
   });
 
+  it("builds chat thread pin with messages and citations map", () => {
+    const payload = buildPinCapturePayload({
+      bodyKind: "chat",
+      title: "Chat — Question?",
+      data: {
+        messages: [
+          { id: "u1", role: "user", text: "Question?" },
+          { id: "a1", role: "assistant", text: "Answer." },
+        ],
+        sourceView: "chat",
+        mode: "corpus",
+        citationsByMessageId: {
+          a1: [
+            {
+              articleId: "uid-1",
+              documentUid: "uid-1",
+              title: "Paper A",
+            },
+          ],
+        },
+      },
+      notes: null,
+      sourceDocumentUid: null,
+      location: null,
+    });
+
+    expect(payload.body_kind).toBe("chat");
+    expect(payload.body.data.messages).toHaveLength(2);
+    expect(payload.body.data.citationsByMessageId).toEqual({
+      a1: [
+        {
+          articleId: "uid-1",
+          documentUid: "uid-1",
+          title: "Paper A",
+        },
+      ],
+    });
+    expect(payload.body.data.mode).toBe("corpus");
+  });
+
   it("builds full-document pin with stable body.data marker", () => {
     const payload = buildPinCapturePayload({
       bodyKind: "document",

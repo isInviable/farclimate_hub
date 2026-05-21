@@ -56,6 +56,22 @@ For `body_kind` representing a saved chat, the UI SHALL render `body.data.messag
 - **WHEN** a pin has `body_kind` for chat and `data.messages` is a non-empty array
 - **THEN** each message SHALL show content and identifiable sender side/label
 
+### Requirement: Full-thread chat pins may include citations metadata
+
+When `body_kind` is `chat` and `body.data.citationsByMessageId` is a non-empty object, the pinboard chat renderer SHOULD display citation titles under the matching assistant messages when rendering the saved thread, using the stored `title` and `documentUid` fields. Opening a stored citation SHOULD use the same `open-article` / explorer deep-link behavior as live corpus chat when `documentUid` is present.
+
+Real-time sync or editing of saved threads is not required.
+
+#### Scenario: Saved thread pin shows citations under assistant message
+
+- **WHEN** a pin has `body_kind` `chat`, `data.messages` includes an assistant message with id `m1`, and `data.citationsByMessageId.m1` lists one citation with a title
+- **THEN** the pin detail view SHALL show that title associated with the assistant message for `m1`
+
+#### Scenario: Thread pin without citations metadata
+
+- **WHEN** a `chat` pin has `messages` but no `citationsByMessageId`
+- **THEN** the pin SHALL render messages only without citation rows
+
 ### Requirement: Logical document reference and missing source
 When `source_document_uid` is set, the app SHALL attempt to resolve the current knowledge document (e.g. via existing search or document APIs). If resolution fails, the UI SHALL still show `source_title_snapshot` and pin `body`, SHALL show a clear **source missing** (or equivalent i18n) badge, and SHALL disable or omit deep links to the document; viewing pin body and `user_note` SHALL remain possible. Clients SHALL set `source_document_uid` whenever the pinned content originates from a surface that knows its parent knowledge document (e.g. article views); omitting `source_document_uid` in such cases is a client-side defect, not an acceptable fallback.
 

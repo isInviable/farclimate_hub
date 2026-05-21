@@ -1,7 +1,7 @@
 <template>
   <div
     ref="container"
-    class="relative"
+    class="relative flex min-h-0 flex-1 flex-col"
     @mouseup="refreshSelection"
     @keyup="refreshSelection"
   >
