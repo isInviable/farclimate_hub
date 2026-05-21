@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SkillItem } from '~/composables/useSkillsData'
+import type { SkillItem } from '~/types/skills'
 
 defineProps<{
   items: SkillItem[]
@@ -13,6 +13,15 @@ defineProps<{
         v-for="item in items"
         :key="item.id"
         :item="item"
+      />
+      <UAlert
+        v-if="!items.length"
+        class="col-span-2"
+        color="neutral"
+        variant="soft"
+        icon="i-heroicons-information-circle"
+        title="No skills found"
+        description="Try clearing filters or publishing new skills from the admin panel."
       />
     </div>
   </div>

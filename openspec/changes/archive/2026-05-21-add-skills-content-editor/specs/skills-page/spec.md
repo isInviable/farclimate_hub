@@ -1,15 +1,4 @@
-## Requirements
-
-### Requirement: Skills page renders hero section
-The page SHALL display a full-width hero section with a background image, dark gradient overlay, a large heading, and a subtitle paragraph. The header navigation SHALL be transparent and overlaid on the hero.
-
-#### Scenario: Hero displays headline and subtitle
-- **WHEN** a user visits `/skills`
-- **THEN** the hero section SHALL show the heading "Learn the skills to adapt and thrive in a changing climate" and the subtitle text
-
-#### Scenario: Hero uses transparent navigation overlay
-- **WHEN** the skills page loads
-- **THEN** the `SiteHeader` SHALL be rendered in overlay mode (`mode=true`) so it sits on top of the hero image
+## ADDED Requirements
 
 ### Requirement: Skill detail pages render published skill content
 The system SHALL provide a localized public detail page for each published skill that renders shared skill fields plus localized title and content. Shared fields SHALL include header image, tags, and external links. Localized fields SHALL include title, markdown body, and summary derived from the `<!-- more -->` marker.
@@ -24,7 +13,7 @@ The system SHALL provide a localized public detail page for each published skill
 
 #### Scenario: Locale-specific skill detail is requested
 - **WHEN** a user visits a skill detail page in English, Spanish, or Italian
-- **THEN** the page SHALL load the shared published skill fields and the active locale's title and markdown body, falling back to English when the locale has no dedicated content row
+- **THEN** the page SHALL load the shared published skill fields and the active locale's title and markdown body
 
 ### Requirement: Skills page filters by Supabase tags
 The page SHALL allow users to filter published skills by one-level tags loaded from Supabase with labels localized to English, Spanish, and Italian.
@@ -36,6 +25,8 @@ The page SHALL allow users to filter published skills by one-level tags loaded f
 #### Scenario: User clears tag filters
 - **WHEN** a user clears all selected tag filters
 - **THEN** the grid SHALL show all published skills available for the current locale
+
+## MODIFIED Requirements
 
 ### Requirement: Skills page renders a filter sidebar
 The page SHALL display a left sidebar with tag filters loaded from the published skills taxonomy and simple filter options that match the current skills browsing experience.
@@ -66,7 +57,7 @@ The page SHALL display a grid of `SkillCard` components populated from published
 - **WHEN** `SkillCard` is given a published skill item prop
 - **THEN** it SHALL render the item's image, date or read-time metadata, title, summary, tags, and a link to the skill detail page
 
-### Requirement: Skills data layer is typed and Supabase-backed
+### Requirement: Dummy data is typed and swappable
 The skills data layer SHALL expose a typed interface compatible with the public skills components while loading published skills and tag metadata from Supabase instead of static placeholder data.
 
 #### Scenario: Data interface has required fields

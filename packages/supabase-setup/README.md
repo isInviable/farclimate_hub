@@ -62,6 +62,13 @@ Current setup includes:
 10. `08_article_images_storage.sql`
    - Creates public Storage bucket **`article-images`** for regenerable knowledge/article images written by the data pipeline.
 
+11. `09_skills_content.sql`
+   - Creates Connected Action skills content tables in the **`public`** schema: shared skills, localized skill content rows, localized tags, tag assignments, and external links.
+   - Creates public Storage bucket **`skills`** for admin-uploaded skill header images.
+   - Enables RLS on all skills tables: anonymous users can read only published skills content, while writes require the `connected_admin` JWT claim.
+   - Seeds the initial one-level tag taxonomy and placeholder skills content for English, Spanish, and Italian.
+   - Does not create or modify objects in the `human` or `knowledge` schemas.
+
 ## Usage
 
 From the repo root:

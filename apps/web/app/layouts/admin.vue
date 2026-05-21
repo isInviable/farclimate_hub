@@ -4,37 +4,54 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 const { user, signOut, isAuthenticated, isConnectedAdmin } = useAccess();
 const router = useRouter();
 
-const items: NavigationMenuItem[] = [
-  {
-    label: "Entities (CORDIS)",
-    icon: "i-lucide-building-2",
-    to: "/admin/entities",
-  },
-  {
-    label: "Projects (CORDIS)",
-    icon: "i-lucide-folders",
-    to: "/admin/projects",
-  },
-  {
-    label: "Products (CORDIS)",
-    icon: "i-lucide-package-search",
-    to: "/admin/products",
-  },
-  {
-    label: "Products (custom)",
-    icon: "i-lucide-package-plus",
-    to: "/admin/products-custom",
-  },
-  {
-    label: "Climate risks",
-    icon: "i-lucide-zap",
-    to: "/admin/aux-climate-risks",
-  },
-  {
-    label: "Themes",
-    icon: "i-lucide-layers-3",
-    to: "/admin/aux-themes",
-  },
+const items: NavigationMenuItem[][] = [
+  [
+    {
+      label: "Connected Action",
+      type: "label",
+    },
+    {
+      label: "Entities (CORDIS)",
+      icon: "i-lucide-building-2",
+      to: "/admin/entities",
+    },
+    {
+      label: "Projects (CORDIS)",
+      icon: "i-lucide-folders",
+      to: "/admin/projects",
+    },
+    {
+      label: "Products (CORDIS)",
+      icon: "i-lucide-package-search",
+      to: "/admin/products",
+    },
+    {
+      label: "Products (custom)",
+      icon: "i-lucide-package-plus",
+      to: "/admin/products-custom",
+    },
+    {
+      label: "Climate risks",
+      icon: "i-lucide-zap",
+      to: "/admin/aux-climate-risks",
+    },
+    {
+      label: "Themes",
+      icon: "i-lucide-layers-3",
+      to: "/admin/aux-themes",
+    },
+  ],
+  [
+    {
+      label: "Content",
+      type: "label",
+    },
+    {
+      label: "Skills",
+      icon: "i-lucide-graduation-cap",
+      to: "/admin/skills",
+    },
+  ],
 ];
 
 const handleLogout = async () => {

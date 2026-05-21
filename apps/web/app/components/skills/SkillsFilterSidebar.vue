@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface CategoryItem {
   label: string
+  slug?: string
   count?: number
 }
 
@@ -9,8 +10,17 @@ defineProps<{
   filterOptions: CategoryItem[]
 }>()
 
-const selectedCategories = ref<string[]>([])
+const selectedCategories = defineModel<string[]>('selectedCategories', { default: [] })
 const selectedFilters = ref<string[]>([])
+
+function toggleSelection(values: string[], value: string, selected: boolean) {
+  if (selected && !values.includes(value)) {
+    values.push(value)
+  } else if (!selected) {
+    const index = values.indexOf(value)
+    if (index >= 0) values.splice(index, 1)
+  }
+}
 </script>
 
 <template>
@@ -21,12 +31,12 @@ const selectedFilters = ref<string[]>([])
       </h2>
       <UCheckbox
         v-for="cat in trainingCategories"
-        :key="cat.label"
-        v-model="selectedCategories"
-        :value="cat.label"
+        :key="cat.slug ?? cat.label"
+        :model-value="selectedCategories.includes(cat.slug ?? cat.label)"
         :label="`${cat.label}${cat.count !== undefined ? ` (${cat.count})` : ''}`"
         color="neutral"
         class="font-mono text-[13px] text-neutral-darkest"
+        @update:model-value="(value) => toggleSelection(selectedCategories, cat.slug ?? cat.label, Boolean(value))"
       />
     </div>
 
@@ -37,11 +47,11 @@ const selectedFilters = ref<string[]>([])
       <UCheckbox
         v-for="opt in filterOptions"
         :key="opt.label"
-        v-model="selectedFilters"
-        :value="opt.label"
+        :model-value="selectedFilters.includes(opt.label)"
         :label="opt.label"
         color="neutral"
         class="font-mono text-[13px] text-neutral-darkest"
+        @update:model-value="(value) => toggleSelection(selectedFilters, opt.label, Boolean(value))"
       />
     </div>
   </aside>

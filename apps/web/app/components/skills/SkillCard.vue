@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SkillItem } from '~/composables/useSkillsData'
+import type { SkillItem } from '~/types/skills'
 
 defineProps<{
   item: SkillItem
@@ -36,6 +36,18 @@ defineProps<{
       <p class="font-mono font-light text-[13px] leading-relaxed text-neutral-darkest w-full">
         {{ item.description }}
       </p>
+
+      <div v-if="item.tags.length" class="flex flex-wrap gap-2">
+        <UBadge
+          v-for="tag in item.tags"
+          :key="tag.slug"
+          color="neutral"
+          variant="soft"
+          size="sm"
+        >
+          {{ tag.label }}
+        </UBadge>
+      </div>
     </div>
 
     <NuxtLinkLocale
@@ -43,7 +55,7 @@ defineProps<{
       class="flex items-center gap-4 bg-neutral-darkest pl-4 shrink-0"
     >
       <span class="font-mono font-medium text-[13px] text-neutral-lightest">Read</span>
-      <div class="bg-[#9e9e14] flex items-center justify-center size-10 shrink-0">
+      <div class="bg-grounded-green-dark flex items-center justify-center size-10 shrink-0">
         <UIcon name="i-heroicons-arrow-down" class="size-6 text-white" />
       </div>
     </NuxtLinkLocale>
