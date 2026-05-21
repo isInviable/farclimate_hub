@@ -757,6 +757,9 @@ async function deleteProduct() {
             :columns="columns"
             :loading="loading"
             empty="No products found"
+            :ui="{
+              td: 'text-neutral-dark',
+            }"
           >
             <template #actions-cell="{ row }">
               <UButton

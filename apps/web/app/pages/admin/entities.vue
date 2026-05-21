@@ -462,10 +462,14 @@ function cancelEdit() {
 
         <div class="overflow-x-auto">
           <UTable
+          
             :data="items"
             :columns="columns"
             :loading="loading"
             empty="No entities found"
+            :ui="{
+              td: 'text-neutral-dark',
+            }"
           >
             <template #actions-cell="{ row }">
               <UButton

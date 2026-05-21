@@ -270,6 +270,9 @@ async function deleteRisk() {
             :columns="columns"
             :loading="loading"
             empty="No climate risks found"
+            :ui="{
+              td: 'text-neutral-dark',
+            }"
           >
             <template #actions-cell="{ row }">
               <UButton

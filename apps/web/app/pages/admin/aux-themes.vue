@@ -270,6 +270,9 @@ async function deleteTheme() {
             :columns="columns"
             :loading="loading"
             empty="No themes found"
+            :ui="{
+              td: 'text-neutral-dark',
+            }"
           >
             <template #actions-cell="{ row }">
               <UButton
