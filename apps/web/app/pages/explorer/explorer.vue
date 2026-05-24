@@ -11,6 +11,7 @@
             :search-results="searchStore.resultsData?.hits || []"
             :facets-data="searchStore.facetsData"
             @filters-changed="handleFiltersChanged"
+            @run-search="handleRunSearch"
             @search-results="handleSearchResults"
             @search-error="handleSearchError"
           />
@@ -220,7 +221,7 @@ import type { ExplorerEffectiveFilters } from "@/types/explorerFilters";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
 import { fetchCorpusMetadata } from "@/composables/useFacets";
-import type { ArticleDetail } from "@/types/search";
+import type { ArticleDetail, SearchFacetParams } from "@/types/search";
 import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel.vue";
 import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
@@ -278,6 +279,7 @@ const searchStore = useSearchStore();
 const route = useRoute();
 const router = useRouter();
 const { search: hybridSearch, loadAll, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
+const appliedSearchQuery = ref("");
 
 function getDocumentUidFromQuery(
   q: typeof route.query
@@ -423,30 +425,64 @@ const setViewMode = (mode: string) => {
   viewMode.value = mode;
 };
 
+function activeKeysFromBooleanMap(value: unknown): string[] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  return Object.entries(value as Record<string, unknown>)
+    .filter(([, selected]) => Boolean(selected))
+    .map(([key]) => key);
+}
+
+function stringsFromArrayOrBooleanMap(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  }
+  return activeKeysFromBooleanMap(value);
+}
+
+function filtersToFacetParams(filters: Record<string, any>): SearchFacetParams {
+  return {
+    sectors: stringsFromArrayOrBooleanMap(filters.sector),
+    climate_impacts: stringsFromArrayOrBooleanMap(filters.hazards),
+    adaptation_approaches: [],
+    keywords: [],
+    biogeographical_regions: stringsFromArrayOrBooleanMap(filters.biogeographical_regions),
+  };
+}
+
+async function runExplorerSearch(filters: Record<string, any>, options: { commitSearchQuery?: boolean } = {}) {
+  searchStore.setExplorerEffectiveFilters(filters as ExplorerEffectiveFilters);
+
+  if (facetFilters) {
+    facetFilters.value = filtersToFacetParams(filters);
+  }
+
+  const currentQuery = searchStore.searchQuery.trim();
+  if (options.commitSearchQuery && currentQuery) {
+    appliedSearchQuery.value = currentQuery;
+    await hybridSearch(currentQuery);
+    return;
+  }
+
+  const filtersStillContainAppliedQuery =
+    typeof filters.search === "string" &&
+    filters.search.trim() === appliedSearchQuery.value &&
+    appliedSearchQuery.value.length > 0;
+
+  if (filtersStillContainAppliedQuery) {
+    await hybridSearch(appliedSearchQuery.value);
+  } else {
+    appliedSearchQuery.value = "";
+    await loadAll();
+  }
+}
+
 // Filter handling methods
 const handleFiltersChanged = (filters: Record<string, any>) => {
-  searchStore.setExplorerEffectiveFilters(filters as ExplorerEffectiveFilters);
-  // Sync facet params and re-run search so API returns filtered results
-  const sectorSel = filters.sector;
-  const sectors = typeof sectorSel === "object" && sectorSel !== null
-    ? Object.entries(sectorSel).filter(([, v]) => v).map(([k]) => k)
-    : [];
-  const hazardsSel = filters.hazards;
-  const climate_impacts = typeof hazardsSel === "object" && hazardsSel !== null
-    ? Object.entries(hazardsSel).filter(([, v]) => v).map(([k]) => k)
-    : [];
-  const regionsSel = filters.biogeographical_regions;
-  const biogeographical_regions = typeof regionsSel === "object" && regionsSel !== null && !Array.isArray(regionsSel)
-    ? Object.entries(regionsSel).filter(([, v]) => v).map(([k]) => k)
-    : Array.isArray(regionsSel) ? regionsSel.filter((v): v is string => typeof v === "string") : [];
-  if (facetFilters) {
-    facetFilters.value = { sectors, climate_impacts, adaptation_approaches: [], keywords: [], biogeographical_regions };
-  }
-  if (searchStore.searchQuery.trim()) {
-    hybridSearch(searchStore.searchQuery);
-  } else {
-    loadAll();
-  }
+  void runExplorerSearch(filters);
+};
+
+const handleRunSearch = (filters: Record<string, any>) => {
+  void runExplorerSearch(filters, { commitSearchQuery: true });
 };
 
 const handleSearchResults = (results: any) => {
@@ -470,7 +506,10 @@ const handleArticleClick = (articleId: string) => {
 
 async function search() {
   if (!searchQuery.value.trim()) return;
-  await hybridSearch(searchQuery.value);
+  await runExplorerSearch(
+    { ...searchStore.explorerEffectiveFilters, search: searchQuery.value },
+    { commitSearchQuery: true }
+  );
 }
 
 async function loadAllArticles() {
@@ -583,36 +622,39 @@ const filteredPapers = computed(() => {
     const activeFilters = searchStore.explorerEffectiveFilters;
 
     const sectorFilter = activeFilters.sector;
+    const activeSectors = activeKeysFromBooleanMap(sectorFilter);
     const docSectors = Array.isArray(doc.sectors) ? doc.sectors : doc.sectors ? [doc.sectors] : [];
     const sectorMatch =
-      !sectorFilter ||
-      Object.entries(sectorFilter).some(
-        ([sector, selected]) =>
-          selected && docSectors.some((s: string) => s.toLowerCase().includes(sector.toLowerCase()))
+      activeSectors.length === 0 ||
+      activeSectors.some(
+        (sector) =>
+          docSectors.some((s: string) => s.toLowerCase().includes(sector.toLowerCase()))
       );
 
     const hazardsFilter = activeFilters.hazards;
+    const activeHazards = activeKeysFromBooleanMap(hazardsFilter);
     const docHazards = doc.climate_impacts || [];
     const hazardMatch =
-      !hazardsFilter ||
-      Object.entries(hazardsFilter).some(
-        ([hazard, selected]) =>
-          selected &&
+      activeHazards.length === 0 ||
+      activeHazards.some(
+        (hazard) =>
           docHazards.some((h: string) => h.toLowerCase().includes(hazard.toLowerCase()))
       );
 
     const phasesFilter = activeFilters.phases;
+    const activePhases = activeKeysFromBooleanMap(phasesFilter);
     const phaseMatch =
-      !phasesFilter ||
-      Object.entries(phasesFilter).some(
-        ([phase, selected]) => selected && doc.phase?.toLowerCase() === phase
+      activePhases.length === 0 ||
+      activePhases.some(
+        (phase) => doc.phase?.toLowerCase() === phase
       );
 
     const scalesFilter = activeFilters.scales;
+    const activeScales = activeKeysFromBooleanMap(scalesFilter);
     const scaleMatch =
-      !scalesFilter ||
-      Object.entries(scalesFilter).some(
-        ([scale, selected]) => selected && doc.scale?.toLowerCase() === scale
+      activeScales.length === 0 ||
+      activeScales.some(
+        (scale) => doc.scale?.toLowerCase() === scale
       );
 
     return sectorMatch && hazardMatch && phaseMatch && scaleMatch;
@@ -692,11 +734,7 @@ onMounted(async () => {
 
 // Watch for language changes and refresh results
 watch(locale, () => {
-  if (searchQuery.value.trim()) {
-    search();
-  } else {
-    loadAllArticles();
-  }
+  void runExplorerSearch(searchStore.explorerEffectiveFilters as Record<string, any>);
 });
 
 /** Re-run URL search bootstrap when query/type/sector change (client navigation from landing). */

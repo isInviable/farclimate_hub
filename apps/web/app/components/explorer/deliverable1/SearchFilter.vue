@@ -56,7 +56,6 @@
 
 <script setup lang="ts">
 import { useSearchStore } from "@/stores/search";
-import { useHybridSearch } from "@/composables/useHybridSearch";
 import FilterComponent from "./FilterComponent.vue";
 
 const props = defineProps<{
@@ -69,14 +68,14 @@ const emit = defineEmits<{
   'filter-change': [key: string, value: any, enabled: boolean];
   'filter-clear': [key: string];
   'filter-apply': [key: string, value: any];
+  'run-search': [];
 }>();
 
 const { t } = useI18n();
 const searchStore = useSearchStore();
-const { search: hybridSearch, isSearching: hybridSearching, error: searchError } = useHybridSearch();
 
 const isSearchEnabled = computed(() => props.enabled || false);
-const isSearching = computed(() => hybridSearching.value);
+const isSearching = computed(() => searchStore.isSearching);
 
 const recommendationPills = ref([
   "forestry",
@@ -102,16 +101,17 @@ const handleFilterChange = (key: string, value: any, enabled: boolean) => {
   if (enabled && value !== undefined && value !== null && typeof value === "string") {
     searchStore.setSearchQuery(value);
   }
+  emit('filter-change', key, value, enabled);
 };
 
 const handleFilterClear = (key: string) => {
   searchStore.setSearchQuery('');
-  searchStore.setResultsData(null);
+  emit('filter-clear', key);
 };
 
 const handleFilterApply = (key: string, value: any) => {
   if (typeof value === "string") searchStore.setSearchQuery(value);
-  handleSearch();
+  emit('filter-apply', key, value);
 };
 
 const handleSearch = async () => {
@@ -121,13 +121,7 @@ const handleSearch = async () => {
     emit('filter-change', 'search', searchStore.searchQuery, true);
   }
 
-  await hybridSearch(searchStore.searchQuery);
-
-  if (searchError.value) {
-    emit('search-error', searchError.value);
-  } else {
-    emit('search-results', searchStore.resultsData);
-  }
+  emit('run-search');
 };
 
 const searchWithPill = (pill: string) => {

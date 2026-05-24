@@ -27,6 +27,7 @@
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
+          @run-search="handleRunSearch"
         />
 
         <!-- Sector Filter (Active) -->
@@ -106,6 +107,7 @@
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
+          @run-search="handleRunSearch"
         />
 
         <!-- Sector Filter -->
@@ -218,6 +220,7 @@ const props = defineProps<{
 // Emits
 const emit = defineEmits<{
   'filters-changed': [filters: Record<string, any>];
+  'run-search': [filters: Record<string, any>];
   'search-results': [results: any];
   'search-error': [error: any];
 }>();
@@ -226,6 +229,7 @@ const emit = defineEmits<{
 const filters = reactive<Record<string, any>>({});
 const enabledFilters = reactive<Record<string, boolean>>({});
 const searchResults = ref(props.searchResults || []);
+const lastActiveConstraintSignature = ref(activeConstraintSignature({}));
 
 // Derive current result-set counts as Record<value, count> for BarChartFilter.
 const sectorCountsFromResultSet = computed(() => {
@@ -342,6 +346,50 @@ function getEffectiveFilters() {
   );
 }
 
+function activeKeysFromBooleanMap(value: unknown): string[] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  return Object.entries(value as Record<string, unknown>)
+    .filter(([, selected]) => Boolean(selected))
+    .map(([key]) => key)
+    .sort();
+}
+
+function activeValues(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+      .sort();
+  }
+  return activeKeysFromBooleanMap(value);
+}
+
+function activeConstraintSignature(effectiveFilters: Record<string, any>) {
+  return JSON.stringify({
+    sector: activeValues(effectiveFilters.sector),
+    hazards: activeValues(effectiveFilters.hazards),
+    biogeographical_regions: activeValues(effectiveFilters.biogeographical_regions),
+    phases: activeValues(effectiveFilters.phases),
+    scales: activeValues(effectiveFilters.scales),
+    time: activeValues(effectiveFilters.time),
+  });
+}
+
+function emitFiltersChangedIfConstraintsChanged(force = false) {
+  const effective = getEffectiveFilters();
+  const nextSignature = activeConstraintSignature(effective);
+  if (!force && nextSignature === lastActiveConstraintSignature.value) return;
+
+  lastActiveConstraintSignature.value = nextSignature;
+  emit('filters-changed', effective);
+}
+
+function clearSearchFilterAndRefetch() {
+  delete filters.search;
+  enabledFilters.search = false;
+  searchStore.setSearchQuery("");
+  emitFiltersChangedIfConstraintsChanged(true);
+}
+
 /** Mirror `searchStore.searchQuery` into local filter state without emitting (typing updates the store each keystroke; emitting would re-trigger hybrid search). Explorer runs `search()` after URL bootstrap. */
 watch(
   () => searchStore.searchQuery,
@@ -358,21 +406,51 @@ watch(
 );
 
 const handleFilterChange = (key: string, value: any, enabled: boolean) => {
+  if (key === "search") {
+    if (!enabled) {
+      clearSearchFilterAndRefetch();
+      return;
+    }
+
+    filters.search = typeof value === "string" ? value : searchStore.searchQuery;
+    enabledFilters.search = true;
+    return;
+  }
+
   filters[key] = value;
   enabledFilters[key] = enabled;
-  emit('filters-changed', getEffectiveFilters());
+  emitFiltersChangedIfConstraintsChanged();
 };
 
 const handleFilterClear = (key: string) => {
+  if (key === "search") {
+    clearSearchFilterAndRefetch();
+    return;
+  }
+
   delete filters[key];
   enabledFilters[key] = false;
-  emit('filters-changed', getEffectiveFilters());
+  emitFiltersChangedIfConstraintsChanged();
 };
 
 const handleFilterApply = (key: string, value: any) => {
   filters[key] = value;
   enabledFilters[key] = true;
-  emit('filters-changed', getEffectiveFilters());
+  if (key === "search") {
+    handleRunSearch();
+    return;
+  }
+
+  emitFiltersChangedIfConstraintsChanged();
+};
+
+const handleRunSearch = () => {
+  const query = searchStore.searchQuery.trim();
+  if (!query) return;
+
+  filters.search = query;
+  enabledFilters.search = true;
+  emit('run-search', getEffectiveFilters());
 };
 
 const handleSearchResults = (results: any) => {
@@ -390,6 +468,7 @@ const handleLoadSavedSearch = (state: SavedSearchFilters) => {
     enabledFilters,
     setSearchQuery: (q) => searchStore.setSearchQuery(q),
   });
+  lastActiveConstraintSignature.value = activeConstraintSignature(effective);
   emit('filters-changed', effective);
 };
 
@@ -398,11 +477,13 @@ const clearAllFilters = () => {
     delete filters[key];
     enabledFilters[key] = false;
   });
+  searchStore.setSearchQuery("");
+  lastActiveConstraintSignature.value = activeConstraintSignature({});
   emit('filters-changed', {});
 };
 
 const applyAllFilters = () => {
-  emit('filters-changed', getEffectiveFilters());
+  emitFiltersChangedIfConstraintsChanged();
 };
 </script>
 
