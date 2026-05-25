@@ -33,6 +33,27 @@ describe("POST /api/explorer-search response contract", () => {
     expect(data.facets?.for_result_set.sectors).toBeDefined()
   })
 
+  it("accepts adaptation_approaches facet filter", async () => {
+    if (!baseUrl) return
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/api/explorer-search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: "",
+        lang: "en",
+        limit: 5,
+        offset: 0,
+        includeFacets: true,
+        adaptation_approaches: ["Ecosystem-based adaptation"],
+      }),
+    })
+
+    expect(res.ok).toBe(true)
+    const data = (await res.json()) as ExplorerSearchResponse
+    expect(typeof data.total).toBe("number")
+    expect(data.facets?.for_result_set.adaptation_approaches).toBeDefined()
+  })
+
   it("omits facet metadata for page-only requests", async () => {
     if (!baseUrl) return
     const res = await fetch(`${baseUrl.replace(/\/$/, "")}/api/explorer-search`, {

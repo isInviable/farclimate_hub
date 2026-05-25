@@ -38,11 +38,15 @@ This is what happens on initial load and when the user is browsing with filters 
 
 ## Filters
 
-The explorer currently supports filters on:
+The explorer sidebar supports filters on:
 
-- Sector, for example Agriculture, Forestry, Water management, Disaster Risk Reduction.
-- Climate impacts, for example Droughts, Flooding, Extreme heat.
-- Biogeographical region.
+- **Search** — free-text query (hybrid or keyword ranking).
+- **Sector**, for example Agriculture, Forestry, Water management, Disaster Risk Reduction.
+- **Climate impacts**, for example Droughts, Flooding, Extreme heat.
+- **Adaptation approaches** — types of adaptation solution from the knowledge summary.
+- **Biogeographical region**.
+
+Keywords, time ranges, implementation phase, and geographic scale are **not** exposed in the filter UI. Filtering is applied on the server via `POST /api/explorer-search`; list, grid, map, and other views render the hits returned for the current page without an extra client-side filter pass.
 
 The filter model is:
 

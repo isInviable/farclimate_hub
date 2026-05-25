@@ -63,7 +63,7 @@
           <!-- List View -->
           <ViewModeListSimple
             v-if="viewMode === 'list'"
-            :results="filteredPapers"
+            :results="visibleResults"
             :isSearching="isSearching"
             :total-count="explorerResultTotal"
             :server-page="currentServerPage"
@@ -75,7 +75,7 @@
           <!-- Grid View -->
           <ViewModeGrid
             v-else-if="viewMode === 'grid'"
-            :results="filteredPapers"
+            :results="visibleResults"
             :total-count="explorerResultTotal"
             :server-page="currentServerPage"
             :server-page-size="serverPageSize"
@@ -86,21 +86,21 @@
           <!-- Instagram View -->
           <ViewModeInstagram
             v-else-if="viewMode === 'instagram'"
-            :results="filteredPapers"
+            :results="visibleResults"
             @document-selected="handleDocumentSelected"
           />
 
           <!-- Map View -->
           <ViewModeMap
             v-else-if="viewMode === 'map'"
-            :results="filteredPapers"
+            :results="visibleResults"
             @document-selected="handleDocumentSelected"
           />
 
           <!-- Bubble View (biogeographical regions / UMAP) -->
           <ViewModeBioregionUmap
             v-else-if="viewMode === 'bubble'"
-            :results="filteredPapers"
+            :results="visibleResults"
             @document-selected="handleDocumentSelected"
           />
 
@@ -229,13 +229,14 @@ import type { ExplorerEffectiveFilters } from "@/types/explorerFilters";
 import { useSearchSelectionStore } from "@/stores/searchSelection";
 import { useHybridSearch } from "@/composables/useHybridSearch";
 import { fetchCorpusMetadata } from "@/composables/useFacets";
-import type { ArticleDetail, SearchFacetParams } from "@/types/search";
+import type { ArticleDetail } from "@/types/search";
 import type { ArticlePanelNavItem } from "~/components/explorer/ArticleSidePanel.vue";
 import PinCaptureDialog from "~/components/explorer/PinCaptureDialog.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
 import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 import { resolveExplorerInitialSearchFromRoute } from "~/composables/explorerRouteSearch";
+import { deriveSearchFacetParams, stripUnsupportedExplorerFilters } from "~/utils/explorerFacetFilters";
 
 // i18n composable for language detection
 const { locale, t } = useI18n();
@@ -454,35 +455,12 @@ const setViewMode = (mode: string) => {
   viewMode.value = mode;
 };
 
-function activeKeysFromBooleanMap(value: unknown): string[] {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
-  return Object.entries(value as Record<string, unknown>)
-    .filter(([, selected]) => Boolean(selected))
-    .map(([key]) => key);
-}
-
-function stringsFromArrayOrBooleanMap(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
-  }
-  return activeKeysFromBooleanMap(value);
-}
-
-function filtersToFacetParams(filters: Record<string, any>): SearchFacetParams {
-  return {
-    sectors: stringsFromArrayOrBooleanMap(filters.sector),
-    climate_impacts: stringsFromArrayOrBooleanMap(filters.hazards),
-    adaptation_approaches: [],
-    keywords: [],
-    biogeographical_regions: stringsFromArrayOrBooleanMap(filters.biogeographical_regions),
-  };
-}
-
 async function runExplorerSearch(filters: Record<string, any>, options: { commitSearchQuery?: boolean } = {}) {
-  searchStore.setExplorerEffectiveFilters(filters as ExplorerEffectiveFilters);
+  const effective = stripUnsupportedExplorerFilters(filters);
+  searchStore.setExplorerEffectiveFilters(effective as ExplorerEffectiveFilters);
 
   if (facetFilters) {
-    facetFilters.value = filtersToFacetParams(filters);
+    facetFilters.value = deriveSearchFacetParams(effective);
   }
 
   const currentQuery = searchStore.searchQuery.trim();
@@ -493,8 +471,8 @@ async function runExplorerSearch(filters: Record<string, any>, options: { commit
   }
 
   const filtersStillContainAppliedQuery =
-    typeof filters.search === "string" &&
-    filters.search.trim() === appliedSearchQuery.value &&
+    typeof effective.search === "string" &&
+    effective.search.trim() === appliedSearchQuery.value &&
     appliedSearchQuery.value.length > 0;
 
   if (filtersStillContainAppliedQuery) {
@@ -651,56 +629,11 @@ function toggleBlock(block: string) {
   selectedBlock.value = selectedBlock.value === block ? 'none' : block;
 }
 
-// Computed filtered papers (now using search results and active filters)
-const filteredPapers = computed(() => {
-  const searchResults = searchStore.resultsData?.hits || [];
-
-  return searchResults.filter((paper: any) => {
-    const doc = paper.document || paper;
-    const activeFilters = searchStore.explorerEffectiveFilters;
-
-    const sectorFilter = activeFilters.sector;
-    const activeSectors = activeKeysFromBooleanMap(sectorFilter);
-    const docSectors = Array.isArray(doc.sectors) ? doc.sectors : doc.sectors ? [doc.sectors] : [];
-    const sectorMatch =
-      activeSectors.length === 0 ||
-      activeSectors.some(
-        (sector) =>
-          docSectors.some((s: string) => s.toLowerCase().includes(sector.toLowerCase()))
-      );
-
-    const hazardsFilter = activeFilters.hazards;
-    const activeHazards = activeKeysFromBooleanMap(hazardsFilter);
-    const docHazards = doc.climate_impacts || [];
-    const hazardMatch =
-      activeHazards.length === 0 ||
-      activeHazards.some(
-        (hazard) =>
-          docHazards.some((h: string) => h.toLowerCase().includes(hazard.toLowerCase()))
-      );
-
-    const phasesFilter = activeFilters.phases;
-    const activePhases = activeKeysFromBooleanMap(phasesFilter);
-    const phaseMatch =
-      activePhases.length === 0 ||
-      activePhases.some(
-        (phase) => doc.phase?.toLowerCase() === phase
-      );
-
-    const scalesFilter = activeFilters.scales;
-    const activeScales = activeKeysFromBooleanMap(scalesFilter);
-    const scaleMatch =
-      activeScales.length === 0 ||
-      activeScales.some(
-        (scale) => doc.scale?.toLowerCase() === scale
-      );
-
-    return sectorMatch && hazardMatch && phaseMatch && scaleMatch;
-  });
-});
+/** Server-returned page hits; facet filtering is applied in POST /api/explorer-search. */
+const visibleResults = computed(() => searchStore.resultsData?.hits ?? []);
 
 const sidePanelNavigationItems = computed<ArticlePanelNavItem[]>(() =>
-  filteredPapers.value
+  visibleResults.value
     .map((hit: any) => {
       const uid = String(
         hit.document_uid ?? hit.document?.document_uid ?? hit.id ?? "",
@@ -712,7 +645,7 @@ const sidePanelNavigationItems = computed<ArticlePanelNavItem[]>(() =>
 );
 
 function handleSidePanelNavigate(uid: string) {
-  const hit = filteredPapers.value.find(
+  const hit = visibleResults.value.find(
     (h: any) =>
       h.document_uid === uid ||
       h.document?.document_uid === uid ||

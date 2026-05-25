@@ -2,8 +2,8 @@
   <div class="filter-manager">
     <!-- Active Filters Section -->
     <div v-if="activeFilters.length > 0">
-      <div class="flex items-center gap-2 px-4 py-2 border-b  ">
-        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-darkest whitespace-nowrap">
+      <div class="flex items-center gap-2 px-4 py-2 border-b">
+        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest whitespace-nowrap">
           Active Filters
         </h3>
         <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums">
@@ -53,9 +53,12 @@
           @filter-apply="handleFilterApply"
         />
 
-        <TimeFilter
-          v-if="isFilterEnabled('time')"
+        <AdaptationApproachesFilter
+          v-if="isFilterEnabled('adaptation_approaches')"
           :enabled="true"
+          :selection="filters.adaptation_approaches"
+          :adaptation-approaches="facetsData?.global?.adaptation_approaches"
+          :for-result-set-counts="adaptationApproachesCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -72,20 +75,16 @@
           @filter-apply="handleFilterApply"
         />
 
-        <!-- Add more active filters here -->
-        <!-- <HazardFilter v-if="isFilterEnabled('hazards')" :enabled="true" />
-        <PhaseFilter v-if="isFilterEnabled('phases')" :enabled="true" />
-        <ScaleFilter v-if="isFilterEnabled('scales')" :enabled="true" /> -->
       </div>
     </div>
 
     <!-- Available Filters Section -->
     <div v-if="availableFilters.length > 0">
-      <div class="flex items-center gap-2 px-4 py-2  border-b border-neutral-darkest bg-neutral-darkest">
-        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-lightest whitespace-nowrap">
+      <div class="flex items-center gap-2 px-4 py-2 border-b border-neutral-darkest bg-neutral-darkest">
+        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-lightest whitespace-nowrap">
           Available Filters
         </h3>
-        <span class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
+        <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
           {{ availableFilters.length }}
         </span>
         <SavedSearchMenu
@@ -133,9 +132,12 @@
           @filter-apply="handleFilterApply"
         />
 
-        <TimeFilter
-          v-if="isFilterAvailable('time')"
+        <AdaptationApproachesFilter
+          v-if="isFilterAvailable('adaptation_approaches')"
           :enabled="false"
+          :selection="filters.adaptation_approaches"
+          :adaptation-approaches="facetsData?.global?.adaptation_approaches"
+          :for-result-set-counts="adaptationApproachesCountsFromResultSet"
           @filter-change="handleFilterChange"
           @filter-clear="handleFilterClear"
           @filter-apply="handleFilterApply"
@@ -152,17 +154,13 @@
           @filter-apply="handleFilterApply"
         />
 
-        <!-- Add more filters here -->
-        <!-- <HazardFilter v-if="isFilterAvailable('hazards')" :enabled="false" />
-        <PhaseFilter v-if="isFilterAvailable('phases')" :enabled="false" />
-        <ScaleFilter v-if="isFilterAvailable('scales')" :enabled="false" /> -->
       </div>
     </div>
 
     <!-- No Available Filters Message -->
     <div v-else class="text-center py-8 border-t border-neutral-darkest">
       <UIcon name="i-heroicons-check-circle" class="mx-auto mb-2 text-primary-600 size-8" />
-      <p class="font-mono text-2xs font-bold uppercase tracking-[0.16em] text-neutral-darkest">
+      <p class="font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest">
         All filters are active
       </p>
       <p class="font-mono text-2xs text-neutral-dark mt-1">
@@ -206,9 +204,13 @@ import { useSavedSearchExplorerApplySignal } from "~/composables/useSavedSearchE
 import SearchFilter from './SearchFilter.vue';
 import SectorFilter from './SectorFilter.vue';
 import HazardsFilter from './HazardsFilter.vue';
-import TimeFilter from './TimeFilter.vue';
+import AdaptationApproachesFilter from './AdaptationApproachesFilter.vue';
 import BiogeographicalRegionsFilter from './BiogeographicalRegionsFilter.vue';
 import SavedSearchMenu from './SavedSearchMenu.vue';
+import {
+  facetConstraintSignature,
+  stripUnsupportedExplorerFilters,
+} from '~/utils/explorerFacetFilters';
 
 // Props
 const props = defineProps<{
@@ -229,7 +231,7 @@ const emit = defineEmits<{
 const filters = reactive<Record<string, any>>({});
 const enabledFilters = reactive<Record<string, boolean>>({});
 const searchResults = ref(props.searchResults || []);
-const lastActiveConstraintSignature = ref(activeConstraintSignature({}));
+const lastActiveConstraintSignature = ref(facetConstraintSignature({}));
 
 // Derive current result-set counts as Record<value, count> for BarChartFilter.
 const sectorCountsFromResultSet = computed(() => {
@@ -242,6 +244,10 @@ const climateImpactsCountsFromResultSet = computed(() => {
 });
 const biogeographicalRegionsCountsFromResultSet = computed(() => {
   const arr = props.facetsData?.for_result_set?.biogeographical_regions ?? [];
+  return Object.fromEntries(arr.map((e) => [e.value, e.count]));
+});
+const adaptationApproachesCountsFromResultSet = computed(() => {
+  const arr = props.facetsData?.for_result_set?.adaptation_approaches ?? [];
   return Object.fromEntries(arr.map((e) => [e.value, e.count]));
 });
 
@@ -283,10 +289,8 @@ const allFilterMetadata = [
   { key: 'search', title: 'Search', icon: 'i-heroicons-magnifying-glass' },
   { key: 'sector', title: 'Sector', icon: 'i-heroicons-building-office' },
   { key: 'hazards', title: 'Climate Hazards', icon: 'i-heroicons-exclamation-triangle' },
+  { key: 'adaptation_approaches', title: 'Adaptation approaches', icon: 'i-heroicons-light-bulb' },
   { key: 'biogeographical_regions', title: 'Biogeographical region', icon: 'i-heroicons-map' },
-  { key: 'phases', title: 'Implementation Phase', icon: 'i-heroicons-clock' },
-  { key: 'scales', title: 'Geographic Scale', icon: 'i-heroicons-map' },
-  { key: 'time', title: 'Time', icon: 'i-heroicons-clock' },
 ];
 const filterMetadata = computed(() => {
   const hasBiogeographicalRegions = props.facetsData?.global?.biogeographical_regions !== undefined;
@@ -339,44 +343,17 @@ const getFilterStatus = (key: string): string => {
   return 'Filter applied';
 };
 
-/** Emit only filters that are currently enabled, so parent does not send inactive filter values in the query/facets. */
+/** Emit only enabled, supported filters so parent does not send inactive or legacy keys. */
 function getEffectiveFilters() {
-  return Object.fromEntries(
+  const enabled = Object.fromEntries(
     Object.entries(filters).filter(([k]) => enabledFilters[k])
   );
-}
-
-function activeKeysFromBooleanMap(value: unknown): string[] {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
-  return Object.entries(value as Record<string, unknown>)
-    .filter(([, selected]) => Boolean(selected))
-    .map(([key]) => key)
-    .sort();
-}
-
-function activeValues(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value
-      .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
-      .sort();
-  }
-  return activeKeysFromBooleanMap(value);
-}
-
-function activeConstraintSignature(effectiveFilters: Record<string, any>) {
-  return JSON.stringify({
-    sector: activeValues(effectiveFilters.sector),
-    hazards: activeValues(effectiveFilters.hazards),
-    biogeographical_regions: activeValues(effectiveFilters.biogeographical_regions),
-    phases: activeValues(effectiveFilters.phases),
-    scales: activeValues(effectiveFilters.scales),
-    time: activeValues(effectiveFilters.time),
-  });
+  return stripUnsupportedExplorerFilters(enabled);
 }
 
 function emitFiltersChangedIfConstraintsChanged(force = false) {
   const effective = getEffectiveFilters();
-  const nextSignature = activeConstraintSignature(effective);
+  const nextSignature = facetConstraintSignature(effective);
   if (!force && nextSignature === lastActiveConstraintSignature.value) return;
 
   lastActiveConstraintSignature.value = nextSignature;
@@ -468,7 +445,7 @@ const handleLoadSavedSearch = (state: SavedSearchFilters) => {
     enabledFilters,
     setSearchQuery: (q) => searchStore.setSearchQuery(q),
   });
-  lastActiveConstraintSignature.value = activeConstraintSignature(effective);
+  lastActiveConstraintSignature.value = facetConstraintSignature(effective);
   emit('filters-changed', effective);
 };
 
@@ -478,7 +455,7 @@ const clearAllFilters = () => {
     enabledFilters[key] = false;
   });
   searchStore.setSearchQuery("");
-  lastActiveConstraintSignature.value = activeConstraintSignature({});
+  lastActiveConstraintSignature.value = facetConstraintSignature({});
   emit('filters-changed', {});
 };
 

@@ -1,4 +1,14 @@
 import type { SavedSearchFilters } from "~/types/savedSearches";
+import {
+  stripUnsupportedExplorerFilters,
+  UNSUPPORTED_EXPLORER_FILTER_KEYS,
+} from "~/utils/explorerFacetFilters";
+
+function isSupportedFilterKey(key: string): boolean {
+  return !UNSUPPORTED_EXPLORER_FILTER_KEYS.includes(
+    key as (typeof UNSUPPORTED_EXPLORER_FILTER_KEYS)[number]
+  );
+}
 
 /**
  * Mutates filter/search UI state to match a saved search (same behaviour as
@@ -22,12 +32,12 @@ export function applySavedSearchFiltersState(
 
   if (state.filters) {
     Object.entries(state.filters).forEach(([k, v]) => {
-      ctx.filters[k] = v;
+      if (isSupportedFilterKey(k)) ctx.filters[k] = v;
     });
   }
   if (state.enabledFilters) {
     Object.entries(state.enabledFilters).forEach(([k, v]) => {
-      ctx.enabledFilters[k] = v;
+      if (isSupportedFilterKey(k)) ctx.enabledFilters[k] = v;
     });
   }
   if (state.searchQuery !== undefined) {
@@ -38,7 +48,8 @@ export function applySavedSearchFiltersState(
     }
   }
 
-  return Object.fromEntries(
+  const effective = Object.fromEntries(
     Object.entries(ctx.filters).filter(([k]) => ctx.enabledFilters[k])
   );
+  return stripUnsupportedExplorerFilters(effective);
 }

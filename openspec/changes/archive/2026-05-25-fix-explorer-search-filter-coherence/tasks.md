@@ -1,29 +1,29 @@
 ## 1. Filter UI Scope
 
-- [ ] 1.1 Remove Time, Phase, and Scale entries from `FilterManager.vue` metadata, active constraint signatures, and rendered filter lists.
-- [ ] 1.2 Remove the Time filter import/rendering from `FilterManager.vue`; leave the standalone component untouched unless unused cleanup is safe.
-- [ ] 1.3 Ensure loaded saved-search state cannot re-enable unsupported `time`, `phases`, or `scales` filters in the explorer UI.
+- [x] 1.1 Remove Time, Phase, and Scale entries from `FilterManager.vue` metadata, active constraint signatures, and rendered filter lists.
+- [x] 1.2 Remove the Time filter import/rendering from `FilterManager.vue`; leave the standalone component untouched unless unused cleanup is safe.
+- [x] 1.3 Ensure loaded saved-search state cannot re-enable unsupported `time`, `phases`, or `scales` filters in the explorer UI.
 
 ## 2. Adaptation Approaches Filter
 
-- [ ] 2.1 Add an Adaptation approaches filter component using the same facet/bar-chart pattern as Sector and Hazards.
-- [ ] 2.2 Wire Adaptation approaches into `FilterManager.vue` active/available rendering, global facet options, and result-set counts.
-- [ ] 2.3 Map active `adaptation_approaches` UI selections into `SearchFacetParams.adaptation_approaches` for explorer search requests.
-- [ ] 2.4 Keep Keywords out of the explorer filter interface and request mapping.
+- [x] 2.1 Add an Adaptation approaches filter component using the same facet/bar-chart pattern as Sector and Hazards.
+- [x] 2.2 Wire Adaptation approaches into `FilterManager.vue` active/available rendering, global facet options, and result-set counts.
+- [x] 2.3 Map active `adaptation_approaches` UI selections into `SearchFacetParams.adaptation_approaches` for explorer search requests.
+- [x] 2.4 Keep Keywords out of the explorer filter interface and request mapping.
 
 ## 3. Server-Owned Result Rendering
 
-- [ ] 3.1 Replace `filteredPapers` client-side restriction logic in `explorer.vue` with a direct server-result derivation or neutral `visibleResults` computed value.
-- [ ] 3.2 Update all explorer view-mode bindings and side-panel navigation inputs to use the server-returned result page without additional facet/time/phase/scale filtering.
-- [ ] 3.3 Preserve non-restrictive display helpers such as match badges only where they annotate results without removing hits.
+- [x] 3.1 Replace `filteredPapers` client-side restriction logic in `explorer.vue` with a direct server-result derivation or neutral `visibleResults` computed value.
+- [x] 3.2 Update all explorer view-mode bindings and side-panel navigation inputs to use the server-returned result page without additional facet/time/phase/scale filtering.
+- [x] 3.3 Preserve non-restrictive display helpers such as match badges only where they annotate results without removing hits.
 
 ## 4. Tests And Documentation
 
-- [ ] 4.1 Add or update tests that verify Adaptation approaches are sent to `/api/explorer-search` when active and omitted when inactive.
-- [ ] 4.2 Add or update tests that verify unsupported filter keys (`time`, `phases`, `scales`) do not affect search requests or rendered results.
-- [ ] 4.3 Add or update tests that verify visible result counts match the server-returned page hits.
-- [ ] 4.4 Update `docs/explorer-search-behavior.md` to document the supported filter set and server-owned filtering model.
-- [ ] 4.5 Run the relevant app test/lint checks and fix regressions introduced by the change.
+- [x] 4.1 Add or update tests that verify Adaptation approaches are sent to `/api/explorer-search` when active and omitted when inactive.
+- [x] 4.2 Add or update tests that verify unsupported filter keys (`time`, `phases`, `scales`) do not affect search requests or rendered results.
+- [x] 4.3 Add or update tests that verify visible result counts match the server-returned page hits.
+- [x] 4.4 Update `docs/explorer-search-behavior.md` to document the supported filter set and server-owned filtering model.
+- [x] 4.5 Run the relevant app test/lint checks and fix regressions introduced by the change.
 ## 1. Shared filter helpers
 
 - [x] 1.1 Extract `activeKeysFromBooleanMap` to `apps/web/app/utils/explorerFilterMatch.ts` (or shared module) and use it from `listMatchBadges.ts`

@@ -1,19 +1,13 @@
 import type { SearchResult } from '@/types/search'
 import { normalizeBiogeographicalRegionsRaw } from '@/utils/explorerBioregions'
+import { activeKeysFromBooleanMap } from '@/utils/explorerFacetFilters'
 
-export type ListMatchBadgeKind = 'sector' | 'hazard' | 'bioregion'
+export type ListMatchBadgeKind = 'sector' | 'hazard' | 'bioregion' | 'adaptation'
 
 export interface ListMatchBadge {
   kind: ListMatchBadgeKind
   label: string
   color?: 'neutral' | 'warning' | 'primary' | 'success'
-}
-
-function activeKeysFromBooleanMap(val: unknown): string[] {
-  if (!val || typeof val !== 'object' || Array.isArray(val)) return []
-  return Object.entries(val as Record<string, boolean>)
-    .filter(([, v]) => Boolean(v))
-    .map(([k]) => k)
 }
 
 function docSectorsList(doc: SearchResult): string[] {
@@ -24,7 +18,7 @@ function docSectorsList(doc: SearchResult): string[] {
 
 /**
  * Badges for list rows: active filter keys (sector, hazards, biogeographical_regions) that intersect this document.
- * Matching rules align with `filteredPapers` in explorer (case-insensitive substring on sector / climate_impacts).
+ * Annotates rows with active filter labels; does not remove hits from the result list.
  */
 export function listMatchBadgesForDocument(
   doc: SearchResult,
@@ -58,6 +52,21 @@ export function listMatchBadgesForDocument(
         )
       ) {
         out.push({ kind: 'hazard', label: key, color: 'warning' })
+      }
+    }
+  }
+
+  const approachesFilter = snapshot.adaptation_approaches
+  const activeApproaches = activeKeysFromBooleanMap(approachesFilter)
+  if (activeApproaches.length) {
+    const docApproaches = doc.adaptation_approaches || []
+    for (const key of activeApproaches) {
+      if (
+        docApproaches.some((a: string) =>
+          a.toLowerCase().includes(key.toLowerCase())
+        )
+      ) {
+        out.push({ kind: 'adaptation', label: key, color: 'success' })
       }
     }
   }
