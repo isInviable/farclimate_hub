@@ -1,38 +1,28 @@
 <template>
   <div class="summary-main-content flex flex-col gap-5 min-w-0">
     <div class="block 2xl:grid grid-cols-4 gap-4">
-    <CapturableBlock
-      v-if="document?.subtitle"
-      :label="$t('summaryHeaders.shortDescription')"
-      icon="mdi:comment-text-outline"
-      :chrome="false"
-      :capture-enabled="false"
-      class="col-span-3"
-    >
-      <p class="text-xl text-neutral-darkest leading-relaxed font-medium max-w-3xl
-      ">
-        {{ document.subtitle }}
-      </p>
-    </CapturableBlock>
-      <div v-if="externalSourceUrl" class="pt-2">
-      <UButton
-        :to="externalSourceUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        variant="outline"
-        color="primary"
-        icon="i-lucide-external-link"
-        :label="$t('article.viewOnClimateAdapt')"
-      />
-      <p class="text-xs text-neutral-700 mt-1">
-        {{ $t("article.sourceLinkHint") }}
-      </p>
-    </div>
+      <CapturableBlock
+        v-if="document?.subtitle"
+        :label="$t('summaryHeaders.shortDescription')"
+        icon="mdi:comment-text-outline"
+        :chrome="false"
+        :capture-enabled="false"
+        class="col-span-3"
+      >
+        <p
+          class="text-xl text-neutral-darkest leading-relaxed font-medium max-w-3xl"
+        >
+          {{ document.subtitle }}
+        </p>
+      </CapturableBlock>
+      
     </div>
     
 
     <div v-if="parsedDocument.sectorsArray?.length">
-      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
+      <p
+        class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1"
+      >
         {{ $t("summaryHeaders.sector") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -49,7 +39,9 @@
     </div>
 
     <div v-if="parsedDocument.hazardsArray?.length">
-      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
+      <p
+        class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1"
+      >
         {{ $t("summaryHeaders.hazards") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -66,7 +58,9 @@
     </div>
 
     <div v-if="parsedDocument.adaptationApproachesArray?.length">
-      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
+      <p
+        class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1"
+      >
         {{ $t("summaryHeaders.typeOfSolution") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -83,7 +77,9 @@
     </div>
 
     <div v-if="parsedDocument.keywordsArray?.length">
-      <p class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1">
+      <p
+        class="font-mono text-xs text-neutral-700 uppercase tracking-wide mb-1"
+      >
         {{ $t("summaryHeaders.keywords") }}
       </p>
       <div class="flex flex-wrap gap-2">
@@ -98,8 +94,6 @@
         />
       </div>
     </div>
-
-  
   </div>
 </template>
 
@@ -137,14 +131,11 @@ function splitToArray(value: unknown): string[] {
 const parsedDocument = computed(() => ({
   sectorsArray: splitToArray(props.document?.sectors),
   hazardsArray: splitToArray(props.document?.climate_impacts),
-  adaptationApproachesArray: splitToArray(props.document?.adaptation_approaches),
+  adaptationApproachesArray: splitToArray(
+    props.document?.adaptation_approaches,
+  ),
   keywordsArray: splitToArray(props.document?.keywords),
 }));
 
-const externalSourceUrl = computed<string | null>(() => {
-  const raw = props.document?.source_url;
-  if (typeof raw !== "string") return null;
-  const trimmed = raw.trim();
-  return /^https?:\/\//i.test(trimmed) ? trimmed : null;
-});
+
 </script>

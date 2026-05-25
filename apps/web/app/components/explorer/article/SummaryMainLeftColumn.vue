@@ -70,6 +70,22 @@
         {{ sourceLine }}
       </p>
     </div>
+
+    <div v-if="externalSourceUrl" class="pt-2">
+        <UButton
+          :to="externalSourceUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="outline"
+          color="primary"
+          icon="i-lucide-external-link"
+          :label="$t('article.viewOnClimateAdapt')"
+        />
+        <p class="text-xs text-neutral-700 mt-1">
+          {{ $t("article.sourceLinkHint") }}
+        </p>
+      </div>
+
   </aside>
 </template>
 
@@ -162,4 +178,11 @@ function normalizeGeoToArray(value: unknown): string[] {
   }
   return [];
 }
+
+const externalSourceUrl = computed<string | null>(() => {
+  const raw = props.document?.source_url;
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  return /^https?:\/\//i.test(trimmed) ? trimmed : null;
+});
 </script>

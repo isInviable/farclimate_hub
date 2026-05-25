@@ -9,7 +9,7 @@
   >
    
     <div
-      class="prose prose-md md:prose-2xl max-w-none break-words text-neutral-800 prose-img:max-w-full prose-pre:overflow-x-auto"
+      class="prose prose-md md:prose-xl max-w-none break-words text-neutral-800 prose-img:max-w-full prose-pre:overflow-x-auto"
       v-html="md.render(section.content)"
     />
   </CapturableBlock>

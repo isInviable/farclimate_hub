@@ -132,9 +132,9 @@
                 :key="section.key"
                 :data-testid="`article-recipe-segment-${section.key}`"
                 :data-recipe-segment-index="1 + idx"
-                class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 last:border-b-0 lg:py-20"
+                class="min-w-0 border-b border-neutral-lighter py-16 mb-64 last:border-b-0  flex justify-center"
               >
-                <div class="flex min-w-0 flex-col gap-10">
+                <div class="flex min-w-0 flex-col gap-10 max-w-4xl ">
                   <RecipeSectionBody :section="section" />
                   <div
                     class="flex justify-center border-t border-default/10 pt-10"
