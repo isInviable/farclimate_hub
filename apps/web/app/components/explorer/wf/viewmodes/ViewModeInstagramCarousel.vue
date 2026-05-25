@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full bg-neutral-100">
+  <div class="group/carousel relative w-full bg-neutral-100">
     <div
       ref="scrollerRef"
       role="region"
@@ -7,6 +7,7 @@
       tabindex="0"
       class="flex w-full overflow-x-auto scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       @scroll.passive="onScroll"
+      @keydown="onKeydown"
       @pointerdown="onPointerDown"
       @pointerup="onPointerUp"
       @pointercancel="onPointerCancel"
@@ -31,8 +32,33 @@
       </div>
     </div>
 
+    <template v-if="hasMultipleSlides">
+      <UButton
+        type="button"
+        color="neutral"
+        variant="solid"
+        size="xs"
+        icon="i-lucide-chevron-left"
+        :disabled="!canGoPrev"
+        :aria-label="prevAriaLabel"
+        class="pointer-events-auto absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full opacity-90 shadow-sm transition-opacity group-hover/carousel:opacity-100 disabled:opacity-40"
+        @click.stop="goToPrev"
+      />
+      <UButton
+        type="button"
+        color="neutral"
+        variant="solid"
+        size="xs"
+        icon="i-lucide-chevron-right"
+        :disabled="!canGoNext"
+        :aria-label="nextAriaLabel"
+        class="pointer-events-auto absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full opacity-90 shadow-sm transition-opacity group-hover/carousel:opacity-100 disabled:opacity-40"
+        @click.stop="goToNext"
+      />
+    </template>
+
     <div
-      v-if="slides.length > 1"
+      v-if="hasMultipleSlides"
       class="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center gap-1.5"
       role="tablist"
       :aria-label="dotsTablistLabel"
@@ -47,7 +73,7 @@
         :aria-label="dotAria(i)"
         class="pointer-events-auto h-1.5 w-1.5 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         :class="i === activeIndex ? 'bg-neutral-800' : 'bg-neutral-400/90'"
-        @click.stop="goToSlide(i)"
+        @click.stop="goToSlideFromDot(i)"
       />
     </div>
 
@@ -126,8 +152,48 @@ const slideStatusText = computed(() =>
   }),
 )
 
+const hasMultipleSlides = computed(() => slides.value.length > 1)
+
+const canGoPrev = computed(() => activeIndex.value > 0)
+
+const canGoNext = computed(
+  () => activeIndex.value < slides.value.length - 1,
+)
+
+const prevAriaLabel = computed(() => t('viewModes.instagramCarouselPrev'))
+
+const nextAriaLabel = computed(() => t('viewModes.instagramCarouselNext'))
+
 function dotAria(i: number) {
   return t('viewModes.instagramDotAria', { n: i + 1 })
+}
+
+function markSlideNavigation() {
+  suppressOpenUntil.value = Date.now() + POINTER_SUPPRESS_MS
+  slideChangedDuringPointer = true
+}
+
+function goToPrev() {
+  if (!canGoPrev.value) return
+  markSlideNavigation()
+  goToSlide(activeIndex.value - 1)
+}
+
+function goToNext() {
+  if (!canGoNext.value) return
+  markSlideNavigation()
+  goToSlide(activeIndex.value + 1)
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (!hasMultipleSlides.value) return
+  if (e.key === 'ArrowLeft') {
+    e.preventDefault()
+    goToPrev()
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault()
+    goToNext()
+  }
 }
 
 function getScrollIndex(): number {
@@ -150,6 +216,11 @@ function goToSlide(i: number) {
   const clamped = Math.max(0, Math.min(i, slides.value.length - 1))
   el.scrollTo({ left: clamped * el.clientWidth, behavior: 'smooth' })
   activeIndex.value = clamped
+}
+
+function goToSlideFromDot(i: number) {
+  markSlideNavigation()
+  goToSlide(i)
 }
 
 function onPointerDown(e: PointerEvent) {

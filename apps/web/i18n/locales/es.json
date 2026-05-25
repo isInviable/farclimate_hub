@@ -374,6 +374,8 @@
     "instagram": "Instagram",
     "instagramCarouselRegion": "Imágenes del artículo",
     "instagramCarouselDotsTablist": "Diapositivas de la galería",
+    "instagramCarouselPrev": "Imagen anterior",
+    "instagramCarouselNext": "Imagen siguiente",
     "instagramImageNofM": "Imagen {n} de {total}",
     "instagramSlideStatus": "Imagen {current} de {total}",
     "instagramDotAria": "Ir a la imagen {n}",

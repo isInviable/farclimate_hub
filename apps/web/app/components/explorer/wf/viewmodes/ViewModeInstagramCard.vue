@@ -1,88 +1,66 @@
 <template>
-  <article class="border border-neutral-darkest bg-neutral-lightest">
-    <!-- Header -->
-    <div class="flex items-center gap-3 px-4 py-3 border-b border-neutral-darkest/15">
-      <div class="flex-1 min-w-0">
-        <p class="font-sans font-semibold text-sm text-neutral-darkest truncate">
-          {{ username }}
-        </p>
-        <EditorialEyebrow v-if="location" color="muted" class="block truncate">
-          {{ location }}
-        </EditorialEyebrow>
+  <article
+    :class="[
+      'border border-neutral-darkest/20 overflow-hidden transition-colors',
+      selected ? 'bg-neutral-300' : 'bg-neutral-lightest',
+    ]"
+  >
+    <CapturableBlock
+      pin-kind="text_segment"
+      :title="title"
+      :preview="pinPreview"
+      :payload="{ markdown: pinPreview }"
+      :chrome="false"
+      source-view="explorer-instagram"
+      class="block w-full border-b border-neutral-darkest/10"
+    >
+      <div class="flex items-start gap-2 px-3 py-2.5 pr-10">
+        <UCheckbox
+          :model-value="selected"
+          color="primary"
+          size="xs"
+          class="mt-0.5 shrink-0"
+          @click.stop
+          @update:model-value="$emit('toggle-select')"
+        />
+        <div class="flex-1 min-w-0">
+          <p class="font-sans font-semibold text-sm text-neutral-darkest truncate">
+            {{ username }}
+          </p>
+          <EditorialEyebrow v-if="location" color="muted" class="block truncate">
+            {{ location }}
+          </EditorialEyebrow>
+        </div>
       </div>
-      <UButton
-        variant="ghost"
-        color="neutral"
-        size="xs"
-        :aria-label="$t('viewModes.instagramViewMore')"
-        @click.stop
-      >
-        <Icon name="mdi:dots-horizontal" size="1.25rem" />
-      </UButton>
-    </div>
+    </CapturableBlock>
 
-    <!-- Carousel -->
     <ViewModeInstagramCarousel
       :images="document.images"
       @activate="$emit('open')"
     />
 
-    <!-- Actions -->
-    <div class="flex items-center gap-1 px-3 py-2 border-t border-neutral-darkest/15">
-      <UButton
-        variant="ghost"
-        color="neutral"
-        size="sm"
-        @click.stop
-      >
-        <Icon name="mdi:share-outline" size="1.5rem" />
-      </UButton>
-
-      <div class="ml-auto">
-        <CapturableBlock
-          pin-kind="text_segment"
-          :title="title"
-          :preview="pinPreview"
-          :payload="{ markdown: pinPreview }"
-          :chrome="false"
-          source-view="explorer-instagram"
-          class="relative inline-flex"
-        >
-          <template #pin="{ openCapture, isPinned, isSaving }">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              size="sm"
-              :disabled="isSaving"
-              :aria-label="$t('pins.capture.buttonAria')"
-              @click.stop="openCapture"
-            >
-              <Icon
-                :name="isPinned ? 'mdi:bookmark' : 'mdi:bookmark-outline'"
-                size="1.5rem"
-                :class="isPinned ? 'text-primary-600' : 'text-neutral-darkest'"
-              />
-            </UButton>
-          </template>
-          <span class="sr-only">{{ pinPreview }}</span>
-        </CapturableBlock>
-      </div>
-    </div>
-
-    <!-- Caption -->
-    <div class="px-4 pt-1 pb-4">
-      <p class="font-display font-bold text-lg leading-tight text-neutral-darkest">
-        {{ title }}
-      </p>
-      <p v-if="subtitle" class="text-sm text-neutral-dark leading-relaxed mt-1">
-        {{ subtitle }}
-      </p>
+    <div class="px-3 pt-2 pb-3">
       <button
         type="button"
-        class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark hover:text-neutral-darkest transition-colors cursor-pointer text-left mt-2"
+        class="w-full text-left cursor-pointer group"
         @click="$emit('open')"
       >
-        {{ $t('viewModes.instagramViewMore') }}
+        <p
+          class="font-display font-bold text-base leading-snug text-neutral-darkest group-hover:underline"
+        >
+          {{ title }}
+        </p>
+        <p
+          v-if="subtitle"
+          class="text-sm text-neutral-dark leading-relaxed mt-1 line-clamp-4"
+        >
+          {{ subtitle }}
+        </p>
+        <span
+          class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark group-hover:text-neutral-darkest transition-colors inline-block mt-2"
+        >
+          {{ $t('viewModes.instagramViewMore') }}
+        </span>
       </button>
     </div>
   </article>
@@ -98,9 +76,11 @@ defineProps<{
   title: string
   subtitle: string
   pinPreview: string
+  selected: boolean
 }>()
 
 defineEmits<{
   open: []
+  'toggle-select': []
 }>()
 </script>
