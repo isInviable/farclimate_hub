@@ -1,4 +1,8 @@
 <template>
+  <DecorativeCorner
+    src="/img/explorer/bg_image_contact.png"
+    corner="bottom-right"
+  />
   <div v-if="!isFullyEmpty" class="mx-auto grid max-w-6xl grid-cols-1 gap-10 pt-9 lg:grid-cols-2 lg:gap-16">
     <!-- Left: contacts + websites (React SummaryContacts left column) -->
     <section class="min-w-0">
@@ -112,20 +116,17 @@
     color="neutral"
     variant="subtle"
     icon="i-lucide-info"
-    :title="emptySlideTitle"
-    :description="emptySlideDescription"
+    :title="emptyTitle"
+    :description="emptyDescription"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import MarkdownIt from "markdown-it";
 import CapturableBlock from "../CapturableBlock.vue";
-import {
-  ArticleDecorationContextKey,
-  type ArticleDecoration,
-} from "./articleDecorationContext";
+import DecorativeCorner from "./DecorativeCorner.vue";
 
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
@@ -138,21 +139,6 @@ const props = defineProps<{
     websites?: { url?: string | string[] } | null;
   };
 }>();
-
-const decorationContext = inject(ArticleDecorationContextKey, null);
-const decorationSource = Symbol("SummaryContactsSlideDecoration");
-const decoration: ArticleDecoration = {
-  src: "/img/explorer/bg_image_contact.png",
-  corner: "bottom-right",
-};
-
-onMounted(() => {
-  decorationContext?.setDecoration(decorationSource, decoration);
-});
-
-onUnmounted(() => {
-  decorationContext?.clearDecoration(decorationSource);
-});
 
 const contactText = computed<string>(() => {
   const raw = props.document?.contact;
@@ -203,8 +189,8 @@ const referencesPinPayload = computed(() => ({
 const emptyContactsLabel = computed(() => $t("article.contacts.empty"));
 const emptyWebsitesLabel = computed(() => $t("article.websites.empty"));
 const emptyReferencesLabel = computed(() => $t("article.references.empty"));
-const emptySlideTitle = computed(() => $t("article.contacts.allEmptyTitle"));
-const emptySlideDescription = computed(() =>
+const emptyTitle = computed(() => $t("article.contacts.allEmptyTitle"));
+const emptyDescription = computed(() =>
   $t("article.contacts.allEmptyDescription"),
 );
 </script>

@@ -10,11 +10,20 @@
   />
 </template>
 
+<script lang="ts">
+export type DecorativeCornerPosition =
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "middle-left"
+  | "middle-right"
+  | "bottom-right";
+</script>
+
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { ArticleDecorationCorner } from "./articleDecorationContext";
 
-type Corner = ArticleDecorationCorner;
+type Corner = DecorativeCornerPosition;
 
 const props = withDefaults(
   defineProps<{

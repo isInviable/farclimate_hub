@@ -509,6 +509,9 @@
       "emptyTitle": "Nessun punto sulla mappa",
       "emptyDescription": "Questo caso studio non ha ancora coordinate geografiche nel database."
     },
+    "secondaryNav": {
+      "ariaLabel": "Sezioni della ricetta"
+    },
     "panelNav": {
       "previousCase": "Caso precedente",
       "nextCase": "Caso successivo",

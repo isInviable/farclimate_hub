@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="summary-main-left mt-6 flex w-full max-w-[260px] flex-col gap-[22px] overflow-y-auto pr-1 min-h-0"
+    class="summary-main-left flex w-full max-w-[260px] flex-col gap-[22px] overflow-y-auto pr-1 min-h-0"
   >
     <div v-if="implementationYearsLabel">
       <p

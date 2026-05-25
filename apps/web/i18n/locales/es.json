@@ -509,6 +509,9 @@
       "emptyTitle": "Sin puntos en el mapa",
       "emptyDescription": "Este caso de estudio aún no tiene coordenadas geográficas en la base de datos."
     },
+    "secondaryNav": {
+      "ariaLabel": "Secciones de la receta"
+    },
     "panelNav": {
       "previousCase": "Caso anterior",
       "nextCase": "Caso siguiente",

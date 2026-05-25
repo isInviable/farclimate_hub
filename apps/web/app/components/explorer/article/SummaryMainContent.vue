@@ -107,20 +107,39 @@
 import { computed } from "vue";
 import CapturableBlock from "../CapturableBlock.vue";
 
-interface ParsedDocument {
-  sectorsArray?: string[];
-  hazardsArray?: string[];
-  adaptationApproachesArray?: string[];
-  keywordsArray?: string[];
-}
-
 const props = defineProps<{
   document: Record<string, unknown> & {
     subtitle?: string;
     source_url?: string | null;
+    sectors?: unknown;
+    climate_impacts?: unknown;
+    adaptation_approaches?: unknown;
+    keywords?: unknown;
   };
-  parsedDocument: ParsedDocument;
 }>();
+
+function splitToArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((v): v is string => typeof v === "string")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+const parsedDocument = computed(() => ({
+  sectorsArray: splitToArray(props.document?.sectors),
+  hazardsArray: splitToArray(props.document?.climate_impacts),
+  adaptationApproachesArray: splitToArray(props.document?.adaptation_approaches),
+  keywordsArray: splitToArray(props.document?.keywords),
+}));
 
 const externalSourceUrl = computed<string | null>(() => {
   const raw = props.document?.source_url;

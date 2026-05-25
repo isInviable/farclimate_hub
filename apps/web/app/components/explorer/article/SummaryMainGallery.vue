@@ -1,8 +1,8 @@
 <template>
-  <div class="summary-main-gallery shrink-0 pt-4">
+  <div class="summary-main-gallery shrink-0 pt-10">
     <div
       v-if="galleryImages.length > 0"
-      class="flex gap-3 overflow-x-auto pb-1 -mx-2 px-2 snap-x snap-mandatory"
+      class="flex max-w-full gap-3 overflow-x-auto overscroll-x-contain scroll-smooth snap-x snap-mandatory pb-3 scrollbar-thin scrollbar-thumb-neutral-400 scrollbar-track-transparent"
     >
       <CapturableBlock
         v-for="(img, index) in galleryImages"

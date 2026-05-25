@@ -509,6 +509,9 @@
       "emptyTitle": "No map points",
       "emptyDescription": "This case study does not yet have geographic coordinates in the database."
     },
+    "secondaryNav": {
+      "ariaLabel": "Recipe sections"
+    },
     "panelNav": {
       "previousCase": "Previous case",
       "nextCase": "Next case",

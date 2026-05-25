@@ -123,7 +123,7 @@
 
     <template v-if="showPanelNav" #footer>
       <div
-        class="flex w-full items-center justify-between gap-4 px-9 py-[18px] border-t border-default bg-trust-blue-100/45"
+        class="flex w-full min-w-0 items-center justify-between gap-4 overflow-hidden px-9 py-[18px] border-t border-default bg-trust-blue-100/45"
       >
         <div class="flex min-w-0 flex-1 items-center gap-3.5">
           <UButton

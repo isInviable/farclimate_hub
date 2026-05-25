@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import MapBase from "../MapBase.vue";
 
@@ -33,9 +34,32 @@ interface MapPoint {
   articleId?: string | number;
 }
 
-defineProps<{
-  mapPoints: MapPoint[];
+const props = defineProps<{
+  document: Record<string, unknown> & {
+    title?: string;
+    location?: unknown;
+    id?: string | number;
+  };
 }>();
 
 const { t: $t } = useI18n();
+
+const mapPoints = computed<MapPoint[]>(() => {
+  const loc = props.document?.location;
+  if (
+    !Array.isArray(loc) ||
+    loc.length !== 2 ||
+    typeof loc[0] !== "number" ||
+    typeof loc[1] !== "number"
+  ) {
+    return [];
+  }
+  return [
+    {
+      label: typeof props.document?.title === "string" ? props.document.title : "",
+      location: { lat: loc[0], lon: loc[1] },
+      articleId: props.document?.id,
+    },
+  ];
+});
 </script>
