@@ -1,6 +1,9 @@
+import { computed, ref } from 'vue'
+import { defineStore } from 'pinia'
 import type { ArticleDetail } from '@/types/search'
 import type { ExplorerCorpusMetadataResponse, FacetCategory, FilterFacetsResponse } from '@/types/facets'
 import type { ExplorerEffectiveFilters } from '@/types/explorerFilters'
+import type { ExplorerSearchHit } from '@/types/explorerSearch'
 
 function emptyFacetCategory(): FacetCategory {
   return {
@@ -15,6 +18,11 @@ function emptyFacetCategory(): FacetCategory {
 export const useSearchStore = defineStore('search', () => {
   const facetsData = ref<FilterFacetsResponse | null>(null)
   const corpusMetadata = ref<ExplorerCorpusMetadataResponse | null>(null)
+  const explorerSearchSignature = ref<string | null>(null)
+  const explorerSearchTotal = ref<number | null>(null)
+  const explorerSearchLimit = ref(60)
+  const explorerSearchOffset = ref(0)
+  const explorerLoadedPages = ref<Record<number, ExplorerSearchHit[]>>({})
 
   /** Last effective sidebar filters (JSON-serializable); mirrors `FilterManager` emit payload. */
   const explorerEffectiveFilters = ref<ExplorerEffectiveFilters>({})
@@ -41,12 +49,20 @@ export const useSearchStore = defineStore('search', () => {
       raw: number
       formatted: string
     }
-    hits: {
-      document: ArticleDetail
-      id: string
-      score: number
-    }[]
+    hits: ExplorerSearchHit[]
   } | null>(null)
+
+  const explorerAccumulatedHits = computed(() => {
+    const seen = new Set<string>()
+    return Object.entries(explorerLoadedPages.value)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .flatMap(([, hits]) => hits)
+      .filter((hit) => {
+        if (seen.has(hit.id)) return false
+        seen.add(hit.id)
+        return true
+      })
+  })
 
   const hasAnySelectedTags = computed(() => {
     return selectedTags.value.keywords.length > 0 || 
@@ -70,6 +86,46 @@ export const useSearchStore = defineStore('search', () => {
     resultsData.value = data
   }
 
+  const resetExplorerSearchCache = (signature: string | null = null) => {
+    explorerSearchSignature.value = signature
+    explorerSearchTotal.value = null
+    explorerSearchOffset.value = 0
+    explorerLoadedPages.value = {}
+  }
+
+  const setExplorerSearchPage = (payload: {
+    signature: string
+    offset: number
+    limit: number
+    hits: ExplorerSearchHit[]
+    total?: number
+    facets?: FilterFacetsResponse
+  }) => {
+    if (explorerSearchSignature.value !== payload.signature) {
+      resetExplorerSearchCache(payload.signature)
+    }
+
+    explorerSearchLimit.value = payload.limit
+    explorerSearchOffset.value = payload.offset
+    explorerLoadedPages.value = {
+      ...explorerLoadedPages.value,
+      [payload.offset]: payload.hits,
+    }
+
+    if (typeof payload.total === 'number') {
+      explorerSearchTotal.value = payload.total
+    }
+    if (payload.facets) {
+      facetsData.value = payload.facets
+    }
+
+    resultsData.value = {
+      count: explorerSearchTotal.value ?? payload.hits.length,
+      elapsed: { raw: 0, formatted: '0ms' },
+      hits: payload.hits,
+    }
+  }
+
   const setFacetsData = (data: FilterFacetsResponse | null) => {
     facetsData.value = data
   }
@@ -88,6 +144,12 @@ export const useSearchStore = defineStore('search', () => {
   return {
     facetsData,
     corpusMetadata,
+    explorerSearchSignature,
+    explorerSearchTotal,
+    explorerSearchLimit,
+    explorerSearchOffset,
+    explorerLoadedPages,
+    explorerAccumulatedHits,
     explorerEffectiveFilters,
     selectedTags,
     searchQuery,
@@ -100,6 +162,8 @@ export const useSearchStore = defineStore('search', () => {
     setSelectedTags,
     setSearchQuery,
     setResultsData,
+    resetExplorerSearchCache,
+    setExplorerSearchPage,
     setIsSearching,
   }
 })

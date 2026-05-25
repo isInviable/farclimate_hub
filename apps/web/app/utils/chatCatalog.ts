@@ -2,7 +2,7 @@ import type { ChatCatalogEntry, ChatMode } from "~/types/chat";
 
 type DocumentLike = Record<string, unknown>;
 
-type SearchHitLike = {
+export type ChatSearchHitLike = {
   id?: string;
   document_uid?: string;
   document?: DocumentLike;
@@ -54,7 +54,7 @@ export function buildCatalogFromDocument(
 }
 
 export function buildCatalogFromHits(
-  hits: SearchHitLike[] | null | undefined,
+  hits: ChatSearchHitLike[] | null | undefined,
 ): ChatCatalogEntry[] {
   if (!hits?.length) return [];
   const seen = new Set<string>();
@@ -82,7 +82,7 @@ export function buildCatalogFromHits(
 
 export function buildDocumentBlobsFromCatalog(
   catalog: ChatCatalogEntry[],
-  hits: SearchHitLike[] | null | undefined,
+  hits: ChatSearchHitLike[] | null | undefined,
   document: DocumentLike | null | undefined,
 ): string[] {
   if (document) {
@@ -112,7 +112,7 @@ export function buildDocumentBlobsFromCatalog(
 
 export function inferChatMode(
   document: DocumentLike | null | undefined,
-  hits: SearchHitLike[] | null | undefined,
+  hits: ChatSearchHitLike[] | null | undefined,
 ): ChatMode {
   if (document) return "single";
   if (hits?.length) return "corpus";

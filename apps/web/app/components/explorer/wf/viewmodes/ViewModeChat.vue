@@ -187,6 +187,7 @@ import {
   buildCatalogFromHits,
   buildDocumentBlobsFromCatalog,
   inferChatMode,
+  type ChatSearchHitLike,
 } from "~/utils/chatCatalog";
 import {
   buildConversationPinData,
@@ -236,19 +237,23 @@ const chatAssistantPreset = {
   },
 };
 
-const props = defineProps({
-  hits: {
-    type: Array,
-    default: () => [],
+const MAX_CHAT_CONTEXT_HITS = 20;
+
+const props = withDefaults(
+  defineProps<{
+    hits?: ChatSearchHitLike[];
+    document?: Record<string, unknown> | null;
+  }>(),
+  {
+    hits: () => [],
+    document: null,
   },
-  document: {
-    type: Object,
-    default: null,
-  },
-});
+);
+
+const boundedHits = computed(() => props.hits.slice(0, MAX_CHAT_CONTEXT_HITS));
 
 const chatMode = computed(() =>
-  inferChatMode(props.document as Record<string, unknown> | null, props.hits),
+  inferChatMode(props.document, boundedHits.value),
 );
 
 const catalog = computed(() => {
@@ -257,14 +262,14 @@ const catalog = computed(() => {
       props.document as Record<string, unknown>,
     );
   }
-  return buildCatalogFromHits(props.hits);
+  return buildCatalogFromHits(boundedHits.value);
 });
 
 const documentBlobs = computed(() =>
   buildDocumentBlobsFromCatalog(
     catalog.value,
-    props.hits,
-    props.document as Record<string, unknown> | null,
+    boundedHits.value,
+    props.document,
   ),
 );
 
@@ -305,20 +310,22 @@ const conversationPinPreview = computed(() => {
     .slice(0, 2000);
 });
 
-function citationsForMessage(message: ExplorerChatUIMessage): ChatCitation[] {
-  const part = message.parts?.find((p) => p.type === "data-citations");
+function citationsForMessage(message: unknown): ChatCitation[] {
+  const typedMessage = message as ExplorerChatUIMessage;
+  const part = typedMessage.parts?.find((p) => p.type === "data-citations");
   if (part && part.type === "data-citations" && part.data?.citations) {
     return part.data.citations;
   }
   return [];
 }
 
-function citationsLoadingForMessage(message: ExplorerChatUIMessage): boolean {
+function citationsLoadingForMessage(message: unknown): boolean {
+  const typedMessage = message as ExplorerChatUIMessage;
   if (chatMode.value !== "corpus") return false;
-  if (message.role !== "assistant") return false;
-  if (citationsForMessage(message).length > 0) return false;
+  if (typedMessage.role !== "assistant") return false;
+  if (citationsForMessage(typedMessage).length > 0) return false;
   const last = messages.value[messages.value.length - 1];
-  if (!last || last.id !== message.id) return false;
+  if (!last || last.id !== typedMessage.id) return false;
   return status.value === "streaming" || status.value === "submitted";
 }
 

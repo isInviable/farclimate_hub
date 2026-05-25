@@ -81,8 +81,8 @@
 
     <!-- Available Filters Section -->
     <div v-if="availableFilters.length > 0">
-      <div class="flex items-center gap-2 px-4 py-2  border-b border-neutral-darkest ">
-        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-darkest whitespace-nowrap">
+      <div class="flex items-center gap-2 px-4 py-2  border-b border-neutral-darkest bg-neutral-darkest">
+        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-[0.18em] text-neutral-lightest whitespace-nowrap">
           Available Filters
         </h3>
         <span class="inline-flex items-center justify-center min-w-[20px] h-[16px] px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">

@@ -236,12 +236,16 @@ interface SearchHit {
 const props = withDefaults(
   defineProps<{
     results?: SearchHit[]
+    totalCount?: number | null
+    serverPage?: number
+    serverPageSize?: number
   }>(),
   { results: () => [] }
 )
 
 const emit = defineEmits<{
   "document-selected": [doc: ArticleDetail]
+  "page-change": [page: number]
 }>()
 
 const { t } = useI18n()
@@ -267,7 +271,12 @@ const customCompareHasSubmitted = computed(() => {
 const anyCheckboxSelected = computed(() => sel.selected.length > 0)
 
 const { page, pageSize, totalCount, pagedItems, rangeStart, rangeEnd } =
-  useExplorerResultsPaging(toRef(props, 'results'), { pageSize: 12 })
+  useExplorerResultsPaging(toRef(props, 'results'), {
+    pageSize: computed(() => props.serverPageSize ?? 12),
+    totalCount: computed(() => props.totalCount),
+    page: computed(() => props.serverPage),
+    onPageChange: (nextPage) => emit("page-change", nextPage),
+  })
 
 const hitsForAiSummary = computed(() => {
   if (anyCheckboxSelected.value) {

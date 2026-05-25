@@ -210,12 +210,16 @@ const props = withDefaults(
   defineProps<{
     results?: ListHit[]
     isSearching?: boolean
+    totalCount?: number | null
+    serverPage?: number
+    serverPageSize?: number
   }>(),
   { results: () => [] }
 )
 
 const emit = defineEmits<{
   'document-selected': [document: ArticleDetail]
+  'page-change': [page: number]
 }>()
 
 const activeTab = ref('default')
@@ -223,8 +227,11 @@ const sortKey = ref<ExplorerSortKey>('name')
 
 const { page, pageSize, totalCount, pagedItems, rangeStart, rangeEnd } =
   useExplorerResultsPaging(toRef(props, 'results'), {
-    pageSize: 20,
+    pageSize: computed(() => props.serverPageSize ?? 20),
     sortKey,
+    totalCount: computed(() => props.totalCount),
+    page: computed(() => props.serverPage),
+    onPageChange: (nextPage) => emit('page-change', nextPage),
   })
 
 const sel = useSearchSelectionStore()

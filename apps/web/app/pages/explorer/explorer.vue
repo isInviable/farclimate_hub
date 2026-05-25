@@ -54,7 +54,7 @@
           </div>
           <div class="flex-1" />
           <span class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark">
-            Showing {{ filteredPapers.length }} of {{ corpusTotalCount }} case studies
+            Showing {{ currentResultCount }} of {{ explorerResultTotal }} case studies
           </span>
         </div>
 
@@ -65,14 +65,22 @@
             v-if="viewMode === 'list'"
             :results="filteredPapers"
             :isSearching="isSearching"
+            :total-count="explorerResultTotal"
+            :server-page="currentServerPage"
+            :server-page-size="serverPageSize"
             @document-selected="handleDocumentSelected"
+            @page-change="handleResultPageChange"
           />
 
           <!-- Grid View -->
           <ViewModeGrid
             v-else-if="viewMode === 'grid'"
             :results="filteredPapers"
+            :total-count="explorerResultTotal"
+            :server-page="currentServerPage"
+            :server-page-size="serverPageSize"
             @document-selected="handleDocumentSelected"
+            @page-change="handleResultPageChange"
           />
 
           <!-- Instagram View -->
@@ -143,7 +151,7 @@
       <div class="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-1 flex-col">
         <ArticleTextSelectionCapture source-view="chat">
           <ViewModeChat
-            :hits="searchStore.resultsData?.hits || []"
+            :hits="chatSearchHits"
             @open-article="handleChatOpenArticle"
           />
         </ArticleTextSelectionCapture>
@@ -278,7 +286,7 @@ const viewTabs = [
 const searchStore = useSearchStore();
 const route = useRoute();
 const router = useRouter();
-const { search: hybridSearch, loadAll, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
+const { search: hybridSearch, loadAll, loadPage, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
 const appliedSearchQuery = ref("");
 
 function getDocumentUidFromQuery(
@@ -314,7 +322,9 @@ async function openDocumentFromQueryParam(uid: string) {
   }
   documentDeepLinkBusy.value = true;
   try {
-    const hits = searchStore.resultsData?.hits || [];
+    const hits = searchStore.explorerAccumulatedHits.length > 0
+      ? searchStore.explorerAccumulatedHits
+      : searchStore.resultsData?.hits || [];
     const hit = hits.find(
       (h: { document?: { document_uid?: string }; document_uid?: string }) =>
         h.document?.document_uid === uid || h.document_uid === uid
@@ -350,6 +360,19 @@ const mindmapPinDialogOpen = ref(false);
 const mindmapPinSaving = ref(false);
 const mindmapPinError = ref<string | null>(null);
 const selection = useSearchSelectionStore();
+const autoSelectedPageKeys = ref(new Set<string>());
+
+const chatSearchHits = computed(() => {
+  if (selection.selected.length > 0) {
+    return selection.selected.map((item) => ({
+      id: item.id,
+      document_uid: item.document?.document_uid ?? item.id,
+      score: 1,
+      document: item.document,
+    }));
+  }
+  return searchStore.explorerAccumulatedHits;
+});
 
 const mindmapPinTitle = computed(() => {
   const docTitle = selectedDocument.value?.title?.trim();
@@ -419,6 +442,12 @@ const searchQuery = computed({
 
 const isSearching = computed(() => searchStore.isSearching);
 const corpusTotalCount = computed(() => searchStore.corpusMetadata?.totalCount ?? 0);
+const explorerResultTotal = computed(() => searchStore.explorerSearchTotal ?? searchStore.resultsData?.count ?? corpusTotalCount.value);
+const currentResultCount = computed(() => searchStore.resultsData?.hits.length ?? 0);
+const serverPageSize = computed(() => searchStore.explorerSearchLimit || 60);
+const currentServerPage = computed(() =>
+  Math.floor((searchStore.explorerSearchOffset || 0) / serverPageSize.value) + 1
+);
 
 // Methods
 const setViewMode = (mode: string) => {
@@ -516,6 +545,10 @@ async function loadAllArticles() {
   await loadAll();
 }
 
+async function handleResultPageChange(page: number) {
+  await loadPage(page, serverPageSize.value);
+}
+
 /**
  * URL search bootstrap — precedence: explicit `query` → legacy `type` → passthrough `sector` (trimmed; `all` = empty).
  * Does not toggle facet checkboxes; only sets free-text store and loads results.
@@ -552,7 +585,9 @@ const handleDocumentSelected = (document: ArticleDetail) => {
 async function handleChatOpenArticle(documentUid: string) {
   const uid = documentUid.trim();
   if (!uid) return;
-  const hits = searchStore.resultsData?.hits || [];
+  const hits = searchStore.explorerAccumulatedHits.length > 0
+    ? searchStore.explorerAccumulatedHits
+    : searchStore.resultsData?.hits || [];
   const hit = hits.find(
     (h: { document?: { document_uid?: string }; document_uid?: string }) =>
       h.document?.document_uid === uid || h.document_uid === uid,
@@ -588,7 +623,10 @@ async function generateMindmap() {
   try {
     isMindmapLoading.value = true;
     mindmapMarkdown.value = `# markmap\n\n## Generating...`;
-    const documents = (searchStore.resultsData?.hits || []).slice(0, 20).map((h: any) => {
+    const documents = (searchStore.explorerAccumulatedHits.length > 0
+      ? searchStore.explorerAccumulatedHits
+      : searchStore.resultsData?.hits || []
+    ).slice(0, 20).map((h: any) => {
       const text = [h.document?.title, h.document?.summary, h.document?.content]
         .filter(Boolean)
         .join("\n\n");
@@ -757,17 +795,27 @@ watch(
   }
 );
 
-// Select all results by default whenever results change
+// Select newly loaded pages by default while preserving cross-page user choices.
 watch(
-  () => searchStore.resultsData?.hits,
-  (hits) => {
+  () => [
+    searchStore.explorerSearchSignature,
+    searchStore.explorerSearchOffset,
+    searchStore.resultsData?.hits,
+  ] as const,
+  ([signature, offset, hits], previous) => {
     if (!hits || !Array.isArray(hits)) return;
-    selection.clear();
-    selection.selected = hits.map((hit: any) => ({
+    if (signature && signature !== previous?.[0]) {
+      selection.clear();
+      autoSelectedPageKeys.value = new Set();
+    }
+    const pageKey = `${signature ?? "legacy"}:${offset ?? 0}`;
+    if (autoSelectedPageKeys.value.has(pageKey)) return;
+    autoSelectedPageKeys.value.add(pageKey);
+    selection.mergeAdd(hits.map((hit: any) => ({
       id: hit.id,
       title: hit.document?.title || "",
       document: hit.document,
-    }));
+    })));
   },
   { immediate: true }
 );
