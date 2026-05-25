@@ -1,164 +1,73 @@
 <template>
-  <div class="filter-manager">
-    <!-- Active Filters Section -->
-    <div v-if="activeFilters.length > 0">
-      <div class="flex items-center gap-2 px-4 py-2 border-b">
-        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest whitespace-nowrap">
-          Active Filters
-        </h3>
-        <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums">
-          {{ activeFilters.length }}
-        </span>
-        <SavedSearchMenu
+  <div class="filter-manager-root">
+    <TransitionGroup name="filter-panel" tag="div" class="filter-manager">
+      <div
+        v-for="item in panelItems"
+        :key="item.key"
+        :class="item.type === 'filter' ? 'filter-panel-item' : undefined"
+      >
+        <div
+          v-if="item.type === 'active-header'"
+          class="flex items-center gap-2 px-4 py-2 border-b"
+        >
+          <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest whitespace-nowrap">
+            Active Filters
+          </h3>
+          <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums">
+            {{ activeFilters.length }}
+          </span>
+          <SavedSearchMenu
+            :filters="filters"
+            :enabled-filters="enabledFilters"
+            :search-query="searchStore.searchQuery"
+            @load-search="handleLoadSavedSearch"
+          />
+        </div>
+
+        <div
+          v-else-if="item.type === 'available-header'"
+          class="flex items-center gap-2 px-4 py-2 border-b border-neutral-darkest bg-neutral-darkest"
+        >
+          <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-lightest whitespace-nowrap">
+            Available Filters
+          </h3>
+          <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
+            {{ availableFilters.length }}
+          </span>
+          <SavedSearchMenu
+            v-if="activeFilters.length === 0"
+            :filters="filters"
+            :enabled-filters="enabledFilters"
+            :search-query="searchStore.searchQuery"
+            @load-search="handleLoadSavedSearch"
+          />
+        </div>
+
+        <FilterManagerEntry
+          v-else-if="item.type === 'filter'"
+          :filter-key="item.filterKey"
+          :enabled="item.enabled"
           :filters="filters"
-          :enabled-filters="enabledFilters"
-          :search-query="searchStore.searchQuery"
-          @load-search="handleLoadSavedSearch"
-        />
-      </div>
-      
-      <div>
-        <!-- Search Filter (Active) -->
-        <SearchFilter
-          v-if="isFilterEnabled('search')"
-          :enabled="true"
+          :facets-data="facetsData"
+          :sector-counts-from-result-set="sectorCountsFromResultSet"
+          :climate-impacts-counts-from-result-set="climateImpactsCountsFromResultSet"
+          :biogeographical-regions-counts-from-result-set="biogeographicalRegionsCountsFromResultSet"
+          :adaptation-approaches-counts-from-result-set="adaptationApproachesCountsFromResultSet"
+          @filter-change="handleFilterChange"
+          @filter-clear="handleFilterClear"
+          @filter-apply="handleFilterApply"
           @search-results="handleSearchResults"
           @search-error="handleSearchError"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
           @run-search="handleRunSearch"
         />
-
-        <!-- Sector Filter (Active) -->
-        <SectorFilter
-          v-if="isFilterEnabled('sector')"
-          :enabled="true"
-          :selection="filters.sector"
-          :sectors="facetsData?.global?.sectors"
-          :for-result-set-counts="sectorCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <HazardsFilter
-          v-if="isFilterEnabled('hazards')"
-          :enabled="true"
-          :selection="filters.hazards"
-          :climate-impacts="facetsData?.global?.climate_impacts"
-          :for-result-set-counts="climateImpactsCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <AdaptationApproachesFilter
-          v-if="isFilterEnabled('adaptation_approaches')"
-          :enabled="true"
-          :selection="filters.adaptation_approaches"
-          :adaptation-approaches="facetsData?.global?.adaptation_approaches"
-          :for-result-set-counts="adaptationApproachesCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <BiogeographicalRegionsFilter
-          v-if="isFilterEnabled('biogeographical_regions')"
-          :enabled="true"
-          :selection="filters.biogeographical_regions"
-          :biogeographical-regions="facetsData?.global?.biogeographical_regions"
-          :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
       </div>
-    </div>
-
-    <!-- Available Filters Section -->
-    <div v-if="availableFilters.length > 0">
-      <div class="flex items-center gap-2 px-4 py-2 border-b border-neutral-darkest bg-neutral-darkest">
-        <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-lightest whitespace-nowrap">
-          Available Filters
-        </h3>
-        <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
-          {{ availableFilters.length }}
-        </span>
-        <SavedSearchMenu
-          v-if="activeFilters.length === 0"
-          :filters="filters"
-          :enabled-filters="enabledFilters"
-          :search-query="searchStore.searchQuery"
-          @load-search="handleLoadSavedSearch"
-        />
-      </div>
-      
-      <div>
-        <!-- Search Filter -->
-        <SearchFilter
-          v-if="isFilterAvailable('search')"
-          :enabled="false"
-          @search-results="handleSearchResults"
-          @search-error="handleSearchError"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-          @run-search="handleRunSearch"
-        />
-
-        <!-- Sector Filter -->
-        <SectorFilter
-          v-if="isFilterAvailable('sector')"
-          :enabled="false"
-          :selection="filters.sector"
-          :sectors="facetsData?.global?.sectors"
-          :for-result-set-counts="sectorCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <HazardsFilter
-          v-if="isFilterAvailable('hazards')"
-          :enabled="false"
-          :selection="filters.hazards"
-          :climate-impacts="facetsData?.global?.climate_impacts"
-          :for-result-set-counts="climateImpactsCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <AdaptationApproachesFilter
-          v-if="isFilterAvailable('adaptation_approaches')"
-          :enabled="false"
-          :selection="filters.adaptation_approaches"
-          :adaptation-approaches="facetsData?.global?.adaptation_approaches"
-          :for-result-set-counts="adaptationApproachesCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-        <BiogeographicalRegionsFilter
-          v-if="isFilterAvailable('biogeographical_regions')"
-          :enabled="false"
-          :selection="filters.biogeographical_regions"
-          :biogeographical-regions="facetsData?.global?.biogeographical_regions"
-          :for-result-set-counts="biogeographicalRegionsCountsFromResultSet"
-          @filter-change="handleFilterChange"
-          @filter-clear="handleFilterClear"
-          @filter-apply="handleFilterApply"
-        />
-
-      </div>
-    </div>
+    </TransitionGroup>
 
     <!-- No Available Filters Message -->
-    <div v-else class="text-center py-8 border-t border-neutral-darkest">
+    <div
+      v-if="availableFilters.length === 0 && filterMetadata.length > 0"
+      class="text-center py-8 border-t border-neutral-darkest"
+    >
       <UIcon name="i-heroicons-check-circle" class="mx-auto mb-2 text-primary-600 size-8" />
       <p class="font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest">
         All filters are active
@@ -174,16 +83,16 @@
         <UButton
           variant="editorial"
           size="sm"
-          @click="clearAllFilters"
           :disabled="activeFilters.length === 0"
+          @click="clearAllFilters"
         >
           Clear All
         </UButton>
         <UButton
           variant="editorial-solid"
           size="sm"
-          @click="applyAllFilters"
           :disabled="activeFilters.length === 0"
+          @click="applyAllFilters"
         >
           Apply Filters
         </UButton>
@@ -201,16 +110,17 @@ import type { SavedSearchFilters } from "~/types/savedSearches";
 import { applySavedSearchFiltersState } from "~/utils/applySavedSearchFilters";
 import { tryConsumePendingSavedSearchApply } from "~/utils/pendingSavedSearchExplorer";
 import { useSavedSearchExplorerApplySignal } from "~/composables/useSavedSearchExplorerApplySignal";
-import SearchFilter from './SearchFilter.vue';
-import SectorFilter from './SectorFilter.vue';
-import HazardsFilter from './HazardsFilter.vue';
-import AdaptationApproachesFilter from './AdaptationApproachesFilter.vue';
-import BiogeographicalRegionsFilter from './BiogeographicalRegionsFilter.vue';
 import SavedSearchMenu from './SavedSearchMenu.vue';
+import FilterManagerEntry from './FilterManagerEntry.vue';
 import {
   facetConstraintSignature,
   stripUnsupportedExplorerFilters,
 } from '~/utils/explorerFacetFilters';
+
+type PanelItem =
+  | { key: 'active-header'; type: 'active-header' }
+  | { key: 'available-header'; type: 'available-header' }
+  | { key: string; type: 'filter'; filterKey: string; enabled: boolean };
 
 // Props
 const props = defineProps<{
@@ -314,32 +224,55 @@ const availableFilters = computed(() => {
     .filter(meta => !enabledFilters[meta.key]);
 });
 
-// Methods
-const isFilterEnabled = (key: string): boolean => {
-  return enabledFilters[key] || false;
-};
+const panelItems = computed((): PanelItem[] => {
+  const items: PanelItem[] = [];
+  const active = activeFilters.value;
+  const available = availableFilters.value;
 
-const isFilterAvailable = (key: string): boolean => {
-  return !enabledFilters[key];
-};
+  if (active.length > 0) {
+    items.push({ key: 'active-header', type: 'active-header' });
+    for (const meta of active) {
+      items.push({
+        key: meta.key,
+        type: 'filter',
+        filterKey: meta.key,
+        enabled: true,
+      });
+    }
+  }
+
+  if (available.length > 0) {
+    items.push({ key: 'available-header', type: 'available-header' });
+    for (const meta of available) {
+      items.push({
+        key: meta.key,
+        type: 'filter',
+        filterKey: meta.key,
+        enabled: false,
+      });
+    }
+  }
+
+  return items;
+});
 
 const getFilterStatus = (key: string): string => {
   const value = filters[key];
   if (!value) return 'No filter applied';
-  
+
   if (typeof value === 'string') {
     return value;
   }
-  
+
   if (Array.isArray(value)) {
     return `${value.length} items selected`;
   }
-  
+
   if (typeof value === 'object') {
     const count = Object.values(value).filter(Boolean).length;
     return `${count} options selected`;
   }
-  
+
   return 'Filter applied';
 };
 
@@ -465,7 +398,19 @@ const applyAllFilters = () => {
 </script>
 
 <style scoped>
+.filter-manager-root {
+  min-width: 0;
+}
+
 .filter-manager {
   min-width: 0;
+}
+
+.filter-panel-item {
+  display: block;
+}
+
+.filter-panel-move {
+  transition: transform 0.25s ease;
 }
 </style>
