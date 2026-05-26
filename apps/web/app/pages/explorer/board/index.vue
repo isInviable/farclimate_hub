@@ -4,6 +4,7 @@
 
     <!-- Main Content -->
     <PinBoardView
+      ref="pinBoardRef"
       :pins="pinsList"
       :loading="pinsLoading"
       :error="pinsError"
@@ -93,6 +94,7 @@
       :pins="pinsList"
       :project-id="projectsStore.currentProjectId"
       @generated="handlePodcastGenerated"
+      @open-artifacts="openBoardArtifacts"
     />
 
     <PowerPointCreationWizard
@@ -100,6 +102,7 @@
       :pins="pinsList"
       :project-id="projectsStore.currentProjectId"
       @generated="handlePowerPointGenerated"
+      @open-artifacts="openBoardArtifacts"
     />
   </div>
 </template>
@@ -159,6 +162,8 @@ const artifactCountTotal = computed(
     powerPointArtifactsList.value.length +
     pinboardExportsList.value.length
 )
+
+const pinBoardRef = ref<{ selectArtifacts: () => void } | null>(null)
 
 const pinboardExportGenerating = ref(false)
 const pinboardExportRequestError = ref<string | null>(null)
@@ -256,6 +261,12 @@ const handlePodcastGenerated = () => {
 
 const handlePowerPointGenerated = () => {
   void powerPointArtifactsApi.fetchPowerPointArtifacts(projectsStore.currentProjectId)
+}
+
+function openBoardArtifacts() {
+  pinBoardRef.value?.selectArtifacts()
+  isPodcastOpen.value = false
+  isPowerPointOpen.value = false
 }
 
 const localePath = useLocalePath();

@@ -38,7 +38,7 @@
               class="mr-2 font-mono text-3xl font-semibold text-neutral-700 md:text-4xl"
             >{{ headerNumberPrefix }}</span>
             <span
-              class="font-display text-3xl font-bold capitalize text-primary-600 md:text-5xl"
+              class="font-display text-3xl font-bold text-primary-600 md:text-5xl"
             >{{ headerSlideLabel }}</span>
           </h2>
         </div>

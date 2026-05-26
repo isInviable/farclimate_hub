@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import type { PresentationStructure } from "../../app/types/presentationGeneration"
 import {
   buildPowerPointDeck,
+  definePowerPointMasters,
   powerPointDeckToBlob,
   POWERPOINT_MIME_TYPE,
   type PptxPresentationLike,
@@ -9,6 +10,7 @@ import {
 
 function fakePresentation() {
   const slides: Array<{ options: unknown; calls: Array<{ name: string; args: unknown[] }> }> = []
+  const masters: unknown[] = []
   const pres: PptxPresentationLike = {
     addSlide: (options?: unknown) => {
       const calls: Array<{ name: string; args: unknown[] }> = []
@@ -19,10 +21,12 @@ function fakePresentation() {
         addShape: (...args: unknown[]) => calls.push({ name: "addShape", args }),
       }
     },
-    defineSlideMaster: () => undefined,
+    defineSlideMaster: (options: unknown) => {
+      masters.push(options)
+    },
     write: async () => new Blob(["pptx"], { type: POWERPOINT_MIME_TYPE }),
   }
-  return { pres, slides }
+  return { pres, slides, masters }
 }
 
 describe("PowerPoint deck builder", () => {
@@ -31,7 +35,7 @@ describe("PowerPoint deck builder", () => {
     const doc: PresentationStructure = {
       title: "Adaptation briefing",
       slides: [
-        { type: "cover", title: "Adaptation briefing" },
+        { type: "cover", title: "LLM cover title" },
         { type: "bullets", title: "Key points", bullets: ["Restore mangroves"] },
         {
           type: "image-title",
@@ -49,6 +53,7 @@ describe("PowerPoint deck builder", () => {
 
     const deck = buildPowerPointDeck(doc, {
       createPresentation: () => fake.pres,
+      deckTitle: "User deck title",
       images: {
         "image-1": {
           sourceId: "image-1",
@@ -58,10 +63,45 @@ describe("PowerPoint deck builder", () => {
     })
 
     expect(deck.layout).toBe("LAYOUT_WIDE")
+    expect(fake.masters).toHaveLength(2)
+    expect(fake.masters.map((m) => (m as { title: string }).title)).toEqual(["COVER", "CONTENT"])
     expect(fake.slides).toHaveLength(4)
-    expect(fake.slides.every((slide) => slide.options)).toBe(true)
+    expect(fake.slides[0]?.options).toEqual({ masterName: "COVER" })
+    expect(fake.slides[1]?.options).toEqual({ masterName: "CONTENT" })
     expect(fake.slides[0]?.calls.some((call) => call.name === "addText")).toBe(true)
     expect(fake.slides[2]?.calls.some((call) => call.name === "addImage")).toBe(true)
+
+    const bulletsListCall = fake.slides[1]?.calls.find(
+      (call) =>
+        call.name === "addText" &&
+        Array.isArray(call.args[0]) &&
+        (call.args[0] as { options?: { bullet?: unknown } }[])[0]?.options?.bullet
+    )
+    const bulletItems = bulletsListCall?.args[0] as Array<{
+      text: string
+      options: { bullet?: { characterCode?: string } }
+    }>
+    expect(bulletItems?.[0]?.options.bullet?.characterCode).toBe("2022")
+    expect(bulletItems?.[0]?.text).toBe("Restore mangroves")
+
+    const coverTitleCall = fake.slides[0]?.calls.find((call) => call.name === "addText")
+    expect(coverTitleCall?.args[0]).toBe("User deck title")
+  })
+
+  it("defines content master with slide numbers and branding", () => {
+    const fake = fakePresentation()
+    definePowerPointMasters(fake.pres, {
+      deckTitle: "Regional briefing",
+      brandName: "FarClimate",
+      logoData: "image/png;base64,abc",
+    })
+
+    const contentMaster = fake.masters.find((m) => (m as { title: string }).title === "CONTENT") as {
+      slideNumber?: { align?: string }
+      objects?: unknown[]
+    }
+    expect(contentMaster?.slideNumber?.align).toBe("right")
+    expect(contentMaster?.objects?.length).toBeGreaterThan(3)
   })
 
   it("fails safely for unsupported slide types", () => {

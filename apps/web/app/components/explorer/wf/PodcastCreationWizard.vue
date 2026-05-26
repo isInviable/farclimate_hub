@@ -149,6 +149,15 @@
             <p class="text-sm text-gray-600">
               {{ $t("podcast.wizard.completeHelp") }}
             </p>
+            <UButton
+              class="mt-3 px-0"
+              variant="link"
+              color="primary"
+              icon="i-heroicons-folder-open"
+              @click="goToArtifacts"
+            >
+              {{ $t("podcast.wizard.openArtifacts") }}
+            </UButton>
           </UCard>
         </section>
       </div>
@@ -235,6 +244,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "generated"): void;
+  (e: "openArtifacts"): void;
 }>();
 
 const open = defineModel<boolean>("open", { default: false });
@@ -387,6 +397,11 @@ async function generatePodcast() {
   } finally {
     generatingAudio.value = false;
   }
+}
+
+function goToArtifacts() {
+  emit("openArtifacts");
+  open.value = false;
 }
 
 function resetWizard() {

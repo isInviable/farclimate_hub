@@ -483,4 +483,8 @@ function openArticle(uid: string | null | undefined) {
 function handleOpenArticleFromMap(payload: { documentUid: string }) {
   openArticle(payload?.documentUid);
 }
+
+defineExpose({
+  selectArtifacts,
+})
 </script>

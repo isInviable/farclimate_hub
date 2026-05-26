@@ -41,7 +41,11 @@
           />
 
           <div class="grid gap-4 md:grid-cols-2">
-            <UFormField :label="$t('powerpoint.wizard.titleLabel')" required>
+            <UFormField
+              :label="$t('powerpoint.wizard.titleLabel')"
+              :hint="$t('powerpoint.wizard.titleHint')"
+              required
+            >
               <UInput
                 v-model="deckTitle"
                 :placeholder="$t('powerpoint.wizard.titlePlaceholder')"
@@ -138,6 +142,15 @@
             <p class="text-sm text-gray-600">
               {{ $t("powerpoint.wizard.completeHelp") }}
             </p>
+            <UButton
+              class="mt-3 px-0"
+              variant="link"
+              color="primary"
+              icon="i-heroicons-folder-open"
+              @click="goToArtifacts"
+            >
+              {{ $t("powerpoint.wizard.openArtifacts") }}
+            </UButton>
           </UCard>
         </section>
       </div>
@@ -218,6 +231,7 @@ import {
 } from "~/utils/powerPointSelection"
 import {
   buildPowerPointDeck,
+  fetchPowerPointLogoAsDataUrl,
   powerPointDeckToBlob,
   type PowerPointImageAsset,
 } from "~/utils/powerPointDeck"
@@ -231,6 +245,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   generated: []
+  openArtifacts: []
 }>()
 
 const open = defineModel<boolean>("open", { default: false })
@@ -318,6 +333,10 @@ watch(
 
 async function generateStructure() {
   actionError.value = null
+  if (!deckTitle.value.trim()) {
+    actionError.value = t("powerpoint.wizard.validation.missingTitle")
+    return
+  }
   await loadSelectedDocumentTexts()
   const validation = validatePowerPointSelection(sourcePreviews.value)
   if (!validation.ok || !requireAuthForPersistence() || !session.value?.access_token) return
@@ -340,6 +359,7 @@ async function generateStructure() {
           audience: audience.value,
           slideCount: slideCount.value,
           extra: extraInstructions.value,
+          title: deckTitle.value.trim(),
         },
       },
     })
@@ -364,21 +384,31 @@ async function generatePowerPoint() {
   const reviewed = parseReviewedPresentation()
   if (!reviewed) return
 
+  const title = deckTitle.value.trim()
+  if (!title) {
+    actionError.value = t("powerpoint.wizard.validation.missingTitle")
+    return
+  }
+
   generatingDeck.value = true
   try {
+    const logoData = await fetchPowerPointLogoAsDataUrl()
     const deck = buildPowerPointDeck(reviewed, {
+      deckTitle: title,
+      logoData,
       images: imageAssetsBySourceId(),
     })
     const pptx = await powerPointDeckToBlob(deck)
     await powerPointArtifacts.createPowerPointArtifact({
       projectId: props.projectId,
-      title: deckTitle.value.trim() || reviewed.title || t("powerpoint.wizard.defaultTitle"),
+      title,
       presentation: reviewed,
       pptx,
       sourcePinIds: sourcePreviews.value.map((item) => item.source.id),
       metadata: {
         sourceCount: sourcePreviews.value.length,
         instructions: {
+          deckTitle: title,
           tone: tone.value.trim() || null,
           language: language.value.trim() || null,
           audience: audience.value.trim() || null,
@@ -425,6 +455,11 @@ function imageAssetsBySourceId(): Record<string, PowerPointImageAsset> {
         },
       ])
   )
+}
+
+function goToArtifacts() {
+  emit("openArtifacts")
+  open.value = false
 }
 
 function resetWizard() {
