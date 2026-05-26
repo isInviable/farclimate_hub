@@ -44,18 +44,14 @@ defineEmits<{
 
 const explorerSearchTo = computed(() => {
   const q = props.modelValue.trim();
-  const path = localePath("/explorer/explorer");
   return q.length > 0
-    ? { path, query: { query: q } }
-    : { path };
+    ? localePath({ path: "/explorer/explorer", query: { query: q } })
+    : localePath("/explorer/explorer");
 });
 
 async function goToExplorerSearch() {
   const q = props.modelValue.trim();
   if (!q) return;
-  await navigateTo({
-    path: localePath("/explorer/explorer"),
-    query: { query: q },
-  });
+  await navigateTo(localePath({ path: "/explorer/explorer", query: { query: q } }));
 }
 </script>

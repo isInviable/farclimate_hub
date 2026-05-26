@@ -46,6 +46,14 @@
     "meta": {
       "title": "Climate Adaptation Explorer",
       "description": "Search and explore climate adaptation case studies."
+    },
+    "searchEmpty": {
+      "textTitle": "Sorry, no search results for \"{term}\"",
+      "textTip": "Try to use only meaningful words. Remember that the language in the query must match the language you are using in the interface.",
+      "filtersTitle": "No case studies match your current filters",
+      "filtersTip": "Try removing or adjusting filters in the sidebar.",
+      "genericTitle": "No case studies to show",
+      "genericTip": "Refresh the page or try again later."
     }
   },
   "pins": {

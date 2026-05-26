@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <UButton
-      :to="{ path: explorerPath, query: { sector: 'forestry' } }"
+      :to="sectorExplorerLink('forestry')"
       size="lg"
       color="neutral"
       variant="outline"
@@ -14,7 +14,7 @@
     </UButton>
 
     <UButton
-      :to="{ path: explorerPath, query: { sector: 'fishery' } }"
+      :to="sectorExplorerLink('fishery')"
       size="lg"
       color="neutral"
       variant="outline"
@@ -27,7 +27,7 @@
     </UButton>
 
     <UButton
-      :to="{ path: explorerPath, query: { sector: 'agriculture' } }"
+      :to="sectorExplorerLink('agriculture')"
       size="lg"
       color="neutral"
       variant="outline"
@@ -42,7 +42,7 @@
 
   <div class="mt-6 flex justify-center">
     <UButton
-      :to="{ path: explorerPath, query: { sector: 'all' } }"
+      :to="sectorExplorerLink('all')"
       size="lg"
       color="neutral"
       variant="solid"
@@ -57,6 +57,15 @@
 </template>
 
 <script setup lang="ts">
+import { localizedSectorSearchTerm } from "~/utils/explorerSectorSearch";
+
 const localePath = useLocalePath();
-const explorerPath = computed(() => localePath("/explorer/explorer"));
+const { t } = useI18n();
+
+function sectorExplorerLink(sectorKey: string) {
+  return localePath({
+    path: "/explorer/explorer",
+    query: { sector: localizedSectorSearchTerm(sectorKey, t) },
+  });
+}
 </script>

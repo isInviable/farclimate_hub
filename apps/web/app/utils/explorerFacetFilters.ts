@@ -76,3 +76,15 @@ export function facetConstraintsEqual(
 ): boolean {
   return facetConstraintSignature(a) === facetConstraintSignature(b);
 }
+
+export function hasActiveExplorerFacetConstraints(
+  filters: Record<string, unknown>
+): boolean {
+  const params = deriveSearchFacetParams(filters);
+  return [
+    params.sectors,
+    params.climate_impacts,
+    params.adaptation_approaches,
+    params.biogeographical_regions,
+  ].some((arr) => (arr?.length ?? 0) > 0);
+}

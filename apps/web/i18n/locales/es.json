@@ -46,6 +46,14 @@
     "meta": {
       "title": "Explorador de Adaptación Climática",
       "description": "Busca y explora estudios de caso de adaptación climática."
+    },
+    "searchEmpty": {
+      "textTitle": "Lo sentimos, no hay resultados de búsqueda para \"{term}\"",
+      "textTip": "Intente usar solo palabras significativas. Recuerde que el idioma de la consulta debe coincidir con el idioma de la interfaz.",
+      "filtersTitle": "Ningún estudio de caso coincide con los filtros actuales",
+      "filtersTip": "Pruebe a quitar o ajustar los filtros en la barra lateral.",
+      "genericTitle": "No hay estudios de caso que mostrar",
+      "genericTip": "Actualice la página o inténtelo de nuevo más tarde."
     }
   },
   "pins": {

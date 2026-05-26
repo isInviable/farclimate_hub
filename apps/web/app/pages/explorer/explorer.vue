@@ -60,6 +60,13 @@
 
         <!-- Results Display -->
         <div class="rounded-md min-h-[600px]">
+          <ExplorerSearchEmptyState
+            v-if="showExplorerEmptyResults"
+            :variant="emptyResultsVariant"
+            :search-term="emptyResultsSearchTerm"
+          />
+
+          <template v-else>
           <!-- List View -->
           <ViewModeListSimple
             v-if="viewMode === 'list'"
@@ -115,6 +122,7 @@
               </p>
             </div>
           </div>
+          </template>
         </div>
       </main>
     </div>
@@ -236,7 +244,11 @@ import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { isValidPinLocation } from "~/utils/pinBoardMap";
 import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 import { resolveExplorerInitialSearchFromRoute } from "~/composables/explorerRouteSearch";
-import { deriveSearchFacetParams, stripUnsupportedExplorerFilters } from "~/utils/explorerFacetFilters";
+import {
+  deriveSearchFacetParams,
+  hasActiveExplorerFacetConstraints,
+  stripUnsupportedExplorerFilters,
+} from "~/utils/explorerFacetFilters";
 
 // i18n composable for language detection
 const { locale, t } = useI18n();
@@ -629,6 +641,26 @@ function toggleBlock(block: string) {
 
 /** Server-returned page hits; facet filtering is applied in POST /api/explorer-search. */
 const visibleResults = computed(() => searchStore.resultsData?.hits ?? []);
+
+const showExplorerEmptyResults = computed(
+  () => !isSearching.value && visibleResults.value.length === 0
+);
+
+const emptyResultsSearchTerm = computed(
+  () => appliedSearchQuery.value || searchQuery.value.trim()
+);
+
+const emptyResultsVariant = computed((): "text" | "filters" | "generic" => {
+  if (emptyResultsSearchTerm.value.length > 0) return "text";
+  if (
+    hasActiveExplorerFacetConstraints(
+      searchStore.explorerEffectiveFilters as Record<string, unknown>
+    )
+  ) {
+    return "filters";
+  }
+  return "generic";
+});
 
 const sidePanelNavigationItems = computed<ArticlePanelNavItem[]>(() =>
   visibleResults.value

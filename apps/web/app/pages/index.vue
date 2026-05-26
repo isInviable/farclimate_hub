@@ -156,7 +156,10 @@
 </template>
 
 <script lang="ts" setup>
+import { localizedSectorSearchTerm } from '~/utils/explorerSectorSearch'
+
 const localePath = useLocalePath()
+const { t } = useI18n()
 const { home } = await useHomeContent()
 
 function scrollToContent() {
@@ -167,7 +170,7 @@ function scrollToContent() {
 function sectorExplorerLink(sector: string) {
   return localePath({
     path: '/explorer/explorer',
-    query: { sector },
+    query: { sector: localizedSectorSearchTerm(sector, t) },
   })
 }
 </script>
