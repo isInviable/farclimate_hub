@@ -1,12 +1,13 @@
 <template>
   <div class="min-h-screen bg-white px-8">
-    <PublicBoardHeader />
+    <PublicBoardHeader :project-name="publicProjectName" />
 
     <PinBoardView
       :pins="pinsList"
       :loading="pinsLoading"
       :error="pinsError"
       :enable-selection="false"
+      :include-saved-searches="false"
       :empty-all-message="$t('pins.publicBoardEmpty')"
       :empty-category-message="$t('pins.boardEmptyCategory')"
     />
@@ -20,29 +21,21 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useProjectsStore } from '@/stores/projects'
-import { usePinsSupabase } from '~/composables/usePinsSupabase'
 import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
 
 const route = useRoute()
 const router = useRouter()
-const projectsStore = useProjectsStore()
-const pinsApi = usePinsSupabase()
+const publicBoard = usePublicBoard()
 
-const pinsList = computed(() => pinsApi.pins.value)
-const pinsLoading = computed(() => pinsApi.loading.value)
-const pinsError = computed(() => pinsApi.error.value ?? null)
+const pinsList = computed(() => publicBoard.pins.value)
+const pinsLoading = computed(() => publicBoard.loading.value)
+const pinsError = computed(() => publicBoard.error.value ?? null)
+const publicProjectName = computed(() => publicBoard.project.value?.name ?? 'Unnamed Project')
 
 const isCommentsOpen = ref(false)
 
 async function syncPublicBoard() {
-  if (projectsStore.projects.length === 0) await projectsStore.initialize()
-  const id = route.params.id as string
-  if (!id) return
-  if (projectsStore.getAllProjects().some((p) => p.id === id)) {
-    projectsStore.switchToProject(id, { readOnly: true })
-  }
-  await pinsApi.loadPinsForProject(id)
+  await publicBoard.loadPublicBoardByToken(route.params.id as string)
 }
 
 onMounted(() => {

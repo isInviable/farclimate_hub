@@ -1,14 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { mapKnowledgeRowToArticleDocument } from "../utils/knowledgeDocument";
-
-function getSupabaseClient() {
-  const config = useRuntimeConfig();
-  const url = config.public.supabaseUrl as string;
-  const key =
-    (config.supabaseServiceRoleKey as string) ||
-    (config.public.supabasePublishableKey as string);
-  return createClient(url, key);
-}
+import { createPublicKnowledgeSupabaseClient } from "../utils/knowledgeSupabase";
 
 /**
  * GET /api/document-by-uid?uid=<stable document_uid>&lang=en
@@ -31,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
   const lang = typeof q.lang === "string" && q.lang.trim() ? q.lang.trim() : "en";
 
-  const supabase = getSupabaseClient();
+  const supabase = createPublicKnowledgeSupabaseClient();
   const { data, error } = await supabase.rpc("get_document_by_uid", {
     p_document_uid: uid,
     filter_lang: lang,

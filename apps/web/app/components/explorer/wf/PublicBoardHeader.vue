@@ -22,12 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProjectsStore } from '@/stores/projects'
-
-const projectsStore = useProjectsStore()
-
-const projectName = computed(() => projectsStore.currentProject?.name || 'Unnamed Project')
+defineProps<{
+  projectName: string
+}>()
 </script>
 
 

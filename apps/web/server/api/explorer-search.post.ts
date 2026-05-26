@@ -1,7 +1,7 @@
 import { google } from "@ai-sdk/google"
 import { embed } from "ai"
-import { createClient } from "@supabase/supabase-js"
 import { buildSearchHit } from "../utils/knowledgeDocument"
+import { createPublicKnowledgeSupabaseClient } from "../utils/knowledgeSupabase"
 import type {
   ExplorerSearchRequest,
   ExplorerSearchResponse,
@@ -54,10 +54,7 @@ const facetKeys: FacetKey[] = [
 ]
 
 function getSupabaseClient() {
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key = (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string)
-  return createClient(url, key)
+  return createPublicKnowledgeSupabaseClient()
 }
 
 function clampInteger(value: unknown, fallback: number, min: number, max: number) {

@@ -238,6 +238,7 @@ const props = withDefaults(
     loading?: boolean
     error?: string | null
     enableSelection?: boolean
+    includeSavedSearches?: boolean
     emptyAllMessage?: string
     emptyCategoryMessage?: string
     artifactCount?: number
@@ -246,6 +247,7 @@ const props = withDefaults(
     loading: false,
     error: null,
     enableSelection: true,
+    includeSavedSearches: true,
     emptyAllMessage: "",
     emptyCategoryMessage: "",
     artifactCount: 0,
@@ -257,9 +259,9 @@ const projectsStore = useProjectsStore();
 const savedSearchesApi = useSavedSearchesSupabase();
 
 watch(
-  () => projectsStore.currentProjectId,
-  (id) => {
-    void savedSearchesApi.fetchSavedSearches(id);
+  [() => projectsStore.currentProjectId, () => props.includeSavedSearches],
+  ([id, includeSavedSearches]) => {
+    void savedSearchesApi.fetchSavedSearches(includeSavedSearches ? id : null);
   },
   { immediate: true }
 );

@@ -73,11 +73,14 @@
               Public board link — anyone with the link can view.
             </div>
             <div class="flex items-center gap-2">
-              <UInput v-model="publicLink" readonly class="flex-1" @focus="selectAll" />
-              <UButton size="sm" variant="solid" color="primary" @click="copyPublicLink">
+              <UInput v-model="publicLink" readonly class="flex-1" placeholder="Click Copy to create link" @focus="selectAll" />
+              <UButton size="sm" variant="solid" color="primary" :loading="sharing" @click="copyPublicLink">
                 {{ copied ? 'Copied' : 'Copy' }}
               </UButton>
             </div>
+            <p v-if="shareError" class="text-xs text-red-600">
+              {{ shareError }}
+            </p>
           </div>
         </template>
       </UPopover>
@@ -112,7 +115,7 @@ import { useAccess } from "~/composables/useAccess";
 const pinsApi = usePinsSupabase();
 const pinCount = computed(() => pinsApi.pins.value.length);
 const projectsStore = useProjectsStore();
-const { isDemoMode, isAuthenticated, requireAuthForPersistence } = useAccess();
+const { isDemoMode, isAuthenticated, requireAuthForPersistence, session } = useAccess();
 const route = useRoute();
 
 // Lightweight relative-time formatter for the project meta line
@@ -198,23 +201,52 @@ const showShareButton = computed(() => {
   return p.includes('/explorer/board') && !p.includes('/explorer/board/public')
 })
 
+interface PublicBoardShareResponse {
+  token: string
+  path: string
+}
+
 // Copy public link logic
 const copied = ref(false)
-const publicLink = computed(() => {
-  const id = projectsStore.currentProjectId
-  const path = `/explorer/board/public/${id ?? ''}`
-  return process.client ? (new URL(path, window.location.origin)).toString() : path
-})
+const sharing = ref(false)
+const shareError = ref<string | null>(null)
+const publicLink = ref('')
+
 async function copyPublicLink() {
-  const url = publicLink.value
+  const projectId = projectsStore.currentProjectId
+  if (!projectId) return
+  if (!requireAuthForPersistence()) return
+  const token = session.value?.access_token
+  if (!token) {
+    shareError.value = 'Sign in to share this board.'
+    return
+  }
+
+  sharing.value = true
+  shareError.value = null
   try {
+    const share = await $fetch<PublicBoardShareResponse>('/api/public-board/share', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: { projectId },
+    })
+    const url = process.client
+      ? new URL(share.path, window.location.origin).toString()
+      : share.path
+    publicLink.value = url
     if (process.client && navigator?.clipboard?.writeText) {
       await navigator.clipboard.writeText(url)
     }
     copied.value = true
     setTimeout(() => copied.value = false, 1500)
-  } catch (e) {
+  } catch (e: unknown) {
+    const err = e as { data?: { message?: string }; message?: string }
+    shareError.value = err.data?.message || err.message || 'Failed to create share link'
     console.error('Failed to copy public link', e)
+  } finally {
+    sharing.value = false
   }
 }
 

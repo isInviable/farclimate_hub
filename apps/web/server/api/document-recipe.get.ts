@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createPublicKnowledgeSupabaseClient } from "../utils/knowledgeSupabase";
 
 /**
  * Returns `knowledge.recipe.ingredients` for one document + language.
@@ -14,11 +14,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "documentId query parameter is required" });
   }
 
-  const config = useRuntimeConfig();
-  const url = config.public.supabaseUrl as string;
-  const key =
-    (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string);
-  const supabase = createClient(url, key);
+  const supabase = createPublicKnowledgeSupabaseClient();
 
   const { data: rows, error: rpcError } = await supabase.rpc("get_documents_by_ids", {
     doc_ids: [documentId],

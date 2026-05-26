@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { isDocumentUuid, mapKnowledgeRowToArticleDocument } from '../../utils/knowledgeDocument'
+import { createPublicKnowledgeSupabaseClient } from '../../utils/knowledgeSupabase'
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id
@@ -15,11 +15,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid document id' })
   }
 
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key =
-    (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string)
-  const supabase = createClient(url, key)
+  const supabase = createPublicKnowledgeSupabaseClient()
 
   const { data: rows, error: rpcError } = await supabase.rpc('get_documents_by_ids', {
     doc_ids: [trimmed],

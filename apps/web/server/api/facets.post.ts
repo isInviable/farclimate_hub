@@ -28,14 +28,11 @@
  *   Each list is ordered by count descending. When no doc_ids are sent, for_result_set has empty arrays.
  */
 
-import { createClient } from "@supabase/supabase-js"
 import type { FilterFacetsRequest, FilterFacetsResponse } from "../../app/types/facets"
+import { createPublicKnowledgeSupabaseClient } from "../utils/knowledgeSupabase"
 
 function getSupabaseClient() {
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key = (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string)
-  return createClient(url, key)
+  return createPublicKnowledgeSupabaseClient()
 }
 
 const emptyFacets: FilterFacetsResponse = {

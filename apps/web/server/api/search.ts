@@ -1,7 +1,7 @@
 import { google } from "@ai-sdk/google"
 import { embed } from "ai"
-import { createClient } from "@supabase/supabase-js"
 import { buildSearchHit } from "../utils/knowledgeDocument"
+import { createPublicKnowledgeSupabaseClient } from "../utils/knowledgeSupabase"
 
 const EMBEDDING_MODEL = "gemini-embedding-001"
 const EMBEDDING_DIMS = 768
@@ -33,10 +33,7 @@ function setCachedEmbedding(query: string, lang: string, embedding: number[]) {
 }
 
 function getSupabaseClient() {
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key = (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string)
-  return createClient(url, key)
+  return createPublicKnowledgeSupabaseClient()
 }
 
 async function generateQueryEmbedding(query: string): Promise<number[]> {

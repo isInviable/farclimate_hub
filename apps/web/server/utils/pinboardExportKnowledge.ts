@@ -1,16 +1,9 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import { mapKnowledgeRowToArticleDocument } from "./knowledgeDocument"
+import { createPublicKnowledgeSupabaseClient } from "./knowledgeSupabase"
 
 export function knowledgeClientForExport(): SupabaseClient {
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key =
-    (config.supabaseServiceRoleKey as string) ||
-    (config.public.supabasePublishableKey as string)
-  if (!url || !key) {
-    throw new Error("Supabase URL or key missing for pinboard export knowledge fetch")
-  }
-  return createClient(url, key)
+  return createPublicKnowledgeSupabaseClient()
 }
 
 /**

@@ -1,6 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { config as loadEnv } from 'dotenv'
+
+// Nuxt loads `.env` from apps/web only; merge repo-root `.env` for shared secrets (e.g. service role).
+const appRoot = path.dirname(fileURLToPath(import.meta.url))
+const repoRootEnv = path.resolve(appRoot, '../../.env')
+if (existsSync(repoRootEnv)) {
+  loadEnv({ path: repoRootEnv })
+}
 
 export default defineNuxtConfig({
   modules: [

@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import { createPublicKnowledgeSupabaseClient } from "../../utils/knowledgeSupabase"
 import type {
   ExplorerCorpusMetadataResponse,
   FacetCategory,
@@ -16,13 +17,10 @@ const emptyFacets: FacetCategory = {
 }
 
 function getSupabaseClient() {
-  const config = useRuntimeConfig()
-  const url = config.public.supabaseUrl as string
-  const key = (config.supabaseServiceRoleKey as string) || (config.public.supabasePublishableKey as string)
-  return createClient(url, key)
+  return createPublicKnowledgeSupabaseClient()
 }
 
-async function getCorpusTotalCount(supabase: ReturnType<typeof getSupabaseClient>): Promise<number> {
+async function getCorpusTotalCount(supabase: SupabaseClient): Promise<number> {
   const { count, error } = await supabase
     .schema("knowledge")
     .from("documents")
