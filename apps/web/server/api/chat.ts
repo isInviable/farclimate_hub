@@ -1,4 +1,3 @@
-import { google } from "@ai-sdk/google";
 import {
   convertToModelMessages,
   createUIMessageStream,
@@ -14,6 +13,7 @@ import {
   parseChatMode,
 } from "../utils/chatCatalog";
 import { extractChatCitations } from "../utils/chatCitations";
+import { googleGenerativeModel } from "../utils/llmModelConfig";
 
 export default defineEventHandler(async (event) => {
   if (event.method !== "POST") {
@@ -48,12 +48,13 @@ export default defineEventHandler(async (event) => {
 
   const modelMessages = await convertToModelMessages(messages as UIMessage[]);
   const userQuestion = getLastUserMessageText(messages);
+  const config = useRuntimeConfig();
 
   const stream = createUIMessageStream({
     originalMessages: messages as UIMessage[],
     execute: async ({ writer }) => {
       const result = streamText({
-        model: google("gemini-3.1-flash-lite-preview"),
+        model: googleGenerativeModel(config),
         system,
         messages: modelMessages,
         experimental_transform: smoothStream({ chunking: "word" }),
@@ -79,6 +80,7 @@ export default defineEventHandler(async (event) => {
             userQuestion,
             assistantText,
             catalog,
+            runtimeConfig: config,
           });
           writer.write({
             type: "data-citations",

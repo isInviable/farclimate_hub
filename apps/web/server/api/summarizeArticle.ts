@@ -1,6 +1,6 @@
-import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { googleGenerativeModel } from "../utils/llmModelConfig";
 
 // Simple in-memory cache
 const responseCache = new Map<string, { response: any; timestamp: string }>();
@@ -36,8 +36,9 @@ export default defineEventHandler(async (event) => {
     Returned text is Markdown, so you can include Markdown marks in the response. Explicitly include markdown marks for the main words within the list, not necessarily the first word.
     `;
 
+    const config = useRuntimeConfig();
     const { object } = await generateObject({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: googleGenerativeModel(config),
       prompt: fullPrompt,
       output: "array",
       schema: z.string()

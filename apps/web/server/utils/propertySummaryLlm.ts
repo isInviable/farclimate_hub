@@ -1,6 +1,6 @@
-import { google } from '@ai-sdk/google'
 import { generateText, Output } from 'ai'
 import { z } from 'zod'
+import { googleGenerativeModel } from './llmModelConfig'
 
 export const summarySchema = z.object({
   summary: z.string(),
@@ -156,8 +156,9 @@ export async function runSummarizePropertyItem(params: {
       ? buildCustomPrompt(userPrompt.trim(), text)
       : buildPropertyPrompt(property, text)
 
+  const config = useRuntimeConfig()
   const { output: object } = await generateText({
-    model: google('gemini-3.1-flash-lite-preview'),
+    model: googleGenerativeModel(config),
     prompt: fullPrompt,
     output: Output.object({ schema: summarySchema }),
   })

@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { config as loadEnv } from 'dotenv'
+import { DEFAULT_GENERATIVE_MODEL_NAME } from './server/utils/llmModelConfig'
 
 // Nuxt loads `.env` from apps/web only; merge repo-root `.env` for shared secrets (e.g. service role).
 const appRoot = path.dirname(fileURLToPath(import.meta.url))
@@ -58,8 +59,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
     podcastArtifactBucket: process.env.NUXT_PODCAST_ARTIFACT_BUCKET || 'human-artifacts',
-    podcastSummarizeModel: process.env.NUXT_PODCAST_SUMMARIZE_MODEL || 'gemini-3.1-flash-lite-preview',
-    slideshow_model_name: process.env.NUXT_SLIDESHOW_MODEL_NAME || 'gemini-3.1-flash-lite-preview',
+    generativeModel: process.env.NUXT_GENERATIVE_MODEL || DEFAULT_GENERATIVE_MODEL_NAME,
+    podcastSummarizeModel: process.env.NUXT_PODCAST_SUMMARIZE_MODEL || DEFAULT_GENERATIVE_MODEL_NAME,
+    slideshow_model_name: process.env.NUXT_SLIDESHOW_MODEL_NAME || DEFAULT_GENERATIVE_MODEL_NAME,
     googleTtsApiKey: process.env.GOOGLE_TTS_API_KEY || process.env.NUXT_GOOGLE_TTS_API_KEY || '',
     podcastTtsLanguageCode: process.env.NUXT_PODCAST_TTS_LANGUAGE_CODE || 'en-US',
     podcastTtsVoiceName: process.env.NUXT_PODCAST_TTS_VOICE_NAME || '',

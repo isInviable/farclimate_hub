@@ -370,6 +370,13 @@ describe("presentation provider orchestration", () => {
     expect(resolveLlmModelName({}, "slideshow_model_name")).toBe(
       DEFAULT_GENERATIVE_MODEL_NAME
     )
+
+    expect(
+      resolveLlmModelName(
+        { generativeModel: "gemini-custom-default" },
+        "slideshow_model_name"
+      )
+    ).toBe("gemini-custom-default")
   })
 
   it("passes the prompt and validates mocked provider success", async () => {

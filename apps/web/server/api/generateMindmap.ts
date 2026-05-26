@@ -1,5 +1,5 @@
-import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
+import { googleGenerativeModel } from "../utils/llmModelConfig";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -27,8 +27,9 @@ export default defineEventHandler(async (event) => {
       `Create a concise, nested hierarchy of ONLY the key ideas present in the documents.\n\n` +
       `DOCUMENTS (each contains 'articleId: <id>'):\n${context}`;
 
+    const config = useRuntimeConfig();
     const { text } = await generateText({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: googleGenerativeModel(config),
       prompt:  defaultPrompt,
       maxTokens: 1200,
       temperature: 0.4,

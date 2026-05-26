@@ -1,6 +1,6 @@
-import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { googleGenerativeModel } from "../utils/llmModelConfig";
 
 // Simple in-memory cache
 const sectionCache = new Map<string, { response: any; timestamp: string }>();
@@ -64,8 +64,9 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    const config = useRuntimeConfig();
     const { object } = await generateObject({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: googleGenerativeModel(config),
       prompt: sectionPrompt,
       schema: z.object({
         title: z.string().describe("A short title for the section (3-5 words)"),

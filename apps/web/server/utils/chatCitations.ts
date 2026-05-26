@@ -1,8 +1,8 @@
-import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
 import type { ChatCatalogEntry, ChatCitation } from "../../app/types/chat";
 import { filterCitationsToCatalog } from "./chatCatalog";
+import { googleGenerativeModel } from "./llmModelConfig";
 
 const citationsSchema = z.object({
   citedArticleIds: z.array(z.string()),
@@ -35,12 +35,13 @@ export async function extractChatCitations(options: {
   userQuestion: string;
   assistantText: string;
   catalog: ChatCatalogEntry[];
+  runtimeConfig: Record<string, unknown>;
 }): Promise<ChatCitation[]> {
-  const { userQuestion, assistantText, catalog } = options;
+  const { userQuestion, assistantText, catalog, runtimeConfig } = options;
   if (!catalog.length || !assistantText.trim()) return [];
 
   const { object } = await generateObject({
-    model: google("gemini-3.1-flash-lite-preview"),
+    model: googleGenerativeModel(runtimeConfig),
     prompt: buildCitationExtractionPrompt({
       userQuestion,
       assistantText,

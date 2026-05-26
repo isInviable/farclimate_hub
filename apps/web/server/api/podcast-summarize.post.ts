@@ -1,5 +1,6 @@
 import { google } from "@ai-sdk/google"
 import { generateText } from "ai"
+import { resolveLlmModelName } from "../utils/llmModelConfig"
 import { createError, defineEventHandler, readBody } from "h3"
 import type { PodcastSummarizeResponse } from "~/types/podcastGeneration"
 import {
@@ -24,9 +25,7 @@ export default defineEventHandler(async (event): Promise<PodcastSummarizeRespons
   }
 
   const config = useRuntimeConfig()
-  const modelName =
-    (config.podcastSummarizeModel as string | undefined) ||
-    "gemini-3.1-flash-lite-preview"
+  const modelName = resolveLlmModelName(config, "podcast_summary_model_name")
   const prompt = buildPodcastPrompt(request)
   const result = await generateText({
     model: google(modelName),

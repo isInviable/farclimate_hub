@@ -1,6 +1,6 @@
-import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { googleGenerativeModel } from "../utils/llmModelConfig";
 
 // Simple in-memory cache
 const responseCache = new Map<string, { response: any; timestamp: string }>();
@@ -55,8 +55,9 @@ export default defineEventHandler(async (event) => {
     The response list of related articles should be an array of strings, each string is the id of an article.
     `;
 
+    const config = useRuntimeConfig();
     const { object } = await generateObject({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: googleGenerativeModel(config),
       prompt: fullPrompt,
       output: "array",
       schema: z.object({
