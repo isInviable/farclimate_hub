@@ -14,6 +14,8 @@
     "test:human-artifacts": "vitest run tests/human/artifacts.rls.test.ts",
     "test:podcast-live": "vitest run tests/api/podcast-generation.live.test.ts",
     "test:watch": "vitest",
+    "test:multilang-search": "vitest run tests/api/explorer-search.multilang-matrix.test.ts",
+    "report:multilang-search": "node scripts/multilang-search-report.mjs",
     "i18n:unused": "node scripts/find-unused-i18n-keys.mjs"
   },
   "dependencies": {

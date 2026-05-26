@@ -18,6 +18,11 @@ For one-time Supabase environment bootstrap work such as auth/RBAC setup, use th
 - **`pnpm db:drop`** — Drops the knowledge schema (destructive). Use when you want to remove all knowledge tables and functions (e.g. tear down the env or start completely fresh).
 - **`pnpm db:truncate`** — Truncates knowledge tables, keeps schema. Use when you want to empty data but keep tables/functions, then run `db:push` to reload (e.g. reload same pipeline output without recreating schema).
 - **`pnpm db:reset`** — drop + create + push in one go. Use when you want a full reset: wipe schema, recreate it, and reload from `pipeline/augmented/`.
+- **`pnpm db:backfill-italian-fts`** — One-time fix for existing databases: applies `03_triggers.sql` (including `ts_config_for_lang` with `italian` for `it`), `04_search_functions.sql`, and `07_backfill_italian_fts.sql`. Run after deploying the Italian FTS fix to an environment that already has data. Fresh `db:push` loads already use the updated trigger; backfill is only needed when `knowledge.fulltext` rows for `lang = 'it'` were indexed with the old `simple` config.
+
+### Full-text search language configs
+
+Indexing (`fulltext_fts_trigger`) and querying (`keyword_search`, `hybrid_search`) both use `knowledge.ts_config_for_lang(lang)`: `en` → `english`, `es` → `spanish`, `it` → `italian`, else `simple`. If you add a language to that mapping, update `sql/03_triggers.sql` and re-touch existing fulltext rows for that `lang` (see `07_backfill_italian_fts.sql` as a template).
 
 ## Configuration
 

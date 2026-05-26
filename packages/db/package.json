@@ -9,7 +9,8 @@
     "db:truncate": "tsx src/truncate-all.ts",
     "db:push": "tsx src/push-climate-adapt.ts",
     "db:embed": "tsx src/generate-embeddings.ts",
-    "db:reset": "tsx src/drop-all.ts && tsx src/create-tables.ts && tsx src/push-climate-adapt.ts"
+    "db:reset": "tsx src/drop-all.ts && tsx src/create-tables.ts && tsx src/push-climate-adapt.ts",
+    "db:backfill-italian-fts": "tsx src/backfill-italian-fts.ts"
   },
   "dependencies": {
     "@google/genai": "^1.43.0",

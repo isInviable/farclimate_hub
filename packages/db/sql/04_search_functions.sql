@@ -47,12 +47,7 @@ AS $$
 DECLARE
   ts_config regconfig;
 BEGIN
-  CASE filter_lang
-    WHEN 'en' THEN ts_config := 'english';
-    WHEN 'es' THEN ts_config := 'spanish';
-    WHEN 'it' THEN ts_config := 'italian';
-    ELSE ts_config := 'simple';
-  END CASE;
+  ts_config := knowledge.ts_config_for_lang(filter_lang);
 
   RETURN QUERY
   SELECT
@@ -96,12 +91,7 @@ AS $$
 DECLARE
   ts_config regconfig;
 BEGIN
-  CASE filter_lang
-    WHEN 'en' THEN ts_config := 'english';
-    WHEN 'es' THEN ts_config := 'spanish';
-    WHEN 'it' THEN ts_config := 'italian';
-    ELSE ts_config := 'simple';
-  END CASE;
+  ts_config := knowledge.ts_config_for_lang(filter_lang);
 
   RETURN QUERY
   WITH full_text AS (

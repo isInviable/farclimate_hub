@@ -144,6 +144,17 @@ Search is scoped by language, such as English, Spanish, or Italian. The selected
 
 Changing language is treated as a new search.
 
+## Multilingual parity monitoring
+
+Free-text recall is evaluated per language (separate fulltext and embeddings per `lang`). A fixed intent matrix and report live in [multilang-free-text-search-report.md](./multilang-free-text-search-report.md).
+
+Re-run after search or translation changes:
+
+```bash
+NUXT_TEST_BASE_URL=http://localhost:3000 pnpm --filter web report:multilang-search
+NUXT_TEST_BASE_URL=http://localhost:3000 pnpm --filter web test:multilang-search
+```
+
 ## Summary
 
 The current explorer search flow is:

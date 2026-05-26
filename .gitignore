@@ -28,3 +28,5 @@ apps/web/test-output/
 
 *.mcp.json
 .cursor/mcp.json
+# Local Netlify folder
+.netlify
