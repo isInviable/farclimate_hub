@@ -10,7 +10,7 @@
         {{ selection.count }}
       </button>
       <span class="hidden md:inline font-mono text-2xs uppercase tracking-[0.14em] text-neutral-lightest/80">
-        selected
+        {{ $t('listActions.selectedLabel') }}
       </span>
       <button
         v-if="selection.count > 0"
@@ -30,7 +30,7 @@
     >
       <Icon name="mdi:chat-processing" class="h-4 w-4 text-primary-400" />
       <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
-        Chat with results
+        {{ $t('listActions.chatWithResults') }}
       </span>
     </button>
     <button
@@ -40,7 +40,7 @@
     >
       <Icon name="mdi:lightbulb-on" class="h-4 w-4 text-primary-400" />
       <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
-        Top insights
+        {{ $t('listActions.topInsights') }}
       </span>
     </button>
     <button
@@ -50,7 +50,7 @@
     >
       <Icon name="mdi:source-branch" class="h-4 w-4 text-primary-400" />
       <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
-        Mind map
+        {{ $t('viewModes.mindmap') }}
       </span>
     </button>
   </ActionBarBase>

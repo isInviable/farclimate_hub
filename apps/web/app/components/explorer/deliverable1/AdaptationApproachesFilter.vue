@@ -1,7 +1,7 @@
 <template>
   <BarChartFilter
     v-if="items.length > 0"
-    title="Adaptation approaches"
+    :title="$t('filters.adaptationApproaches')"
     icon="i-heroicons-light-bulb"
     filter-key="adaptation_approaches"
     :items="items"
@@ -14,7 +14,7 @@
     @filter-apply="(...args) => emit('filter-apply', ...args)"
   />
   <div v-else class="text-sm text-gray-500 py-2">
-    No adaptation approach data yet. Run a search or load all.
+    {{ $t('filters.empty.adaptationApproaches') }}
   </div>
 </template>
 

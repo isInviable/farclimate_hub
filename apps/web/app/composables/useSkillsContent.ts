@@ -72,11 +72,14 @@ function formatDate(value: string | null, locale: SkillLocale): string {
   }).format(new Date(value));
 }
 
-function estimateReadTime(markdown: string): string {
+function estimateReadTime(
+  markdown: string,
+  t: (key: string, params?: Record<string, unknown>) => string,
+): string {
   const words = stripMarkdown(markdown).split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.ceil(words / 220));
 
-  return `${minutes} min. read`;
+  return t("skills.readTime", { minutes });
 }
 
 function tagLabel(tag: SkillTag, locale: SkillLocale): string {
@@ -103,6 +106,7 @@ function toSkillItem(
   row: SkillQueryRow,
   locale: SkillLocale,
   supabase: ReturnType<typeof useSupabaseClient>,
+  t: (key: string, params?: Record<string, unknown>) => string,
   index = 0,
 ): SkillItem | null {
   const content = pickSkillContent(row.skill_contents, locale);
@@ -128,7 +132,7 @@ function toSkillItem(
     bodyMarkdown: body,
     image: skillImage(supabase, row.header_image_path, index),
     date: formatDate(row.published_at, locale),
-    readTime: estimateReadTime(body),
+    readTime: estimateReadTime(body, t),
     url: `/skills/${row.slug}`,
     tags,
     links: (row.skill_external_links ?? []).sort((a, b) => a.sort_order - b.sort_order),
@@ -138,7 +142,7 @@ function toSkillItem(
 
 export function useSkillsContent() {
   const supabase = useSupabaseClient();
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
 
   const currentLocale = computed(() => normalizeLocale(locale.value));
 
@@ -162,7 +166,7 @@ export function useSkillsContent() {
     if (error) throw error;
 
     return ((data ?? []) as SkillQueryRow[])
-      .map((row, index) => toSkillItem(row, activeLocale, supabase, index))
+      .map((row, index) => toSkillItem(row, activeLocale, supabase, t, index))
       .filter((item): item is SkillItem => Boolean(item));
   }
 
@@ -187,7 +191,7 @@ export function useSkillsContent() {
     if (error) throw error;
     if (!data) return null;
 
-    return toSkillItem(data as SkillQueryRow, activeLocale, supabase);
+    return toSkillItem(data as SkillQueryRow, activeLocale, supabase, t);
   }
 
   function buildTagFilters(skills: SkillItem[]): SkillTagFilter[] {

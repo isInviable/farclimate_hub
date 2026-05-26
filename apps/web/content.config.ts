@@ -312,6 +312,22 @@ function storyCollection(locale: string) {
   })
 }
 
+const aboutPageSchema = z.object({
+  heroImage: z.string().optional(),
+  heroImageAlt: z.string().optional(),
+})
+
+function aboutCollection(locale: string) {
+  return defineCollection({
+    type: 'page',
+    source: {
+      include: `${locale}/about.md`,
+      cwd: 'content',
+    },
+    schema: aboutPageSchema,
+  })
+}
+
 export default defineContentConfig({
   collections: {
     home_en: homeCollection('en'),
@@ -326,5 +342,8 @@ export default defineContentConfig({
     story_en: storyCollection('en'),
     story_es: storyCollection('es'),
     story_it: storyCollection('it'),
+    about_en: aboutCollection('en'),
+    about_es: aboutCollection('es'),
+    about_it: aboutCollection('it'),
   },
 })

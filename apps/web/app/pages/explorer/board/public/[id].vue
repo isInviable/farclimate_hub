@@ -30,7 +30,8 @@ const publicBoard = usePublicBoard()
 const pinsList = computed(() => publicBoard.pins.value)
 const pinsLoading = computed(() => publicBoard.loading.value)
 const pinsError = computed(() => publicBoard.error.value ?? null)
-const publicProjectName = computed(() => publicBoard.project.value?.name ?? 'Unnamed Project')
+const { t } = useI18n()
+const publicProjectName = computed(() => publicBoard.project.value?.name ?? t('projects.unnamed'))
 
 const isCommentsOpen = ref(false)
 

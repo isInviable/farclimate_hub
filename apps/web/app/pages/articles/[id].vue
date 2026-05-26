@@ -15,7 +15,7 @@ import ArticleViewAI from '@/components/explorer/ArticleViewAI.vue'
 import { knowledgeApiLang } from '@/utils/knowledgeApiLang'
 
 const route = useRoute()
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 const { data: article, error, pending } = await useFetch<ArticleDetail>(
   () => `/api/articles/${String(route.params.id ?? '')}`,
@@ -39,7 +39,7 @@ watch(error, (e) => {
   if (!e || import.meta.server) return
   const code = statusFromError(e)
   if (code === 404 || code === 400) {
-    showError({ statusCode: 404, statusMessage: 'Article not found' })
+    showError({ statusCode: 404, statusMessage: t('article.errors.notFound') })
   }
 })
 definePageMeta({
@@ -54,11 +54,11 @@ useHead({
 if (error.value) {
   const code = statusFromError(error.value)
   if (code === 404 || code === 400) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
+    throw createError({ statusCode: 404, statusMessage: t('article.errors.notFound') })
   }
   throw createError({
     statusCode: code === 502 ? 502 : 500,
-    statusMessage: 'Failed to load article',
+    statusMessage: t('pins.drawer.loadError'),
   })
 }
 </script>

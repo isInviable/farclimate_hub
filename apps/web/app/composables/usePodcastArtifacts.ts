@@ -3,6 +3,7 @@ import type { HumanArtifactRow } from "~/types/artifacts";
 export function usePodcastArtifacts() {
   const supabase = useSupabaseClient();
   const { isAuthenticated } = useAccess();
+  const { t } = useI18n();
 
   const artifacts = ref<HumanArtifactRow[]>([]);
   const loading = ref(false);
@@ -31,7 +32,7 @@ export function usePodcastArtifacts() {
       if (queryError) throw queryError;
       artifacts.value = (data ?? []) as HumanArtifactRow[];
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load podcasts";
+      error.value = e instanceof Error ? e.message : t("podcast.artifacts.loadError");
       artifacts.value = [];
     } finally {
       loading.value = false;
@@ -52,7 +53,7 @@ export function usePodcastArtifacts() {
       if (signedUrlError) throw signedUrlError;
       return data?.signedUrl ?? null;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to create podcast link";
+      error.value = e instanceof Error ? e.message : t("common.requestFailed");
       return null;
     }
   }

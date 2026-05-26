@@ -449,7 +449,7 @@ async function saveDocumentPin(note: string): Promise<void> {
       animationElement: null,
     });
     if (!id) {
-      documentPinError.value = pinsApi.error.value ?? "Could not save pin";
+      documentPinError.value = pinsApi.error.value ?? t("pins.capture.saveFailed");
       return;
     }
     documentPinDialogOpen.value = false;

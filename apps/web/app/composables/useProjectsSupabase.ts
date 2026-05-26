@@ -5,6 +5,7 @@ const PROJECTS_STORAGE_KEY = "farclimate-current-project-id";
 export function useProjectsSupabase() {
   const supabase = useSupabaseClient();
   const { isAuthenticated, requireAuthForPersistence } = useAccess();
+  const { t } = useI18n();
 
   const projects = ref<Project[]>([]);
   const loading = ref(false);
@@ -39,7 +40,7 @@ export function useProjectsSupabase() {
       if (e) throw e;
       projects.value = (data ?? []) as Project[];
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load projects";
+      error.value = e instanceof Error ? e.message : t("projects.errors.load");
       projects.value = [];
     } finally {
       loading.value = false;
@@ -56,7 +57,7 @@ export function useProjectsSupabase() {
     try {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData?.user) {
-        error.value = "Not authenticated";
+        error.value = t("projects.errors.notAuthenticated");
         return null;
       }
       const user = authData.user;
@@ -65,7 +66,7 @@ export function useProjectsSupabase() {
         .from("projects")
         .insert({
           owner_user_id: user.id,
-          name: name || "Unnamed Project",
+          name: name || t("projects.unnamed"),
           description: description ?? null,
         })
         .select("id, owner_user_id, name, description, created_at, updated_at")
@@ -74,7 +75,7 @@ export function useProjectsSupabase() {
       await fetchProjects();
       return insertData as Project;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to create project";
+      error.value = e instanceof Error ? e.message : t("projects.errors.create");
       return null;
     } finally {
       loading.value = false;
@@ -101,7 +102,7 @@ export function useProjectsSupabase() {
       await fetchProjects();
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to update project";
+      error.value = e instanceof Error ? e.message : t("projects.errors.update");
       return false;
     } finally {
       loading.value = false;
@@ -122,7 +123,7 @@ export function useProjectsSupabase() {
       await fetchProjects();
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to delete project";
+      error.value = e instanceof Error ? e.message : t("projects.errors.delete");
       return false;
     } finally {
       loading.value = false;

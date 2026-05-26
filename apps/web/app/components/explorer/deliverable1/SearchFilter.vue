@@ -1,6 +1,6 @@
 <template>
   <FilterComponent
-    title="Search"
+    :title="$t('filters.searchFilter')"
     icon="i-heroicons-magnifying-glass"
     filter-key="search"
     :has-visualization="false"
@@ -18,7 +18,7 @@
           size="md"
           variant="editorial"
           class="grow"
-          placeholder="Search corpus…"
+          :placeholder="$t('search.corpusPlaceholder')"
           :model-value="searchStore.searchQuery"
           @update:model-value="(v) => onSearchInput(v, updateValue)"
           @keyup.enter="handleSearch"
@@ -29,7 +29,7 @@
           size="md"
           variant="editorial-solid"
         >
-          {{ isSearching ? "…" : "Search" }}
+          {{ isSearching ? "…" : $t('common.search') }}
         </UButton>
       </div>
 

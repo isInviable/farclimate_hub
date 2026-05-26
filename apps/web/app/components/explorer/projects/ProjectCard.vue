@@ -75,7 +75,7 @@
           class="min-h-9 w-full justify-center font-mono text-2xs uppercase tracking-widest"
           @click.stop="goToExplorer"
         >
-          {{ isCurrent ? "Go to explorer (current project)" : "Go to explorer" }}
+          {{ isCurrent ? $t('projects.card.goToExplorerCurrent') : $t('projects.card.goToExplorer') }}
         </UButton>
       </div>
     </div>

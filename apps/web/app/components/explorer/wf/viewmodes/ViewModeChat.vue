@@ -387,7 +387,7 @@ async function saveConversationPin(note: string) {
       location: null,
     });
     if (!id) {
-      conversationPinError.value = "Could not save pin";
+      conversationPinError.value = t("pins.capture.saveFailed");
       return;
     }
     conversationPinDialogOpen.value = false;

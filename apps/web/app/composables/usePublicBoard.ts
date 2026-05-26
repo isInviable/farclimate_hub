@@ -11,6 +11,7 @@ interface PublicBoardResponse {
 }
 
 export function usePublicBoard() {
+  const { t } = useI18n()
   const pins = ref<HumanPinRow[]>([])
   const project = ref<PublicBoardProject | null>(null)
   const loading = ref(false)
@@ -33,7 +34,7 @@ export function usePublicBoard() {
       pins.value = data.pins
     } catch (e: unknown) {
       const err = e as { data?: { message?: string }; message?: string }
-      error.value = err.data?.message || err.message || "Failed to load public board"
+      error.value = err.data?.message || err.message || t("publicBoard.errors.load")
       pins.value = []
       project.value = null
     } finally {

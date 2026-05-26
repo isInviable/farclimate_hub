@@ -1,10 +1,10 @@
 <template>
   <section class="mt-14 border-t border-neutral-darkest pt-10">
     <EditorialEyebrow class="mb-6 block" color="muted">
-      Overview
+      {{ $t('projects.stats.overview') }}
     </EditorialEyebrow>
     <h2 class="font-display text-2xl font-bold text-neutral-darkest">
-      Project statistics
+      {{ $t('projects.stats.title') }}
     </h2>
     <div
       class="editorial-frame mt-8 grid grid-cols-1 md:grid-cols-3"
@@ -23,7 +23,7 @@
         </div>
         <div class="min-w-0 text-left">
           <p class="font-mono text-2xs font-bold uppercase tracking-[0.14em] text-neutral-dark">
-            Total projects
+            {{ $t('projects.stats.totalProjects') }}
           </p>
           <p class="font-display text-3xl font-bold text-neutral-darkest">
             {{ totalProjects }}
@@ -41,7 +41,7 @@
         </div>
         <div class="min-w-0 text-left">
           <p class="font-mono text-2xs font-bold uppercase tracking-[0.14em] text-neutral-dark">
-            Total pins
+            {{ $t('projects.stats.totalPins') }}
           </p>
           <p class="font-display text-3xl font-bold text-neutral-darkest">
             {{ totalPins }}
@@ -62,13 +62,13 @@
         </div>
         <div class="min-w-0 text-left">
           <p class="font-mono text-2xs font-bold uppercase tracking-[0.14em] text-neutral-dark">
-            Most pinned project
+            {{ $t('projects.dashboard.mostPinnedProject') }}
           </p>
           <p
             class="font-display text-lg font-semibold text-neutral-darkest truncate"
             :title="mostActiveName || undefined"
           >
-            {{ mostActiveName || "N/A" }}
+            {{ mostActiveName || $t('projects.stats.notAvailable') }}
           </p>
         </div>
       </div>

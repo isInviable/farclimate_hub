@@ -87,13 +87,15 @@ const truncate = (text: string | undefined, length: number) => {
   return text ?? ''
 }
 
+const { t } = useI18n()
+
 const getUsername = (doc: ArticleDetail) => {
   if (doc.contact && typeof doc.contact === 'string') {
     let firstLine = doc.contact.split(/\r?\n/)[0].trim()
     if (firstLine.length > 64) {
       firstLine = firstLine.slice(0, 64) + '...'
     }
-    return firstLine || 'Climate Shaper'
+    return firstLine || t('viewModes.instagramClimateShaper')
   }
   if (doc.sectors) {
     const raw =
@@ -101,7 +103,7 @@ const getUsername = (doc: ArticleDetail) => {
     const first = raw[0]?.trim()
     if (first) return first
   }
-  return 'Climate Shaper'
+  return t('viewModes.instagramClimateShaper')
 }
 
 const getLocation = (doc: ArticleDetail) => {
@@ -116,7 +118,7 @@ const getLocation = (doc: ArticleDetail) => {
 
 const getTitle = (doc: ArticleDetail) => {
   if (doc.title) return doc.title
-  return 'Unknown Title'
+  return t('viewModes.instagramUnknownTitle')
 }
 
 function instagramPinPreview(doc: ArticleDetail): string {

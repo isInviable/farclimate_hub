@@ -3,6 +3,7 @@ import type { SavedSearch, SavedSearchFilters } from "~/types/savedSearches";
 export function useSavedSearchesSupabase() {
   const supabase = useSupabaseClient();
   const { isAuthenticated, requireAuthForPersistence } = useAccess();
+  const { t } = useI18n();
 
   const savedSearches = ref<SavedSearch[]>([]);
   const loading = ref(false);
@@ -27,7 +28,7 @@ export function useSavedSearchesSupabase() {
       if (e) throw e;
       savedSearches.value = (data ?? []) as SavedSearch[];
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load saved searches";
+      error.value = e instanceof Error ? e.message : t("pins.errors.loadSavedSearches");
       savedSearches.value = [];
     } finally {
       loading.value = false;
@@ -57,7 +58,7 @@ export function useSavedSearchesSupabase() {
       await fetchSavedSearches(projectId);
       return data as SavedSearch;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to save search";
+      error.value = e instanceof Error ? e.message : t("pins.errors.saveSearch");
       return null;
     } finally {
       loading.value = false;
@@ -78,7 +79,7 @@ export function useSavedSearchesSupabase() {
       await fetchSavedSearches(_currentProjectId.value);
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to delete saved search";
+      error.value = e instanceof Error ? e.message : t("pins.errors.deleteSavedSearch");
       return false;
     } finally {
       loading.value = false;

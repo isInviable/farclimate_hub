@@ -54,6 +54,7 @@ const props = withDefaults(
 
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
+const { t } = useI18n();
 const articleContext = inject(PinArticleContextKey, null);
 
 const container = ref<HTMLElement | null>(null);
@@ -65,7 +66,7 @@ const saveError = ref<string | null>(null);
 
 const captureTitle = computed(() => {
   const articleTitle = articleContext?.title.value?.trim() || "";
-  return [articleTitle, "Selected text"].filter(Boolean).join(" — ");
+  return [articleTitle, t("pins.kinds.selected_text")].filter(Boolean).join(" — ");
 });
 
 const floatingButtonStyle = computed(() => {
@@ -138,7 +139,7 @@ async function saveCapture(note: string) {
       animationElement: container.value,
     });
     if (!id) {
-      saveError.value = pinsApi.error.value ?? "Could not save pin";
+      saveError.value = pinsApi.error.value ?? t("pins.capture.saveFailed");
       return;
     }
     dialogOpen.value = false;

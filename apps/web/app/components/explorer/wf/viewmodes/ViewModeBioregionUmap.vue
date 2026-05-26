@@ -5,7 +5,7 @@
       class="flex flex-col items-center justify-center py-16 text-gray-500 rounded-lg border border-gray-200 bg-gray-50"
     >
       <UIcon name="i-heroicons-circle-stack-20-solid" class="w-12 h-12 text-gray-300 mb-3" />
-      <p class="text-lg font-medium">No results to map</p>
+      <p class="text-lg font-medium">{{ $t('viewModes.umapEmpty') }}</p>
       <p class="text-sm">Run a search or adjust filters to see biogeographical regions</p>
     </div>
     <ClientOnly v-else>

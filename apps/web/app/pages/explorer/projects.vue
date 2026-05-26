@@ -4,7 +4,7 @@
 
     <div class="explorer-dashboard-column">
       <ProjectsDashboardHeader
-        description="Each project card opens your workspace in the explorer. Use Go to explorer at the bottom of a card (or click anywhere on the card) to browse case studies."
+        :description="$t('projects.dashboard.cardDescription')"
       >
         <template #actions>
           <UButton
@@ -14,7 +14,7 @@
             icon="i-heroicons-plus"
             @click="createNewProject"
           >
-            Create new project
+            {{ $t('projects.dashboard.createNewProjectButton') }}
           </UButton>
           <UButton
             v-else
@@ -23,7 +23,7 @@
             size="lg"
             icon="i-heroicons-arrow-right-on-rectangle"
           >
-            Sign in to create projects
+            {{ $t('projects.dashboard.signInToCreateProjects') }}
           </UButton>
         </template>
       </ProjectsDashboardHeader>
@@ -31,11 +31,11 @@
       <!-- Demo mode: sign-in prompt -->
       <ProjectsEmptyState
         v-if="!isAuthenticated"
-        heading="Sign in to manage projects"
-        body="Projects are saved to your account. Sign in to create and manage projects across devices."
+        :heading="$t('projects.dashboard.signInToManageHeading')"
+        :body="$t('projects.dashboard.signInToManageBody')"
       >
         <UButton :to="loginLink" color="primary" size="lg">
-          Sign in
+          {{ $t('auth.signIn') }}
         </UButton>
       </ProjectsEmptyState>
 
@@ -70,8 +70,8 @@
               projectsStore.projects.length === 0 &&
               !projectsStore.loading
           "
-          heading="No projects yet"
-          body="Create your first project to start organizing your climate adaptation research and pinned items."
+          :heading="$t('projects.dashboard.emptyFirstHeading')"
+          :body="$t('projects.dashboard.emptyFirstBody')"
         >
           <UButton
             color="primary"
@@ -79,7 +79,7 @@
             icon="i-heroicons-plus"
             @click="createNewProject"
           >
-            Create your first project
+            {{ $t('projects.dashboard.createFirstProject') }}
           </UButton>
         </ProjectsEmptyState>
       </div>
@@ -92,20 +92,20 @@
       />
     </div>
 
-    <UModal v-model:open="showCreateModal" title="Create new project">
+    <UModal v-model:open="showCreateModal" :title="$t('projects.dashboard.modalCreateTitle')">
       <template #body>
         <UInput
           v-model="newProjectName"
           class="w-full"
           variant="editorial"
-          placeholder="Enter project name…"
+          :placeholder="$t('projects.dashboard.enterProjectName')"
           @keyup.enter="confirmCreateProject"
         />
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-3">
           <UButton variant="ghost" color="neutral" @click="cancelCreateProject">
-            Cancel
+            {{ $t('projects.dashboard.cancel') }}
           </UButton>
           <UButton
             color="primary"
@@ -113,7 +113,7 @@
             :loading="creating"
             @click="confirmCreateProject"
           >
-            Create project
+            {{ $t('projects.dashboard.createProject') }}
           </UButton>
         </div>
       </template>
@@ -133,24 +133,21 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Project } from "~/types/projects";
 
 definePageMeta({
-  title: "Projects Dashboard",
-  description:
-    "Manage your climate adaptation research projects and their pinned items.",
   layout: "explorer",
 });
 
 useHead({
-  title: "Projects Dashboard - Deliverable 1",
+  title: () => `${t("projects.dashboard.metaTitle")} - Deliverable 1`,
   meta: [
     {
       name: "description",
-      content:
-        "Manage your climate adaptation research projects and their pinned items.",
+      content: () => t("projects.dashboard.metaDescription"),
     },
   ],
 });
 
 const route = useRoute();
+const { t } = useI18n();
 const projectsStore = useProjectsStore();
 const pinsApi = usePinsSupabase();
 const { isAuthenticated } = useAccess();
@@ -238,7 +235,7 @@ function cancelCreateProject() {
 async function renameProject(projectId: string) {
   const project = projectsStore.projects.find((p) => p.id === projectId);
   if (!project) return;
-  const newName = prompt("Enter new project name:", project.name);
+  const newName = prompt(t("projects.dashboard.promptRename"), project.name);
   if (newName?.trim() && newName.trim() !== project.name) {
     await projectsStore.updateProjectName(projectId, newName.trim());
   }
@@ -248,7 +245,7 @@ async function deleteProjectAction(projectId: string) {
   const project = projectsStore.projects.find((p) => p.id === projectId);
   if (!project) return;
   const confirmDelete = confirm(
-    `Are you sure you want to delete "${project.name}"? This action cannot be undone.`
+    t("projects.dashboard.confirmDeleteNamed", { name: project.name }),
   );
   if (confirmDelete) {
     await projectsStore.deleteProject(projectId);
@@ -259,12 +256,12 @@ function getProjectMenuItems(project: Project): DropdownMenuItem[][] {
   return [
     [
       {
-        label: "Rename Project",
+        label: t("projects.dashboard.renameProject"),
         icon: "i-heroicons-pencil",
         onSelect: () => renameProject(project.id),
       },
       {
-        label: "Delete Project",
+        label: t("projects.dashboard.deleteProject"),
         icon: "i-heroicons-trash",
         color: "error",
         onSelect: () => deleteProjectAction(project.id),

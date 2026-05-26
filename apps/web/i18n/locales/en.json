@@ -22,7 +22,10 @@
     "firstPage": "First page",
     "previousPage": "Previous page",
     "nextPage": "Next page",
-    "lastPage": "Last page"
+    "lastPage": "Last page",
+    "share": "Share",
+    "cancel": "Cancel",
+    "requestFailed": "Request failed"
   },
   "explorer": {
     "exampleQueries": "Example queries",
@@ -39,6 +42,10 @@
       "searchHint": "You can start with a text search too:",
       "searchPlaceholder": "Search…",
       "footerHint": "Click a sector above to explore adaptation solutions, or view all solutions across sectors for a comprehensive overview."
+    },
+    "meta": {
+      "title": "Climate Adaptation Explorer",
+      "description": "Search and explore climate adaptation case studies."
     }
   },
   "pins": {
@@ -165,6 +172,22 @@
       "loading": "Loading article…",
       "pinDocumentAria": "Pin this article",
       "detailsDescription": "Detailed article view with summary, recipe, and chat."
+    },
+    "errors": {
+      "load": "Failed to load pins",
+      "create": "Failed to create pin",
+      "update": "Failed to update pin",
+      "delete": "Failed to delete pin",
+      "reorder": "Failed to reorder pins",
+      "loadSavedSearches": "Failed to load saved searches",
+      "saveSearch": "Failed to save search",
+      "deleteSavedSearch": "Failed to delete search"
+    },
+    "share": {
+      "linkCopied": "Link copied to clipboard"
+    },
+    "exports": {
+      "signInRequired": "Sign in to generate a download."
     }
   },
   "podcast": {
@@ -310,18 +333,25 @@
     }
   },
   "header": {
-    "home": "home",
-    "solutions": "solutions",
-    "skills": "skills", 
-    "network": "network",
-    "stories": "stories",
-    "about": "about",
-    "pinsBoard": "Pins Board"
+    "home": "Home",
+    "solutions": "Solutions",
+    "skills": "Skills",
+    "network": "Network",
+    "stories": "Stories",
+    "about": "About",
+    "pinsBoard": "Pins Board",
+    "brandTitle": "FarClimate Transformation Hub",
+    "brandTitleLine1": "FarClimate",
+    "brandTitleLine2": "Transformation Hub",
+    "connectedAction": "Connected Action"
   },
   "listActions": {
     "default": "Default",
     "topInsights": "Top insights",
-    "chatWithResults": "Chat with these results"
+    "chatWithResults": "Chat with these results",
+    "selectedLabel": "selected",
+    "chatWithSelection": "Chat with selection",
+    "mindmap": "Mind map"
   },
   "search": {
     "title": "Solutions Explorer",
@@ -329,23 +359,52 @@
     "filtersApplied": "filters applied",
     "activeFilters": "Active Filters",
     "availableFilters": "Available Filters",
-    "dragInstructions": "Drag filters between sections to activate or deactivate them"
+    "dragInstructions": "Drag filters between sections to activate or deactivate them",
+    "corpusPlaceholder": "Search corpus…",
+    "clearAll": "Clear All",
+    "applyFilters": "Apply Filters",
+    "allFiltersActive": "All filters are active",
+    "removeFiltersHint": "Remove filters above to make them available again"
   },
   "filters": {
     "activity": "Activity",
-    "hazards": "Hazards", 
+    "hazards": "Hazards",
     "location": "Location",
-    "status": "Status",
+    "status": {
+      "none": "No filter applied",
+      "itemsSelected": "{count} items selected",
+      "optionsSelected": "{count} options selected",
+      "applied": "Filter applied"
+    },
     "time": "Time",
     "selectBioregion": "Select Bioregion",
     "allBioregions": "All Bioregions",
     "searchByLocation": "Search by location",
     "lowCost": "Low cost",
-    "highCost": "High cost"
+    "highCost": "High cost",
+    "sector": "Sector",
+    "climateImpacts": "Climate impacts",
+    "climateHazards": "Climate Hazards",
+    "adaptationApproaches": "Adaptation approaches",
+    "biogeographicalRegion": "Biogeographical region",
+    "searchFilter": "Search",
+    "empty": {
+      "sector": "No sector data yet. Run a search to load facets.",
+      "hazards": "No climate impact data yet. Run a search to load facets.",
+      "bioregion": "No biogeographical region data yet. Run a search to load facets.",
+      "adaptationApproaches": "No adaptation approach data yet. Run a search to load facets."
+    },
+    "toggleAria": "{action} {title} filter",
+    "toggleEnable": "Enable",
+    "toggleDisable": "Disable",
+    "visualization": {
+      "placeholder": "Visualization not available for this filter."
+    },
+    "showAll": "Show all"
   },
   "status": {
     "proposal": "Proposal",
-    "inProgress": "In Progress", 
+    "inProgress": "In Progress",
     "finished": "Finished"
   },
   "timeframes": {
@@ -355,7 +414,7 @@
   "bioregions": {
     "alpine": "Alpine (Central European Mountains)",
     "atlantic": "Atlantic (Western European Coastlands)",
-    "boreal": "Boreal (Northern European Forests)", 
+    "boreal": "Boreal (Northern European Forests)",
     "continental": "Continental (Central European Plains)",
     "mediterranean": "Mediterranean (Southern European Coast)",
     "amazon": "Amazon Rainforest",
@@ -366,7 +425,7 @@
   },
   "hazards": {
     "drought": "Drought",
-    "heatwave": "Heatwave", 
+    "heatwave": "Heatwave",
     "heavyPrecipitation": "Heavy Precipitation",
     "wildfire": "Wildfire",
     "floods": "Floods",
@@ -375,7 +434,7 @@
   },
   "viewModes": {
     "list": "List",
-    "grid": "Grid", 
+    "grid": "Grid",
     "instagram": "Instagram",
     "instagramCarouselRegion": "Article images",
     "instagramCarouselDotsTablist": "Gallery slides",
@@ -389,7 +448,7 @@
     "showProperty": "Show property",
     "summary": "Summary",
     "costBenefit": "Cost & Benefits",
-    "implementationTime": "Implementation Time", 
+    "implementationTime": "Implementation Time",
     "lifetime": "Lifetime",
     "stakeholderParticipation": "Stakeholder Participation",
     "successLimitations": "Success & Limitations",
@@ -416,12 +475,25 @@
     "matchingFiltersAria": "Matches active search filters",
     "matchingFiltersMore": "+{count} more",
     "read": "Read",
-    "clearSelection": "Clear selection"
+    "clearSelection": "Clear selection",
+    "compare": "Compare",
+    "byBioRegions": "By bioRegions",
+    "images": "Images",
+    "tabsAria": "View mode",
+    "mindmap": "Mind map",
+    "mapEmptyTitle": "No locations to display",
+    "mapEmptyDescription": "Search results don't contain geographic data",
+    "downloadPng": "Download PNG",
+    "umapEmpty": "No results to map",
+    "instagramUnknownTitle": "Unknown Title",
+    "instagramClimateShaper": "Climate Shaper",
+    "shareMap": "Share Map",
+    "fullscreen": "Fullscreen"
   },
   "pills": {
     "forestry": "Forestry",
     "agriculture": "Agriculture",
-    "fishery": "Fishery", 
+    "fishery": "Fishery",
     "mediterranean": "Mediterranean",
     "atlantic": "Atlantic",
     "continental": "Continental",
@@ -442,6 +514,9 @@
       "main": "Summary",
       "contacts": "Contact & references",
       "map": "Map"
+    },
+    "empty": {
+      "economic": "No economic data available"
     }
   },
   "recipe": {
@@ -518,6 +593,9 @@
       "keyboardHint": "Alt + ← → to navigate · Esc to close",
       "prevAria": "Open previous case in list",
       "nextAria": "Open next case in list"
+    },
+    "errors": {
+      "notFound": "Article not found"
     }
   },
   "summaryHeaders": {
@@ -541,5 +619,189 @@
     "source": "Source",
     "authorsFallback": "EU-Adapt research team",
     "sourceFallback": "European Climate Adaptation Platform"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "logOut": "Log out",
+    "backToHome": "← Back to home",
+    "tabs": {
+      "signIn": "Sign in",
+      "signUp": "Sign up"
+    },
+    "headings": {
+      "checkEmail": "Check your email",
+      "signIn": "Sign in",
+      "welcome": "Welcome"
+    },
+    "subtitle": {
+      "otpSent": "We sent a 6-digit code to {email}",
+      "password": "Sign in with your email and password.",
+      "demo": "In demo mode your browsing isn't saved. Sign in or create an account to save your work."
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "name": "Your name",
+      "emailPlaceholder": "your{'@'}email.com",
+      "passwordPlaceholder": "Enter your password",
+      "namePlaceholder": "How should we call you?"
+    },
+    "actions": {
+      "signIn": "Sign in",
+      "createAccount": "Create account",
+      "continue": "Continue",
+      "signInWithCode": "← Sign in with email code instead",
+      "signInWithPassword": "Sign in with password instead"
+    },
+    "otp": {
+      "verifying": "Verifying…",
+      "changeEmail": "← Change email",
+      "resendCode": "Resend code",
+      "resendIn": "Resend in {seconds}s"
+    },
+    "errors": {
+      "rateLimit": "Too many requests. Please wait a moment before trying again.",
+      "expired": "The code has expired. Please request a new one.",
+      "invalidOtp": "Invalid code. Please check and try again.",
+      "unexpected": "An unexpected error occurred. Please try again.",
+      "invalidCredentials": "Invalid email or password."
+    },
+    "validation": {
+      "emailRequired": "Please enter your email address.",
+      "emailInvalid": "Please enter a valid email address.",
+      "nameRequired": "Please enter your name.",
+      "emailPasswordRequired": "Please enter both email and password."
+    }
+  },
+  "skills": {
+    "readTime": "{minutes} min. read",
+    "index": {
+      "heroTitle": "Learn the skills to adapt and thrive in a changing climate",
+      "heroSubtitle": "Here you can explore practical skills to face climate challenges. Filter what interests you from the menu on the left, and discover on the right a collection of tools, courses, and real cases ready to inspire your next steps",
+      "sortMoreViews": "More views",
+      "sortRelevance": "Relevance"
+    },
+    "sidebar": {
+      "allTrainings": "All trainings",
+      "filterBy": "Filter by"
+    },
+    "empty": {
+      "title": "No skills found",
+      "description": "Try adjusting your filters or check back later."
+    },
+    "detail": {
+      "back": "Back to skills",
+      "externalLinks": "External links"
+    },
+    "errors": {
+      "notFound": "Skill not found"
+    }
+  },
+  "projects": {
+    "unnamed": "Unnamed Project",
+    "header": {
+      "projectMenu": "Project menu",
+      "project": "Project",
+      "signInToUse": "Sign in to use projects",
+      "shareBoard": "Share board",
+      "copied": "Copied",
+      "copy": "Copy",
+      "explorer": "Explorer",
+      "editedAgo": "edited {time} ago",
+      "pinnedCount": "{count} pinned",
+      "shareError": "Could not create share link",
+      "publicLinkHint": "Public board link — anyone with the link can view.",
+      "copyLinkPlaceholder": "Click Copy to create link",
+      "shareSignInRequired": "Sign in to share this board.",
+      "projectsDashboard": "Projects Dashboard",
+      "signInToManageProjects": "Sign in to create and manage projects",
+      "createNewProject": "Create New Project",
+      "newProjectDefault": "New Project",
+      "editedJustNow": "just now",
+      "editedMinutesAgo": "edited {count}m ago",
+      "editedHoursAgo": "edited {count}h ago",
+      "editedDaysAgo": "edited {count}d ago",
+      "editedMonthsAgo": "edited {count}mo ago",
+      "editedYearsAgo": "edited {count}y ago"
+    },
+    "dashboard": {
+      "metaTitle": "Projects",
+      "metaDescription": "Manage your explorer projects and pinboards.",
+      "eyebrow": "Projects",
+      "title": "Your projects",
+      "subtitle": "Create and switch between projects to organize pins and saved searches.",
+      "emptyTitle": "No projects yet",
+      "emptyDescription": "Create a project to start pinning and saving searches.",
+      "createButton": "Create project",
+      "modalCreateTitle": "Create project",
+      "modalEditTitle": "Edit project",
+      "nameLabel": "Project name",
+      "namePlaceholder": "My adaptation project",
+      "promptName": "Enter a name for the new project:",
+      "confirmDelete": "Delete this project? Pins and saved searches will be removed.",
+      "cardDescription": "Each project card opens your workspace in the explorer. Use Go to explorer at the bottom of a card (or click anywhere on the card) to browse case studies.",
+      "signInToCreateProjects": "Sign in to create projects",
+      "signInToManageHeading": "Sign in to manage projects",
+      "signInToManageBody": "Projects are saved to your account. Sign in to create and manage projects across devices.",
+      "emptyFirstHeading": "No projects yet",
+      "emptyFirstBody": "Create your first project to start organizing your climate adaptation research and pinned items.",
+      "createFirstProject": "Create your first project",
+      "createNewProjectButton": "Create new project",
+      "enterProjectName": "Enter project name…",
+      "cancel": "Cancel",
+      "createProject": "Create project",
+      "renameProject": "Rename project",
+      "deleteProject": "Delete project",
+      "confirmDeleteTitle": "Delete project?",
+      "promptRename": "Enter new project name:",
+      "confirmDeleteNamed": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "mostPinnedProject": "Most pinned project"
+    },
+    "stats": {
+      "overview": "Overview",
+      "title": "Project statistics",
+      "totalProjects": "Total projects",
+      "totalPins": "Total pins",
+      "savedSearches": "Saved searches",
+      "notAvailable": "N/A"
+    },
+    "card": {
+      "goToExplorer": "Go to explorer",
+      "goToExplorerCurrent": "Go to explorer (current project)"
+    },
+    "errors": {
+      "load": "Failed to load projects",
+      "create": "Failed to create project",
+      "update": "Failed to update project",
+      "delete": "Failed to delete project",
+      "notAuthenticated": "Not authenticated"
+    }
+  },
+  "publicBoard": {
+    "actions": {
+      "viewOnly": "View only",
+      "cloneToProjects": "Clone to my projects",
+      "addComment": "Add comment",
+      "download": "Download"
+    },
+    "comments": {
+      "title": "Comments",
+      "empty": "No comments yet.",
+      "placeholder": "Write a comment...",
+      "submit": "Add comment"
+    },
+    "errors": {
+      "load": "Failed to load public board"
+    }
+  },
+  "boardActions": {
+    "videoSummary": "Create video summary",
+    "moreActions": "More actions...",
+    "chatWithSelection": "Chat with selection",
+    "topInsightsSelection": "Top insights (selection)",
+    "videoSummaryModal": "Video summary",
+    "chatModalTitle": "Chat about the selected solutions",
+    "insightsModalTitle": "Top insights about the selected solutions",
+    "cloneCopyOf": "Copy of {name}"
   }
-} 
+}

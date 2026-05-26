@@ -1,8 +1,8 @@
 <template>
-  <UModal v-model:open="isOpen" title="Comments" :fullscreen="false">
+  <UModal v-model:open="isOpen" :title="$t('publicBoard.comments.title')" :fullscreen="false">
     <template #body>
       <div class="space-y-4">
-        <div v-if="comments.length === 0" class="text-sm text-gray-500">No comments yet.</div>
+        <div v-if="comments.length === 0" class="text-sm text-gray-500">{{ $t('publicBoard.comments.empty') }}</div>
         <div v-else class="space-y-3 max-h-80 overflow-auto pr-2">
           <div v-for="c in comments" :key="c.id" class="bg-white rounded border p-3">
             <div class="text-xs text-gray-400">{{ formatDate(c.createdAt) }}</div>
@@ -10,9 +10,9 @@
           </div>
         </div>
         <div class="border-t pt-3">
-          <UTextarea v-model="draft" placeholder="Write a comment..." :rows="3" />
+          <UTextarea v-model="draft" :placeholder="$t('publicBoard.comments.placeholder')" :rows="3" />
           <div class="flex justify-end mt-2">
-            <UButton variant="solid" color="primary" :disabled="!draft.trim()" @click="addComment">Add comment</UButton>
+            <UButton variant="solid" color="primary" :disabled="!draft.trim()" @click="addComment">{{ $t('publicBoard.comments.submit') }}</UButton>
           </div>
         </div>
       </div>

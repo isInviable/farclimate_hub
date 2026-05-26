@@ -45,7 +45,7 @@
     <UModal
       v-model:open="isChatOpen"
       fullscreen
-      title="Chat about the selected solutions"
+      :title="$t('boardActions.chatModalTitle')"
       :ui="{
         content: 'flex h-dvh max-h-dvh min-h-0 flex-col',
         body: 'flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6',
@@ -63,7 +63,7 @@
       </template>
     </UModal>
 
-    <UModal v-model:open="isInsightsOpen" fullscreen title="Top insights about the selected solutions">
+    <UModal v-model:open="isInsightsOpen" fullscreen :title="$t('boardActions.insightsModalTitle')">
       <template #body>
         <div class="max-w-5xl mx-auto">
           <ViewModeSummaries
@@ -74,7 +74,7 @@
     </UModal>
 
     <!-- Media Modals -->
-    <UModal v-model:open="isVideoOpen" title="Video summary">
+    <UModal v-model:open="isVideoOpen" :title="$t('boardActions.videoSummaryModal')">
       <template #body>
         <div class="max-w-5xl mx-auto">
           <VideoPlayer embedded />
@@ -82,8 +82,8 @@
       </template>
       <template #footer>
         <div class="flex gap-2 justify-end w-full">
-          <UButton variant="soft" icon="i-lucide-share-2" @click="shareMedia('/media/summary_text_example.mp4', 'Video summary')">Share</UButton>
-          <UButton icon="i-lucide-download" color="primary" @click="downloadMedia('/media/summary_text_example.mp4', 'video-summary.mp4')">Download</UButton>
+          <UButton variant="soft" icon="i-lucide-share-2" @click="shareMedia('/media/summary_text_example.mp4', t('boardActions.videoSummaryModal'))">{{ $t('common.share') }}</UButton>
+          <UButton icon="i-lucide-download" color="primary" @click="downloadMedia('/media/summary_text_example.mp4', 'video-summary.mp4')">{{ $t('podcast.artifacts.download') }}</UButton>
         </div>
       </template>
     </UModal>
@@ -114,6 +114,7 @@ import PinBoardArtifactsView from '~/components/explorer/wf/pin-board/PinBoardAr
 import PodcastCreationWizard from '~/components/explorer/wf/PodcastCreationWizard.vue'
 import PowerPointCreationWizard from '~/components/explorer/wf/PowerPointCreationWizard.vue'
 
+const { t } = useI18n()
 const pinsApi = usePinsSupabase()
 const podcastArtifactsApi = usePodcastArtifacts()
 const pinboardExportsApi = usePinboardExportArtifacts()
@@ -203,7 +204,7 @@ async function handleGeneratePinboardDownload() {
   if (!requireAuthForPersistence()) return
   const token = session.value?.access_token
   if (!token) {
-    pinboardExportRequestError.value = "Sign in to generate a download."
+    pinboardExportRequestError.value = t("pins.exports.signInRequired")
     return
   }
   pinboardExportRequestError.value = null
@@ -219,7 +220,7 @@ async function handleGeneratePinboardDownload() {
     await pinboardExportsApi.fetchPinboardExports(projectId)
   } catch (e: unknown) {
     const err = e as { data?: { message?: string }; message?: string }
-    const msg = err.data?.message || err.message || 'Request failed'
+    const msg = err.data?.message || err.message || t('common.requestFailed')
     pinboardExportRequestError.value = msg
   } finally {
     pinboardExportGenerating.value = false
@@ -299,7 +300,7 @@ const shareMedia = async (url: string, title: string) => {
       return
     }
     await navigator.clipboard?.writeText?.(location.origin + url)
-    window.alert('Link copied to clipboard')
+    window.alert(t('pins.share.linkCopied'))
   } catch (e) {
     console.error('Failed to share media', e)
   }

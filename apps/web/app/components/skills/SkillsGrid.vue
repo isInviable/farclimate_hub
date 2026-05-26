@@ -20,8 +20,8 @@ defineProps<{
         color="neutral"
         variant="soft"
         icon="i-heroicons-information-circle"
-        title="No skills found"
-        description="Try clearing filters or publishing new skills from the admin panel."
+        :title="$t('skills.empty.title')"
+        :description="$t('skills.empty.description')"
       />
     </div>
   </div>

@@ -3,6 +3,7 @@ import type { HumanArtifactRow } from "~/types/artifacts"
 export function usePinboardExportArtifacts() {
   const supabase = useSupabaseClient()
   const { isAuthenticated } = useAccess()
+  const { t } = useI18n()
 
   const artifacts = ref<HumanArtifactRow[]>([])
   const loading = ref(false)
@@ -31,7 +32,7 @@ export function usePinboardExportArtifacts() {
       if (queryError) throw queryError
       artifacts.value = (data ?? []) as HumanArtifactRow[]
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load pinboard exports"
+      error.value = e instanceof Error ? e.message : t("podcast.artifacts.downloadsLoadError")
       artifacts.value = []
     } finally {
       loading.value = false
@@ -53,7 +54,7 @@ export function usePinboardExportArtifacts() {
       if (signedUrlError) throw signedUrlError
       return data?.signedUrl ?? null
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to create download link"
+      error.value = e instanceof Error ? e.message : t("podcast.artifacts.downloadGenerateError")
       return null
     }
   }

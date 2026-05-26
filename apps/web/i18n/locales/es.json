@@ -22,7 +22,10 @@
     "firstPage": "Primera página",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
-    "lastPage": "Última página"
+    "lastPage": "Última página",
+    "share": "Compartir",
+    "cancel": "Cancelar",
+    "requestFailed": "La solicitud falló"
   },
   "explorer": {
     "exampleQueries": "Consultas de ejemplo",
@@ -39,6 +42,10 @@
       "searchHint": "También puede empezar con una búsqueda por texto:",
       "searchPlaceholder": "Buscar…",
       "footerHint": "Pulse un sector para explorar soluciones de adaptación o vea todas las soluciones entre sectores."
+    },
+    "meta": {
+      "title": "Explorador de Adaptación Climática",
+      "description": "Busca y explora estudios de caso de adaptación climática."
     }
   },
   "pins": {
@@ -165,6 +172,22 @@
       "loading": "Cargando artículo…",
       "pinDocumentAria": "Marcar este artículo",
       "detailsDescription": "Vista detallada del artículo con resumen, receta y chat."
+    },
+    "errors": {
+      "load": "No se pudieron cargar los marcadores",
+      "create": "No se pudo crear el marcador",
+      "update": "No se pudo actualizar el marcador",
+      "delete": "No se pudo eliminar el marcador",
+      "reorder": "No se pudo reordenar los marcadores",
+      "loadSavedSearches": "No se pudieron cargar las búsquedas guardadas",
+      "saveSearch": "No se pudo guardar la búsqueda",
+      "deleteSavedSearch": "No se pudo eliminar la búsqueda"
+    },
+    "share": {
+      "linkCopied": "Enlace copiado al portapapeles"
+    },
+    "exports": {
+      "signInRequired": "Inicia sesión para generar una descarga."
     }
   },
   "podcast": {
@@ -310,13 +333,17 @@
     }
   },
   "header": {
-    "home": "inicio",
-    "solutions": "soluciones",
-    "skills": "habilidades",
-    "network": "red",
-    "stories": "historias",
-    "about": "acerca de",
-    "pinsBoard": "Tablero de Marcadores"
+    "home": "Inicio",
+    "solutions": "Soluciones",
+    "skills": "Habilidades",
+    "network": "Red",
+    "stories": "Historias",
+    "about": "Sobre el proyecto",
+    "pinsBoard": "Tablero de Marcadores",
+    "brandTitle": "FarClimate Transformation Hub",
+    "brandTitleLine1": "FarClimate",
+    "brandTitleLine2": "Transformation Hub",
+    "connectedAction": "Connected Action"
   },
   "search": {
     "title": "Explorador de Soluciones",
@@ -324,19 +351,48 @@
     "filtersApplied": "filtros aplicados",
     "activeFilters": "Filtros Activos",
     "availableFilters": "Filtros Disponibles",
-    "dragInstructions": "Arrastra los filtros entre secciones para activarlos o desactivarlos"
+    "dragInstructions": "Arrastra los filtros entre secciones para activarlos o desactivarlos",
+    "corpusPlaceholder": "Buscar en el corpus…",
+    "clearAll": "Borrar todo",
+    "applyFilters": "Aplicar filtros",
+    "allFiltersActive": "Todos los filtros están activos",
+    "removeFiltersHint": "Elimina filtros arriba para volver a hacerlos disponibles"
   },
   "filters": {
     "activity": "Actividad",
     "hazards": "Peligros",
     "location": "Ubicación",
-    "status": "Estado",
+    "status": {
+      "none": "Sin filtro aplicado",
+      "itemsSelected": "{count} elementos seleccionados",
+      "optionsSelected": "{count} opciones seleccionadas",
+      "applied": "Filtro aplicado"
+    },
     "time": "Tiempo",
     "selectBioregion": "Seleccionar Biorregión",
     "allBioregions": "Todas las Biorregiones",
     "searchByLocation": "Buscar por ubicación",
     "lowCost": "Bajo costo",
-    "highCost": "Alto costo"
+    "highCost": "Alto costo",
+    "sector": "Sector",
+    "climateImpacts": "Impactos climáticos",
+    "climateHazards": "Peligros climáticos",
+    "adaptationApproaches": "Enfoques de adaptación",
+    "biogeographicalRegion": "Región biogeográfica",
+    "searchFilter": "Búsqueda",
+    "empty": {
+      "sector": "Aún no hay datos de sector. Ejecuta una búsqueda para cargar facetas.",
+      "hazards": "Aún no hay datos de impactos climáticos. Ejecuta una búsqueda para cargar facetas.",
+      "bioregion": "Aún no hay datos de región biogeográfica. Ejecuta una búsqueda para cargar facetas.",
+      "adaptationApproaches": "Aún no hay datos de enfoques de adaptación. Ejecuta una búsqueda para cargar facetas."
+    },
+    "toggleAria": "{action} filtro {title}",
+    "toggleEnable": "Activar",
+    "toggleDisable": "Desactivar",
+    "visualization": {
+      "placeholder": "Visualización no disponible para este filtro."
+    },
+    "showAll": "Mostrar todo"
   },
   "status": {
     "proposal": "Propuesta",
@@ -411,13 +467,27 @@
     "matchingFiltersAria": "Coincide con filtros de búsqueda activos",
     "matchingFiltersMore": "+{count} más",
     "read": "Leer",
-    "clearSelection": "Quitar selección"
+    "clearSelection": "Quitar selección",
+    "compare": "Comparar",
+    "byBioRegions": "Por biorregiones",
+    "images": "Imágenes",
+    "tabsAria": "Modo de vista",
+    "mindmap": "Mapa mental",
+    "mapEmptyTitle": "No hay ubicaciones que mostrar",
+    "mapEmptyDescription": "Los resultados de búsqueda no contienen datos geográficos",
+    "downloadPng": "Descargar PNG",
+    "umapEmpty": "No hay resultados para el mapa",
+    "instagramUnknownTitle": "Título desconocido",
+    "instagramClimateShaper": "Climate Shaper"
   },
-    "listActions": {
-      "default": "Por defecto",
-      "topInsights": "Ideas clave",
-      "chatWithResults": "Pregutar a estos resultados"
-    },
+  "listActions": {
+    "default": "Por defecto",
+    "topInsights": "Ideas clave",
+    "chatWithResults": "Pregutar a estos resultados",
+    "selectedLabel": "seleccionados",
+    "chatWithSelection": "Chat con la selección",
+    "mindmap": "Mapa mental"
+  },
   "pills": {
     "forestry": "Silvicultura",
     "agriculture": "Agricultura",
@@ -456,6 +526,9 @@
       "main": "Resumen",
       "contacts": "Contactos y referencias",
       "map": "Mapa"
+    },
+    "empty": {
+      "economic": "No hay datos económicos disponibles"
     }
   },
   "recipe": {
@@ -518,6 +591,9 @@
       "keyboardHint": "Alt + ← → para navegar · Esc para cerrar",
       "prevAria": "Abrir el caso anterior de la lista",
       "nextAria": "Abrir el caso siguiente de la lista"
+    },
+    "errors": {
+      "notFound": "Artículo no encontrado"
     }
   },
   "summaryHeaders": {
@@ -541,5 +617,214 @@
     "source": "Fuente",
     "authorsFallback": "Equipo de investigación EU-Adapt",
     "sourceFallback": "Plataforma Europea de Adaptación al Cambio Climático"
-  }
-} 
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "logOut": "Cerrar sesión",
+    "backToHome": "← Volver al inicio",
+    "tabs": {
+      "signIn": "Iniciar sesión",
+      "signUp": "Registrarse"
+    },
+    "headings": {
+      "checkEmail": "Revisa tu correo",
+      "signIn": "Iniciar sesión",
+      "welcome": "Bienvenido"
+    },
+    "subtitle": {
+      "otpSent": "Enviamos un código de 6 dígitos a {email}",
+      "password": "Inicia sesión con tu correo y contraseña.",
+      "demo": "En modo demo tu navegación no se guarda. Inicia sesión o crea una cuenta para guardar tu trabajo."
+    },
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "name": "Tu nombre",
+      "emailPlaceholder": "tu{'@'}email.com",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "namePlaceholder": "¿Cómo debemos llamarte?"
+    },
+    "actions": {
+      "signIn": "Iniciar sesión",
+      "createAccount": "Crear cuenta",
+      "continue": "Continuar",
+      "signInWithCode": "← Iniciar sesión con código por correo",
+      "signInWithPassword": "Iniciar sesión con contraseña"
+    },
+    "otp": {
+      "verifying": "Verificando…",
+      "changeEmail": "← Cambiar correo",
+      "resendCode": "Reenviar código",
+      "resendIn": "Reenviar en {seconds}s"
+    },
+    "errors": {
+      "rateLimit": "Demasiadas solicitudes. Espera un momento antes de intentarlo de nuevo.",
+      "expired": "El código ha caducado. Solicita uno nuevo.",
+      "invalidOtp": "Código no válido. Compruébalo e inténtalo de nuevo.",
+      "unexpected": "Ocurrió un error inesperado. Inténtalo de nuevo.",
+      "invalidCredentials": "Correo o contraseña no válidos."
+    },
+    "validation": {
+      "emailRequired": "Introduce tu dirección de correo.",
+      "emailInvalid": "Introduce un correo válido.",
+      "nameRequired": "Introduce tu nombre.",
+      "emailPasswordRequired": "Introduce correo y contraseña."
+    }
+  },
+  "skills": {
+    "readTime": "{minutes} min. de lectura",
+    "index": {
+      "heroTitle": "Aprende las habilidades para adaptarte y prosperar en un clima cambiante",
+      "heroSubtitle": "Aquí puedes explorar habilidades prácticas para afrontar los retos climáticos. Filtra lo que te interese en el menú de la izquierda y descubre a la derecha herramientas, cursos y casos reales listos para inspirar tus próximos pasos",
+      "sortMoreViews": "Más vistas",
+      "sortRelevance": "Relevancia"
+    },
+    "sidebar": {
+      "allTrainings": "Todas las formaciones",
+      "filterBy": "Filtrar por"
+    },
+    "empty": {
+      "title": "No se encontraron habilidades",
+      "description": "Prueba a ajustar los filtros o vuelve más tarde."
+    },
+    "detail": {
+      "back": "Volver a habilidades",
+      "externalLinks": "Enlaces externos"
+    },
+    "errors": {
+      "notFound": "Habilidad no encontrada"
+    }
+  },
+  "projects": {
+    "unnamed": "Proyecto sin nombre",
+    "header": {
+      "projectMenu": "Menú del proyecto",
+      "project": "Proyecto",
+      "signInToUse": "Inicia sesión para usar proyectos",
+      "shareBoard": "Compartir tablero",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "explorer": "Explorador",
+      "editedAgo": "editado hace {time}",
+      "pinnedCount": "{count} fijados",
+      "shareError": "No se pudo crear el enlace para compartir",
+      "publicLinkHint": "Public board link — anyone with the link can view.",
+      "copyLinkPlaceholder": "Click Copy to create link",
+      "shareSignInRequired": "Sign in to share this board.",
+      "projectsDashboard": "Projects Dashboard",
+      "signInToManageProjects": "Sign in to create and manage projects",
+      "createNewProject": "Create New Project",
+      "newProjectDefault": "New Project",
+      "editedJustNow": "just now",
+      "editedMinutesAgo": "edited {count}m ago",
+      "editedHoursAgo": "edited {count}h ago",
+      "editedDaysAgo": "edited {count}d ago",
+      "editedMonthsAgo": "edited {count}mo ago",
+      "editedYearsAgo": "edited {count}y ago"
+    },
+    "dashboard": {
+      "metaTitle": "Proyectos",
+      "metaDescription": "Gestiona tus proyectos del explorador y tableros de marcadores.",
+      "eyebrow": "Proyectos",
+      "title": "Tus proyectos",
+      "subtitle": "Crea y cambia entre proyectos para organizar marcadores y búsquedas guardadas.",
+      "emptyTitle": "Aún no hay proyectos",
+      "emptyDescription": "Crea un proyecto para empezar a fijar contenido y guardar búsquedas.",
+      "createButton": "Crear proyecto",
+      "modalCreateTitle": "Crear proyecto",
+      "modalEditTitle": "Editar proyecto",
+      "nameLabel": "Nombre del proyecto",
+      "namePlaceholder": "Mi proyecto de adaptación",
+      "promptName": "Introduce un nombre para el nuevo proyecto:",
+      "confirmDelete": "¿Eliminar este proyecto? Se eliminarán los marcadores y búsquedas guardadas.",
+      "cardDescription": "Each project card opens your workspace in the explorer. Use Go to explorer at the bottom of a card (or click anywhere on the card) to browse case studies.",
+      "signInToCreateProjects": "Sign in to create projects",
+      "signInToManageHeading": "Sign in to manage projects",
+      "signInToManageBody": "Projects are saved to your account. Sign in to create and manage projects across devices.",
+      "emptyFirstHeading": "No projects yet",
+      "emptyFirstBody": "Create your first project to start organizing your climate adaptation research and pinned items.",
+      "createFirstProject": "Create your first project",
+      "createNewProjectButton": "Create new project",
+      "enterProjectName": "Enter project name…",
+      "cancel": "Cancel",
+      "createProject": "Create project",
+      "renameProject": "Rename project",
+      "deleteProject": "Delete project",
+      "confirmDeleteTitle": "Delete project?",
+      "promptRename": "Enter new project name:",
+      "confirmDeleteNamed": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "mostPinnedProject": "Most pinned project"
+    },
+    "stats": {
+      "overview": "Resumen",
+      "title": "Estadísticas del proyecto",
+      "totalProjects": "Proyectos totales",
+      "totalPins": "Marcadores totales",
+      "savedSearches": "Búsquedas guardadas",
+      "notAvailable": "N/D"
+    },
+    "card": {
+      "goToExplorer": "Ir al explorador",
+      "goToExplorerCurrent": "Ir al explorador (proyecto actual)"
+    },
+    "errors": {
+      "load": "No se pudieron cargar los proyectos",
+      "create": "No se pudo crear el proyecto",
+      "update": "No se pudo actualizar el proyecto",
+      "delete": "No se pudo eliminar el proyecto",
+      "notAuthenticated": "No autenticado"
+    }
+  },
+  "publicBoard": {
+    "actions": {
+      "viewOnly": "Solo lectura",
+      "cloneToProjects": "Clonar en mis proyectos",
+      "addComment": "Añadir comentario",
+      "download": "Descargar"
+    },
+    "comments": {
+      "title": "Comentarios",
+      "empty": "Aún no hay comentarios.",
+      "placeholder": "Escribe un comentario...",
+      "submit": "Añadir comentario"
+    },
+    "errors": {
+      "load": "No se pudo cargar el tablero público"
+    }
+  },
+  "boardActions": {
+    "videoSummary": "Crear resumen en vídeo",
+    "moreActions": "Más acciones...",
+    "chatWithSelection": "Chat con la selección",
+    "topInsightsSelection": "Ideas clave (selección)",
+    "videoSummaryModal": "Resumen en vídeo"
+  },
+  "metaTitle": "Projects",
+  "metaDescription": "Manage your explorer projects and pinboards.",
+  "eyebrow": "Projects",
+  "title": "Your projects",
+  "subtitle": "Create and switch between projects to organize pins and saved searches.",
+  "emptyTitle": "No projects yet",
+  "emptyDescription": "Create a project to start pinning and saving searches.",
+  "createButton": "Create project",
+  "modalCreateTitle": "Create project",
+  "modalEditTitle": "Edit project",
+  "nameLabel": "Project name",
+  "namePlaceholder": "My adaptation project",
+  "promptName": "Enter a name for the new project:",
+  "confirmDelete": "Delete this project? Pins and saved searches will be removed.",
+  "cardDescription": "Each project card opens your workspace in the explorer. Use Go to explorer at the bottom of a card (or click anywhere on the card) to browse case studies.",
+  "signInToCreateProjects": "Sign in to create projects",
+  "signInToManageHeading": "Sign in to manage projects",
+  "signInToManageBody": "Projects are saved to your account. Sign in to create and manage projects across devices.",
+  "emptyFirstHeading": "No projects yet",
+  "emptyFirstBody": "Create your first project to start organizing your climate adaptation research and pinned items.",
+  "createFirstProject": "Create your first project",
+  "createNewProjectButton": "Create new project",
+  "enterProjectName": "Enter project name…",
+  "cancel": "Cancel",
+  "createProject": "Create project",
+  "renameProject": "Rename project",
+  "deleteProject": "Delete project",
+  "confirmDeleteTitle": "Delete project?"
+}

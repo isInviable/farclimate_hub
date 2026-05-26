@@ -6,7 +6,7 @@
       class="flex flex-row justify-center"
       v-if="!isMapLoaded"
     >
-      <div>Loading...</div>
+      <div>{{ $t('common.loading') }}</div>
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@
         <button
           type="button"
           class="inline-flex items-center justify-center w-7 h-7 border border-neutral-darkest text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors"
-          aria-label="Project menu"
+          :aria-label="$t('projects.header.projectMenu')"
         >
           <UIcon name="material-symbols-light:menu" class="w-4 h-4" />
         </button>
@@ -14,7 +14,7 @@
 
       <!-- PROJECT eyebrow -->
       <span class="font-mono uppercase text-2xs font-bold tracking-[0.18em] text-neutral-dark hidden sm:inline">
-        Project
+        {{ $t('projects.header.project') }}
       </span>
       <span class="hidden sm:inline-block w-px h-5 bg-neutral-darkest/20" aria-hidden="true" />
 
@@ -28,7 +28,7 @@
           <span
             class="font-display font-bold text-[20px] leading-none text-neutral-darkest truncate"
           >
-            {{ isDemoMode ? 'Sign in to use projects' : (projectsStore.currentProject?.name || 'Unnamed Project') }}
+            {{ isDemoMode ? $t('projects.header.signInToUse') : (projectsStore.currentProject?.name || $t('projects.unnamed')) }}
           </span>
           <UIcon
             v-if="!isDemoMode"
@@ -64,18 +64,18 @@
           class="inline-flex items-center gap-2 h-9 px-3 border border-neutral-darkest bg-transparent text-neutral-darkest hover:bg-neutral-darkest/5 transition-colors"
         >
           <UIcon name="mdi:link-variant" class="w-4 h-4" />
-          <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Share board</span>
+          <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">{{ $t('projects.header.shareBoard') }}</span>
         </button>
 
         <template #content>
           <div class="p-4 w-80 space-y-2">
             <div class="font-mono text-2xs text-neutral-dark uppercase tracking-widest">
-              Public board link — anyone with the link can view.
+              {{ $t('projects.header.publicLinkHint') }}
             </div>
             <div class="flex items-center gap-2">
-              <UInput v-model="publicLink" readonly class="flex-1" placeholder="Click Copy to create link" @focus="selectAll" />
+              <UInput v-model="publicLink" readonly class="flex-1" :placeholder="$t('projects.header.copyLinkPlaceholder')" @focus="selectAll" />
               <UButton size="sm" variant="solid" color="primary" :loading="sharing" @click="copyPublicLink">
-                {{ copied ? 'Copied' : 'Copy' }}
+                {{ copied ? $t('projects.header.copied') : $t('projects.header.copy') }}
               </UButton>
             </div>
             <p v-if="shareError" class="text-xs text-red-600">
@@ -116,6 +116,7 @@ const pinsApi = usePinsSupabase();
 const pinCount = computed(() => pinsApi.pins.value.length);
 const projectsStore = useProjectsStore();
 const { isDemoMode, isAuthenticated, requireAuthForPersistence, session } = useAccess();
+const { t } = useI18n();
 const route = useRoute();
 
 // Lightweight relative-time formatter for the project meta line
@@ -128,13 +129,13 @@ function relativeTimeFromNow(input?: string | Date | null): string | null {
   const diffMin = Math.round(diffSec / 60);
   const diffHr = Math.round(diffMin / 60);
   const diffDay = Math.round(diffHr / 24);
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return `edited ${diffMin}m ago`;
-  if (diffHr < 24) return `edited ${diffHr}h ago`;
-  if (diffDay < 30) return `edited ${diffDay}d ago`;
+  if (diffSec < 60) return t('projects.header.editedJustNow');
+  if (diffMin < 60) return t('projects.header.editedMinutesAgo', { count: diffMin });
+  if (diffHr < 24) return t('projects.header.editedHoursAgo', { count: diffHr });
+  if (diffDay < 30) return t('projects.header.editedDaysAgo', { count: diffDay });
   const diffMo = Math.round(diffDay / 30);
-  if (diffMo < 12) return `edited ${diffMo}mo ago`;
-  return `edited ${Math.round(diffMo / 12)}y ago`;
+  if (diffMo < 12) return t('projects.header.editedMonthsAgo', { count: diffMo });
+  return t('projects.header.editedYearsAgo', { count: Math.round(diffMo / 12) });
 }
 
 const projectMetaLine = computed(() => {
@@ -142,7 +143,7 @@ const projectMetaLine = computed(() => {
   const stamp = relativeTimeFromNow(project?.updated_at || project?.created_at);
   const pieces: string[] = [];
   if (stamp) pieces.push(stamp);
-  if (pinCount.value > 0) pieces.push(`${pinCount.value} pinned`);
+  if (pinCount.value > 0) pieces.push(t('projects.header.pinnedCount', { count: pinCount.value }));
   return pieces.join(' · ');
 });
 
@@ -190,9 +191,9 @@ const pinsButtonIcon = computed(() => {
 const pinsButtonLabel = computed(() => {
   const currentPath = route.path;
   if (currentPath.includes('/board')) {
-    return 'Explorer';
+    return t('projects.header.explorer');
   }
-  return 'Pins Board';
+  return t('header.pinsBoard');
 });
 
 // Public share link button visibility
@@ -218,7 +219,7 @@ async function copyPublicLink() {
   if (!requireAuthForPersistence()) return
   const token = session.value?.access_token
   if (!token) {
-    shareError.value = 'Sign in to share this board.'
+    shareError.value = t('projects.header.shareSignInRequired')
     return
   }
 
@@ -243,7 +244,7 @@ async function copyPublicLink() {
     setTimeout(() => copied.value = false, 1500)
   } catch (e: unknown) {
     const err = e as { data?: { message?: string }; message?: string }
-    shareError.value = err.data?.message || err.message || 'Failed to create share link'
+    shareError.value = err.data?.message || err.message || t('projects.header.shareError')
     console.error('Failed to copy public link', e)
   } finally {
     sharing.value = false
@@ -261,7 +262,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
 
   items.push([
     {
-      label: 'Projects Dashboard',
+      label: t('projects.header.projectsDashboard'),
       icon: 'material-symbols-light:dashboard',
       onSelect: () => navigateTo('/explorer/projects')
     }
@@ -269,11 +270,11 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
 
   if (isDemoMode.value) {
     items.push([
-      { label: 'Sign in to create and manage projects', type: 'label' }
+      { label: t('projects.header.signInToManageProjects'), type: 'label' }
     ]);
     items.push([
       {
-        label: 'Sign in',
+        label: t('auth.signIn'),
         icon: 'i-heroicons-arrow-right-on-rectangle',
         onSelect: () => navigateTo(explorerLoginLink.value)
       }
@@ -283,7 +284,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
 
   items.push([
     {
-      label: projectsStore.currentProject?.name || 'Unnamed Project',
+      label: projectsStore.currentProject?.name || t('projects.unnamed'),
       type: 'label'
     }
   ]);
@@ -300,7 +301,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
 
   items.push([
     {
-      label: 'Create New Project',
+      label: t('projects.header.createNewProject'),
       icon: 'i-heroicons-plus',
       onSelect: () => createNewProject()
     }
@@ -312,7 +313,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
 // Project management functions
 function startEditingProject() {
   isEditingProject.value = true;
-  editingProjectName.value = projectsStore.currentProject?.name || 'Unnamed Project';
+  editingProjectName.value = projectsStore.currentProject?.name || t('projects.unnamed');
   nextTick(() => {
     projectNameInput.value?.focus();
     projectNameInput.value?.select();
@@ -337,7 +338,7 @@ function switchToProject(projectId: string) {
 
 async function createNewProject() {
   if (!requireAuthForPersistence()) return;
-  const newProject = await projectsStore.createProject('New Project');
+  const newProject = await projectsStore.createProject(t('projects.header.newProjectDefault'));
   if (newProject) {
     nextTick(() => startEditingProject());
   }

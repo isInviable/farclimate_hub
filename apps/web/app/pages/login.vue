@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const { signIn, sendOtp, verifyOtp } = useAuth();
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
@@ -20,10 +21,10 @@ const password = ref("");
 const error = ref("");
 const isSubmitting = ref(false);
 
-const tabs: TabsItem[] = [
-  { label: "Sign in", value: "signin" },
-  { label: "Sign up", value: "signup" },
-];
+const tabs = computed<TabsItem[]>(() => [
+  { label: t("auth.tabs.signIn"), value: "signin" },
+  { label: t("auth.tabs.signUp"), value: "signup" },
+]);
 
 const COOLDOWN_SECONDS = 60;
 const cooldownRemaining = ref(0);
@@ -55,12 +56,11 @@ function startCooldown() {
 function mapAuthError(err: any): string {
   const msg = err?.message?.toLowerCase() ?? "";
   if (msg.includes("rate") || msg.includes("too many"))
-    return "Too many requests. Please wait a moment before trying again.";
-  if (msg.includes("expired"))
-    return "The code has expired. Please request a new one.";
+    return t("auth.errors.rateLimit");
+  if (msg.includes("expired")) return t("auth.errors.expired");
   if (msg.includes("invalid") || msg.includes("otp"))
-    return "Invalid code. Please check and try again.";
-  return err?.message || "An unexpected error occurred. Please try again.";
+    return t("auth.errors.invalidOtp");
+  return err?.message || t("auth.errors.unexpected");
 }
 
 function clearError() {
@@ -84,15 +84,15 @@ const handleSendOtp = async () => {
   clearError();
 
   if (!email.value) {
-    error.value = "Please enter your email address.";
+    error.value = t("auth.validation.emailRequired");
     return;
   }
   if (!isValidEmail.value) {
-    error.value = "Please enter a valid email address.";
+    error.value = t("auth.validation.emailInvalid");
     return;
   }
   if (isSignUp.value && !name.value.trim()) {
-    error.value = "Please enter your name.";
+    error.value = t("auth.validation.nameRequired");
     return;
   }
 
@@ -111,7 +111,7 @@ const handleSendOtp = async () => {
     startCooldown();
   } catch (err: unknown) {
     error.value =
-      err instanceof Error ? err.message : "An unexpected error occurred.";
+      err instanceof Error ? err.message : t("auth.errors.unexpected");
   } finally {
     isSubmitting.value = false;
   }
@@ -133,7 +133,7 @@ const handleVerifyOtp = async (code: number[]) => {
     await router.push(returnTo.value);
   } catch (err: unknown) {
     error.value =
-      err instanceof Error ? err.message : "An unexpected error occurred.";
+      err instanceof Error ? err.message : t("auth.errors.unexpected");
     otpCode.value = [] as number[];
   } finally {
     isSubmitting.value = false;
@@ -156,7 +156,7 @@ const handleResend = async () => {
     startCooldown();
   } catch (err: unknown) {
     error.value =
-      err instanceof Error ? err.message : "An unexpected error occurred.";
+      err instanceof Error ? err.message : t("auth.errors.unexpected");
   } finally {
     isSubmitting.value = false;
   }
@@ -165,7 +165,7 @@ const handleResend = async () => {
 const handlePasswordLogin = async () => {
   clearError();
   if (!email.value || !password.value) {
-    error.value = "Please enter both email and password.";
+    error.value = t("auth.validation.emailPasswordRequired");
     return;
   }
 
@@ -176,7 +176,7 @@ const handlePasswordLogin = async () => {
       password.value,
     );
     if (signInError) {
-      error.value = signInError.message || "Invalid email or password.";
+      error.value = signInError.message || t("auth.errors.invalidCredentials");
       return;
     }
     if (data) {
@@ -184,7 +184,7 @@ const handlePasswordLogin = async () => {
     }
   } catch (err: unknown) {
     error.value =
-      err instanceof Error ? err.message : "An unexpected error occurred.";
+      err instanceof Error ? err.message : t("auth.errors.unexpected");
   } finally {
     isSubmitting.value = false;
   }
@@ -212,20 +212,19 @@ onUnmounted(() => {
     <div class="max-w-md w-full space-y-8 p-8">
       <div class="text-center">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          <template v-if="step === 'otp'">Check your email</template>
-          <template v-else-if="authMode === 'password'">Sign in</template>
-          <template v-else>Welcome</template>
+          <template v-if="step === 'otp'">{{ $t('auth.headings.checkEmail') }}</template>
+          <template v-else-if="authMode === 'password'">{{ $t('auth.headings.signIn') }}</template>
+          <template v-else>{{ $t('auth.headings.welcome') }}</template>
         </h1>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           <template v-if="step === 'otp'">
-            We sent a 6-digit code to <strong>{{ email }}</strong>
+            {{ $t('auth.subtitle.otpSent', { email }) }}
           </template>
           <template v-else-if="authMode === 'password'">
-            Sign in with your email and password.
+            {{ $t('auth.subtitle.password') }}
           </template>
           <template v-else>
-            In demo mode your browsing isn't saved. Sign in or create an account
-            to save your work.
+            {{ $t('auth.subtitle.demo') }}
           </template>
         </p>
       </div>
@@ -246,7 +245,7 @@ onUnmounted(() => {
             />
 
             <p v-if="isSubmitting" class="text-sm text-gray-500">
-              Verifying…
+              {{ $t('auth.otp.verifying') }}
             </p>
           </div>
 
@@ -264,7 +263,7 @@ onUnmounted(() => {
               :disabled="isSubmitting"
               @click="goBackToForm"
             >
-              ← Change email
+              {{ $t('auth.otp.changeEmail') }}
             </UButton>
             <UButton
               variant="link"
@@ -274,8 +273,8 @@ onUnmounted(() => {
             >
               {{
                 cooldownRemaining > 0
-                  ? `Resend in ${cooldownRemaining}s`
-                  : "Resend code"
+                  ? $t('auth.otp.resendIn', { seconds: cooldownRemaining })
+                  : $t('auth.otp.resendCode')
               }}
             </UButton>
           </div>
@@ -287,11 +286,11 @@ onUnmounted(() => {
         <UCard>
           <form @submit.prevent="handlePasswordLogin">
             <div class="space-y-4">
-              <UFormField label="Email" name="pwd-email" required>
+              <UFormField :label="$t('auth.fields.email')" name="pwd-email" required>
                 <UInput
                   v-model="email"
                   type="email"
-                  placeholder="your@email.com"
+                  :placeholder="$t('auth.fields.emailPlaceholder')"
                   :disabled="isSubmitting"
                   autocomplete="email"
                   size="lg"
@@ -299,11 +298,11 @@ onUnmounted(() => {
                 />
               </UFormField>
 
-              <UFormField label="Password" name="password" required>
+              <UFormField :label="$t('auth.fields.password')" name="password" required>
                 <UInput
                   v-model="password"
                   type="password"
-                  placeholder="Enter your password"
+                  :placeholder="$t('auth.fields.passwordPlaceholder')"
                   :disabled="isSubmitting"
                   autocomplete="current-password"
                   size="lg"
@@ -326,7 +325,7 @@ onUnmounted(() => {
                 :disabled="isSubmitting"
                 class="mt-2"
               >
-                Sign in
+                {{ $t('auth.actions.signIn') }}
               </UButton>
             </div>
           </form>
@@ -339,7 +338,7 @@ onUnmounted(() => {
             color="neutral"
             @click="switchToOtp"
           >
-            ← Sign in with email code instead
+            {{ $t('auth.actions.signInWithCode') }}
           </UButton>
         </div>
       </template>
@@ -358,14 +357,14 @@ onUnmounted(() => {
             <div class="space-y-4">
               <UFormField
                 v-if="isSignUp"
-                label="Your name"
+                :label="$t('auth.fields.name')"
                 name="name"
                 required
               >
                 <UInput
                   v-model="name"
                   type="text"
-                  placeholder="How should we call you?"
+                  :placeholder="$t('auth.fields.namePlaceholder')"
                   :disabled="isSubmitting"
                   autocomplete="name"
                   size="lg"
@@ -373,11 +372,11 @@ onUnmounted(() => {
                 />
               </UFormField>
 
-              <UFormField label="Email" name="email" required class="w-full">
+              <UFormField :label="$t('auth.fields.email')" name="email" required class="w-full">
                 <UInput
                   v-model="email"
                   type="email"
-                  placeholder="your@email.com"
+                  :placeholder="$t('auth.fields.emailPlaceholder')"
                   :disabled="isSubmitting"
                   autocomplete="email"
                   size="lg"
@@ -400,7 +399,7 @@ onUnmounted(() => {
                 :disabled="isSubmitting"
                 class="mt-2"
               >
-                {{ isSignUp ? "Create account" : "Continue" }}
+                {{ isSignUp ? $t('auth.actions.createAccount') : $t('auth.actions.continue') }}
               </UButton>
             </div>
           </form>
@@ -413,7 +412,7 @@ onUnmounted(() => {
             color="neutral"
             @click="switchToPassword"
           >
-            Sign in with password instead
+            {{ $t('auth.actions.signInWithPassword') }}
           </UButton>
         </div>
       </template>
@@ -423,7 +422,7 @@ onUnmounted(() => {
           to="/"
           class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
         >
-          ← Back to home
+          {{ $t('auth.backToHome') }}
         </NuxtLinkLocale>
       </div>
     </div>

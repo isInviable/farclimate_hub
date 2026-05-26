@@ -1,7 +1,7 @@
 <template>
   <BarChartFilter
     v-if="items.length > 0"
-    title="Climate impacts"
+    :title="$t('filters.climateImpacts')"
     icon="i-heroicons-exclamation-triangle"
     filter-key="hazards"
     :items="items"
@@ -13,7 +13,7 @@
     @filter-clear="(k) => emit('filter-clear', k)"
     @filter-apply="(...args) => emit('filter-apply', ...args)"
   />
-  <div v-else class="text-sm text-gray-500 py-2">No climate impact data yet. Run a search or load all.</div>
+  <div v-else class="text-sm text-gray-500 py-2">{{ $t('filters.empty.hazards') }}</div>
 </template>
 
 <script setup lang="ts">

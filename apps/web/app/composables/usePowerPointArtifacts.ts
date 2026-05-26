@@ -50,6 +50,7 @@ function userIdFromSession(session: unknown): string | null {
 export function usePowerPointArtifacts() {
   const supabase = useSupabaseClient()
   const { isAuthenticated, session } = useAccess()
+  const { t } = useI18n()
 
   const artifacts = ref<HumanArtifactRow[]>([])
   const loading = ref(false)
@@ -78,7 +79,7 @@ export function usePowerPointArtifacts() {
       if (queryError) throw queryError
       artifacts.value = (data ?? []) as HumanArtifactRow[]
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load PowerPoint files"
+      error.value = e instanceof Error ? e.message : t("powerpoint.artifacts.loadError")
       artifacts.value = []
     } finally {
       loading.value = false
@@ -90,7 +91,7 @@ export function usePowerPointArtifacts() {
   ): Promise<HumanArtifactRow> {
     const ownerUserId = userIdFromSession(session.value)
     if (!ownerUserId) {
-      throw new Error("Sign in to create a PowerPoint artifact")
+      throw new Error(t("pins.exports.signInRequired"))
     }
 
     const artifactId = crypto.randomUUID()
@@ -189,7 +190,7 @@ export function usePowerPointArtifacts() {
       if (signedUrlError) throw signedUrlError
       return data?.signedUrl ?? null
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to create PowerPoint link"
+      error.value = e instanceof Error ? e.message : t("common.requestFailed")
       return null
     }
   }

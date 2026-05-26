@@ -10,7 +10,7 @@
     "links": [
       {
         "label": "About",
-        "to": "#about"
+        "to": "/about"
       },
       {
         "label": "Stories",

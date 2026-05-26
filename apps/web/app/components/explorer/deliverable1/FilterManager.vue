@@ -11,7 +11,7 @@
           class="flex items-center gap-2 px-4 py-2 border-b"
         >
           <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest whitespace-nowrap">
-            Active Filters
+            {{ $t('search.activeFilters') }}
           </h3>
           <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest text-neutral-lightest font-mono text-2xs font-bold tabular-nums">
             {{ activeFilters.length }}
@@ -29,7 +29,7 @@
           class="flex items-center gap-2 px-4 py-2 border-b border-neutral-darkest bg-neutral-darkest"
         >
           <h3 class="flex-1 font-mono text-2xs font-bold uppercase tracking-widest text-neutral-lightest whitespace-nowrap">
-            Available Filters
+            {{ $t('search.availableFilters') }}
           </h3>
           <span class="inline-flex items-center justify-center min-w-5 h-4 px-1 bg-neutral-darkest/10 text-neutral-darkest font-mono text-2xs font-bold tabular-nums">
             {{ availableFilters.length }}
@@ -70,10 +70,10 @@
     >
       <UIcon name="i-heroicons-check-circle" class="mx-auto mb-2 text-primary-600 size-8" />
       <p class="font-mono text-2xs font-bold uppercase tracking-widest text-neutral-darkest">
-        All filters are active
+        {{ $t('search.allFiltersActive') }}
       </p>
       <p class="font-mono text-2xs text-neutral-dark mt-1">
-        Remove filters above to make them available again
+        {{ $t('search.removeFiltersHint') }}
       </p>
     </div>
 
@@ -86,7 +86,7 @@
           :disabled="activeFilters.length === 0"
           @click="clearAllFilters"
         >
-          Clear All
+          {{ $t('search.clearAll') }}
         </UButton>
         <UButton
           variant="editorial-solid"
@@ -94,7 +94,7 @@
           :disabled="activeFilters.length === 0"
           @click="applyAllFilters"
         >
-          Apply Filters
+          {{ $t('search.applyFilters') }}
         </UButton>
       </div>
     </div>
@@ -116,6 +116,8 @@ import {
   facetConstraintSignature,
   stripUnsupportedExplorerFilters,
 } from '~/utils/explorerFacetFilters';
+
+const { t } = useI18n();
 
 type PanelItem =
   | { key: 'active-header'; type: 'active-header' }
@@ -194,19 +196,31 @@ if (searchStore.searchQuery && searchStore.searchQuery.trim()) {
   enabledFilters.search = true;
 }
 
+const filterTitleKeys: Record<string, string> = {
+  search: 'filters.searchFilter',
+  sector: 'filters.sector',
+  hazards: 'filters.climateHazards',
+  adaptation_approaches: 'filters.adaptationApproaches',
+  biogeographical_regions: 'filters.biogeographicalRegion',
+};
+
 // Filter metadata: show biogeographical_regions only when the API returns that category (after DB migration)
 const allFilterMetadata = [
-  { key: 'search', title: 'Search', icon: 'i-heroicons-magnifying-glass' },
-  { key: 'sector', title: 'Sector', icon: 'i-heroicons-building-office' },
-  { key: 'hazards', title: 'Climate Hazards', icon: 'i-heroicons-exclamation-triangle' },
-  { key: 'adaptation_approaches', title: 'Adaptation approaches', icon: 'i-heroicons-light-bulb' },
-  { key: 'biogeographical_regions', title: 'Biogeographical region', icon: 'i-heroicons-map' },
+  { key: 'search', icon: 'i-heroicons-magnifying-glass' },
+  { key: 'sector', icon: 'i-heroicons-building-office' },
+  { key: 'hazards', icon: 'i-heroicons-exclamation-triangle' },
+  { key: 'adaptation_approaches', icon: 'i-heroicons-light-bulb' },
+  { key: 'biogeographical_regions', icon: 'i-heroicons-map' },
 ];
 const filterMetadata = computed(() => {
   const hasBiogeographicalRegions = props.facetsData?.global?.biogeographical_regions !== undefined;
-  return hasBiogeographicalRegions
+  const keys = hasBiogeographicalRegions
     ? allFilterMetadata
     : allFilterMetadata.filter((m) => m.key !== 'biogeographical_regions');
+  return keys.map((m) => ({
+    ...m,
+    title: t(filterTitleKeys[m.key] ?? m.key),
+  }));
 });
 
 // Computed
@@ -258,22 +272,22 @@ const panelItems = computed((): PanelItem[] => {
 
 const getFilterStatus = (key: string): string => {
   const value = filters[key];
-  if (!value) return 'No filter applied';
+  if (!value) return t('filters.status.none');
 
   if (typeof value === 'string') {
     return value;
   }
 
   if (Array.isArray(value)) {
-    return `${value.length} items selected`;
+    return t('filters.status.itemsSelected', { count: value.length });
   }
 
   if (typeof value === 'object') {
     const count = Object.values(value).filter(Boolean).length;
-    return `${count} options selected`;
+    return t('filters.status.optionsSelected', { count });
   }
 
-  return 'Filter applied';
+  return t('filters.status.applied');
 };
 
 /** Emit only enabled, supported filters so parent does not send inactive or legacy keys. */

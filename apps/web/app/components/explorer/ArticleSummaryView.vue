@@ -244,7 +244,7 @@
           v-html="md.render(parsedDocument.cost_benefit)"
           class="text-sm"
         ></div>
-        <p v-else class="text-sm text-gray-500">No economic data available</p>
+        <p v-else class="text-sm text-gray-500">{{ $t('summary.empty.economic') }}</p>
       </SelectableBlock>
       <!-- Reference information -->
       <SelectableBlock

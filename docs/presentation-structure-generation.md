@@ -54,7 +54,7 @@ The endpoint also accepts `selectedItems` instead of `items`, a plain string `in
   },
   "sourceCount": 1,
   "generatedAt": "2026-05-07T00:00:00.000Z",
-  "model": "gemini-3.1-flash-lite-preview"
+  "model": "gemini-3.1-flash-lite"
 }
 ```
 

@@ -10,7 +10,7 @@
         {{ selectionStore.selectionCount }}
       </button>
       <span class="hidden md:inline font-mono text-2xs uppercase tracking-[0.14em] text-neutral-lightest/80">
-        selected
+        {{ $t('listActions.selectedLabel') }}
       </span>
       <button
         v-if="selectionStore.selectionCount > 0"
@@ -30,7 +30,7 @@
     >
       <Icon name="mdi:chat-processing" class="h-4 w-4 text-primary-400" />
       <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
-        Chat with selection
+        {{ $t('boardActions.chatWithSelection') }}
       </span>
     </button>
     <button
@@ -40,14 +40,14 @@
     >
       <Icon name="mdi:lightbulb-on" class="h-4 w-4 text-primary-400" />
       <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
-        Top insights
+        {{ $t('listActions.topInsights') }}
       </span>
     </button>
 
     <USelect
       v-model="selectedAction"
       :items="actionOptions"
-      placeholder="More actions..."
+      :placeholder="$t('boardActions.moreActions')"
       class="min-w-48"
       :ui="{
         base: 'rounded-none bg-transparent border-0 text-neutral-lightest font-mono text-2xs uppercase tracking-[0.14em] hover:bg-neutral-lightest/10 focus:ring-0 h-11',
@@ -83,12 +83,12 @@ const actionOptions = computed(() => [
     icon: "mdi:presentation",
   },
   {
-    label: "Create podcast",
+    label: t("podcast.wizard.title"),
     value: "podcast",
     icon: "mdi:podcast",
   },
   {
-    label: "Create video summary",
+    label: t("boardActions.videoSummary"),
     value: "video",
     icon: "mdi:video",
   },

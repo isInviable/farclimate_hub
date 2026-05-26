@@ -103,6 +103,7 @@ function boardDataFromPin(pin: HumanPinRow): Record<string, unknown> {
 export function usePinsSupabase() {
   const supabase = useSupabaseClient();
   const { isAuthenticated, requireAuthForPersistence } = useAccess();
+  const { t } = useI18n();
 
   /** Shared across all callers (header, board, list, pin control). */
   const pinboardId = useState<string | null>("human-pins-pinboard-id", () => null);
@@ -202,7 +203,7 @@ export function usePinsSupabase() {
       if (e) throw e;
       pins.value = (data ?? []) as HumanPinRow[];
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to load pins";
+      error.value = e instanceof Error ? e.message : t("pins.errors.load");
       pins.value = [];
     } finally {
       loading.value = false;
@@ -251,7 +252,7 @@ export function usePinsSupabase() {
       );
       return row;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to create pin";
+      error.value = e instanceof Error ? e.message : t("pins.errors.create");
       return null;
     } finally {
       loading.value = false;
@@ -287,7 +288,7 @@ export function usePinsSupabase() {
       await loadPinsForProject(lastLoadedProjectId.value);
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to update pin";
+      error.value = e instanceof Error ? e.message : t("pins.errors.update");
       return false;
     } finally {
       loading.value = false;
@@ -308,7 +309,7 @@ export function usePinsSupabase() {
       pins.value = pins.value.filter((p) => p.id !== id);
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to delete pin";
+      error.value = e instanceof Error ? e.message : t("pins.errors.delete");
       return false;
     } finally {
       loading.value = false;
@@ -334,7 +335,7 @@ export function usePinsSupabase() {
       await loadPinsForProject(lastLoadedProjectId.value);
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : "Failed to reorder pins";
+      error.value = e instanceof Error ? e.message : t("pins.errors.reorder");
       return false;
     } finally {
       loading.value = false;

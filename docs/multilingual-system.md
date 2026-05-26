@@ -37,7 +37,7 @@ English remains the **authoritative extraction language**. Other languages are *
 python pipeline/translate_augmented.py --lang <code> [--pattern '*_en_augmented.json'] [--input pipeline/augmented]
 ```
 
-**Environment:** `GEMINI_API_KEY` (and optionally `GEMINI_MODEL_TRANSLATE`). Env is read from repo `.env` and/or `pipeline/.env`.
+**Environment:** `GEMINI_API_KEY`; optionally `GEMINI_MODEL` for augmentation (default `gemini-3.1-flash-lite`) and `GEMINI_MODEL_TRANSLATE` for translation. Env is read from repo `.env` and/or `pipeline/.env`.
 
 **What gets translated (when present in English):**
 

@@ -13,7 +13,7 @@
         <NuxtLinkLocale to="/" class="font-display font-bold text-xl shrink-0 flex items-center gap-2">
           <img src="/img/icono-farclimate.png" alt="Logo" class="h-7"  />
           <div class="font-display font-bold text-xs leading-tight" v-if="!mode">
-            FarClimate <br /> Transformation Hub
+            {{ $t('header.brandTitleLine1') }} <br /> {{ $t('header.brandTitleLine2') }}
           </div>
         </NuxtLinkLocale>
 
@@ -21,11 +21,11 @@
           class="hidden md:flex items-center gap-10 text-[13px] font-mono ml-6"
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
-          <NuxtLinkLocale to="/explorer/">Solutions</NuxtLinkLocale>
-          <NuxtLinkLocale to="/stories">Stories</NuxtLinkLocale>
-          <NuxtLinkLocale to="/skills">Skills</NuxtLinkLocale>
-          <NuxtLinkLocale to="/connected/dashboard">Connected Action</NuxtLinkLocale>
-          <NuxtLinkLocale to="#about">About</NuxtLinkLocale>
+          <NuxtLinkLocale to="/explorer/">{{ $t('header.solutions') }}</NuxtLinkLocale>
+          <NuxtLinkLocale to="/stories">{{ $t('header.stories') }}</NuxtLinkLocale>
+          <NuxtLinkLocale to="/skills">{{ $t('header.skills') }}</NuxtLinkLocale>
+          <NuxtLinkLocale to="/connected/dashboard">{{ $t('header.connectedAction') }}</NuxtLinkLocale>
+          <NuxtLinkLocale to="/about">{{ $t('header.about') }}</NuxtLinkLocale>
         </nav>
 
         <div class="flex-1" />
@@ -67,7 +67,7 @@
             "
           >
             <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-4 h-4" />
-            <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">Sign in</span>
+            <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">{{ $t('auth.signIn') }}</span>
           </NuxtLinkLocale>
         </template>
         <template v-else>
@@ -88,7 +88,7 @@
             "
             @click="handleLogout"
           >
-            <span class="font-mono uppercase text-2xs font-bold tracking-[0.14em]">Log out</span>
+            <span class="font-mono uppercase text-2xs font-bold tracking-[0.14em]">{{ $t('auth.logOut') }}</span>
             <UIcon name="mdi:arrow-top-right" class="w-3.5 h-3.5" />
           </button>
         </template>

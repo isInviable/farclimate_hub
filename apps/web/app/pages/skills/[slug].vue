@@ -8,6 +8,7 @@ definePageMeta({
 
 const route = useRoute();
 const localePath = useLocalePath();
+const { t } = useI18n();
 const { fetchPublishedSkillBySlug } = useSkillsContent();
 
 const slug = computed(() => {
@@ -24,7 +25,7 @@ const { data: skill } = await useAsyncData(
 );
 
 if (!skill.value) {
-  throw createError({ statusCode: 404, statusMessage: "Skill not found" });
+  throw createError({ statusCode: 404, statusMessage: t("skills.errors.notFound") });
 }
 </script>
 
@@ -68,7 +69,7 @@ if (!skill.value) {
             icon="i-heroicons-arrow-left"
             :to="localePath('/skills')"
           >
-            Back to skills
+            {{ $t('skills.detail.back') }}
           </UButton>
         </div>
 
@@ -83,7 +84,7 @@ if (!skill.value) {
         <UCard v-if="skill.links.length" class="mt-8">
           <template #header>
             <h2 class="font-display text-2xl font-bold text-neutral-darkest">
-              External links
+              {{ $t('skills.detail.externalLinks') }}
             </h2>
           </template>
 

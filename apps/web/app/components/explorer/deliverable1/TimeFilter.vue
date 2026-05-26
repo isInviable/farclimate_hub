@@ -1,6 +1,6 @@
 <template>
   <FilterComponent
-    title="Time"
+    :title="$t('filters.time')"
     icon="i-heroicons-clock"
     filter-key="time"
     :has-visualization="false"
@@ -42,10 +42,12 @@ const emit = defineEmits<{
 const isEnabled = ref(props.enabled || false)
 const modelValue = ref<TimeValue>('all')
 
-const radioItems = [
-  { label: 'Show all', value: 'all' },
-  { label: 'Last 10 years', value: 'last10' }
-]
+const { t } = useI18n();
+
+const radioItems = computed(() => [
+  { label: t('filters.showAll'), value: 'all' },
+  { label: t('timeframes.recent'), value: 'last10' },
+]);
 
 function onUpdate(val: string) {
   // Auto-enable when user interacts

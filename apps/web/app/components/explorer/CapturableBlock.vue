@@ -123,6 +123,7 @@ const props = withDefaults(
 
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
+const { t } = useI18n();
 const articleContext = inject(PinArticleContextKey, null);
 
 const blockElement = ref<HTMLElement | null>(null);
@@ -214,7 +215,7 @@ async function saveCapture(note: string) {
       animationElement: blockElement.value,
     });
     if (!id) {
-      saveError.value = pinsApi.error.value ?? "Could not save pin";
+      saveError.value = pinsApi.error.value ?? t("pins.capture.saveFailed");
       return;
     }
     createdPinId.value = id;

@@ -24,7 +24,7 @@
         <div
           class="flex items-center border-b border-neutral-darkest bg-neutral-lightest h-12"
           role="tablist"
-          aria-label="View mode"
+          :aria-label="$t('viewModes.tabsAria')"
         >
           <div class="flex items-stretch h-full">
             <button
@@ -192,7 +192,7 @@
             >
               {{ $t("pins.capture.mindmapPinButton") }}
             </UButton>
-            <UButton size="sm" variant="outline" @click="isMindmapOpen = false">Close</UButton>
+            <UButton size="sm" variant="outline" @click="isMindmapOpen = false">{{ $t('common.close') }}</UButton>
           </div>
         </div>
         <div class="bg-white rounded-md border border-gray-200 h-[70vh] p-0 overflow-hidden">
@@ -247,20 +247,16 @@ const pinsApi = usePinsSupabase();
 
 // Page metadata
 definePageMeta({
-  title: "Climate Adaptation Explorer",
-  description:
-    "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
   layout: 'explorer'
 });
 
 // SEO head
 useHead({
-  title: "Climate Adaptation Explorer - Deliverable 1",
+  title: () => `${t('explorer.meta.title')} - Deliverable 1`,
   meta: [
     {
       name: "description",
-      content:
-        "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
+      content: () => t('explorer.meta.description'),
     },
   ],
 });
@@ -269,21 +265,23 @@ useHead({
 const props = defineProps({
   title: {
     type: String,
-    default: "Climate Adaptation Explorer",
+    default: "",
   },
 });
+
+const pageTitle = computed(() => props.title || t('explorer.meta.title'));
 
 // Reactive state
 const viewMode = ref("list");
 
 // Editorial view tabs (kept in same order/IDs as before to preserve behavior)
-const viewTabs = [
-  { id: "list", label: "List", icon: "mdi:view-list" },
-  { id: "grid", label: "Compare", icon: "mdi:view-grid" },
-  { id: "map", label: "Map", icon: "mdi:map-outline" },
-  { id: "bubble", label: "By bioRegions", icon: "mdi:chart-bubble" },
-  { id: "instagram", label: "Images", icon: "mdi:image-multiple-outline" },
-] as const;
+const viewTabs = computed(() => [
+  { id: "list", label: t("viewModes.list"), icon: "mdi:view-list" },
+  { id: "grid", label: t("viewModes.compare"), icon: "mdi:view-grid" },
+  { id: "map", label: t("viewModes.map"), icon: "mdi:map-outline" },
+  { id: "bubble", label: t("viewModes.byBioRegions"), icon: "mdi:chart-bubble" },
+  { id: "instagram", label: t("viewModes.images"), icon: "mdi:image-multiple-outline" },
+] as const);
 const searchStore = useSearchStore();
 const route = useRoute();
 const router = useRouter();
@@ -420,7 +418,7 @@ async function saveMindmapPin(note: string) {
       animationElement: null,
     });
     if (!id) {
-      mindmapPinError.value = pinsApi.error.value ?? "Could not save pin";
+      mindmapPinError.value = pinsApi.error.value ?? t("pins.capture.saveFailed");
       return;
     }
     mindmapPinDialogOpen.value = false;
