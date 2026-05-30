@@ -126,24 +126,56 @@
                 </div>
               </section>
 
-              <!-- Markdown sections -->
+              <!-- Markdown sections (per-section imagery: RECIPE_SECTION_IMAGES) -->
               <section
                 v-for="(section, idx) in recipeSections"
                 :key="section.key"
                 :data-testid="`article-recipe-segment-${section.key}`"
                 :data-recipe-segment-index="1 + idx"
-                class="min-w-0 border-b border-neutral-lighter py-16 mb-64 last:border-b-0  flex justify-center"
+                :data-section-decoration="recipeSectionImage(section)?.placement ?? undefined"
+                class="mb-64 flex min-w-0 justify-center border-b border-neutral-lighter py-16 last:border-b-0"
               >
-                <div class="flex min-w-0 flex-col gap-10 max-w-4xl ">
-                  <RecipeSectionBody :section="section" />
+                <div
+                  class="flex min-w-0 w-full flex-col gap-10"
+                  :class="
+                    recipeSectionImage(section)?.placement === 'aside-left'
+                      ? 'max-w-5xl'
+                      : 'max-w-4xl'
+                  "
+                >
                   <div
+                    v-if="recipeSectionImage(section)?.placement === 'aside-left'"
+                    class="grid min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,12rem)_minmax(0,32rem)] lg:gap-x-10 xl:grid-cols-[minmax(0,14rem)_minmax(0,36rem)]"
+                  >
+                    <div
+                      class="flex shrink-0 justify-center lg:sticky lg:top-24 lg:justify-start"
+                      aria-hidden="true"
+                    >
+                      <img
+                        :src="recipeSectionImage(section)!.src"
+                        alt=""
+                        :class="recipeSectionImage(section)!.imgClass"
+                      >
+                    </div>
+                    <div class="min-w-0">
+                      <RecipeSectionBody :section="section" />
+                    </div>
+                  </div>
+
+                  <RecipeSectionBody
+                    v-else
+                    :section="section"
+                  />
+
+                  <div
+                    v-if="recipeSectionImage(section)?.placement === 'after'"
                     class="flex justify-center border-t border-default/10 pt-10"
                     aria-hidden="true"
                   >
                     <img
-                      :src="decorationForMarkdownIndex(idx).src"
+                      :src="recipeSectionImage(section)!.src"
                       alt=""
-                      class="max-h-36 w-auto max-w-xs object-contain opacity-90 sm:max-w-sm md:max-h-44"
+                      :class="recipeSectionImage(section)!.imgClass"
                     >
                   </div>
                 </div>
@@ -215,7 +247,11 @@ import SummaryMainGallery from "./article/SummaryMainGallery.vue";
 import SummaryContactsSection from "./article/SummaryContactsSection.vue";
 import SummaryMapSection from "./article/SummaryMapSection.vue";
 import RecipeSectionBody from "./article/RecipeSectionBody.vue";
-import { useArticleRecipe } from "@/composables/useArticleRecipe";
+import {
+  useArticleRecipe,
+  type RecipeSection,
+  type RecipeSectionKey,
+} from "@/composables/useArticleRecipe";
 
 type PrimaryId = "recipe" | "chat" | "contacts";
 
@@ -316,10 +352,41 @@ const showSecondaryNav = computed(
     recipeNavSlides.value.length > 0,
 );
 
-function decorationForMarkdownIndex(idx: number): { src: string } {
-  return idx % 2 === 0
-    ? { src: "/img/explorer/bg_image_recipe.png" }
-    : { src: "/img/explorer/bg_image_compass.png" };
+type RecipeSectionImagePlacement = "aside-left" | "after";
+
+interface RecipeSectionImageConfig {
+  placement: RecipeSectionImagePlacement;
+  src: string;
+  imgClass: string;
+}
+
+const RECIPE_SECTION_IMAGE_DEFAULTS = {
+  after:
+    "max-h-36 w-auto max-w-xs object-contain opacity-90 sm:max-w-sm md:max-h-44",
+  asideLeft:
+    "w-full max-w-[13rem] object-contain opacity-90 sm:max-w-[14rem] ",
+} as const;
+
+/** Add section keys here to attach recipe / compass (or other) imagery. */
+const RECIPE_SECTION_IMAGES: Partial<
+  Record<RecipeSectionKey, RecipeSectionImageConfig>
+> = {
+  context_summary: {
+    placement: "aside-left",
+    src: "/img/explorer/bg_image_recipe.png",
+    imgClass: RECIPE_SECTION_IMAGE_DEFAULTS.asideLeft,
+  },
+  challenges: {
+    placement: "after",
+    src: "/img/explorer/full_compass.png",
+    imgClass: RECIPE_SECTION_IMAGE_DEFAULTS.after,
+  },
+};
+
+function recipeSectionImage(
+  section: RecipeSection,
+): RecipeSectionImageConfig | null {
+  return RECIPE_SECTION_IMAGES[section.key] ?? null;
 }
 
 function onRecipeSegmentNavClick(idx: number): void {
