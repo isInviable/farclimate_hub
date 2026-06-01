@@ -20,6 +20,9 @@
 import { ref, computed, watch } from 'vue';
 import BarChartFilter from './BarChartFilter.vue';
 import type { FacetEntry } from '@/types/facets';
+import { useFacetLabel } from '@/composables/useFacetLabel';
+
+const { facetLabel } = useFacetLabel();
 
 const props = defineProps<{
   enabled?: boolean;
@@ -47,7 +50,10 @@ watch(
 )
 
 const items = computed(() =>
-  (props.climateImpacts ?? []).map((e) => ({ key: e.value, label: e.value }))
+  (props.climateImpacts ?? []).map((e) => ({
+    key: e.value,
+    label: facetLabel('climate_impacts', e.value),
+  }))
 );
 const counts = computed(() => props.forResultSetCounts ?? {});
 const countsGlobal = computed(() =>

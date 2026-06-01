@@ -37,9 +37,9 @@
               {{ item.label }}
             </span>
             <span class="font-mono text-2xs text-neutral-dark tabular-nums whitespace-nowrap">
-              {{ getCurrentCount(item.label)
+              {{ getCurrentCount(item.key)
               }}<span v-if="hasGlobalCounts" class="opacity-60"
-                >/{{ getGlobalCount(item.label) }}</span
+                >/{{ getGlobalCount(item.key) }}</span
               >
             </span>
           </div>
@@ -48,12 +48,12 @@
             <div
               v-if="hasGlobalCounts"
               class="absolute left-0 top-0 h-full bg-neutral-darkest/15"
-              :style="{ width: `${getGlobalPercent(item.label)}%` }"
+              :style="{ width: `${getGlobalPercent(item.key)}%` }"
             />
             <div
               class="absolute left-0 top-0 h-full transition-colors"
               :class="isSelected(item.key) ? 'bg-primary-600' : 'bg-neutral-darkest'"
-              :style="{ width: `${getCurrentPercent(item.label)}%` }"
+              :style="{ width: `${getCurrentPercent(item.key)}%` }"
             />
           </div>
         </label>
@@ -142,14 +142,14 @@ const maxScale = computed(() => {
   return values.length ? Math.max(...values) : 1;
 });
 
-const getGlobalCount = (label: string): number => props.countsGlobal?.[label] ?? 0;
-const getCurrentCount = (label: string): number => props.counts?.[label] ?? 0;
-const getGlobalPercent = (label: string): number => {
-  const c = hasGlobalCounts.value ? getGlobalCount(label) : getCurrentCount(label);
+const getGlobalCount = (key: string): number => props.countsGlobal?.[key] ?? 0;
+const getCurrentCount = (key: string): number => props.counts?.[key] ?? 0;
+const getGlobalPercent = (key: string): number => {
+  const c = hasGlobalCounts.value ? getGlobalCount(key) : getCurrentCount(key);
   return maxScale.value ? (c / maxScale.value) * 100 : 0;
 };
-const getCurrentPercent = (label: string): number => {
-  const c = getCurrentCount(label);
+const getCurrentPercent = (key: string): number => {
+  const c = getCurrentCount(key);
   return maxScale.value ? (c / maxScale.value) * 100 : 0;
 };
 

@@ -33,7 +33,7 @@
           variant="solid"
           size="md"
           class="rounded-none px-3"
-          :label="sector.trim()"
+          :label="facetLabel('sectors', sector.trim())"
         />
       </div>
     </div>
@@ -52,7 +52,7 @@
           variant="solid"
           size="md"
           class="rounded-none px-3"
-          :label="hazard.trim()"
+          :label="facetLabel('climate_impacts', hazard.trim())"
         />
       </div>
     </div>
@@ -71,7 +71,7 @@
           variant="solid"
           size="md"
           class="rounded-none px-3"
-          :label="approach.trim()"
+          :label="facetLabel('adaptation_approaches', approach.trim())"
         />
       </div>
     </div>
@@ -90,7 +90,7 @@
           variant="solid"
           size="md"
           class="rounded-none px-3"
-          :label="keyword.trim()"
+          :label="facetLabel('keywords', keyword.trim())"
         />
       </div>
     </div>
@@ -100,6 +100,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import CapturableBlock from "../CapturableBlock.vue";
+import { useFacetLabel } from "@/composables/useFacetLabel";
+
+const { facetLabel } = useFacetLabel();
 
 const props = defineProps<{
   document: Record<string, unknown> & {

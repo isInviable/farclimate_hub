@@ -1,13 +1,28 @@
 import type { SearchResult } from '@/types/search'
 import { normalizeBiogeographicalRegionsRaw } from '@/utils/explorerBioregions'
 import { activeKeysFromBooleanMap } from '@/utils/explorerFacetFilters'
+import {
+  LIST_MATCH_BADGE_KIND_TO_CATEGORY,
+  type FacetCategory,
+} from '@/utils/facetLabel'
 
 export type ListMatchBadgeKind = 'sector' | 'hazard' | 'bioregion' | 'adaptation'
 
 export interface ListMatchBadge {
   kind: ListMatchBadgeKind
+  /** Canonical English facet value (filter key). */
   label: string
   color?: 'neutral' | 'warning' | 'primary' | 'success'
+}
+
+/** Resolve a badge's display label via facet-label i18n lookup. */
+export function resolveListMatchBadgeLabel(
+  badge: ListMatchBadge,
+  facetLabel: (category: FacetCategory, englishValue: string) => string,
+): string {
+  const category = LIST_MATCH_BADGE_KIND_TO_CATEGORY[badge.kind]
+  if (!category) return badge.label
+  return facetLabel(category, badge.label)
 }
 
 function docSectorsList(doc: SearchResult): string[] {

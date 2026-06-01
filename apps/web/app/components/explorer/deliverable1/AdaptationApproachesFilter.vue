@@ -22,6 +22,9 @@
 import { ref, computed, watch } from "vue";
 import BarChartFilter from "./BarChartFilter.vue";
 import type { FacetEntry } from "@/types/facets";
+import { useFacetLabel } from "@/composables/useFacetLabel";
+
+const { facetLabel } = useFacetLabel();
 
 const props = defineProps<{
   enabled?: boolean;
@@ -49,7 +52,7 @@ watch(
 const items = computed(() =>
   (props.adaptationApproaches ?? []).map((e) => ({
     key: e.value,
-    label: e.value,
+    label: facetLabel("adaptation_approaches", e.value),
   }))
 );
 const counts = computed(() => props.forResultSetCounts ?? {});

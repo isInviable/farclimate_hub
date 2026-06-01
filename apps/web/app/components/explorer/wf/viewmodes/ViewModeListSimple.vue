@@ -87,7 +87,7 @@
                 color="primary"
                 class="truncate"
               >
-                {{ meta.sector }}
+                {{ meta.sector ? facetLabel('sectors', meta.sector) : '' }}
               </EditorialEyebrow>
               <span
                 v-if="meta.sector && meta.solutionType"
@@ -99,7 +99,7 @@
                 color="muted"
                 class="truncate"
               >
-                {{ meta.solutionType }}
+                {{ meta.solutionType ? facetLabel('adaptation_approaches', meta.solutionType) : '' }}
               </EditorialEyebrow>
             </div>
 
@@ -134,7 +134,7 @@
                 size="xs"
                 class="max-w-full truncate"
               >
-                {{ b.label }}
+                {{ resolveListMatchBadgeLabel(b, facetLabel) }}
               </UBadge>
               <UBadge
                 v-if="badgeOverflow > 0"
@@ -170,7 +170,7 @@
                 {{ $t("common.bioregion", "Bioregion") }}
               </EditorialEyebrow>
               <p class="font-mono text-xs font-semibold text-neutral-darkest mt-1 truncate">
-                {{ meta.bioregion }}
+                {{ facetLabel('biogeographical_regions', String(meta.bioregion)) }}
               </p>
             </template>
           </div>
@@ -198,8 +198,12 @@ import type { ArticleDetail } from '~/types/search'
 import { useSearchStore } from '@/stores/search'
 import {
   listMatchBadgesForDocument,
+  resolveListMatchBadgeLabel,
   visibleListMatchBadges,
 } from '@/utils/listMatchBadges'
+import { useFacetLabel } from '@/composables/useFacetLabel'
+
+const { facetLabel } = useFacetLabel()
 
 interface ListHit {
   id: string

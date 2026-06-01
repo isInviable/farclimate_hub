@@ -115,6 +115,9 @@ import smallestEnclosingCircle from 'smallest-enclosing-circle'
 import { UMAP } from 'umap-js'
 import type { ArticleDetail, SearchResult } from '@/types/search'
 import { buildPerHitUmapVectors, type SearchHitLike } from '@/utils/explorerBioregions'
+import { useFacetLabel } from '@/composables/useFacetLabel'
+
+const { facetLabel } = useFacetLabel()
 
 /** Same radius for every search-result dot (v1: no size encoding). */
 const DOT_R = 8
@@ -216,14 +219,14 @@ function showDocTip(e: MouseEvent, d: DocLayout) {
   tooltip.title = d.title || 'Untitled'
   tooltip.subtitle =
     d.regions.length > 0
-      ? `Bioregions:\n${d.regions.map((r) => `• ${r}`).join('\n')}`
+      ? `Bioregions:\n${d.regions.map((r) => `• ${displayRegionLabel(r)}`).join('\n')}`
       : 'Bioregions:\n• —'
   moveTip(e)
 }
 
 function showRegionTip(e: MouseEvent, c: RegionCircleLayout) {
   tooltip.visible = true
-  tooltip.title = c.region
+  tooltip.title = displayRegionLabel(c.region)
   tooltip.subtitle = `${c.count} case ${c.count === 1 ? 'study' : 'studies'} in this region`
   moveTip(e)
 }
@@ -314,8 +317,9 @@ onUnmounted(() => {
 const REGION_LABEL_MAX = 34
 
 function displayRegionLabel(name: string) {
-  if (name.length <= REGION_LABEL_MAX) return name
-  return `${name.slice(0, REGION_LABEL_MAX - 1)}…`
+  const translated = facetLabel('biogeographical_regions', name)
+  if (translated.length <= REGION_LABEL_MAX) return translated
+  return `${translated.slice(0, REGION_LABEL_MAX - 1)}…`
 }
 
 /** Place label above the circle, or below if it would clip the top of the SVG. */

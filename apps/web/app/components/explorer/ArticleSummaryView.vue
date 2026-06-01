@@ -93,7 +93,7 @@
             :key="sector"
             class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
           >
-            {{ sector.trim() }}
+            {{ sector.trim() ? facetLabel('sectors', sector.trim()) : '' }}
           </span>
         </div>
       </SelectableBlock>
@@ -116,7 +116,7 @@
             :key="hazard"
             class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
           >
-            {{ hazard.trim() }}
+            {{ hazard.trim() ? facetLabel('climate_impacts', hazard.trim()) : '' }}
           </span>
         </div>
       </SelectableBlock>
@@ -132,7 +132,7 @@
             :key="approach"
             class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
           >
-            {{ approach.trim() }}
+            {{ approach.trim() ? facetLabel('adaptation_approaches', approach.trim()) : '' }}
           </span>
         </div>
       </SelectableBlock>
@@ -303,7 +303,7 @@
             :key="keyword"
             class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
           >
-            {{ keyword.trim() }}
+            {{ keyword.trim() ? facetLabel('keywords', keyword.trim()) : '' }}
           </span>
         </div>
       </SelectableBlock>
@@ -335,7 +335,7 @@
                 :key="`${entry.key}-${value}`"
                 class="bg-white border border-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded-full"
               >
-                {{ value }}
+                {{ formatGeoValue(entry.key, value) }}
               </span>
             </div>
           </div>
@@ -350,8 +350,10 @@ import SelectableBlock from "./SelectableBlock.vue";
 import MapBase from "./MapBase.vue";
 import MarkdownIt from "markdown-it";
 import { useI18n } from "vue-i18n";
+import { useFacetLabel } from "@/composables/useFacetLabel";
 
 const { t: $t } = useI18n();
+const { facetLabel } = useFacetLabel();
 
 const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
@@ -463,6 +465,13 @@ const formatGeoLabel = (key) =>
     .replace(/_/g, " ")
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
+
+function formatGeoValue(key: string, value: string) {
+  if (key === "biogeographical_regions") {
+    return facetLabel("biogeographical_regions", value);
+  }
+  return value;
+}
 
 const normalizeGeoValues = (value) => {
   if (value === null || value === undefined) return [];
