@@ -1,12 +1,12 @@
 <template>
-  <section class="explorer-editorial-panel p-6 md:p-8 mt-10 md:mt-12">
-    <p class="explorer-mono-eyebrow mb-4">
+  <section class="max-w-2xl mx-auto">
+    <p class="font-mono text-sm text-neutral-darkest mb-4 text-center">
       {{ $t("explorer.index.searchHint") }}
     </p>
-    <div class="flex flex-col sm:flex-row justify-center gap-2 sm:items-stretch sm:-space-x-px">
+    <div class="flex flex-col sm:flex-row gap-2 sm:items-stretch">
       <UInput
         icon="i-lucide-search"
-        size="md"
+        size="xl"
         variant="outline"
         color="neutral"
         class="grow sm:min-w-0"
@@ -16,15 +16,12 @@
         @keyup.enter="goToExplorerSearch"
       />
       <UButton
-        size="md"
-        variant="outline"
+        size="xl"
+        variant="solid"
         color="neutral"
-        class="sm:shrink-0 justify-center"
+        class="sm:shrink-0 justify-center bg-neutral-900 text-neutral-50 font-mono uppercase"
         :to="explorerSearchTo"
       >
-        <template #leading>
-          <UIcon name="material-symbols-light:search" class="size-6" />
-        </template>
         {{ $t("common.search") }}
       </UButton>
     </div>

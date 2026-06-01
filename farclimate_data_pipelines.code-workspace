@@ -8,5 +8,12 @@
 		}
 	],
 	"settings": {
+		"i18n-ally.localesPaths": [
+			"apps/web/i18n",
+			"apps/web/i18n/locales",
+			"old/dataCrawler/venv/lib/python3.13/site-packages/humanize/locale",
+			"old/dataCrawler/venv/lib/python3.13/site-packages/litellm/anthropic_interface/messages",
+			"old/dataCrawler/venv/lib/python3.13/site-packages/litellm/llms/anthropic/experimental_pass_through/messages"
+		]
 	}
 }

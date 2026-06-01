@@ -31,17 +31,54 @@
     "exampleQueries": "Consultas de ejemplo",
     "index": {
       "metaTitle": "Soluciones de adaptación climática",
-      "metaDescription": "Explore estrategias de adaptación climática en silvicultura, pesca y agricultura.",
+      "metaDescription": "Explora estrategias de adaptación climática en silvicultura, pesca y agricultura.",
       "heroTitle": "Soluciones de adaptación climática",
-      "aboutTitle": "Acerca de esta plataforma",
-      "aboutBody": "Esta plataforma es un recurso para profesionales, investigadores y responsables políticos que buscan soluciones basadas en evidencia frente al cambio climático. Hemos reunido soluciones de los sectores forestal, pesquero y agrícola, cada una con enfoques para fortalecer la resiliencia climática.",
+      "heroSubtitle": "Explora publicaciones de adaptación por sector, busca en el corpus y abre documentos para filtrar, comparar y guardar hallazgos en tu tablero.",
+      "aboutTitle": "Qué puedes hacer aquí",
+      "aboutBody": "Este explorador reúne conocimiento de adaptación climática de los sectores forestal, pesquero y agrícola. Elige un sector para centrar la búsqueda o explora todo a la vez. En el explorador puedes buscar por texto, aplicar filtros, abrir documentos completos y guardar resultados en tu tablero.",
+      "aboutHint": "Empieza con un sector, abre todos los sectores o ve directo a una búsqueda por texto.",
+      "featuresTitle": "Qué puedes hacer",
+      "featuresIntro": "Desde el descubrimiento hasta la compartición, el explorador y el tablero te ayudan a convertir la evidencia de adaptación en acción, con herramientas de IA opcionales para enfocar, comparar y comunicar lo esencial.",
+      "featuresMainHeading": "Funciones principales",
+      "featuresAiHeading": "Con IA",
+      "gotoexplorer": "Explorar Soluciones",
+      "features": {
+        "explore": {
+          "title": "Explorar",
+          "description": "Busca y filtra el corpus para encontrar experiencias y casos de estudio que te ayuden a abordar tu reto de adaptación climática."
+        },
+        "board": {
+          "title": "Construir tu tablero",
+          "description": "Guarda documentos, extractos e ideas en tu tablero para crear una base de conocimiento personal que puedas consultar y organizar."
+        },
+        "share": {
+          "title": "Compartir con colegas",
+          "description": "Comparte tu tablero con colegas para que el equipo revise la misma evidencia, notas y fuentes seleccionadas."
+        },
+        "curate": {
+          "title": "Enfocarse en lo relevante",
+          "description": "Selecciona un conjunto de casos y usa la IA para destacar temas, riesgos y conclusiones más pertinentes a tu contexto."
+        },
+        "compare": {
+          "title": "Comparar artículos",
+          "description": "Compara artículos en paralelo para contrastar enfoques, regiones y resultados sin perder el material de origen."
+        },
+        "generate": {
+          "title": "Crear materiales de comunicación",
+          "description": "Genera contenido derivado—resúmenes u esquemas de presentación—para talleres, informes y diálogo con partes interesadas."
+        }
+      },
       "sectorForestry": "Silvicultura",
+      "sectorForestryDescription": "Incendios, pérdida de biodiversidad, especies invasoras",
       "sectorFishery": "Pesca",
+      "sectorFisheryDescription": "Calentamiento oceánico, sobrepesca, erosión costera",
       "sectorAgriculture": "Agricultura",
+      "sectorAgricultureDescription": "Sequías, degradación del suelo, plagas, escasez de agua",
+      "sectorButtonLabel": "Explorar",
       "viewAll": "Ver todo",
-      "searchHint": "También puede empezar con una búsqueda por texto:",
+      "searchHint": "O empieza con una búsqueda por texto:",
       "searchPlaceholder": "Buscar…",
-      "footerHint": "Pulse un sector para explorar soluciones de adaptación o vea todas las soluciones entre sectores."
+      "footerHint": "Las tarjetas de sector abren el explorador con ese enfoque. Ver todo quita el filtro de sector para recorrer todo el corpus."
     },
     "meta": {
       "title": "Explorador de Adaptación Climática",
@@ -49,11 +86,11 @@
     },
     "searchEmpty": {
       "textTitle": "Lo sentimos, no hay resultados de búsqueda para \"{term}\"",
-      "textTip": "Intente usar solo palabras significativas. Recuerde que el idioma de la consulta debe coincidir con el idioma de la interfaz.",
+      "textTip": "Intenta usar solo palabras significativas. Recuerda que el idioma de la consulta debe coincidir con el idioma de la interfaz.",
       "filtersTitle": "Ningún estudio de caso coincide con los filtros actuales",
-      "filtersTip": "Pruebe a quitar o ajustar los filtros en la barra lateral.",
+      "filtersTip": "Prueba a quitar o ajustar los filtros en la barra lateral.",
       "genericTitle": "No hay estudios de caso que mostrar",
-      "genericTip": "Actualice la página o inténtelo de nuevo más tarde."
+      "genericTip": "Actualiza la página o inténtalo de nuevo más tarde."
     }
   },
   "pins": {

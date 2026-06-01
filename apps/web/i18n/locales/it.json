@@ -33,15 +33,52 @@
       "metaTitle": "Soluzioni di adattamento climatico",
       "metaDescription": "Esplora strategie di adattamento climatico nei settori forestale, della pesca e agricolo.",
       "heroTitle": "Soluzioni di adattamento climatico",
-      "aboutTitle": "Informazioni sulla piattaforma",
-      "aboutBody": "Questa piattaforma è una risorsa per professionisti, ricercatori e decisori politici che cercano soluzioni basate su evidenze alle sfide climatiche. Abbiamo selezionato soluzioni dai settori forestale, della pesca e agricolo, ciascuna con approcci per costruire resilienza climatica.",
+      "heroSubtitle": "Sfoglia documenti di adattamento per settore, cerca nel corpus e apri i documenti per filtrare, confrontare e salvare spunti sulla tua bacheca.",
+      "aboutTitle": "Cosa puoi fare qui",
+      "aboutBody": "Questo esploratore riunisce conoscenze di adattamento da foresta, pesca e agricoltura. Scegli un settore per focalizzare la ricerca oppure esplora tutto insieme. Nell’esploratore puoi cercare per testo, applicare filtri, aprire documenti completi e salvare risultati sulla bacheca.",
+      "aboutHint": "Inizia da un settore, apri tutti i settori o passa subito a una ricerca testuale.",
+      "featuresTitle": "Cosa puoi fare",
+      "featuresIntro": "Dalla scoperta alla condivisione, l’esploratore e la bacheca ti aiutano a trasformare le evidenze di adattamento in azione, con strumenti IA opzionali per focalizzare, confrontare e comunicare ciò che conta.",
+      "featuresMainHeading": "Funzioni principali",
+      "featuresAiHeading": "Con IA",
+      "gotoexplorer": "Esplora Soluzioni",
+      "features": {
+        "explore": {
+          "title": "Esplora",
+          "description": "Cerca e filtra il corpus per trovare esperienze e casi di studio utili per affrontare la tua sfida di adattamento climatico."
+        },
+        "board": {
+          "title": "Costruisci la bacheca",
+          "description": "Salva documenti, estratti e spunti sulla bacheca per creare una base di conoscenza personale da riorganizzare nel tempo."
+        },
+        "share": {
+          "title": "Condividi con i colleghi",
+          "description": "Condividi la bacheca con i colleghi così il team può rivedere insieme le stesse evidenze, note e fonti selezionate."
+        },
+        "curate": {
+          "title": "Concentrati su ciò che conta",
+          "description": "Seleziona un insieme di casi e usa l’IA per evidenziare temi, rischi e insegnamenti più rilevanti per il tuo contesto."
+        },
+        "compare": {
+          "title": "Confronta gli articoli",
+          "description": "Metti gli articoli a confronto per comparare approcci, regioni e risultati senza perdere il materiale di origine."
+        },
+        "generate": {
+          "title": "Crea materiali di comunicazione",
+          "description": "Genera contenuti derivati—sintesi o scalette di presentazione—per workshop, report e dialogo con gli stakeholder."
+        }
+      },
       "sectorForestry": "Forestazione",
+      "sectorForestryDescription": "Incendi, perdita di biodiversità, specie invasive",
       "sectorFishery": "Pesca",
+      "sectorFisheryDescription": "Riscaldamento oceanico, sovrasfruttamento, erosione costiera",
       "sectorAgriculture": "Agricoltura",
+      "sectorAgricultureDescription": "Siccità, degradazione del suolo, parassiti, scarsità d’acqua",
+      "sectorButtonLabel": "Esplora",
       "viewAll": "Vedi tutto",
-      "searchHint": "Puoi anche iniziare con una ricerca testuale:",
+      "searchHint": "Oppure inizia con una ricerca testuale:",
       "searchPlaceholder": "Cerca…",
-      "footerHint": "Clicca un settore per esplorare le soluzioni di adattamento oppure visualizza tutte le soluzioni tra i settori."
+      "footerHint": "Le schede settore aprono l’esploratore con quel focus. Vedi tutto rimuove il filtro settore per sfogliare l’intero corpus."
     },
     "meta": {
       "title": "Explorer di Adattamento Climatico",
