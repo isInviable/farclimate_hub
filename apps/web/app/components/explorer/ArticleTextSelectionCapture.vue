@@ -54,6 +54,7 @@ const props = withDefaults(
 
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
+const { promptAuthForPersistence } = useAccess();
 const { t } = useI18n();
 const articleContext = inject(PinArticleContextKey, null);
 
@@ -116,6 +117,7 @@ function refreshSelection() {
 function openCapture() {
   refreshSelection();
   if (!selectedText.value) return;
+  if (!promptAuthForPersistence("pin")) return;
   saveError.value = null;
   dialogOpen.value = true;
 }

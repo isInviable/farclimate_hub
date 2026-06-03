@@ -128,21 +128,22 @@
                 :data-testid="`article-recipe-segment-${section.key}`"
                 :data-recipe-segment-index="1 + idx"
                 :data-section-decoration="recipeSectionImage(section)?.placement ?? undefined"
-                class="mb-64 flex min-w-0 justify-center border-b border-neutral-lighter pt-0 pb-16 last:border-b-0"
+                class="mb-32 flex min-w-0 flex-col border-b border-neutral-lighter pt-0 pb-16 last:border-b-0"
               >
                 <div
-                  class="flex min-w-0 w-full flex-col gap-10"
-                  :class="
+                  class="flex min-w-0 w-full flex-col justify-center gap-10 self-center max-w-5xl"
+                  
+                >
+                <!-- :class="
                     recipeSectionImage(section)?.placement === 'aside-left'
                       ? 'max-w-5xl'
                       : 'max-w-4xl'
-                  "
-                >
+                  " -->
                   <RecipeSegmentHeading
                     :number="segmentNumber(1 + idx)"
                     :label="section.title"
                   />
-                  <div
+                  <!-- <div
                     v-if="recipeSectionImage(section)?.placement === 'aside-left'"
                     class="grid min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,12rem)_minmax(0,32rem)] lg:gap-x-10 xl:grid-cols-[minmax(0,14rem)_minmax(0,36rem)]"
                   >
@@ -159,16 +160,16 @@
                     <div class="min-w-0 md:pl-8">
                       <RecipeSectionBody :section="section" />
                     </div>
-                  </div>
+                  </div> -->
 
                   <div
-                    v-else
+                    
                     class="min-w-0 md:pl-12"
                   >
                     <RecipeSectionBody :section="section" />
                   </div>
 
-                  <div
+                  <!-- <div
                     v-if="recipeSectionImage(section)?.placement === 'after'"
                     class="flex justify-center border-t border-default/10 pt-10"
                     aria-hidden="true"
@@ -178,8 +179,13 @@
                       alt=""
                       :class="recipeSectionImage(section)!.imgClass"
                     >
-                  </div>
+                  </div> -->
                 </div>
+                <RecipeSectionGalleryStrip
+                  v-if="showSectionGalleryStrip(idx)"
+                  :src="sectionGalleryStripSrc(idx)"
+                  :object-position-y="sectionGalleryStripFocusY(idx)"
+                />
               </section>
 
               <!-- Map -->
@@ -254,6 +260,8 @@ import SummaryContactsSection from "./article/SummaryContactsSection.vue";
 import SummaryMapSection from "./article/SummaryMapSection.vue";
 import RecipeSectionBody from "./article/RecipeSectionBody.vue";
 import RecipeSegmentHeading from "./article/RecipeSegmentHeading.vue";
+import RecipeSectionGalleryStrip from "./article/RecipeSectionGalleryStrip.vue";
+import { RecipeScrollRootKey } from "./article/recipeScrollContext";
 import {
   useArticleRecipe,
   type RecipeSection,
@@ -276,7 +284,7 @@ const props = withDefaults(
 );
 
 const { t } = useI18n();
-const { isAuthenticated } = useAccess();
+const { isAuthenticated, promptAuthForPersistence } = useAccess();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
 
@@ -297,6 +305,7 @@ function onPrimaryChange(id: string): void {
 }
 
 const recipeScrollRoot = ref<HTMLElement | null>(null);
+provide(RecipeScrollRootKey, recipeScrollRoot);
 const activeRecipeSegmentIndex = ref(0);
 let recipeScrollRaf = 0;
 
@@ -445,6 +454,48 @@ function segmentNumber(index: number): string {
   return `${String(index + 1).padStart(2, "0")}.`;
 }
 
+const SUMMARY_GALLERY_PLACEHOLDER = "/img/img_placeholder.png";
+
+interface SummaryGalleryImage {
+  public_url: string;
+}
+
+const summaryGalleryImages = computed<SummaryGalleryImage[]>(() => {
+  const raw = (props.document as { images?: unknown })?.images;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(
+    (img): img is SummaryGalleryImage =>
+      !!img &&
+      typeof img === "object" &&
+      typeof (img as SummaryGalleryImage).public_url === "string" &&
+      (img as SummaryGalleryImage).public_url.length > 0,
+  );
+});
+
+/** Decorative strip below segments numbered 02, 04, 06, … (even headings). */
+function showSectionGalleryStrip(recipeSectionIdx: number): boolean {
+  return recipeSectionIdx % 2 === 0;
+}
+
+function sectionGalleryStripSrc(recipeSectionIdx: number): string {
+  const images = summaryGalleryImages.value;
+  const imageIndex = Math.floor(recipeSectionIdx / 2);
+  if (images.length > 0) {
+    return images[imageIndex % images.length]!.public_url;
+  }
+  return SUMMARY_GALLERY_PLACEHOLDER;
+}
+
+/** Stable vertical crop per strip (20–80%) so repeated URLs look distinct. */
+function sectionGalleryStripFocusY(recipeSectionIdx: number): number {
+  const src = sectionGalleryStripSrc(recipeSectionIdx);
+  let hash = recipeSectionIdx * 2654435761;
+  for (let i = 0; i < src.length; i++) {
+    hash = Math.imul(hash ^ src.charCodeAt(i), 16777619);
+  }
+  return (Math.abs(hash) % 61) + 20;
+}
+
 const paperTitle = computed(() => {
   return props.document.title;
 });
@@ -518,6 +569,7 @@ async function saveDocumentPin(note: string): Promise<void> {
 
 defineExpose({
   openDocumentPinDialog: () => {
+    if (!promptAuthForPersistence("pin")) return;
     documentPinError.value = null;
     documentPinDialogOpen.value = true;
   },
