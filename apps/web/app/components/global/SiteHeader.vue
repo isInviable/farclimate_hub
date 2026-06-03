@@ -21,11 +21,26 @@
           class="hidden md:flex items-center gap-10 text-[13px] font-mono ml-6"
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
-          <UButton variant="solid" size="lg" class="rounded-md" color="primary" :to="localePath('/explorer/')">{{ $t('header.solutions') }}</UButton>
-          <NuxtLinkLocale to="/stories">{{ $t('header.stories') }}</NuxtLinkLocale>
-          <NuxtLinkLocale to="/skills">{{ $t('header.skills') }}</NuxtLinkLocale>
-          <NuxtLinkLocale to="/connected/dashboard">{{ $t('header.connectedAction') }}</NuxtLinkLocale>
-          <NuxtLinkLocale to="/about">{{ $t('header.about') }}</NuxtLinkLocale>
+          <UButton
+            :variant="isSolutionsActive ? 'solid' : 'outline'"
+            size="lg"
+            class="rounded-md text-white font-bold"
+            color="primary"
+            :to="localePath('/explorer/')"
+          >{{ $t('header.solutions') }}</UButton>
+          <NuxtLinkLocale
+            v-for="link in navLinks"
+            :key="link.to"
+            :to="link.to"
+            class="transition-colors inline-block"
+            :class="
+              isActive(link.to)
+                ? 'font-semibold bg-primary'
+                : mode
+                  ? 'hover:text-neutral-lightest/70'
+                  : 'hover:text-neutral-dark'
+            "
+          >{{ $t(link.label) }}</NuxtLinkLocale>
         </nav>
 
         <div class="flex-1" />
@@ -113,6 +128,22 @@ const props = withDefaults(
 const { isDemoMode, user, signOut } = useAccess();
 const route = useRoute();
 const router = useRouter();
+
+const navLinks = [
+  { to: "/stories", label: "header.stories" },
+  { to: "/skills", label: "header.skills" },
+  { to: "/connected/dashboard", label: "header.connectedAction" },
+  { to: "/about", label: "header.about" },
+];
+
+function isActive(to: string) {
+  const normalize = (p: string) => p.replace(/\/+$/, "") || "/";
+  const target = normalize(localePath(to));
+  const current = normalize(route.path);
+  return current === target || current.startsWith(`${target}/`);
+}
+
+const isSolutionsActive = computed(() => isActive("/explorer/"));
 
 const explorerLoginLink = computed(() => {
   const returnTo =

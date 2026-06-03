@@ -57,7 +57,10 @@
             <UCheckbox
               :model-value="isSelected(hit.id)"
               color="primary"
-              size="xs"
+              size="md"
+              :ui="{
+                base: 'data-[state=unchecked]:ring-neutral-darkest data-[state=unchecked]:bg-neutral-lightest',
+              }"
               @update:model-value="() => toggleSelection(hit)"
             />
             <span
