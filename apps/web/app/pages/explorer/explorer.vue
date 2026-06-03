@@ -190,7 +190,6 @@
               Regenerate
             </UButton>
             <UButton
-              v-if="isAuthenticated"
               size="sm"
               color="primary"
               variant="soft"
@@ -252,7 +251,7 @@ import {
 
 // i18n composable for language detection
 const { locale, t } = useI18n();
-const { isAuthenticated } = useAccess();
+const { promptAuthForPersistence } = useAccess();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
 
@@ -409,6 +408,7 @@ const mindmapPinLocation = computed((): [number, number] | null => {
 
 function openMindmapPinCapture() {
   if (!mindmapMarkdown.value.trim()) return;
+  if (!promptAuthForPersistence("pin")) return;
   mindmapPinError.value = null;
   mindmapPinDialogOpen.value = true;
 }

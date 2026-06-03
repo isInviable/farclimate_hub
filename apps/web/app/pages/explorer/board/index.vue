@@ -237,7 +237,8 @@ definePageMeta({
   title: "Climate Adaptation Explorer",
   description:
     "Explore climate adaptation papers and solutions with interactive filters and multiple view modes.",
-  layout: 'explorer'
+  layout: 'explorer',
+  middleware: ['explorer-board-auth'],
 });
 // Modal states
 const isChatOpen = ref(false)

@@ -199,7 +199,7 @@ const additions = {
       about: "About",
       home: "Home",
       network: "Network",
-      pinsBoard: "Pins Board",
+      pinsBoard: "PinBoard",
     },
     listActions: {
       selectedLabel: "selected",

@@ -199,6 +199,7 @@ const md = new MarkdownIt();
 
 const { t } = useI18n();
 const { pinCapture } = usePin();
+const { promptAuthForPersistence } = useAccess();
 
 const emit = defineEmits<{
   "open-article": [documentUid: string];
@@ -367,6 +368,7 @@ function chatResponsePayload(text: string, index: number) {
 }
 
 function openConversationPin() {
+  if (!promptAuthForPersistence("pin")) return;
   conversationPinError.value = null;
   conversationPinDialogOpen.value = true;
 }

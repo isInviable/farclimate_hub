@@ -3,13 +3,14 @@
  * Derives demo vs authenticated mode from Supabase session and provides
  * a shared guard for persistence actions. Extensible for future elevated roles (e.g. connected_admin).
  *
- * Persistence guard usage (requireAuthForPersistence):
- * - Admin routes: already gated by admin.auth middleware and per-page isAuthenticated checks.
- * - Human-domain writes (future): when adding server-side APIs for pins, projects, preferences, etc.,
- *   call requireAuthForPersistence() (or requireAuthForPersistence(returnPath)) before the write.
+ * Persistence guard usage:
+ * - `promptAuthForPersistence(context)` — modal-first for user-initiated explorer actions (pin, board).
+ * - `requireAuthForPersistence(returnPath?)` — redirect to login for direct URLs and programmatic writes.
  */
 
 export type AccessMode = "demo" | "authenticated";
+
+export type AuthPromptContext = "pin" | "board" | "generic";
 
 /** Reserved for future RBAC; not used in baseline. */
 export type PlatformRole = "connected_admin";
@@ -22,6 +23,10 @@ type PlatformJwtClaims = {
     connected_admin?: boolean;
   };
 };
+
+const authPromptOpen = ref(false);
+const authPromptContext = ref<AuthPromptContext>("generic");
+const authPromptReturnPath = ref("/");
 
 const decodeJwtClaims = (accessToken?: string | null): PlatformJwtClaims => {
   if (!accessToken) {
@@ -47,6 +52,12 @@ const decodeJwtClaims = (accessToken?: string | null): PlatformJwtClaims => {
     return {};
   }
 };
+
+function resolveReturnPath(route: ReturnType<typeof useRoute>, returnPath?: string): string {
+  if (returnPath) return returnPath;
+  const fullPath = route?.fullPath;
+  return fullPath && fullPath !== "/login" ? fullPath : "/";
+}
 
 export const useAccess = () => {
   const { user, session, loading, isAuthenticated, initAuth, signIn, signOut, refreshSession } =
@@ -74,6 +85,30 @@ export const useAccess = () => {
 
   const isConnectedAdmin = computed(() => role.value === "connected_admin");
 
+  const authPromptLoginLink = computed(() => {
+    const path = authPromptReturnPath.value || "/";
+    return `/login?returnTo=${encodeURIComponent(path)}`;
+  });
+
+  /**
+   * Modal-first guard for user-initiated persistence entry points.
+   * Returns true when authenticated; otherwise opens the auth-required modal and returns false.
+   */
+  const promptAuthForPersistence = (
+    context: AuthPromptContext = "generic",
+    returnPath?: string,
+  ): boolean => {
+    if (isAuthenticated.value) return true;
+    authPromptContext.value = context;
+    authPromptReturnPath.value = resolveReturnPath(route, returnPath);
+    authPromptOpen.value = true;
+    return false;
+  };
+
+  function closeAuthPrompt() {
+    authPromptOpen.value = false;
+  }
+
   /**
    * Guard for persistence actions. If the user is in demo mode, redirects to login
    * with returnTo and returns false. If authenticated, returns true so the action can proceed.
@@ -81,7 +116,7 @@ export const useAccess = () => {
    */
   const requireAuthForPersistence = (returnPath?: string): boolean => {
     if (isAuthenticated.value) return true;
-    const current = returnPath ?? (route?.fullPath && route.fullPath !== "/login" ? route.fullPath : "/");
+    const current = resolveReturnPath(route, returnPath);
     navigateTo(`/login?returnTo=${encodeURIComponent(current)}`);
     return false;
   };
@@ -100,5 +135,11 @@ export const useAccess = () => {
     signOut,
     refreshSession,
     requireAuthForPersistence,
+    promptAuthForPersistence,
+    authPromptOpen,
+    authPromptContext,
+    authPromptReturnPath,
+    authPromptLoginLink,
+    closeAuthPrompt,
   };
 };

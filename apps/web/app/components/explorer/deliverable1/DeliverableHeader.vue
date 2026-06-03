@@ -88,9 +88,11 @@
       
 
       <!-- Pins Board (primary ink button with count chip) -->
-      <NuxtLinkLocale
-        :to="pinsButtonLink"
-        class="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 border border-neutral-darkest bg-neutral-darkest text-neutral-lightest hover:bg-neutral-darker transition-colors"
+      <UButton
+        variant="solid"
+        color="primary"
+        class="inline-flex items-center gap-2 h-9 pl-3 pr-1.5 border transition-colors cursor-pointer"
+        @click="handlePinsBoardClick"
       >
         <UIcon :name="pinsButtonIcon" class="w-4 h-4" />
         <span class="font-mono uppercase text-2xs font-bold tracking-[0.12em]">{{ pinsButtonLabel }}</span>
@@ -99,7 +101,7 @@
         >
           {{ pinCount }}
         </span>
-      </NuxtLinkLocale>
+      </UButton>
 
     </div>
   </header>
@@ -115,7 +117,8 @@ import { useAccess } from "~/composables/useAccess";
 const pinsApi = usePinsSupabase();
 const pinCount = computed(() => pinsApi.pins.value.length);
 const projectsStore = useProjectsStore();
-const { isDemoMode, isAuthenticated, requireAuthForPersistence, session } = useAccess();
+const { isDemoMode, isAuthenticated, requireAuthForPersistence, promptAuthForPersistence, session } = useAccess();
+const localePath = useLocalePath();
 const { t } = useI18n();
 const route = useRoute();
 
@@ -195,6 +198,18 @@ const pinsButtonLabel = computed(() => {
   }
   return t('header.pinsBoard');
 });
+
+function handlePinsBoardClick() {
+  const link = pinsButtonLink.value;
+  const target = localePath(link);
+
+  if (link.includes("/board") && !isAuthenticated.value) {
+    promptAuthForPersistence("board", target);
+    return;
+  }
+
+  void navigateTo(target);
+}
 
 // Public share link button visibility
 const showShareButton = computed(() => {

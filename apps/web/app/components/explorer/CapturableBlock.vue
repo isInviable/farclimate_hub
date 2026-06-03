@@ -123,6 +123,7 @@ const props = withDefaults(
 
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
+const { promptAuthForPersistence } = useAccess();
 const { t } = useI18n();
 const articleContext = inject(PinArticleContextKey, null);
 
@@ -197,6 +198,7 @@ const isPinned = computed(() => {
 });
 
 function openCapture() {
+  if (!promptAuthForPersistence("pin")) return;
   saveError.value = null;
   dialogOpen.value = true;
 }

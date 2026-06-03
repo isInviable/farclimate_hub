@@ -1,38 +1,4 @@
-# Platform login and demo mode
-
-Baseline access model: demo mode for unauthenticated visitors, authenticated sessions for signed-in users, login-gated persistence actions. Demo/authenticated UI is shown in the explorer (browser) header.
-
----
-
-## ADDED Requirements
-
-### Requirement: Demo users can access public platform flows without login
-
-The platform SHALL treat visitors without a Supabase session as demo users and SHALL allow them to access public reading and exploration flows for public content without being required to authenticate first.
-
-#### Scenario: Unauthenticated visitor opens a public page
-- **WHEN** a visitor without an active session loads a public reading or exploration route
-- **THEN** the platform SHALL render the route in demo mode and SHALL NOT require login before showing public content
-
-#### Scenario: Demo user navigates through public exploration flows
-- **WHEN** a demo user browses public content that does not create or update user-owned server data
-- **THEN** the platform SHALL allow the interaction to continue without forcing authentication
-
-### Requirement: Existing users can log in and restore authenticated sessions
-
-The platform SHALL allow existing platform users to authenticate with Supabase Auth using either email OTP or email+password, and SHALL restore authenticated sessions on subsequent page loads until the session is ended or expires.
-
-#### Scenario: User logs in successfully via OTP
-- **WHEN** a valid user completes the OTP verification flow
-- **THEN** the platform SHALL transition from demo mode to authenticated mode in the active session
-
-#### Scenario: User logs in successfully via password
-- **WHEN** a valid existing user completes the password login flow
-- **THEN** the platform SHALL transition from demo mode to authenticated mode in the active session
-
-#### Scenario: Authenticated user reloads the application
-- **WHEN** an authenticated user refreshes the app or opens a new page while their Supabase session remains valid
-- **THEN** the platform SHALL restore the authenticated session and SHALL keep persistence-capable actions available without requiring a fresh login
+## MODIFIED Requirements
 
 ### Requirement: Persistence actions are gated in demo mode
 
@@ -86,6 +52,8 @@ The platform SHALL expose a consistent user-facing distinction between demo mode
 
 - **WHEN** a demo user is using the explorer (Solutions flow)
 - **THEN** the explorer header SHALL show demo mode indication and a Sign in control so the user can authenticate from within the explorer
+
+## ADDED Requirements
 
 ### Requirement: Auth prompt API is available for persistence gates
 

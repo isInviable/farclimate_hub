@@ -718,6 +718,16 @@
       "emailInvalid": "Inserisci un indirizzo email valido.",
       "nameRequired": "Inserisci il tuo nome.",
       "emailPasswordRequired": "Inserisci email e password."
+    },
+    "prompt": {
+      "pinTitle": "Accedi per usare la tua bacheca pin",
+      "pinBody": "La bacheca pin serve per salvare contenuti interessanti per analisi o condivisione future. Registrati o accedi per creare la tua bacheca.",
+      "boardTitle": "Accedi per vedere la tua bacheca pin",
+      "boardBody": "La tua bacheca raccoglie tutto ciò che fissi dall'esploratore. Registrati o accedi per creare e gestire la tua bacheca.",
+      "genericTitle": "Accedi per salvare il tuo lavoro",
+      "genericBody": "Questa azione salva dati sul tuo account. Registrati o accedi per continuare.",
+      "signInAction": "Accedi / Registrati",
+      "cancel": "Annulla"
     }
   },
   "skills": {

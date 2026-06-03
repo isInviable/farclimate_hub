@@ -21,7 +21,7 @@
           class="hidden md:flex items-center gap-10 text-[13px] font-mono ml-6"
           :class="mode ? 'text-neutral-lightest' : 'text-neutral-darkest'"
         >
-          <NuxtLinkLocale to="/explorer/">{{ $t('header.solutions') }}</NuxtLinkLocale>
+          <UButton variant="solid" size="lg" class="rounded-md" color="primary" :to="localePath('/explorer/')">{{ $t('header.solutions') }}</UButton>
           <NuxtLinkLocale to="/stories">{{ $t('header.stories') }}</NuxtLinkLocale>
           <NuxtLinkLocale to="/skills">{{ $t('header.skills') }}</NuxtLinkLocale>
           <NuxtLinkLocale to="/connected/dashboard">{{ $t('header.connectedAction') }}</NuxtLinkLocale>
@@ -99,6 +99,7 @@
 
 <script lang="ts" setup>
 import { useAccess } from "~/composables/useAccess";
+const localePath = useLocalePath()
 
 const props = withDefaults(
   defineProps<{

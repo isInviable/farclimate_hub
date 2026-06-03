@@ -9,5 +9,6 @@
         <SiteFooter />
 
     </div>
+    <AuthRequiredModal />
   </div>
 </template>

@@ -375,10 +375,7 @@ const headerTitle = computed(
     $t("common.documentPreview"),
 );
 
-const canPinDocument = computed<boolean>(() => {
-  const isAuthed = articleViewRef.value?.isAuthenticated?.value ?? false;
-  return isAuthed && !!resolvedDocument.value;
-});
+const canPinDocument = computed<boolean>(() => !!resolvedDocument.value);
 
 function pinKindLabel(kind: string): string {
   const key = `pins.kinds.${kind || "unknown"}`;

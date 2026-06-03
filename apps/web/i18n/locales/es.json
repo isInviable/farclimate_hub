@@ -718,6 +718,16 @@
       "emailInvalid": "Introduce un correo válido.",
       "nameRequired": "Introduce tu nombre.",
       "emailPasswordRequired": "Introduce correo y contraseña."
+    },
+    "prompt": {
+      "pinTitle": "Inicia sesión para usar tu tablero de pins",
+      "pinBody": "El tablero de pins sirve para guardar contenido interesante para análisis o compartir en el futuro. Regístrate o inicia sesión para crear tu tablero.",
+      "boardTitle": "Inicia sesión para ver tu tablero de pins",
+      "boardBody": "Tu tablero reúne todo lo que fijas desde el explorador. Regístrate o inicia sesión para crear y gestionar tu tablero.",
+      "genericTitle": "Inicia sesión para guardar tu trabajo",
+      "genericBody": "Esta acción guarda datos en tu cuenta. Regístrate o inicia sesión para continuar.",
+      "signInAction": "Iniciar sesión / Registrarse",
+      "cancel": "Cancelar"
     }
   },
   "skills": {

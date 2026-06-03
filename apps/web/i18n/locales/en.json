@@ -388,7 +388,7 @@
     "network": "Network",
     "stories": "Stories",
     "about": "About",
-    "pinsBoard": "Pins Board",
+    "pinsBoard": "PinBoard",
     "brandTitle": "FarClimate Transformation Hub",
     "brandTitleLine1": "FarClimate",
     "brandTitleLine2": "Transformation Hub",
@@ -720,6 +720,16 @@
       "emailInvalid": "Please enter a valid email address.",
       "nameRequired": "Please enter your name.",
       "emailPasswordRequired": "Please enter both email and password."
+    },
+    "prompt": {
+      "pinTitle": "Sign in to use your pinboard",
+      "pinBody": "The pinboard is made to save interesting content for future analysis or sharing. Register or sign in to create your board.",
+      "boardTitle": "Sign in to view your pinboard",
+      "boardBody": "Your pinboard collects everything you pin from the explorer. Register or sign in to create and manage your board.",
+      "genericTitle": "Sign in to save your work",
+      "genericBody": "This action saves data to your account. Register or sign in to continue.",
+      "signInAction": "Log in / Register",
+      "cancel": "Cancel"
     }
   },
   "skills": {
