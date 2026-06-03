@@ -8,7 +8,7 @@
       class="relative z-10 flex min-h-0 flex-1 flex-col"
     >
       <header
-        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-start gap-4 border-b border-default/10 bg-neutral-lightest pb-4"
+        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-center gap-4 border-b border-default/10 bg-neutral-lightest pb-3"
       >
         <div class="col-span-1 min-w-0">
           <p
@@ -22,30 +22,18 @@
             {{ paperTitle }}
           </h1>
         </div>
-        <div class="col-span-4 flex min-w-0 flex-col gap-3 pr-24">
+        <div class="col-span-4 flex min-w-0 flex-col pr-24">
           <ArticlePrimaryNav
             :items="primaryItems"
             :active-id="activePrimaryId"
             panel-id-prefix="article-primary"
             @update:active-id="onPrimaryChange"
           />
-          <h2
-            v-if="headerShowTitle"
-            class="min-w-0 max-w-full leading-tight"
-          >
-            <span
-              v-if="headerNumberPrefix"
-              class="mr-2 font-mono text-3xl font-semibold text-neutral-700 md:text-4xl"
-            >{{ headerNumberPrefix }}</span>
-            <span
-              class="font-display text-3xl font-bold text-primary-600 md:text-5xl"
-            >{{ headerSlideLabel }}</span>
-          </h2>
         </div>
       </header>
 
       <!-- Shared 5-col body shell: aside (chapter nav, recipe only) + content area -->
-      <div class="mt-6 grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-6 overflow-hidden lg:grid-cols-5">
+      <div class="mt-2 grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-6 overflow-hidden lg:grid-cols-5">
         <aside
           class="hidden min-w-0 lg:col-span-1 lg:block"
           :aria-hidden="activePrimaryId !== 'recipe' ? 'true' : undefined"
@@ -107,6 +95,13 @@
                 data-recipe-segment-index="0"
                 class="grid min-w-0 scroll-mt-24 grid-cols-1 gap-x-8 gap-y-6 border-b border-default/15 pb-16 lg:grid-cols-3"
               >
+                <div class="min-w-0 lg:col-span-3">
+                  <RecipeSegmentHeading
+                    :number="segmentNumber(0)"
+                    :label="t('recipe.nav.summaryPlus')"
+                    class="mb-0!"
+                  />
+                </div>
                 <div class="min-w-0 lg:col-span-1">
                   <SummaryMainLeftColumn :document="document" />
                 </div>
@@ -133,7 +128,7 @@
                 :data-testid="`article-recipe-segment-${section.key}`"
                 :data-recipe-segment-index="1 + idx"
                 :data-section-decoration="recipeSectionImage(section)?.placement ?? undefined"
-                class="mb-64 flex min-w-0 justify-center border-b border-neutral-lighter py-16 last:border-b-0"
+                class="mb-64 flex min-w-0 justify-center border-b border-neutral-lighter pt-0 pb-16 last:border-b-0"
               >
                 <div
                   class="flex min-w-0 w-full flex-col gap-10"
@@ -143,6 +138,10 @@
                       : 'max-w-4xl'
                   "
                 >
+                  <RecipeSegmentHeading
+                    :number="segmentNumber(1 + idx)"
+                    :label="section.title"
+                  />
                   <div
                     v-if="recipeSectionImage(section)?.placement === 'aside-left'"
                     class="grid min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,12rem)_minmax(0,32rem)] lg:gap-x-10 xl:grid-cols-[minmax(0,14rem)_minmax(0,36rem)]"
@@ -157,15 +156,17 @@
                         :class="recipeSectionImage(section)!.imgClass"
                       >
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 md:pl-8">
                       <RecipeSectionBody :section="section" />
                     </div>
                   </div>
 
-                  <RecipeSectionBody
+                  <div
                     v-else
-                    :section="section"
-                  />
+                    class="min-w-0 md:pl-12"
+                  >
+                    <RecipeSectionBody :section="section" />
+                  </div>
 
                   <div
                     v-if="recipeSectionImage(section)?.placement === 'after'"
@@ -187,6 +188,11 @@
                 :data-recipe-segment-index="mapSegmentIndex"
                 class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 lg:py-20"
               >
+                <RecipeSegmentHeading
+                  :number="segmentNumber(mapSegmentIndex)"
+                  :label="t('recipe.nav.map')"
+                  class="mb-6"
+                />
                 <div class="min-h-0 min-w-0">
                   <SummaryMapSection :document="document" />
                 </div>
@@ -247,6 +253,7 @@ import SummaryMainGallery from "./article/SummaryMainGallery.vue";
 import SummaryContactsSection from "./article/SummaryContactsSection.vue";
 import SummaryMapSection from "./article/SummaryMapSection.vue";
 import RecipeSectionBody from "./article/RecipeSectionBody.vue";
+import RecipeSegmentHeading from "./article/RecipeSegmentHeading.vue";
 import {
   useArticleRecipe,
   type RecipeSection,
@@ -434,25 +441,9 @@ onUnmounted(() => {
   if (recipeScrollRaf) cancelAnimationFrame(recipeScrollRaf);
 });
 
-const headerShowTitle = computed(() => {
-  if (activePrimaryId.value !== "recipe") return false;
-  if (recipeLoading.value || recipeLoadError.value) return false;
-  return recipeNavSlides.value.length > 0;
-});
-
-const headerSlideLabel = computed(() => {
-  if (activePrimaryId.value !== "recipe") return "";
-  return (
-    recipeNavSlides.value[activeRecipeSegmentIndex.value]?.label ?? ""
-  );
-});
-
-const headerNumberPrefix = computed(() => {
-  if (activePrimaryId.value !== "recipe") return "";
-  if (recipeLoading.value || recipeLoadError.value) return "";
-  if (!recipeNavSlides.value.length) return "";
-  return `${String(activeRecipeSegmentIndex.value + 1).padStart(2, "0")}.`;
-});
+function segmentNumber(index: number): string {
+  return `${String(index + 1).padStart(2, "0")}.`;
+}
 
 const paperTitle = computed(() => {
   return props.document.title;
