@@ -1,43 +1,44 @@
 <template>
-  <span
-    class="relative inline-flex align-middle"
-    @mouseenter="hover = true"
-    @mouseleave="hover = false"
+  <UTooltip
+    :open="open"
+    :content="{
+      side: 'bottom',
+      align: align === 'right' ? 'end' : 'start',
+      sideOffset: 8,
+    }"
+    arrow
+    :disable-hoverable-content="false"
+    :ui="tooltipUi"
+    @update:open="onOpenChange"
   >
     <button
       type="button"
       aria-label="Help"
-      class="flex h-[18px] w-[18px] shrink-0 cursor-help items-center justify-center rounded-full border font-mono text-[10px] font-bold leading-none transition-colors"
+      class="inline-flex h-[18px] w-[18px] shrink-0 cursor-help items-center justify-center rounded-full border font-mono text-[10px] font-bold leading-none transition-colors"
       :class="
         open
           ? 'border-neutral-darkest bg-neutral-darkest text-neutral-lightest'
           : 'border-neutral-dark text-neutral-dark'
       "
-      @click.stop="pin = !pin"
+      @click.stop="togglePin"
     >
       ?
     </button>
-    <span
-      v-if="open"
-      class="absolute top-6 z-[60] border border-neutral-darkest bg-neutral-darkest p-3 text-left shadow-xl"
-      :class="align === 'right' ? 'right-0' : 'left-0'"
-      :style="{ width: `${w}px` }"
-    >
-      <span
-        class="absolute -top-[5px] h-[9px] w-[9px] rotate-45 bg-neutral-darkest"
-        :class="align === 'right' ? 'right-2' : 'left-2'"
-      />
-      <span
-        v-if="title"
-        class="mb-1.5 block font-mono text-[9px] font-bold tracking-[0.18em] text-neutral"
-      >
-        {{ title.toUpperCase() }}
-      </span>
-      <span class="block font-sans text-xs leading-relaxed text-neutral-lightest">
-        <slot />
-      </span>
-    </span>
-  </span>
+
+    <template #content>
+      <div :style="{ width: `${w}px` }">
+        <p
+          v-if="title"
+          class="mb-1.5 font-mono text-[9px] font-bold tracking-[0.18em] text-neutral uppercase"
+        >
+          {{ title }}
+        </p>
+        <div class="font-sans text-xs leading-relaxed text-neutral-lightest">
+          <slot />
+        </div>
+      </div>
+    </template>
+  </UTooltip>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +54,25 @@ withDefaults(defineProps<Props>(), {
   align: "left",
 });
 
-const hover = ref(false);
-const pin = ref(false);
-const open = computed(() => hover.value || pin.value);
+const tooltipUi = {
+  content:
+    "flex flex-col items-stretch gap-0 rounded-none border border-neutral-darkest bg-neutral-darkest p-3 text-left shadow-xl h-auto max-w-none ring-0 text-neutral-lightest",
+  text: "hidden",
+  arrow: "fill-neutral-darkest",
+};
+
+const pinned = ref(false);
+const open = ref(false);
+
+function onOpenChange(next: boolean) {
+  if (!next && pinned.value) return;
+  open.value = next;
+}
+
+function togglePin() {
+  pinned.value = !pinned.value;
+  if (pinned.value) {
+    open.value = true;
+  }
+}
 </script>
