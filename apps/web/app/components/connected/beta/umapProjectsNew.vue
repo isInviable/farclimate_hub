@@ -1,5 +1,5 @@
 <template>
-  <div ref="el" class="w-screen h-screen bg-white">
+  <div ref="el" class="h-full w-full bg-neutral-lightest">
     <svg :width="width" :height="height" :viewBox="viewBox">
       <rect width="100%" height="100%" class="fill-neutral-lightest"/>
 
@@ -35,7 +35,7 @@
         :cy="risk.y"
         :r="risk.r" 
         stroke-width="2" stroke-dasharray="4 4" 
-        class="fill-transparent hover:fill-gray-400/50 transition-all duration-300 stroke-gray-200 cursor-pointer"
+        class="fill-transparent hover:fill-trust-blue-light/30 transition-all duration-300 stroke-neutral-dark cursor-pointer"
         @mouseover="(e) => { overRisk(risk.label); showTooltip(e, { title: risk.label, value: risk.count, valueLabel: 'Projects' }) }"
         @mousemove="updateTooltipPosition"
         @mouseout="() => { outRisk(); hideTooltip() }"
@@ -93,11 +93,11 @@
     <!-- Tooltip -->
     <div 
       v-if="tooltip.visible"
-      class="fixed bg-white border border-gray-300 rounded shadow-lg p-2 text-sm pointer-events-none z-50"
+      class="fixed z-50 border border-neutral-darkest bg-neutral-lightest p-2 text-sm shadow-lg pointer-events-none"
       :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }"
     >
-      <div class="font-semibold">{{ tooltip.title }}</div>
-      <div v-if="tooltip.subtitle" class="text-xs text-gray-600 mt-1">{{ tooltip.subtitle }}</div>
+      <div class="font-mono text-xs font-bold uppercase tracking-[0.06em] text-neutral-darkest">{{ tooltip.title }}</div>
+      <div v-if="tooltip.subtitle" class="mt-1 text-xs text-neutral-dark">{{ tooltip.subtitle }}</div>
       <div v-if="tooltip.value !== undefined" class="mt-1">
         <span class="font-medium">{{ tooltip.valueLabel }}: {{ typeof tooltip.value === 'number' ? tooltip.value.toLocaleString() : tooltip.value }}</span>
       </div>
@@ -200,7 +200,6 @@
   // watch props.projects
   watch(() => props.projects, (newProjects: Array<any>) => {
     if (newProjects && newProjects.length > 0) {
-      console.log('Projects updated:', newProjects);
       updateUmap(newProjects);
     }
   });
@@ -304,7 +303,6 @@
 
   const updateUmap = (newProjects: Array<any>) => {
     // logic to update UMAP visualization
-    console.log("updating data for mapDataR and UMAP ......");
     umapVisualVariables.value  = newProjects;
 
     const umapDimensions = umapVisualVariables.value.map((d: any) => d.umapDimensions); 
@@ -390,11 +388,8 @@
         circle.r = sec.r + 16; // add some padding
       }
     });
-    console.log("Updated Risk Circles:", filteredCircles);
 
     circlesArray.value = filteredCircles.sort((a, b) => b.r - a.r);
-
-
   };
 
   // a new function similar to updateRiskCircles but for themes
@@ -436,11 +431,8 @@
     
     // sort filteredCircle by radius 
     filteredCircles.sort((a, b) => a.r - b.r);
-    console.log("Updated Theme Circles:", filteredCircles);
 
     circlesArray.value = filteredCircles;
-
-    
   };
 
   // UI variables
@@ -515,25 +507,15 @@
   };
 
   onMounted(() => {
-     console.log('Project Items:', props.projects);
-    // console.log('Theme Circles:', props.themeCircles);
-
-    // Add keyboard event listener
+    // Add keyboard event listener for SVG export (press "S")
     window.addEventListener('keydown', handleKeydown);
 
     updateUmap(props.projects);
     updateRiskCircles(props.riskCircles);
-    // updateThemeCircles(props.themeCircles);
-     console.log('circle array :', circlesArray.value);
-     console.log('max entities count :', maxEntitiesCount.value);
-
-    // window.addEventListener('keydown', handleKeydown);
-
   });
 
   onUnmounted(() => {
-    // Clean up keyboard event listener
-    // window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('keydown', handleKeydown);
   });
 </script>
 

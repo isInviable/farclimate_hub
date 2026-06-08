@@ -1,5 +1,5 @@
 <template>
-  <div ref="el" class="w-screen h-screen bg-white">
+  <div ref="el" class="h-full w-full bg-neutral-lightest">
       <svg :width="width" :height="height" :viewBox="viewBox">
         <defs>
           <filter id="dropShadow" x="0" y="0" width="200%" height="200%">
@@ -276,11 +276,11 @@
     <!-- Tooltip -->
     <div 
       v-if="tooltip.visible"
-      class="fixed bg-white border border-gray-300 rounded shadow-lg p-2 text-sm pointer-events-none z-50"
+      class="fixed z-50 border border-neutral-darkest bg-neutral-lightest p-2 text-sm shadow-lg pointer-events-none"
       :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }"
     >
-      <div class="font-semibold">{{ tooltip.title }}</div>
-      <div v-if="tooltip.subtitle" class="text-xs text-gray-600 mt-1">{{ tooltip.subtitle }}</div>
+      <div class="font-mono text-xs font-bold uppercase tracking-[0.06em] text-neutral-darkest">{{ tooltip.title }}</div>
+      <div v-if="tooltip.subtitle" class="mt-1 text-xs text-neutral-dark">{{ tooltip.subtitle }}</div>
       <div v-if="tooltip.value !== undefined" class="mt-1">
         <span class="font-medium">{{ tooltip.valueLabel }}: {{ typeof tooltip.value === 'number' ? tooltip.value.toLocaleString() : tooltip.value }}</span>
       </div>
@@ -292,6 +292,7 @@
   import { useElementSize } from '@vueuse/core'
   import { useTemplateRef } from 'vue'
   import * as d3 from "d3";
+  import { CA_CAT_LIST } from "~/utils/connectedColors";
 
   const el = useTemplateRef('el')
   const { width, height } = useElementSize(el)
@@ -524,7 +525,7 @@
    const organizationActivityTypeColorScale = computed(() => {
       return d3.scaleOrdinal<string, string>()
         .domain(entityTypes.value.map(d => d.activityType))
-        .range(d3.schemeCategory10);
+        .range(CA_CAT_LIST);
   });
 
   // as for riskStacks
@@ -744,8 +745,6 @@
     });
     overedIsoCodes.value = Array.from(isoSet);
     overedEntitiesIds.value = Array.from(entitiesOutput);
-
-    console.log('overedEntitiesIds:', overedEntitiesIds.value);
   };
 
   const outRisks = () => {
@@ -755,25 +754,6 @@
     overedIsoCodes.value = [];
   };
 
-  onMounted(() => {
-    /*
-    console.log('projects prop:', props.projects);
-    console.log('entities prop:', props.entities);
-    console.log('entities by projects count:', entitiesByProjectsCount.value);
-    console.log('entities by projects count stacks:', entitiesByProjectsCountStacks.value);
-    console.log('entity regions stacks:', entityRegionStacks.value);
-  */
-    console.log('risks :', props.risks);
-
-    // Add keyboard event listener for SVG export
-    // window.addEventListener('keydown', handleKeydown);
-  
-  });
-
-  onUnmounted(() => {
-    // Clean up keyboard event listener
-    // window.removeEventListener('keydown', handleKeydown);
-  });
 </script>
 
 <style scoped>

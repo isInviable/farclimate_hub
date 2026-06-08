@@ -51,11 +51,6 @@ const processedDataBase = computed(() => {
     address_country: e.address_country,
   }));
 
-  const projectEntities = computed(() => {
-    // We'll need to fetch this separately or compute from relationships
-    return [];
-  });
-
   return {
     projects,
     entities,
@@ -78,6 +73,8 @@ const yearRange = ref({
   min: 2010,
   max: 2025,
 });
+
+const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_TYPES.none);
 
 // Processed data with filters applied
 const processedData = computed(() => {
@@ -316,7 +313,7 @@ const dataForProjectsEvolutionByTopic = computed(() => {
   // For each theme, count projects per year
   return base.themes.map((theme: any) => {
     const yearsData = new Map<number, number>();
-    
+
     // Initialize all years with 0
     sortedYears.forEach((year) => {
       yearsData.set(year, 0);
@@ -338,7 +335,7 @@ const dataForProjectsEvolutionByTopic = computed(() => {
     sortedYears.forEach((year) => {
       yearsDataFiltered.set(year, 0);
     });
-    
+
     filtered.projects.forEach((p: any) => {
       if (p.year) {
         const themes = base.projectThemes.filter((pt: any) => pt.projectId === p.id);
@@ -354,7 +351,7 @@ const dataForProjectsEvolutionByTopic = computed(() => {
       label: theme.name,
       years: sortedYears.map((year) => ({
         year,
-        count: hasFilteredData ? yearsDataFiltered.get(year) || 0 : yearsData.get(year) || 0,
+        count: hasFilteredData.value ? yearsDataFiltered.get(year) || 0 : yearsData.get(year) || 0,
       })),
     };
   }).filter((topic) => {
@@ -385,25 +382,23 @@ function removeFilters() {
   activeFilter.value.content = "";
   activeFilter.value.label = "";
 }
-
-function updateYearRange(range: [number, number]) {
-  yearRange.value.min = range[0];
-  yearRange.value.max = range[1];
-  removeFilters();
-}
-
-const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_TYPES.none);
 </script>
 
 <template>
-  <div class="pb-8 pt-2">
-    <!-- Dashboard container -->
-    <div class="mx-auto w-full max-w-[1440px] my-8 mb-32">
-      <!-- Dashboard grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
-        <!-- Row 1: Map (2 cols) | Right Column (1 col) -->
-        <!-- Map + Bar Chart (2 columns) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2">
+  <div class="bg-neutral-lightest">
+    <CaPageHeader
+      n="01"
+      kicker="DASHBOARD"
+      title="Dashboard"
+      intro="A bird's-eye view of the network: how many projects and entities there are, which countries host the most participants, and which adaptation topics are most common."
+      help-title="Reading this page"
+      help="Everything here is cross-filtered. Selecting a country, topic or year narrows the figures across the whole dashboard — useful for asking 'who and what is concentrated where?'"
+    />
+
+    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
+      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_340px]">
+        <!-- main column -->
+        <div class="flex min-w-0 flex-col gap-6">
           <MapBarChart
             :data="dataForEntitiesByCountry"
             :has-filtered-data="hasFilteredData"
@@ -413,173 +408,109 @@ const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_
                 ? activeFilter.content
                 : ''
             "
-            @_click="(event) => processClickOnChart(FILTER_TYPES.country, event.datum)"
             title="Entities per Country"
+            @_click="(event) => processClickOnChart(FILTER_TYPES.country, event.datum)"
           />
-        </div>
 
-        <!-- Right Column: Active Filters + Projects BAN -->
-        <div class="flex flex-col gap-4">
-          <!-- Active Filters Widget -->
-          <div class="bg-white border-gray-50 border-2 p-4">
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="text-sm font-semibold text-gray-700">ACTIVE FILTERS</h3>
-              <UIcon name="i-heroicons-question-mark-circle" class="w-4 h-4 text-gray-400" />
-            </div>
-            
-            <!-- Show filter info when active -->
-            <div v-if="hasFilteredData" class="space-y-3">
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex-1">
-                  <p class="text-xs text-gray-500 mb-1">Filter:</p>
-                  <p class="text-sm font-semibold text-gray-900">{{ activeFilter.label }}</p>
-                </div>
-                <button
-                  @click="removeFilters()"
-                  class="cursor-pointer hover:opacity-70 transition-opacity flex-shrink-0"
-                  title="Remove filter"
-                >
-                  <svg
-                    viewBox="0 0 48 48"
-                    class="w-5 h-5 stroke-gray-600 hover:stroke-gray-900"
-                    fill="none"
-                    stroke-width="1.5"
-                  >
-                    <path
-                      d="M 24.249 3.011 C 8.002 3.011 -2.159 20.599 5.968 34.674 C 14.094 48.742 34.404 48.742 42.53 34.674 C 44.384 31.466 45.357 27.827 45.357 24.12 C 45.357 12.461 35.908 3.011 24.249 3.011 Z M 32.076 28.957 C 33.243 30.086 32.75 32.059 31.189 32.508 C 30.44 32.72 29.629 32.508 29.086 31.946 L 24.249 27.103 L 19.405 31.946 C 18.238 33.07 16.285 32.514 15.891 30.935 C 15.717 30.23 15.916 29.481 16.422 28.957 L 21.265 24.12 L 16.422 19.276 C 15.292 18.109 15.854 16.156 17.433 15.762 C 18.138 15.588 18.887 15.787 19.405 16.293 L 24.249 21.136 L 29.086 16.293 C 30.259 15.163 32.207 15.725 32.6 17.304 C 32.781 18.009 32.581 18.758 32.076 19.276 L 27.232 24.12 L 32.076 28.957 Z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <div class="pt-2 border-t border-gray-200">
-                <p class="text-xs text-gray-500 mb-1">Year Range:</p>
-                <p class="text-xs text-gray-700">
-                  <span>{{ yearRange.min }}</span> →
-                  <span>{{ yearRange.max }}</span>
-                </p>
-              </div>
-            </div>
-            
-            <!-- Show instruction when no filter -->
-            <p v-else class="text-xs text-gray-600">
-              Click on a country, topic or year to enable a filter.
-            </p>
-          </div>
-
-          <!-- Projects BAN -->
-          <BAN title="Projects" :value="totalProjects" :items="processedData.projects" />
-        </div>
-
-        <!-- Row 2: Projects by Topic (2 cols) | Institutions + Products BANs (1 col) -->
-        <!-- Projects by Topic (2 columns) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white border-gray-50 border-2">
           <HorizontalBarChart
             :global-data="dataForProjectsByTheme"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
-            :colors="{ default: '#00B4E1', active: '#F9B401', gray: '#E6E6E6' }"
-            :colors-scale="[
-              '#dbebff',
-              '#c2dffc',
-              '#a8d3f8',
-              '#8ec6f5',
-              '#74baf1',
-              '#59aded',
-              '#3d9fe9',
-              '#1f91e5',
-              '#0082e1',
-            ]"
-            @set-filter="(event) => processClickOnChart(FILTER_TYPES.topic, event)"
             title="Projects by Topic"
+            @set-filter="(event) => processClickOnChart(FILTER_TYPES.topic, event)"
           />
-        </div>
 
-        <!-- Institutions + Products BANs in right column (Row 2) -->
-        <div class="flex flex-col gap-4">
-          <BAN title="Institutions" :value="totalEntities" :items="processedData.entities" />
-          <BAN title="Products" :value="totalProducts" :items="processedData.products" />
-        </div>
-
-        <!-- Row 3: Projects by Risk (2 cols) | Empty (1 col) -->
-        <!-- Projects by Risk (2 columns) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2 bg-white border-gray-50 border-2">
           <HorizontalBarChart
             :global-data="dataForProjectsByRisk"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
-            :colors="{ default: '#FF5C5F', active: '#F9B401', gray: '#E6E6E6' }"
-            :colors-scale="[
-              '#dbebff',
-              '#c2dffc',
-              '#a8d3f8',
-              '#8ec6f5',
-              '#74baf1',
-              '#59aded',
-              '#3d9fe9',
-              '#1f91e5',
-              '#0082e1',
-            ]"
-            @set-filter="(event) => processClickOnChart(FILTER_TYPES.risk, event)"
             title="Projects by Risk"
+            @set-filter="(event) => processClickOnChart(FILTER_TYPES.risk, event)"
           />
-        </div>
 
-        <!-- Empty space in right column for alignment -->
-        <div></div>
-
-
-
-
-
-        <!-- Row 5: Projects Evolution by Topic (2 cols) | Empty (1 col) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2">
           <ProjectsEvolutionByTopic
             :data="dataForProjectsEvolutionByTopic"
             :has-filtered-data="hasFilteredData"
           />
-        </div>
-        <div class="flex flex-col gap-4">
-                  <!-- Projects per Year (1 column) -->
-        <div class="bg-white border-gray-50 border-2">
-          <AreaChart
-            :global-data="dataForProjectsByYear"
-            :has-filtered-data="hasFilteredData"
-            :active-filter="activeFilter"
-            :colors="{ default: '#cece89', active: '#F9B401', gray: '#E6E6E6' }"
-            @set-filter="(event) => processClickOnChart(FILTER_TYPES.year, event)"
-            title="Projects per Year"
-          />
+
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <AreaChart
+              :global-data="dataForProjectsByYear"
+              :has-filtered-data="hasFilteredData"
+              :active-filter="activeFilter"
+              title="Projects per Year"
+              @set-filter="(event) => processClickOnChart(FILTER_TYPES.year, event)"
+            />
+            <AreaChart
+              :global-data="dataForInvestmentByYear"
+              :has-filtered-data="hasFilteredData"
+              :active-filter="activeFilter"
+              :formatter="(d: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(d)"
+              title="Investment per Year"
+              @set-filter="(event) => processClickOnChart(FILTER_TYPES.year, event)"
+            />
+          </div>
         </div>
 
-        <!-- Investment per Year (1 column) -->
-        <div class="bg-white border-gray-50 border-2">
-          <AreaChart
-            :global-data="dataForInvestmentByYear"
-            :has-filtered-data="hasFilteredData"
-            :active-filter="activeFilter"
-            :formatter="(d: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(d)"
-            :colors="{ default: '#cece89', active: '#F9B401', gray: '#E6E6E6' }"
-            @set-filter="(event) => processClickOnChart(FILTER_TYPES.year, event)"
-            title="Investment per Year"
+        <!-- sidebar -->
+        <div class="flex flex-col gap-6 lg:sticky lg:top-[70px]">
+          <CaCard title="Active filters">
+            <template #help>
+              <CaHelp title="Filtering">
+                Click any country (on the map or bars), topic or year to scope the dashboard.
+                Selections appear here; clear them to reset.
+              </CaHelp>
+            </template>
+            <template #right>
+              <button
+                v-if="hasFilteredData"
+                type="button"
+                class="cursor-pointer font-mono text-2xs font-bold tracking-[0.1em] text-community-pink-dark"
+                @click="removeFilters()"
+              >
+                CLEAR
+              </button>
+            </template>
+
+            <div v-if="hasFilteredData" class="flex flex-col gap-3">
+              <span
+                class="inline-flex w-fit items-center gap-2 border border-neutral-darkest bg-warm-neutral-100 px-2.5 py-1.5"
+              >
+                <span class="h-2 w-2 bg-trust-blue-darkest" />
+                <span class="font-mono text-[9px] font-bold tracking-[0.1em] text-neutral-dark">FILTER</span>
+                <span class="font-mono text-[11px] font-semibold">{{ activeFilter.label }}</span>
+                <span class="cursor-pointer text-neutral-dark" @click="removeFilters()">✕</span>
+              </span>
+              <div class="border-t border-neutral-lighter pt-2">
+                <span class="block font-mono text-2xs text-neutral-dark">YEAR RANGE</span>
+                <span class="font-mono text-xs text-neutral-darkest">{{ yearRange.min }} → {{ yearRange.max }}</span>
+              </div>
+            </div>
+            <p v-else class="font-sans text-[13px] text-neutral-dark">
+              Click on a country, topic or year to enable a filter.
+            </p>
+          </CaCard>
+
+          <BAN
+            title="Projects"
+            :value="totalProjects"
+            :items="processedData.projects"
+            accent="#ff0777"
+          />
+          <BAN
+            title="Institutions"
+            :value="totalEntities"
+            :items="processedData.entities"
+            accent="#1e63a2"
+          />
+          <BAN
+            title="Products"
+            :value="totalProducts"
+            :items="processedData.products"
+            accent="#9e9e14"
           />
         </div>
-        
-        </div>
-        
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(100px);
-}
-</style>

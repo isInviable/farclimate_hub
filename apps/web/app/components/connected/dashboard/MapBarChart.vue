@@ -12,23 +12,22 @@ const props = defineProps({
   colorsScale: {
     type: Array,
     default: () => [
-      "#dbebff",
-      "#c2dffc",
-      "#a8d3f8",
-      "#8ec6f5",
-      "#74baf1",
-      "#59aded",
-      "#3d9fe9",
-      "#1f91e5",
-      "#0082e1",
+      "#e8eff6",
+      "#d2e0ec",
+      "#bbd0e3",
+      "#9cc0db",
+      "#78a1c7",
+      "#4b82b5",
+      "#1e63a2",
+      "#13497c",
     ],
   },
   colors: {
     type: Object,
     default: () => ({
-      default: "#0082e1",
-      active: "#F9B401",
-      gray: "#E6E6E6",
+      default: "#1e63a2",
+      active: "#100007",
+      gray: "#ede7df",
     }),
   },
   formatter: {
@@ -267,7 +266,7 @@ function onNonEuropeanClick(country) {
 </script>
 
 <template>
-  <div ref="svgContainer" class="w-full relative bg-white border-gray-50 border-2">
+  <div ref="svgContainer" class="w-full relative bg-neutral-lightest border border-neutral-darkest">
     <svg
       ref="svg"
       class=""
@@ -422,7 +421,7 @@ function onNonEuropeanClick(country) {
             v-show="vBarX > 0"
             :y1="titleHeight * -1"
             :y2="700"
-            stroke="#F9B401"
+            stroke="#100007"
             stroke-width="3"
             :x1="vBarX"
             :x2="vBarX"
@@ -435,8 +434,11 @@ function onNonEuropeanClick(country) {
 
 <style scoped>
 .chart_h1 {
-  font-size: 2.75em;
-  font-weight: 300;
-  fill: #000;
+  font-size: 1.7em;
+  font-weight: 700;
+  fill: #100007;
+  font-family: "Martian Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 </style>

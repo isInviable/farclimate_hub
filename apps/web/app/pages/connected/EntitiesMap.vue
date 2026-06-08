@@ -1,194 +1,197 @@
 
 <template>
 
-  <div class="relative flex-1 min-h-0 flex flex-col">
-    <!-- Left panels: positioned relative to this page (below headers) -->
-    <article class="absolute top-2 left-2 w-sm flex flex-col gap-2 z-10">
+  <div class="bg-neutral-lightest">
+    <CaPageHeader
+      n="02"
+      kicker="ENTITIES MAP"
+      title="Entities Map"
+      intro="Where the network lives. Every participating organisation is placed on the map of Europe; filter by climate risk or theme to see which regions are involved, and hover a NUTS3 region for its breakdown."
+      help-title="Reading the map"
+      help="Dot size reflects the total project funding tied to each entity; colour deepens with the number of projects it joins. Selecting risks or themes dims everything outside the matching projects."
+    />
 
-        <!-- panel risks -->
-      <SidePanel
-        :title="'Risks'"
-        :tot="riskOptions ? riskOptions.length : 0"
-        :count_active="activeRisks.size"
-        :count_selected="selectedRisks.length"
-      >
-       
-        <template #content>
-        <ul>
-            <li 
-                v-for="risk in riskOptions" 
-                :key="risk.id"
-                class="border-b border-gray-200 py-1 cursor-pointer transition-colors duration-200"
-                :class="[
-                    !activeRisks.has(risk.name) ? 'disabled opacity-50 text-gray-400' : 'hover:bg-gray-100',
-                    selectedRisks.includes(risk.name) ? 'bg-orange-100 text-orange-800' : ''
-                ]"
-                @click="toggleRisk(risk.name)"
-            >
-                {{ risk.name }}
-            </li>
-        </ul>
-        </template>
-
-      </SidePanel>
-
-        <!-- panel themes -->
-        <SidePanel
-        :title="'Themes'"
-        :tot="themeOptions ? themeOptions.length : 0"
-        :count_active="activeThemes.size"
-        :count_selected="selectedThemes.length"
-      >
-       
-        <template #content>
-        <ul>
-            <li 
-                v-for="theme in themeOptions" 
-                :key="theme.id"
-                class="border-b border-gray-200 py-1 cursor-pointer transition-colors duration-200"
-                :class="[
-                    !activeThemes.has(theme.name) ? 'disabled opacity-50 text-gray-400' : 'hover:bg-gray-100',
-                    selectedThemes.includes(theme.name) ? 'bg-orange-100 text-orange-800' : ''
-                ]"
-                @click="toggleTheme(theme.name)"
-            >
-                {{ theme.name }}
-            </li>
-        </ul>
-        </template>
-
-        </SidePanel>
-
-         <!-- panel projects -->
-        <SidePanel
-            :title="'Projects'"
-            :tot="projectsWithSimpleEntities.length"
-            :count_active="activeProjects.size"
-      >
-       
-        <template #content>
-            <ul>
-            <li 
-                v-for="project in filteredActiveProjects" 
-                :key="project.id"
-                class="border-b border-gray-200 py-1"
-            >
-                {{ project.acronym || project.title || project.id }}
-                <!--
-                <p class="text-xs text-gray-500">Entities: {{ project.entitiesCount }}</    p>
-                    -->
-            </li>
-            </ul>
-        </template>
-
-        </SidePanel>
-
-        <!-- panel entities -->
-        <SidePanel
-            :title="'Entities'"
-            :tot="entitiesWithProjectsTotalCost.length"
-            :count_active="activeEntities.size"
-      >
-         
-          <template #content>
-                <ul>
-                <li 
-                 v-for="entity in entitiesWithProjectsTotalCost" 
-                 :key="entity.id"
-                 class="border-b border-gray-200 py-1"
-                >
-                 {{ entity.short_name || entity.legal_name || entity.id }}
-                 <p class="text-xs text-gray-500">Projects: {{ entity.projectsCount }} | Total Cost: {{ entity.projectsTotalCost }}</p>
-                </li>
-                </ul>
-          </template>
-        </SidePanel>
-     
-
-    </article>
-
-    <!-- NUTS panel: positioned relative to this page (below headers) -->
-    <article class="absolute top-2 right-2 w-sm text-xs z-10">
-
-        <SidePanel
-            :title="'regions NUTS3'"
-            :tot="regions.size"
-            :count_active="activeRegions.size"
-            :count_selected="selectedNutsIds.length"
-        > 
-        <template #content>
-           <ul>
-            <li 
-                v-for="(name, id) in regions" 
-                :key="id"
-                class="border-b border-gray-200 py-1"
-            >
-                {{ name }} ({{ id }})
-            </li>
-           </ul>
-        </template>
-
-        </SidePanel>
-
-        <article class="bg-white rounded shadow-lg mt-2 p-2">
-<div class="flex justify-between gap-2">
-             <p>{{ overedNutsId ? getNutsNameById(overedNutsId) : 'Hover over a NUTS area' }}</p>
-
-            <p class="text-right"><strong>{{ overedEntities.length }}</strong> entities</p>
+    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
+      <div class="relative h-[72vh] min-h-[560px] overflow-hidden border border-neutral-darkest">
+        <!-- map (behind the floating panels) -->
+        <div class="absolute inset-0">
+          <EntitiesMap
+            :entities="entitiesWithProjectsTotalCost || []"
+            :overedNutsId="overedNutsId"
+            :active-nuts-id="activeNutsId"
+            :nuts_shapes="nuts_shapes"
+            :selectedNutsIds="selectedNutsIds"
+            :active-regions="activeRegions"
+            :active-entities="activeEntities"
+            @updateNutsId="(nutsId) => { overedNutsId = nutsId }"
+            @updateActiveNutsId="(nutsId) => { 
+                if (nutsId) {
+                    const index = selectedNutsIds.indexOf(nutsId);
+                    if (index > -1) {
+                        selectedNutsIds.splice(index, 1);
+                    } else {
+                        selectedNutsIds.push(nutsId);
+                    }
+                }
+            }"
+          />
         </div>
 
-        <div class=" min-h-12 pt-6 border-t border-gray-300 mt-2">
-           
+        <!-- Left panels: filters -->
+        <article class="absolute left-3 top-3 z-10 flex max-h-[calc(100%-24px)] w-[300px] flex-col gap-2 overflow-y-auto">
 
-            <div class="mt-2">
+            <!-- panel risks -->
+          <SidePanel
+            :title="'Risks'"
+            :tot="riskOptions ? riskOptions.length : 0"
+            :count_active="activeRisks.size"
+            :count_selected="selectedRisks.length"
+          >
+           
+            <template #content>
+            <ul>
+                <li 
+                    v-for="risk in riskOptions" 
+                    :key="risk.id"
+                    class="cursor-pointer border-b border-neutral-lighter py-1 transition-colors duration-200"
+                    :class="[
+                        !activeRisks.has(risk.name) ? 'opacity-40 text-neutral-dark' : 'hover:bg-warm-neutral-100',
+                        selectedRisks.includes(risk.name) ? 'bg-trust-blue-lightest font-semibold text-trust-blue-darkest' : ''
+                    ]"
+                    @click="toggleRisk(risk.name)"
+                >
+                    {{ risk.name }}
+                </li>
+            </ul>
+            </template>
+
+          </SidePanel>
+
+            <!-- panel themes -->
+            <SidePanel
+            :title="'Themes'"
+            :tot="themeOptions ? themeOptions.length : 0"
+            :count_active="activeThemes.size"
+            :count_selected="selectedThemes.length"
+          >
+           
+            <template #content>
+            <ul>
+                <li 
+                    v-for="theme in themeOptions" 
+                    :key="theme.id"
+                    class="cursor-pointer border-b border-neutral-lighter py-1 transition-colors duration-200"
+                    :class="[
+                        !activeThemes.has(theme.name) ? 'opacity-40 text-neutral-dark' : 'hover:bg-warm-neutral-100',
+                        selectedThemes.includes(theme.name) ? 'bg-trust-blue-lightest font-semibold text-trust-blue-darkest' : ''
+                    ]"
+                    @click="toggleTheme(theme.name)"
+                >
+                    {{ theme.name }}
+                </li>
+            </ul>
+            </template>
+
+            </SidePanel>
+
+             <!-- panel projects -->
+            <SidePanel
+                :title="'Projects'"
+                :tot="projectsWithSimpleEntities.length"
+                :count_active="activeProjects.size"
+          >
+           
+            <template #content>
                 <ul>
-                  <li v-for="nut in selectedNutsIds" :key="nut">
+                <li 
+                    v-for="project in filteredActiveProjects" 
+                    :key="project.id"
+                    class="border-b border-neutral-lighter py-1"
+                >
+                    {{ project.acronym || project.title || project.id }}
+                </li>
+                </ul>
+            </template>
+
+            </SidePanel>
+
+            <!-- panel entities -->
+            <SidePanel
+                :title="'Entities'"
+                :tot="entitiesWithProjectsTotalCost.length"
+                :count_active="activeEntities.size"
+          >
+             
+              <template #content>
+                    <ul>
+                    <li 
+                     v-for="entity in entitiesWithProjectsTotalCost" 
+                     :key="entity.id"
+                     class="border-b border-neutral-lighter py-1"
+                    >
+                     {{ entity.short_name || entity.legal_name || entity.id }}
+                     <p class="text-2xs text-neutral-dark">Projects: {{ entity.projectsCount }} | Total Cost: {{ entity.projectsTotalCost }}</p>
+                    </li>
+                    </ul>
+              </template>
+            </SidePanel>
+         
+
+        </article>
+
+        <!-- NUTS panel: region read-out -->
+        <article class="absolute right-3 top-3 z-10 w-[300px] text-xs">
+
+            <SidePanel
+                :title="'regions NUTS3'"
+                :tot="regions.size"
+                :count_active="activeRegions.size"
+                :count_selected="selectedNutsIds.length"
+            > 
+            <template #content>
+               <ul class="max-h-[200px] overflow-y-auto">
+                <li 
+                    v-for="(name, id) in regions" 
+                    :key="id"
+                    class="border-b border-neutral-lighter py-1"
+                >
+                    {{ name }} ({{ id }})
+                </li>
+               </ul>
+            </template>
+
+            </SidePanel>
+
+            <div class="mt-2 border border-neutral-darkest bg-neutral-lightest p-3">
+              <div class="flex justify-between gap-2">
+                <p class="font-mono text-[11px] text-neutral-darkest">{{ overedNutsId ? getNutsNameById(overedNutsId) : 'Hover over a NUTS area' }}</p>
+                <p class="text-right font-mono text-[11px]"><strong class="text-trust-blue-darkest">{{ overedEntities.length }}</strong> entities</p>
+              </div>
+
+              <div class="mt-2 min-h-12 border-t border-neutral-lighter pt-3">
+                <ul>
+                  <li v-for="nut in selectedNutsIds" :key="nut" class="font-mono text-[11px] text-neutral-dark">
                     {{ getNutsNameById(nut) }} ({{ nut }})
                   </li>
                 </ul>
+              </div>
             </div>
-        </div>
+
         </article>
-    
-        
-     
 
-    </article>
-
-    <div class="flex-1 min-h-0 relative">
-      <EntitiesMap
-        :entities="entitiesWithProjectsTotalCost || []"
-        :overedNutsId="overedNutsId"
-        :active-nuts-id="activeNutsId"
-        :nuts_shapes="nuts_shapes"
-        :selectedNutsIds="selectedNutsIds"
-        :active-regions="activeRegions"
-        :active-entities="activeEntities"
-        @updateNutsId="(nutsId) => { overedNutsId = nutsId }"
-        @updateActiveNutsId="(nutsId) => { 
-            if (nutsId) {
-                const index = selectedNutsIds.indexOf(nutsId);
-                if (index > -1) {
-                    selectedNutsIds.splice(index, 1);
-                } else {
-                    selectedNutsIds.push(nutsId);
-                }
-            }
-        }"
-      />
+        <!-- Info button -->
+        <UButton
+          icon="i-heroicons-information-circle"
+          color="primary"
+          size="lg"
+          square
+          class="absolute bottom-4 right-4 z-50 shadow-lg"
+          @click="showNoGeolocationModal = true"
+        >
+          <span class="sr-only">Entities without geolocation</span>
+        </UButton>
+      </div>
     </div>
-
-    <!-- Info button: relative to this page (below headers) -->
-    <UButton
-      icon="i-heroicons-information-circle"
-      color="primary"
-      size="lg"
-      square
-      class="absolute bottom-4 right-4 z-50 shadow-lg"
-      @click="showNoGeolocationModal = true"
-    >
-      <span class="sr-only">Entities without geolocation</span>
-    </UButton>
 
     <!-- Modal for entities without geolocation or projects -->
     <UModal
@@ -833,32 +836,5 @@ import nuts_shapes from "~/assets/geo/NUTS_RG_60M_2024_4326_LEVL_3.json";
             activeProjects.value.has(project.id)
         );
     });
-
-
-
-onMounted(() => {
-  /*
-  console.log('Activity Types:', activityTypes.value);
-  console.log('Project Entities:', projectEntitiesRows.value);
- 
-  console.log('Max Projects Count:', maxProjectsCount.value);
- 
-  console.log('Entity Types:', entityTypes.value);
-  */
-  console.log('Projects with Simple Entities:', projectsWithSimpleEntities.value);
- // console.log('Entities with Projects Total Cost:', entitiesWithProjectsTotalCost.value);
- console.log('Regions Map:', regions.value);
-
- // output indexes
- console.log('Projects by Risk:', projectsByRisk.value);
- console.log('Projects by Theme:', projectsByTheme.value);
- console.log('Projects by Entity:', projectsByEntity.value);
- console.log('Entities by Region:', entitiesByRegion.value);
- console.log('Entities by Project:', entitiesByProject.value);
- console.log('Risks by Project:', risksByProject.value);
- console.log('Themes by Project:', themesByProject.value);  
-  
-
-});
 
 </script>

@@ -132,7 +132,7 @@ const router = useRouter();
 const navLinks = [
   { to: "/stories", label: "header.stories" },
   { to: "/skills", label: "header.skills" },
-  { to: "/connected/dashboard", label: "header.connectedAction" },
+  { to: "/connected", label: "header.connectedAction" },
   { to: "/about", label: "header.about" },
 ];
 

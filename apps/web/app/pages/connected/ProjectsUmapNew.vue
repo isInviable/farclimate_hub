@@ -1,11 +1,58 @@
 <template>
-  <div>
-    <UmapProjectsNew
-      :projects="projectItems"
-      :years="yearsRange"
-      :riskCircles="riskItems"
-      :themeCircles="themeItems"
+  <div class="bg-neutral-lightest">
+    <CaPageHeader
+      n="04"
+      kicker="PROJECTS UMAP"
+      title="Projects UMAP"
+      intro="Projects placed in 2-D semantic space from the climate risks and themes they address. Projects that sit close together work on similar problems; dashed rings group the projects sharing a climate risk."
+      help-title="Reading the plot"
+      help="Position comes from a UMAP projection of each project's risk/theme profile — axes have no units. Bubble size reflects funding relative to duration; the stacked shadow scales with the number of participating entities."
     />
+
+    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
+      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[1fr_300px]">
+        <!-- plot -->
+        <div class="relative h-[78vh] min-h-[600px] overflow-hidden border border-neutral-darkest bg-neutral-lightest">
+          <div class="absolute inset-0">
+            <UmapProjectsNew
+              :projects="projectItems"
+              :years="yearsRange"
+              :riskCircles="riskItems"
+              :themeCircles="themeItems"
+            />
+          </div>
+
+          <!-- bubble-size legend -->
+          <div class="absolute bottom-3 left-3 z-10 border border-neutral-darkest bg-neutral-lightest p-3">
+            <span class="mb-2 block font-mono text-2xs font-bold tracking-[0.16em] text-neutral-dark">BUBBLE SIZE = FUNDING</span>
+            <div class="flex items-end gap-3">
+              <span v-for="b in [6, 11, 16]" :key="b" class="flex flex-col items-center gap-1">
+                <span class="block rounded-full border-2 border-neutral-darkest bg-neutral-lightest" :style="{ width: `${b * 2}px`, height: `${b * 2}px` }" />
+              </span>
+              <span class="font-mono text-2xs text-neutral-dark">low → high</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- sidebar -->
+        <div class="flex flex-col gap-6 lg:sticky lg:top-[70px]">
+          <CaCard title="Climate-risk clusters">
+            <template #help>
+              <CaHelp title="Clusters" align="right">
+                Each dashed ring on the plot encloses the projects tackling one climate risk.
+                Hover a ring to highlight its projects.
+              </CaHelp>
+            </template>
+            <ul class="flex flex-col gap-2">
+              <li v-for="risk in riskItems" :key="risk.value" class="flex items-center gap-2.5">
+                <span class="h-3 w-3 shrink-0 rounded-full border-2 border-dashed border-neutral-dark" />
+                <span class="font-mono text-[11px] text-neutral-darkest">{{ risk.label }}</span>
+              </li>
+            </ul>
+          </CaCard>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -287,16 +334,6 @@ import * as d3 from "d3";
       }
     }
     return years;
-  });
-
-  // today
-  const today = new Date();
-
-  onMounted(() => {
-    // print entities
-    console.log('Entities:', entityRows.value);
-    console.log('Project-Entity Relationships:', projectEntitiesRows.value);
-   
   });
 
 </script>

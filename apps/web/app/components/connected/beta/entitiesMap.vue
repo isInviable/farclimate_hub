@@ -1,12 +1,12 @@
 <template>
-  <div ref="el" class="w-screen h-screen bg-gray-200">
+  <div ref="el" class="h-full w-full bg-warm-neutral-100">
     <svg :width="width" :height="height" :viewBox="viewBox">
       <!-- graticule -->
        <g>
         <path
           :d="pathGenerator(graticule) || ''"
           fill="none"
-          class="stroke-gray-300"
+          class="stroke-[#d8d0c6]"
           stroke-width="0.5"
           stroke-dasharray="2 2"
         />
@@ -19,7 +19,7 @@
           :key="feature.id"
           :id="feature.id"
           :d="pathGenerator(feature as any) || ''"
-          class="fill-gray-300"
+          class="fill-[#e7e1d8]"
           stroke="none"
           :opacity="hidenFeatures.includes(feature.id) ? 0 : 1"
         />
@@ -32,12 +32,12 @@
             :key="feature.properties.NUTS_ID"
             :d="pathGenerator(feature as any) || ''"
          
-            class="stroke-gray-300  transition-colors duration-100 "
+            class="stroke-[#cfc7bd]  transition-colors duration-100 "
             :class="props.selectedNutsIds?.includes(feature.properties.NUTS_ID) 
-                      ? 'fill-orange-500 cursor-pointer' 
+                      ? 'fill-trust-blue-darkest cursor-pointer' 
                       : props.activeRegions?.has(feature.properties.NUTS_ID) 
-                        ? 'fill-white cursor-pointer hover:fill-orange-300' 
-                        : 'fill-gray-50'"
+                        ? 'fill-neutral-lightest cursor-pointer hover:fill-trust-blue-light' 
+                        : 'fill-[#f2ece4]'"
             stroke-width="0.5"
             stroke-opacity="0.5"
             
@@ -194,7 +194,7 @@
   const linearColorScale = computed(() => {
     return d3.scaleLinear<string>()
       .domain([0, maxProjectsCount.value || 1])
-      .range(["DarkGreen", "Chartreuse"]); // "DarkGreen", "Chartreuse"
+      .range(["#9cc0db", "#13497c"]); // trust-blue light → deep
   });
 
   // process props.entities to log their geolocations
@@ -230,14 +230,6 @@
     
     return [...resolveCircleCollisions(validEntities), ...invalidEntities];
   }); 
-
-  onMounted(() => {
-    console.log('GeoJSON Data:', props.nuts_shapes);
-    console.log('Entities Prop:', props.entities);
-    console.log('Entities with Geolocation:', entitiesWithGeolocation.value);
-  });
-
-
 
 </script>
 

@@ -178,10 +178,10 @@ const hoveredSvgIndex = ref<number | null>(null);
 </script>
 
 <template>
-  <div ref="containerRef" class="w-full bg-white border-gray-50 border-2">
+  <div ref="containerRef" class="w-full bg-neutral-lightest border border-neutral-darkest">
     <div class="p-6">
-      <h2 class="text-2xl font-bold text-black mb-6">
-        PROJECTS EVOLUTION <span class="text-gray-500 font-normal">BY</span> TOPIC
+      <h2 class="mb-6 font-mono text-xs font-bold uppercase tracking-[0.06em] text-neutral-darkest">
+        PROJECTS EVOLUTION <span class="text-neutral-dark font-normal">BY</span> TOPIC
       </h2>
       
       <div class="relative" :style="{ maxHeight: `${maxHeight}px`, overflow: 'hidden' }">
@@ -222,7 +222,7 @@ const hoveredSvgIndex = ref<number | null>(null);
                   v-if="topic.path"
                   :d="topic.path"
                   fill="none"
-                  stroke="#60a5fa"
+                  stroke="#1e63a2"
                   stroke-width="2"
                   class="transition-all"
                 />
@@ -234,7 +234,7 @@ const hoveredSvgIndex = ref<number | null>(null);
                   :cx="point.x"
                   :cy="point.y"
                   :r="hoveredSvgIndex === index ? 4 : 0"
-                  :fill="hoveredSvgIndex === index ? '#60a5fa' : 'transparent'"
+                  :fill="hoveredSvgIndex === index ? '#1e63a2' : 'transparent'"
                   :stroke="hoveredSvgIndex === index ? 'white' : 'transparent'"
                   :stroke-width="hoveredSvgIndex === index ? 2 : 0"
                   class="cursor-pointer transition-all pointer-events-none"
@@ -261,9 +261,9 @@ const hoveredSvgIndex = ref<number | null>(null);
                     :cx="point.x"
                     :cy="point.y"
                     r="6"
-                    fill="#60a5fa"
+                    fill="#1e63a2"
                     fill-opacity="0.3"
-                    stroke="#60a5fa"
+                    stroke="#1e63a2"
                     stroke-width="2"
                     class="pointer-events-none"
                   />
@@ -344,7 +344,7 @@ const hoveredSvgIndex = ref<number | null>(null);
       <!-- Tooltip -->
       <div
         v-if="tooltip?.visible"
-        class="fixed z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 pointer-events-none"
+        class="fixed z-50 border border-neutral-darkest bg-neutral-darkest px-2 py-1 text-xs text-neutral-lightest pointer-events-none"
         :style="{
           left: `${tooltip.x}px`,
           top: `${tooltip.y + 30}px`,

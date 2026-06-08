@@ -1,17 +1,47 @@
 <template>
 
-  <div>
-    <Connected
-      :projects="projectsWithEntities || []"
-      :risks="Array.from(riskCountMap.entries()).map(([risk, count]) => ({ risk, count }))"
-      :entities="entitiesWithProjectsTotalCost || []"
+  <div class="bg-neutral-lightest">
+    <CaPageHeader
+      n="03"
+      kicker="PROJECT–ENTITY CONNECTIONS"
+      title="Project–Entity Connections"
+      intro="How the work links up. Each project (top) connects to the climate risks it tackles and to the entities and countries that took part. Hover a project, risk or country to trace its relationships."
+      help-title="Reading the diagram"
+      help="Projects run along the top, ordered by start year; risks sit in the middle band; entities are clustered at the bottom by country and by how many projects they join. Bubble size reflects total funding."
     />
+
+    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
+      <div class="relative h-[78vh] min-h-[600px] overflow-hidden border border-neutral-darkest bg-neutral-lightest">
+        <div class="absolute inset-0">
+          <Connected
+            :projects="projectsWithEntities || []"
+            :risks="Array.from(riskCountMap.entries()).map(([risk, count]) => ({ risk, count }))"
+            :entities="entitiesWithProjectsTotalCost || []"
+          />
+        </div>
+
+        <!-- entity-type legend -->
+        <div
+          v-if="entityTypeLegend.length"
+          class="absolute bottom-3 left-3 z-10 border border-neutral-darkest bg-neutral-lightest p-3"
+        >
+          <span class="mb-2 block font-mono text-2xs font-bold tracking-[0.16em] text-neutral-dark">ENTITY TYPE</span>
+          <ul class="flex flex-col gap-1.5">
+            <li v-for="item in entityTypeLegend" :key="item.type" class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 shrink-0" :style="{ backgroundColor: item.color }" />
+              <span class="font-mono text-[11px] text-neutral-darkest">{{ item.type }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 definePageMeta({ layout: 'connected' });
 import type { EntityRow, ProjectRow, AuxClimateRisk } from "~/types/cordis";
+import { caOrdinalColor } from "~/utils/connectedColors";
 
   const supabase = useSupabaseClient();
 
@@ -255,33 +285,17 @@ import type { EntityRow, ProjectRow, AuxClimateRisk } from "~/types/cordis";
     return Array.from(projectMap.values());
   });
 
-  // a computed function to get unique themes from projects themes array
-  const uniqueProjectThemes = computed(() => {
-    const themesSet = new Set<string>();
-    (projectOptions.value ?? []).forEach((project) => {
-      (project.themes ?? []).forEach((theme: string) => {
-        themesSet.add(theme);
-      });
+  // Entity-type legend — order/colour must mirror the ordinal scale used inside
+  // <Connected> (domain sorted by descending count, range = brand palette).
+  const entityTypeLegend = computed(() => {
+    const counts = new Map<string, number>();
+    (entityRows.value ?? []).forEach((e: any) => {
+      const t = e.organization_activity_type_name;
+      if (t) counts.set(t, (counts.get(t) || 0) + 1);
     });
-    return Array.from(themesSet);
-  });
-
-  // a computed function to get unique themes AND count from projects themes array
-  const uniqueProjectThemesWithCount = computed(() => {
-    const themesMap = new Map<string, number>();
-    (projectOptions.value ?? []).forEach((project) => {
-      (project.themes ?? []).forEach((theme: string) => {
-        themesMap.set(theme, (themesMap.get(theme) || 0) + 1);
-      });
-    });
-    return themesMap;
-  });
-
-  onMounted(() => {
-   console.log('unique project themes:', uniqueProjectThemes.value);
-   console.log('unique project themes with count:', uniqueProjectThemesWithCount.value);
-
-   
+    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([type]) => type);
+    const color = caOrdinalColor(sorted);
+    return sorted.map((type) => ({ type, color: color(type) }));
   });
 
 </script>
