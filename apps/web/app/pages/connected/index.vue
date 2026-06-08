@@ -1,15 +1,15 @@
 <template>
   <div class="bg-neutral-lightest">
     <!-- hero -->
-    <div class="border-b border-neutral-darkest bg-warm-neutral-100">
-      <div class="mx-auto max-w-[1320px] px-7 pb-11 pt-14">
-        <span class="font-mono text-[11px] font-bold tracking-[0.2em] text-trust-blue-darkest">
+    <div class="border-b border-neutral-darkest bg-neutral-400">
+      <div class="mx-auto max-w-7xl px-7 pb-11 pt-14">
+        <span class="font-mono text-sm font-bold tracking-[0.2em] text-trust-blue-darkest">
           CONNECTED ACTION
         </span>
-        <h1 class="mt-4 max-w-[900px] font-display text-6xl font-bold leading-[1.04] tracking-tight">
+        <h1 class="mt-4 max-w-4xl font-display text-6xl font-bold leading-[1.04] tracking-tight">
           Explore the European climate-adaptation network
         </h1>
-        <p class="mt-4 max-w-[680px] font-sans text-lg leading-relaxed text-neutral-darker">
+        <p class="mt-4 max-w-2xl font-sans text-lg leading-relaxed text-neutral-darker">
           A data section for browsing European-funded climate-adaptation projects and the
           organisations behind them. Four lenses — each answers a different question about how
           the work connects across topics, places and partners.
@@ -33,9 +33,9 @@
     </div>
 
     <!-- cards -->
-    <div class="mx-auto max-w-[1320px] px-7 pb-20 pt-10">
+    <div class="mx-auto max-w-7xl px-7 pb-20 pt-10">
       <div class="mb-4 flex items-baseline gap-3">
-        <span class="font-mono text-[11px] font-bold tracking-[0.2em] text-neutral-dark">
+        <span class="font-mono text-sm font-bold tracking-[0.2em] text-neutral-dark">
           FOUR WAYS TO EXPLORE
         </span>
         <span class="h-px flex-1 bg-neutral-darkest opacity-25" />
@@ -45,11 +45,11 @@
         </CaHelp>
       </div>
 
-      <div class="grid grid-cols-1 border-l border-t border-neutral-darkest md:grid-cols-2">
+      <div class="grid grid-cols-1 border-l border-t border-neutral-darkest border-r md:grid-cols-2">
         <div
           v-for="card in cards"
           :key="card.id"
-          class="border-b border-r border-neutral-darkest"
+          
         >
           <CaExploreCard
             :id="card.id"

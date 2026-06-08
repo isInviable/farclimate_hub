@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sticky top-0 z-30 flex h-[50px] items-center overflow-x-auto border-b border-neutral-darkest bg-neutral-lightest px-7"
+    class="sticky top-0 z-30 flex overflow-y-hidden items-center overflow-x-auto border-b border-neutral-darkest bg-neutral-lightest px-7"
   >
     <span class="mr-6 shrink-0 font-mono text-2xs font-bold tracking-[0.2em] text-neutral-dark">
       CONNECTED ACTION

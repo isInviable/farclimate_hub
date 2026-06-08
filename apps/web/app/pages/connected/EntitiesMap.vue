@@ -11,8 +11,8 @@
       help="Dot size reflects the total project funding tied to each entity; colour deepens with the number of projects it joins. Selecting risks or themes dims everything outside the matching projects."
     />
 
-    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
-      <div class="relative h-[72vh] min-h-[560px] overflow-hidden border border-neutral-darkest">
+    <div class="mx-auto w-full max-w-[1920px] px-7 py-7 pb-24">
+      <div class="relative h-[80vh] min-h-[640px] overflow-hidden border border-neutral-darkest">
         <!-- map (behind the floating panels) -->
         <div class="absolute inset-0">
           <EntitiesMap

@@ -4,6 +4,10 @@ import * as geo from "d3-geo";
 import { useElementSize } from "@vueuse/core";
 import europeMap from "~/assets/data/europe.json";
 
+const isoToName = Object.fromEntries(
+  europeMap.features.map((f) => [f.properties.ISO2, f.properties.NAME])
+);
+
 const props = defineProps({
   data: {
     type: Array,
@@ -67,16 +71,18 @@ const svg = ref(null);
 const { width: availableWidth } = useElementSize(svgContainer);
 
 const viewBoxWidth = 1080 * 2;
-const viewBoxHeight = 1080;
+const viewBoxHeight = 720;
 
 const canvasWidth = computed(() => availableWidth.value);
-const canvasHeight = computed(() => availableWidth.value / 2);
+const canvasHeight = 500;
 
 const titleHeight = 96;
-const padding = { top: 48, right: 60, bottom: 60, left: 60 };
+const topLabelHeight = 0;
+const padding = { top: 24, right: 60, bottom: 24, left: 60 };
 const xAxisHeight = 96;
-const mapWidth = 1200;
-const mapHeight = 800;
+const mapWidth = 1000;
+const mapHeight = 580;
+const contentStartY = titleHeight + topLabelHeight;
 
 const onlyValuesArray = computed(() => {
   return props.data.map((d) => parseFloat(d.count || 0));
@@ -96,51 +102,10 @@ const widthScale = computed(() => {
     .range([0, (barChartWidth * 2) / 3.5]);
 });
 
-const spaceBetweenBars = computed(() => 48);
+const barSpacing = 4;
 
 const availableHeightForBars = computed(() => {
-  return viewBoxHeight - xAxisHeight - titleHeight - padding.top - padding.bottom - 128;
-});
-
-const totalHeightNeeded = computed(() => {
-  return props.data.length * spaceBetweenBars.value;
-});
-
-const needsScroll = computed(() => {
-  return totalHeightNeeded.value > availableHeightForBars.value;
-});
-
-const scrollOffset = ref(0);
-const maxScrollOffset = computed(() => {
-  if (!needsScroll.value) return 0;
-  const maxOffset = availableHeightForBars.value - totalHeightNeeded.value;
-  return Math.floor(Math.min(0, maxOffset));
-});
-
-const canScrollUp = computed(() => {
-  return needsScroll.value && scrollOffset.value < 0;
-});
-
-const canScrollDown = computed(() => {
-  return needsScroll.value && scrollOffset.value > maxScrollOffset.value;
-});
-
-const scrollStep = computed(() => spaceBetweenBars.value * 2);
-
-function scrollUp() {
-  if (!canScrollUp.value) return;
-  const newOffset = scrollOffset.value + scrollStep.value;
-  scrollOffset.value = Math.min(0, newOffset);
-}
-
-function scrollDown() {
-  if (!canScrollDown.value) return;
-  const newOffset = scrollOffset.value - scrollStep.value;
-  scrollOffset.value = Math.max(maxScrollOffset.value, newOffset);
-}
-
-watch(() => props.data.length, () => {
-  scrollOffset.value = 0;
+  return viewBoxHeight  ;
 });
 
 // Map projection and path
@@ -155,6 +120,16 @@ const europeanCountries = computed(() => {
     const iso2 = d.id;
     return europeMap.features.some((f) => f.properties.ISO2 === iso2);
   });
+});
+
+const europeanCountriesForChart = computed(() => {
+  return europeanCountries.value
+    .map((d) => ({
+      ...d,
+      label: isoToName[d.id] || d.label || d.id,
+      name: isoToName[d.id] || d.name || d.label || d.id,
+    }))
+    .sort((a, b) => (b.count || 0) - (a.count || 0));
 });
 
 const nonEuropeanData = computed(() => {
@@ -272,6 +247,7 @@ function onNonEuropeanClick(country) {
       class=""
       :width="canvasWidth"
       :height="canvasHeight"
+      style="height: 500px;"
       :viewBox="`0 0 ${viewBoxWidth} ${viewBoxHeight}`"
     >
       <g
@@ -285,14 +261,17 @@ function onNonEuropeanClick(country) {
           </text>
         </g>
 
-        <!-- space for labeling above map -->
+        <!-- fixed horizontal lines -->
+       
+
+        <!-- space for labeling above bars -->
         <g
           :transform="`translate(${viewBoxWidth / 2 - padding.left}, ${
-            titleHeight + titleHeight / 2 + 10
+            topLabelHeight + topLabelHeight / 2 + 10
           })`"
         >
           <text
-            class="text-[2.75em] antialiased"
+            class="text-3xl antialiased"
             :x="vBarX"
             dx="0.5em"
             dy="0.2em"
@@ -302,9 +281,9 @@ function onNonEuropeanClick(country) {
           </text>
 
           <text
-            class="text-5xl font-bold"
+            class="text-3xl font-bold"
             :x="vBarX"
-            dx="-0.5em"
+            dx="0em"
             dy="0.25em"
             text-anchor="end"
           >
@@ -312,20 +291,9 @@ function onNonEuropeanClick(country) {
           </text>
         </g>
 
-        <!-- fixed horizontal line -->
-        <line
-          :x1="0"
-          :y1="titleHeight"
-          :x2="viewBoxWidth - padding.left - padding.right"
-          :y2="titleHeight"
-          stroke="#ccc"
-          stroke-width="1"
-          stroke-dasharray="3 1"
-        />
-
         <!-- Map section -->
         <g
-          :transform="`translate(-${padding.left*3}, ${titleHeight + 96})`"
+          :transform="`translate(-${padding.left * 3}, ${contentStartY})`"
           class="chart-content"
         >
           <MapPathSingle
@@ -353,7 +321,7 @@ function onNonEuropeanClick(country) {
         <!-- Non-European countries as squares in bottom right -->
         <g
           v-if="nonEuropeanCountries.length > 0"
-          :transform="`translate(${mapWidth - 400}, ${mapHeight + titleHeight + 96 - 150})`"
+          :transform="`translate(${mapWidth - 320}, ${mapHeight + contentStartY - 120})`"
         >
           <text
             x="0"
@@ -396,10 +364,10 @@ function onNonEuropeanClick(country) {
 
         <!-- Bar chart section -->
         <g
-          :transform="`translate(${viewBoxWidth / 2}, ${titleHeight + 96})`"
+          :transform="`translate(${viewBoxWidth / 2}, ${contentStartY + barSpacing})`"
         >
           <MiniBarChartMap
-            :data="europeanCountries.sort((a, b) => (b.count || 0) - (a.count || 0))"
+            :data="europeanCountriesForChart"
             :colors-scale="colorsScale"
             :colors="colors"
             :view-box-width="viewBoxWidth / 2 "
@@ -419,8 +387,8 @@ function onNonEuropeanClick(country) {
           <!-- vertical line following the mouse -->
           <line
             v-show="vBarX > 0"
-            :y1="titleHeight * -1"
-            :y2="700"
+            :y1="-(contentStartY + barSpacing - titleHeight)"
+            :y2="availableHeightForBars"
             stroke="#100007"
             stroke-width="3"
             :x1="vBarX"

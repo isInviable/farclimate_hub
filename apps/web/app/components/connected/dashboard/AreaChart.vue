@@ -26,7 +26,11 @@ const props = defineProps({
   },
   formatter: {
     type: Function,
-    default: (d) => d,
+    default: (d) => {
+      const n = Math.round(Number(d));
+      if (Number.isNaN(n)) return String(d);
+      return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n);
+    },
   },
   colors: {
     type: Object,
@@ -49,18 +53,18 @@ const props = defineProps({
 const emits = defineEmits(["setFilter"]);
 
 const svgContainer = ref(null);
-const svg = ref(null);
+
 const { width: availableWidth } = useElementSize(svgContainer);
 
-const viewBoxWidth = 1080;
-const viewBoxHeight = 1080;
+const viewBoxWidth = 1000;
+const viewBoxHeight = 800;
 
 const canvasWidth = computed(() => availableWidth.value);
-const canvasHeight = computed(() => availableWidth.value);
+const canvasHeight = computed(() => availableWidth.value*0.8);
 
 const titleHeight = 96;
-const topLabelHeight = 96;
-const padding = { top: 48, right: 60, bottom: 60, left: 60 };
+const topLabelHeight = 42;
+const padding = { top: 48, right: 60, bottom: 0, left: 60 };
 const xAxisHeight = 180;
 const yAxisWidthLeft = 240;
 const yAxisWidthRight = 0;
@@ -170,14 +174,24 @@ watch(closerXValueToMouseX, (newValue) => {
   }
 });
 
+function roundNumber(value) {
+  const n = Number(value);
+  if (Number.isNaN(n)) return value;
+  return Math.round(n);
+}
+
+function formatValue(value) {
+  return props.formatter(roundNumber(value));
+}
+
 function setHoverTextLabels(year) {
   const dataForYear = props.globalData.find((d) => d.label == year);
   if (dataForYear) {
     hoverTextLabel.value = String(year);
     if (props.hasFilteredData) {
-      hoverTextFigure.value = `${dataForYear.count_f || 0} / ${dataForYear.count || 0}`;
+      hoverTextFigure.value = `${formatValue(dataForYear.count_f || 0)} / ${formatValue(dataForYear.count || 0)}`;
     } else {
-      hoverTextFigure.value = String(dataForYear.count || 0);
+      hoverTextFigure.value = formatValue(dataForYear.count || 0);
     }
   }
 }
@@ -227,7 +241,7 @@ function mouseclickHandler(event, d) {
             :transform="`translate(0, ${topLabelHeight + topLabelHeight / 2 + 10})`"
           >
             <text
-              class="text-4xl font-light"
+              class="chart-tooltip-label"
               :x="vBarX"
               dx="-0.666em"
               dy="0px"
@@ -237,10 +251,10 @@ function mouseclickHandler(event, d) {
             </text>
 
             <text
-              class="text-5xl font-bold"
+              class="chart-tooltip-value"
               :x="vBarX"
               dx="-0.5em"
-              dy="1em"
+              dy="1.1em"
               text-anchor="end"
             >
               {{ hoverTextFigure }}
@@ -269,7 +283,7 @@ function mouseclickHandler(event, d) {
               text-anchor="start"
               class="chart_tick"
             >
-              {{ formatter(d) }}
+              {{ formatValue(d) }}
             </text>
           </g>
 
@@ -398,7 +412,7 @@ function mouseclickHandler(event, d) {
               }"
               @click="mouseclickHandler($event, ttt)"
             >
-              {{ formatter(ttt.label) }}
+              {{ ttt.label }}
             </text>
 
             <line
@@ -427,7 +441,19 @@ function mouseclickHandler(event, d) {
 }
 
 .chart_tick {
-  font-size: 1em;
+  font-size: 1.35em;
   fill: #666;
+}
+
+.chart-tooltip-label {
+  font-size: 1.1em;
+  font-weight: 400;
+  fill: #100007;
+}
+
+.chart-tooltip-value {
+  font-size: 1.35em;
+  font-weight: 700;
+  fill: #100007;
 }
 </style>

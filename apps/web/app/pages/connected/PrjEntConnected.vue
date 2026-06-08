@@ -10,8 +10,8 @@
       help="Projects run along the top, ordered by start year; risks sit in the middle band; entities are clustered at the bottom by country and by how many projects they join. Bubble size reflects total funding."
     />
 
-    <div class="mx-auto max-w-[1320px] px-7 py-7 pb-24">
-      <div class="relative h-[78vh] min-h-[600px] overflow-hidden border border-neutral-darkest bg-neutral-lightest">
+    <div class="mx-auto w-full max-w-[1920px] px-7 py-7 pb-24">
+      <div class="relative h-[82vh] min-h-[680px] overflow-hidden border border-neutral-darkest bg-neutral-lightest">
         <div class="absolute inset-0">
           <Connected
             :projects="projectsWithEntities || []"

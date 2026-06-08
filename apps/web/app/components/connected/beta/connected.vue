@@ -146,7 +146,7 @@
           <text
             v-for="year in Array.from({ length: maxEndYear - minStartYear + 1 }, (_, i) => minStartYear + i)"
             :key="'label-' + year"
-            :x="(width - height) / 2 "
+            :x="leftAxis"
             :y="scaleY(year) + 4"
             class="text-[9px] fill-gray-400 font-mono"
             text-anchor="end"
@@ -373,10 +373,14 @@
   };
 
   // variables for dimensions
-  const my = computed(() => height.value/8); // stripes height module
-  const leftAxis = computed(() => (width.value - height.value) / 2); // left axis x position
-  const rightAxis = computed(() => width.value - (width.value - height.value) / 2); // right 
-  // axis x position
+  const my = computed(() => height.value / 8); // stripes height module
+
+  // Horizontal chart bounds — use nearly the full container width (the old
+  // (width - height) / 2 margins assumed a square viewport and left huge
+  // empty gutters on wide screens).
+  const chartPaddingX = computed(() => 56);
+  const leftAxis = computed(() => chartPaddingX.value);
+  const rightAxis = computed(() => width.value - chartPaddingX.value);
 
 
   const StripesHeight = [1,1,1.5,1,1.5,1,1]
@@ -415,11 +419,10 @@
       .range([my.value * 3.5, my.value * 2]);
   });
 
-  // an horizontal scaleBand for projects: starting at (width-height)/2 ending at width -  (width-height)/2
   const scaleX = computed(() => {
     return d3.scaleBand()
       .domain(props.projects.map((d) => d.id))
-      .range([ (width.value - height.value) / 2 , width.value - (width.value - height.value) / 2 ])
+      .range([leftAxis.value, rightAxis.value])
       .padding(0.25);
   });
 
@@ -452,14 +455,13 @@
     const maxCount = d3.max(riskStacks.value, (d) => d.to) || 0;
     return d3.scaleLinear()
       .domain([0, maxCount])
-      .range([ (width.value - height.value) / 2 , width.value - (width.value - height.value) / 2 ]);
-  }); 
+      .range([leftAxis.value, rightAxis.value]);
+  });
 
-// a new horizontal scaleBand for risks from leftAxis to rightAxis
     const scaleXRisksNew = computed(() => {
         return d3.scaleBand()
         .domain(riskStacks.value.map(d => d.riskLabel))
-        .range([ width.value/3 , width.value/3*2 ])
+        .range([leftAxis.value, rightAxis.value])
         .padding(0.1);
     });
 
@@ -554,7 +556,7 @@
     const maxCount = d3.max(entityRegionStacks.value, (d) => d.to) || 0;
     return d3.scaleLinear()
       .domain([0, maxCount])
-      .range([ (width.value - height.value) / 2 , width.value - (width.value - height.value) / 2 ]);
+      .range([leftAxis.value, rightAxis.value]);
   });
 
   // entities grouped by JUST projectsCount 
