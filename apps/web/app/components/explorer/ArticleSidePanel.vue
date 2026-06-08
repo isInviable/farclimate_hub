@@ -226,9 +226,10 @@ const resolvedDocument = ref<ArticleDetail | null>(props.document ?? null);
 const loadError = ref<string | null>(null);
 const isLoading = ref(false);
 
+const { promptAuthForPersistence } = useAccess();
+
 const articleViewRef = ref<{
   openDocumentPinDialog?: () => void;
-  isAuthenticated?: { value: boolean };
 } | null>(null);
 
 const articleFullPageUrl = computed(() => {
@@ -383,6 +384,7 @@ function pinKindLabel(kind: string): string {
 }
 
 function handlePinClick(): void {
+  if (!promptAuthForPersistence("pin")) return;
   articleViewRef.value?.openDocumentPinDialog?.();
 }
 

@@ -284,7 +284,6 @@ const props = withDefaults(
 );
 
 const { t } = useI18n();
-const { isAuthenticated, promptAuthForPersistence } = useAccess();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
 
@@ -569,11 +568,9 @@ async function saveDocumentPin(note: string): Promise<void> {
 
 defineExpose({
   openDocumentPinDialog: () => {
-    if (!promptAuthForPersistence("pin")) return;
     documentPinError.value = null;
     documentPinDialogOpen.value = true;
   },
-  isAuthenticated,
 });
 
 </script>

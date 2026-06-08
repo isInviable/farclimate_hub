@@ -3,6 +3,10 @@
     v-model:open="authPromptOpen"
     :title="modalTitle"
     :description="modalBody"
+    :ui="{
+      overlay: 'z-[200]',
+      content: 'z-[200]',
+    }"
   >
     <template #footer>
       <div class="flex w-full justify-end gap-2">
