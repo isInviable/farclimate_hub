@@ -66,7 +66,7 @@ const titleHeight = 96;
 const topLabelHeight = 42;
 const padding = { top: 48, right: 60, bottom: 0, left: 60 };
 const xAxisHeight = 180;
-const yAxisWidthLeft = 240;
+const yAxisWidthLeft = 160;
 const yAxisWidthRight = 0;
 
 const availableHeighForBars =
@@ -301,7 +301,7 @@ function mouseclickHandler(event, d) {
 
             <path
               :stroke="filterMode ? '#B3B3B3' : '#000'"
-              :stroke-width="filterMode ? 6 : 12"
+              :stroke-width="filterMode ? 3 : 6"
               fill="none"
               :d="lineGenerator(globalData)"
             />
@@ -340,7 +340,7 @@ function mouseclickHandler(event, d) {
                 :key="c.label"
                 :cx="bandScale(c.label)"
                 :cy="heightScale(c.count || 0)"
-                r="12"
+                r="8"
                 :style="{
                   fill:
                     c.label == closerXValueToMouseX

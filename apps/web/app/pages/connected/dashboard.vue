@@ -5,6 +5,7 @@ import {
   fetchProjectsTable,
   fetchEntitiesTable,
   fetchProductsTable,
+  fetchProjectEntitiesTable,
   fetchProjectRisksTable,
   fetchProjectThemesTable,
   fetchAuxClimateRisks,
@@ -33,6 +34,7 @@ function formatInvestment(value: number) {
 const { data: rawProjects } = await useAsyncData("dashboard-projects", fetchProjectsTable);
 const { data: rawEntities } = await useAsyncData("dashboard-entities", fetchEntitiesTable);
 const { data: rawProducts } = await useAsyncData("dashboard-products", fetchProductsTable);
+const { data: rawProjectEntities } = await useAsyncData("dashboard-project-entities", fetchProjectEntitiesTable);
 const { data: rawProjectRisks } = await useAsyncData("dashboard-project-risks", fetchProjectRisksTable);
 const { data: rawProjectThemes } = await useAsyncData("dashboard-project-themes", fetchProjectThemesTable);
 const { data: rawRisks } = await useAsyncData("dashboard-risks", fetchAuxClimateRisks);
@@ -64,6 +66,7 @@ const processedDataBase = computed(() => {
     projects,
     entities,
     products: rawProducts.value || [],
+    projectEntities: rawProjectEntities.value || [],
     projectRisks: rawProjectRisks.value || [],
     projectThemes: rawProjectThemes.value || [],
     risks: rawRisks.value || [],
@@ -85,106 +88,292 @@ const yearRange = ref({
 
 const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_TYPES.none);
 
+const topicChartScopeHint = computed(() => {
+  if (!hasFilteredData.value) return "";
+  const { filterType, label } = activeFilter.value;
+  if (filterType === FILTER_TYPES.topic) {
+    return `Dark bar: projects tagged “${label}” · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.country) {
+    return `Dark bar: topics on projects with ${label} institutions · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.risk) {
+    return `Dark bar: projects addressing “${label}” by topic · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.year) {
+    return `Dark bar: topics on projects starting in ${label} · Gray: all projects`;
+  }
+  return "";
+});
+
+const riskChartScopeHint = computed(() => {
+  if (!hasFilteredData.value) return "";
+  const { filterType, label } = activeFilter.value;
+  if (filterType === FILTER_TYPES.risk) {
+    return `Dark bar: co-risks on projects addressing “${label}” · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.country) {
+    return `Dark bar: risks on projects with ${label} institutions · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.topic) {
+    return `Dark bar: co-risks on projects tagged “${label}” · Gray: all projects`;
+  }
+  if (filterType === FILTER_TYPES.year) {
+    return `Dark bar: risks on projects starting in ${label} · Gray: all projects`;
+  }
+  return "";
+});
+
+const mapChartTitle = computed(() => {
+  const { filterType } = activeFilter.value;
+  if (
+    filterType === FILTER_TYPES.risk ||
+    filterType === FILTER_TYPES.topic ||
+    filterType === FILTER_TYPES.year
+  ) {
+    return "Projects per Country";
+  }
+  return "Entities per Country";
+});
+
+const mapChartScopeHint = computed(() => {
+  if (!hasFilteredData.value) return "";
+  const { filterType, label } = activeFilter.value;
+  if (filterType === FILTER_TYPES.country) {
+    return `Dark bar: ${label} institutions · Gray: all institutions`;
+  }
+  if (filterType === FILTER_TYPES.risk) {
+    return `Dark bar: projects addressing “${label}” per country · Gray: all projects per country`;
+  }
+  if (filterType === FILTER_TYPES.topic) {
+    return `Dark bar: projects tagged “${label}” per country · Gray: all projects per country`;
+  }
+  if (filterType === FILTER_TYPES.year) {
+    return `Dark bar: projects starting in ${label} per country · Gray: all projects per country`;
+  }
+  return "";
+});
+
+function entityIdsForProjects(
+  projectIds: Set<string>,
+  projectEntities: { projectId: string; entityId: string }[]
+) {
+  return new Set(
+    projectEntities
+      .filter((pe) => projectIds.has(pe.projectId))
+      .map((pe) => pe.entityId)
+  );
+}
+
+function filterProjectsByActiveFilter(projects: typeof processedDataBase.value.projects) {
+  const base = processedDataBase.value;
+  const { filterType, content } = activeFilter.value;
+
+  if (filterType === FILTER_TYPES.country) {
+    const entityIdsInCountry = new Set(
+      base.entities.filter((e) => e.country === content).map((e) => e.id)
+    );
+    const projectIds = new Set(
+      base.projectEntities
+        .filter((pe) => entityIdsInCountry.has(pe.entityId))
+        .map((pe) => pe.projectId)
+    );
+    return projects.filter((p) => projectIds.has(p.id));
+  }
+
+  if (filterType === FILTER_TYPES.risk) {
+    const riskId = parseInt(content);
+    const projectIds = new Set(
+      base.projectRisks
+        .filter((pr: { riskId: number }) => pr.riskId === riskId)
+        .map((pr: { projectId: string }) => pr.projectId)
+    );
+    return projects.filter((p) => projectIds.has(p.id));
+  }
+
+  if (filterType === FILTER_TYPES.topic) {
+    const themeId = parseInt(content);
+    const projectIds = new Set(
+      base.projectThemes
+        .filter((pt: { themeId: number }) => pt.themeId === themeId)
+        .map((pt: { projectId: string }) => pt.projectId)
+    );
+    return projects.filter((p) => projectIds.has(p.id));
+  }
+
+  if (filterType === FILTER_TYPES.year) {
+    const year = parseInt(content);
+    return projects.filter((p) => p.year === year);
+  }
+
+  return projects;
+}
+
 // Processed data with filters applied
 const processedData = computed(() => {
-  let projects = [...processedDataBase.value.projects];
-  let entities = [...processedDataBase.value.entities];
+  const base = processedDataBase.value;
 
-  // Apply year filter
-  projects = projects.filter(
+  let projects = base.projects.filter(
     (p) => p.year && p.year >= yearRange.value.min && p.year <= yearRange.value.max
   );
 
-  // Apply active filter
-  if (activeFilter.value.filterType === FILTER_TYPES.country) {
-    entities = entities.filter((e) => e.country === activeFilter.value.content);
-    // Filter projects by entities in that country
-    // This would require project-entities relationship
-  } else if (activeFilter.value.filterType === FILTER_TYPES.risk) {
-    const riskId = parseInt(activeFilter.value.content);
-    const projectIdsWithRisk = new Set(
-      processedDataBase.value.projectRisks
-        .filter((pr: any) => pr.riskId === riskId)
-        .map((pr: any) => pr.projectId)
-    );
-    projects = projects.filter((p) => projectIdsWithRisk.has(p.id));
-  } else if (activeFilter.value.filterType === FILTER_TYPES.topic) {
-    const themeId = parseInt(activeFilter.value.content);
-    const projectIdsWithTheme = new Set(
-      processedDataBase.value.projectThemes
-        .filter((pt: any) => pt.themeId === themeId)
-        .map((pt: any) => pt.projectId)
-    );
-    projects = projects.filter((p) => projectIdsWithTheme.has(p.id));
-  } else if (activeFilter.value.filterType === FILTER_TYPES.year) {
-    const year = parseInt(activeFilter.value.content);
-    projects = projects.filter((p) => p.year === year);
+  if (activeFilter.value.filterType !== FILTER_TYPES.none) {
+    projects = filterProjectsByActiveFilter(projects);
+    const projectIds = new Set(projects.map((p) => p.id));
+    const entityIds = entityIdsForProjects(projectIds, base.projectEntities);
+
+    const entities =
+      activeFilter.value.filterType === FILTER_TYPES.country
+        ? base.entities.filter(
+            (e) =>
+              e.country === activeFilter.value.content && entityIds.has(e.id)
+          )
+        : base.entities.filter((e) => entityIds.has(e.id));
+
+    return { projects, entities, products: base.products };
   }
 
   return {
     projects,
-    entities,
-    products: processedDataBase.value.products,
+    entities: base.entities,
+    products: base.products,
   };
 });
+
+function countriesOnProject(projectId: string, base: any) {
+  const countries = new Set<string>();
+  for (const pe of base.projectEntities) {
+    if (pe.projectId !== projectId) continue;
+    const entity = base.entities.find((e: { id: string }) => e.id === pe.entityId);
+    if (entity?.country) countries.add(entity.country);
+  }
+  return countries;
+}
+
+function countProjectsByCountry(projects: { id: string }[], base: any) {
+  const byCountry = new Map<string, Set<string>>();
+  for (const project of projects) {
+    for (const country of countriesOnProject(project.id, base)) {
+      if (!byCountry.has(country)) byCountry.set(country, new Set());
+      byCountry.get(country)!.add(project.id);
+    }
+  }
+  const counts = new Map<string, number>();
+  byCountry.forEach((projectIds, country) => {
+    counts.set(country, projectIds.size);
+  });
+  return counts;
+}
+
+function countThemesOnProjects(projects: { id: string }[], base: any) {
+  const projectIds = new Set(projects.map((p) => p.id));
+  const byTheme = new Map<number, Set<string>>();
+  for (const pt of base.projectThemes) {
+    if (!projectIds.has(pt.projectId)) continue;
+    if (!byTheme.has(pt.themeId)) byTheme.set(pt.themeId, new Set());
+    byTheme.get(pt.themeId)!.add(pt.projectId);
+  }
+  const counts = new Map<number, number>();
+  byTheme.forEach((ids, themeId) => counts.set(themeId, ids.size));
+  return counts;
+}
+
+function countRisksOnProjects(projects: { id: string }[], base: any) {
+  const projectIds = new Set(projects.map((p) => p.id));
+  const byRisk = new Map<number, Set<string>>();
+  for (const pr of base.projectRisks) {
+    if (!projectIds.has(pr.projectId)) continue;
+    if (!byRisk.has(pr.riskId)) byRisk.set(pr.riskId, new Set());
+    byRisk.get(pr.riskId)!.add(pr.projectId);
+  }
+  const counts = new Map<number, number>();
+  byRisk.forEach((ids, riskId) => counts.set(riskId, ids.size));
+  return counts;
+}
+
+function projectIdsWithRisk(base: any, riskId: number) {
+  return new Set(
+    base.projectRisks
+      .filter((pr: { riskId: number }) => pr.riskId === riskId)
+      .map((pr: { projectId: string }) => pr.projectId)
+  );
+}
+
+function projectIdsWithTheme(base: any, themeId: number) {
+  return new Set(
+    base.projectThemes
+      .filter((pt: { themeId: number }) => pt.themeId === themeId)
+      .map((pt: { projectId: string }) => pt.projectId)
+  );
+}
+
+function projectsForSelectedFilter(
+  base: any,
+  filteredProjects: { id: string }[],
+  filterType: string,
+  content: string
+) {
+  if (filterType === FILTER_TYPES.risk) {
+    const riskIds = projectIdsWithRisk(base, parseInt(content, 10));
+    return filteredProjects.filter((p) => riskIds.has(p.id));
+  }
+  if (filterType === FILTER_TYPES.topic) {
+    const themeIds = projectIdsWithTheme(base, parseInt(content, 10));
+    return filteredProjects.filter((p) => themeIds.has(p.id));
+  }
+  return filteredProjects;
+}
 
 // Dashboard data structures
 const dataForDashboard = computed(() => {
   const base = processedDataBase.value;
   const filtered = processedData.value;
+  const { filterType, content } = activeFilter.value;
 
-  // Entities per country
   const entitiesByCountry = new Map<string, number>();
   base.entities.forEach((e: any) => {
     const country = e.country || "Unknown";
     entitiesByCountry.set(country, (entitiesByCountry.get(country) || 0) + 1);
   });
 
-  const entitiesByCountryFiltered = new Map<string, number>();
-  filtered.entities.forEach((e: any) => {
-    const country = e.country || "Unknown";
-    entitiesByCountryFiltered.set(
-      country,
-      (entitiesByCountryFiltered.get(country) || 0) + 1
-    );
-  });
+  const projectsByCountry = countProjectsByCountry(base.projects, base);
+  const projectsByTheme = countThemesOnProjects(base.projects, base);
+  const projectsByRisk = countRisksOnProjects(base.projects, base);
 
-  // Projects per topic
-  const projectsByTheme = new Map<number, number>();
-  base.projectThemes.forEach((pt: any) => {
-    projectsByTheme.set(
-      pt.themeId,
-      (projectsByTheme.get(pt.themeId) || 0) + 1
-    );
-  });
+  let countryFiltered = new Map<string, number>();
+  let projectsByThemeFiltered = new Map<number, number>();
+  let projectsByRiskFiltered = new Map<number, number>();
 
-  const projectsByThemeFiltered = new Map<number, number>();
-  filtered.projects.forEach((p: any) => {
-    const themes = base.projectThemes.filter((pt: any) => pt.projectId === p.id);
-    themes.forEach((pt: any) => {
-      projectsByThemeFiltered.set(
-        pt.themeId,
-        (projectsByThemeFiltered.get(pt.themeId) || 0) + 1
-      );
+  const useProjectCountsForCountry =
+    filterType === FILTER_TYPES.risk ||
+    filterType === FILTER_TYPES.topic ||
+    filterType === FILTER_TYPES.year;
+
+  if (filterType === FILTER_TYPES.country) {
+    filtered.entities.forEach((e: any) => {
+      const country = e.country || "Unknown";
+      countryFiltered.set(country, (countryFiltered.get(country) || 0) + 1);
     });
-  });
+    projectsByThemeFiltered = countThemesOnProjects(filtered.projects, base);
+    projectsByRiskFiltered = countRisksOnProjects(filtered.projects, base);
+  } else if (filterType !== FILTER_TYPES.none) {
+    const scopedProjects = projectsForSelectedFilter(
+      base,
+      filtered.projects,
+      filterType,
+      content
+    );
 
-  // Projects per risk
-  const projectsByRisk = new Map<number, number>();
-  base.projectRisks.forEach((pr: any) => {
-    projectsByRisk.set(pr.riskId, (projectsByRisk.get(pr.riskId) || 0) + 1);
-  });
+    if (useProjectCountsForCountry) {
+      countryFiltered = countProjectsByCountry(scopedProjects, base);
+    }
 
-  const projectsByRiskFiltered = new Map<number, number>();
-  filtered.projects.forEach((p: any) => {
-    const risks = base.projectRisks.filter((pr: any) => pr.projectId === p.id);
-    risks.forEach((pr: any) => {
-      projectsByRiskFiltered.set(
-        pr.riskId,
-        (projectsByRiskFiltered.get(pr.riskId) || 0) + 1
-      );
-    });
-  });
+    // Cross-charts: attribute topics/countries only through the selected filter.
+    projectsByThemeFiltered = countThemesOnProjects(scopedProjects, base);
+
+    // Risk chart: show co-risks on the scoped project set.
+    projectsByRiskFiltered = countRisksOnProjects(scopedProjects, base);
+  }
 
   // Projects per year
   const projectsByYear = new Map<number, number>();
@@ -225,13 +414,23 @@ const dataForDashboard = computed(() => {
     }
   });
 
+  const countryKeys = new Set<string>([
+    ...entitiesByCountry.keys(),
+    ...projectsByCountry.keys(),
+    ...countryFiltered.keys(),
+  ]);
+
+  const entitiesByCountryData = Array.from(countryKeys).map((country) => ({
+    id: country,
+    label: country,
+    count: useProjectCountsForCountry
+      ? projectsByCountry.get(country) || 0
+      : entitiesByCountry.get(country) || 0,
+    count_f: countryFiltered.get(country) || 0,
+  }));
+
   return {
-    entitiesByCountry: Array.from(entitiesByCountry.entries()).map(([country, count]) => ({
-      id: country,
-      label: country,
-      count,
-      count_f: entitiesByCountryFiltered.get(country) || 0,
-    })),
+    entitiesByCountry: entitiesByCountryData,
     projectsByTheme: base.themes.map((theme: any) => ({
       id: theme.id,
       label: theme.name,
@@ -276,11 +475,18 @@ const dataForEntitiesByCountry = computed(() => {
 });
 
 const dataForProjectsByTheme = computed(() => {
+  const isTopicFilter = activeFilter.value.filterType === FILTER_TYPES.topic;
+  const selectedThemeId = isTopicFilter
+    ? parseInt(activeFilter.value.content, 10)
+    : null;
+
   return dataForDashboard.value.projectsByTheme
     .sort((a, b) => b.count - a.count)
     .map((d) => ({
       ...d,
-      count_f: d.count_f || 0,
+      // On the topic chart, only the selected topic gets a dark bar (avoid co-tag noise).
+      count_f:
+        isTopicFilter && d.id !== selectedThemeId ? 0 : d.count_f || 0,
     }));
 });
 
@@ -422,17 +628,16 @@ const statStripItems = computed(() => [
       title="Dashboard"
       intro="A bird's-eye view of the network: how many projects and entities there are, which countries host the most participants, and which adaptation topics are most common."
       help-title="Reading this page"
-      help="Everything here is cross-filtered. Selecting a country, topic or year narrows the figures across the whole dashboard — useful for asking 'who and what is concentrated where?'"
+      help="Everything here is cross-filtered. A country selection scopes to institutions in that country and the projects they join; topic, risk or year filters narrow the project set across all charts."
     />
 
-    <div class="mx-auto w-full max-w-[1536px] px-7 py-7 pb-24">
-      <div class="mb-6 grid gap-6 grid-cols-6">
-        <CaStatStrip :items="statStripItems"  />
+    <div class="mx-auto grid w-full max-w-[1536px] grid-cols-6 items-start gap-6 px-7 py-7 pb-24">
+      <CaStatStrip :items="statStripItems" />
 
-        <CaCard title="Active filters" class="col-span-3">
+      <CaCard title="Active filters" class="col-span-3 self-start sticky top-[40px] z-10">
           <template #help>
             <CaHelp title="Filtering">
-              Click any country (on the map or bars), topic or year to scope the dashboard.
+              Click a country to focus on its institutions and their projects. Click a topic, risk or year to narrow projects across the dashboard.
               Selections appear here; clear them to reset.
             </CaHelp>
           </template>
@@ -462,12 +667,11 @@ const statStripItems = computed(() => [
             </div>
           </div>
           <p v-else class="font-sans text-[13px] text-neutral-dark">
-            Click on a country, topic or year to enable a filter.
+            Click on a country, topic, risk or year to enable a filter.
           </p>
-        </CaCard>
-      </div>
+      </CaCard>
 
-      <div class="flex min-w-0 flex-col gap-6">
+      <div class="col-span-6 flex min-w-0 flex-col gap-6">
         <MapBarChart
           :data="dataForEntitiesByCountry"
           :has-filtered-data="hasFilteredData"
@@ -477,7 +681,8 @@ const statStripItems = computed(() => [
               ? activeFilter.content
               : ''
           "
-          title="Entities per Country"
+          :title="mapChartTitle"
+          :subtitle="mapChartScopeHint"
           @_click="(event) => processClickOnChart(FILTER_TYPES.country, event.datum)"
         />
 
@@ -486,6 +691,7 @@ const statStripItems = computed(() => [
             :global-data="dataForProjectsByTheme"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
+            :subtitle="topicChartScopeHint"
             title="Projects by Topic"
             @set-filter="(event) => processClickOnChart(FILTER_TYPES.topic, event)"
           />
@@ -493,6 +699,7 @@ const statStripItems = computed(() => [
             :global-data="dataForProjectsByRisk"
             :has-filtered-data="hasFilteredData"
             :active-filter="activeFilter"
+            :subtitle="riskChartScopeHint"
             title="Projects by Risk"
             @set-filter="(event) => processClickOnChart(FILTER_TYPES.risk, event)"
           />

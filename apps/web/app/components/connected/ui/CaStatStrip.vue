@@ -21,7 +21,7 @@
         </span>
         <span
           v-if="item.items?.length"
-          class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-neutral-darkest text-[10px] opacity-0 transition-opacity group-hover:border-[var(--ca-accent)] group-hover:bg-[var(--ca-accent)] group-hover:text-neutral-lightest group-hover:opacity-100"
+          class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-neutral-darkest text-[10px]  transition-opacity group-hover:border-(--ca-accent) group-hover:bg-(--ca-accent) group-hover:text-neutral-lightest group-hover:opacity-100"
         >
           →
         </span>

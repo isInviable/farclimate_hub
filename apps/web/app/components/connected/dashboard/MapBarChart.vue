@@ -62,6 +62,10 @@ const props = defineProps({
     type: String,
     default: "Entities per Country",
   },
+  subtitle: {
+    type: String,
+    default: "",
+  },
 });
 
 const emits = defineEmits(["_click"]);
@@ -259,6 +263,15 @@ function onNonEuropeanClick(country) {
           <text text-anchor="start" x="0%" y="1em" class="chart_h1">
             {{ props.title }}
           </text>
+          <text
+            v-if="props.subtitle"
+            text-anchor="start"
+            x="0%"
+            y="2.6em"
+            class="chart_subtitle"
+          >
+            {{ props.subtitle }}
+          </text>
         </g>
 
         <!-- fixed horizontal lines -->
@@ -408,5 +421,11 @@ function onNonEuropeanClick(country) {
   font-family: "Martian Mono", monospace;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.chart_subtitle {
+  font-size: 0.95em;
+  fill: #666;
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 </style>

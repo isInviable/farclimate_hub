@@ -23,6 +23,10 @@ const props = defineProps({
     type: String,
     default: "Chart Title",
   },
+  subtitle: {
+    type: String,
+    default: "",
+  },
   colors: {
     type: Object,
     default: () => ({
@@ -46,7 +50,7 @@ const props = defineProps({
   },
   ratio: {
     type: Number,
-    default: 1,
+    default: 1.1,
   },
   activeFilter: {
     type: Object,
@@ -69,8 +73,8 @@ const canvasWidth = computed(() => availableWidth.value);
 const canvasHeight = computed(() => availableHeight.value);
 
 const titleHeight = 96;
-const topLabelHeight = 96;
-const padding = { top: 48, right: 60, bottom: 60, left: 60 };
+const topLabelHeight = 80;
+const padding = { top: 48, right: 0, bottom: 0, left: 0 };
 const xAxisHeight = 168;
 const yAxisWidthLeft = 0;
 const yAxisWidthRight = 320;
@@ -110,12 +114,12 @@ const colorScale = computed(() => {
 
 const barHeight = computed(() => {
   if (props.globalData.length < 8) return 90;
-  return 48;
+  return 40;
 });
 
 const barSpacing = computed(() => {
   if (props.globalData.length < 8) return 6;
-  return 4;
+  return 6;
 });
 
 const maxBarsInAvailableHeight = computed(() => {
@@ -138,17 +142,19 @@ const hoverTextLabel = ref("");
 const hoverTextFigure = ref("");
 const vBarX = ref(-600);
 
+function formatBarValue(d) {
+  if (props.hasFilteredData) {
+    return `${d.count_f ?? 0} / ${d.count ?? 0}`;
+  }
+  return String(d.count ?? 0);
+}
+
 function mouseoverHandler(event, d, isGlobal) {
   vBarX.value = isGlobal
     ? widthScale.value(d.count || 0)
     : widthScale.value(d.count_f || 0);
 
-  if (props.hasFilteredData) {
-    hoverTextFigure.value = isGlobal ? d.count : d.count_f;
-  } else {
-    hoverTextFigure.value = d.count;
-  }
-
+  hoverTextFigure.value = formatBarValue(d);
   hoverTextLabel.value = d.label;
 }
 
@@ -183,6 +189,15 @@ function mouseclickHandler(event, d) {
             <text text-anchor="start" x="0%" y="1em" class="chart_h1">
               {{ props.title }}
             </text>
+            <text
+              v-if="props.subtitle"
+              text-anchor="start"
+              x="0%"
+              y="2.6em"
+              class="chart_subtitle"
+            >
+              {{ props.subtitle }}
+            </text>
           </g>
 
           <!-- fixed horizontal lines -->
@@ -211,7 +226,7 @@ function mouseclickHandler(event, d) {
             :transform="`translate(0, ${topLabelHeight + topLabelHeight / 2 + 10})`"
           >
             <text
-              class="text-[2.75em] antialiased"
+              class="text-4xl antialiased"
               :x="viewBoxWidth - padding.right - padding.left"
               dx="0em"
               dy="0.2em"
@@ -221,11 +236,11 @@ function mouseclickHandler(event, d) {
             </text>
 
             <text
-              class="text-5xl font-bold"
-              :x="vBarX"
-              :dx="vBarX > viewBoxWidth / 3 ? '-0.5em' : '0.5em'"
+              class="text-4xl font-bold"
+              :x="padding.left"
+              
               dy="0.25em"
-              :text-anchor="vBarX > viewBoxWidth / 3 ? 'end' : 'start'"
+              text-anchor="start"
             >
               {{ hoverTextFigure }}
             </text>
@@ -300,12 +315,12 @@ function mouseclickHandler(event, d) {
               <text
                 v-if="hasFilteredData"
                 text-anchor="start"
-                :x="widthScale(bar.count_f || 0) + 24"
+                :x="widthScale(bar.count || 0) + 24"
                 :y="barHeight / 2"
                 dy=".35em"
                 class="chart_hor_value pointer-events-none"
               >
-                {{ bar.count_f }}
+                {{ formatBarValue(bar) }}
               </text>
 
               <!-- line below -->
@@ -404,12 +419,18 @@ function mouseclickHandler(event, d) {
 
 <style scoped>
 .chart_h1 {
-  font-size: 1.7em;
+  font-size: 2.0em;
   font-weight: 700;
   fill: #100007;
   font-family: "Martian Mono", monospace;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.chart_subtitle {
+  font-size: 1.5em;
+  fill: #666;
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
 .chart_label {

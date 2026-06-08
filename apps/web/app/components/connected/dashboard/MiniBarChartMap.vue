@@ -33,7 +33,7 @@
               : colorScale(bar.count || 0)
             : colors.active
         "
-        class="stroke-white stroke-2 hover:brightness-110 cursor-pointer transition-all duration-300"
+        class="stroke-white stroke-2 hover:brightness-110 cursor-pointer transition-[filter] duration-300"
         :class="[externalHoveredItemId === (bar.id || bar.iso) ? 'brightness-110' : '']"
         @mouseenter="onMouseover($event, bar, true)"
         @mouseleave="onMouseout($event)"
@@ -49,7 +49,7 @@
         :height="barHeight"
         :width="widthScale(bar.count_f || 0)"
         :fill="colors.active"
-        class="hover:brightness-75 transition-all duration-300"
+        class="hover:brightness-75 transition-[filter] duration-300"
         @mouseover="onMouseover($event, bar, false)"
         @mouseleave="onMouseout($event)"
         @click="onClick($event, bar.id || bar.iso)"
@@ -127,9 +127,9 @@
 
     <!-- axis ticks -->
     <g
-      v-for="(d, i) in widthScale.nice().ticks(colorScale.range().length)"
+      v-for="(d, i) in axisTicks"
       :key="i"
-      :transform="`translate(${widthScale(d)}, 0)`"
+      :transform="`translate(${axisWidthScale(d)}, 0)`"
     >
       <line x1="0" y1="0" x2="0" :y2="12" stroke="gray" stroke-width="1" />
       <text x="0" y="20" dy="1.0em" text-anchor="middle" class="chart_tick">
@@ -207,7 +207,7 @@ const props = defineProps({
   },
 });
 
-const padding = { top: 48, right: 60, bottom: 60, left: 60 };
+const padding = { top: 0, right: 60, bottom: 0, left: 60 };
 const xAxisHeight = 96;
 const titleHeight = 96;
 const topLabelHeight = 96;
@@ -224,6 +224,12 @@ const colorScale = computed(() => {
     .domain([0, max(onlyValuesArray.value) || 1])
     .range(props.colorsScale);
 });
+
+const axisWidthScale = computed(() => props.widthScale.copy().nice());
+
+const axisTicks = computed(() =>
+  axisWidthScale.value.ticks(colorScale.value.range().length)
+);
 
 const spaceBetweenBars = computed(() => barHeight + barSpacing);
 
