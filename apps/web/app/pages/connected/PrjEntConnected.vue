@@ -21,6 +21,8 @@
             :projects="projectsWithEntities"
             :risks="riskItems"
             :entities="connectedEntities"
+            :entity-funding-min="entityFundingMin"
+            :entity-funding-max="entityFundingMax"
             @select-project="openProject"
           />
         </div>
@@ -99,10 +101,37 @@
                 <span class="block rounded-full border border-neutral-darkest bg-neutral-lightest" style="width: 11px; height: 11px" />
                 <span class="block rounded-full border border-neutral-darkest bg-neutral-lightest" style="width: 16px; height: 16px" />
               </span>
-              <span class="font-mono text-2xs text-neutral-dark">entities · total funding</span>
+              <span class="font-mono text-2xs text-neutral-dark">entities · funding (√ size)</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <div
+        v-if="isChartReady && entityFundingBounds.max > entityFundingBounds.min"
+        class="mt-4 border border-neutral-darkest bg-neutral-lightest p-4"
+      >
+        <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="font-mono text-2xs font-bold tracking-[0.16em] text-neutral-dark">
+              ENTITY FUNDING
+            </span>
+            <span class="mt-0.5 block font-mono text-2xs text-neutral-dark">
+              Log scale — finer steps below €1M
+            </span>
+          </div>
+          <span class="font-mono text-[11px] text-neutral-darker">
+            {{ formatFunding(entityFundingMin) }} – {{ formatFunding(entityFundingMax) }}
+          </span>
+        </div>
+        <USlider
+          v-model="entityFundingLogRange"
+          :min="entityFundingBounds.logMin"
+          :max="entityFundingBounds.logMax"
+          :step="fundingLogStep"
+          :min-steps-between-thumbs="1"
+          color="neutral"
+        />
       </div>
     </div>
   </div>
@@ -112,6 +141,7 @@
 definePageMeta({ layout: 'connected' });
 import type { EntityRow, ProjectRow } from "~/types/cordis";
 import { caOrdinalColor } from "~/utils/connectedColors";
+import { fundingFromLog, fundingToLog } from "~/utils/entityFundingScale";
 
 const route = useRoute();
 const supabase = useSupabaseClient();
@@ -331,4 +361,40 @@ const entityTypeLegend = computed(() => {
   const color = caOrdinalColor(sorted);
   return sorted.map((type) => ({ type, color: color(type) }));
 });
+
+const entityFundingBounds = computed(() => {
+  const costs = connectedEntities.value.map((e) => e.projectsTotalCost);
+  if (!costs.length) return { min: 0, max: 0, logMin: 0, logMax: 0 };
+  const min = Math.min(...costs);
+  const max = Math.max(...costs);
+  return { min, max, logMin: fundingToLog(min), logMax: fundingToLog(max) };
+});
+
+const entityFundingLogRange = ref<[number, number]>([0, 0]);
+
+const entityFundingMin = computed(() => fundingFromLog(entityFundingLogRange.value[0]));
+const entityFundingMax = computed(() => fundingFromLog(entityFundingLogRange.value[1]));
+
+watch(
+  entityFundingBounds,
+  ({ logMin, logMax }) => {
+    entityFundingLogRange.value = [logMin, logMax];
+  },
+  { immediate: true }
+);
+
+const fundingLogStep = computed(() => {
+  const span = entityFundingBounds.value.logMax - entityFundingBounds.value.logMin;
+  if (span <= 0) return 0.01;
+  return Math.max(0.01, span / 150);
+});
+
+function formatFunding(value: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'EUR',
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(Math.round(value));
+}
 </script>

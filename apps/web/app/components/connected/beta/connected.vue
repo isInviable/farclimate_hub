@@ -223,7 +223,7 @@
             :r="entityDisplayRadius(entity)"
             :fill="organizationActivityTypeColorScale((entity as any).organization_activity_type_name)"
             class="transition-all duration-300 cursor-pointer"
-            :class="entityVisualClass(entity.id)"
+            :class="[entityVisualClass(entity.id), isEntityInFundingRange(entity.id) ? 'cursor-pointer' : 'pointer-events-none']"
             :opacity="entityVisualOpacity(entity.id)"
             @mouseover="(e) => onEntityHover(e, entity)"
             @mousemove="updateTooltipPosition"
@@ -288,11 +288,19 @@
   const leftAxis = computed(() => chartPaddingX.value);
   const rightAxis = computed(() => width.value - chartPaddingX.value);
 
-  const props = defineProps<{
-    projects: any[];
-    risks: any[];
-    entities: any[];
-  }>();
+  const props = withDefaults(
+    defineProps<{
+      projects: any[];
+      risks: any[];
+      entities: any[];
+      entityFundingMin?: number;
+      entityFundingMax?: number;
+    }>(),
+    {
+      entityFundingMin: 0,
+      entityFundingMax: Number.POSITIVE_INFINITY,
+    }
+  );
 
   const emit = defineEmits<{
     selectProject: [id: string];
@@ -304,8 +312,14 @@
   const maxEndYear = computed(() => {
     return d3.max(props.projects, (d: any) => d.end_year) || new Date().getFullYear();
   });
-  const maxTotalCost = computed(() => {
-    return d3.max(props.projects, (d: any) => d.total_cost) || 0;
+  const maxEntityTotalCost = computed(() => {
+    return d3.max(props.entities, (d: any) => d.projectsTotalCost) || 1;
+  });
+
+  const entityFundingRadiusScale = computed(() => {
+    return d3.scaleSqrt()
+      .domain([0, maxEntityTotalCost.value])
+      .range([2.5, 10.5]);
   });
 
   const yearLabels = computed(() => {
@@ -557,7 +571,7 @@
   const entitiesWithStripPositions = computed(() => {
     const sxRegions = scaleXEntityRegions.value;
     const syProjectsCount = scaleYEntitiesByProjectsCount.value;
-    const maxCost = maxTotalCost.value;
+    const radiusScale = entityFundingRadiusScale.value;
     const jitterMap = entityJitterById.value;
 
     const circles = props.entities.map((entity) => {
@@ -582,7 +596,7 @@
         ...entity,
         radarX: xFrom + jitter.jx * xDelta,
         radarY: yFrom + jitter.jy * yDelta,
-        radarRadius: 2.5 + (entity.projectsTotalCost / maxCost * 8)
+        radarRadius: radiusScale(entity.projectsTotalCost ?? 0)
       };
     });
 
@@ -702,6 +716,19 @@
   const isIsoHighlighted = (iso: string) => noIsoHighlight.value || overedIsoCodes.value.has(iso);
   const isEntityHighlighted = (id: string) => noEntityHighlight.value || overedEntitiesIds.value.has(id);
 
+  const entityFundingById = computed(() => {
+    const map = new Map<string, number>();
+    props.entities.forEach((entity) => {
+      map.set(entity.id, entity.projectsTotalCost ?? 0);
+    });
+    return map;
+  });
+
+  const isEntityInFundingRange = (id: string) => {
+    const cost = entityFundingById.value.get(id) ?? 0;
+    return cost >= props.entityFundingMin && cost <= props.entityFundingMax;
+  };
+
   const entityDisplayRadius = (entity: { id: string; radarRadius: number }) => {
     if (hoveredEntityId.value === entity.id) return entity.radarRadius * 1.8;
     if (!noEntityHighlight.value && overedEntitiesIds.value.has(entity.id)) return entity.radarRadius * 2.0;
@@ -709,6 +736,7 @@
   };
 
   const entityVisualOpacity = (id: string) => {
+    if (!isEntityInFundingRange(id)) return 0.08;
     if (hoveredEntityId.value) {
       return hoveredEntityId.value === id ? 1 : 0.1;
     }
@@ -719,6 +747,7 @@
   };
 
   const entityVisualClass = (id: string) => {
+    if (!isEntityInFundingRange(id)) return 'grayscale-100';
     const active = hoveredEntityId.value
       ? hoveredEntityId.value === id
       : isEntityHighlighted(id);
@@ -801,6 +830,7 @@
   };
 
   const onEntityHover = (event: MouseEvent, entity: any) => {
+    if (!isEntityInFundingRange(entity.id)) return;
     hoveredProjectId.value = null;
     hoveredRiskLabel.value = null;
     hoveredEntityId.value = entity.id;
