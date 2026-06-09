@@ -30,6 +30,7 @@
       <!-- risk circles -->
       <circle
         v-for="(risk, i) in circlesArray"
+        v-show="risk.label === props.activeRisk"
         :key="i"
         :cx="risk.x"
         :cy="risk.y"
@@ -112,8 +113,16 @@
   import { useElementSize } from '@vueuse/core'
   import { useTemplateRef } from 'vue'
   import * as d3 from "d3";
-  import { UMAP } from 'umap-js';
+  import { UMAP, cosine } from 'umap-js';
   import smallestEnclosingCircle from 'smallest-enclosing-circle'
+
+  // deterministic PRNG so the UMAP layout is identical on every load
+  const mulberry32 = (seed: number) => () => {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 
   const el = useTemplateRef('el')
   const { width, height } = useElementSize(el)
@@ -191,10 +200,21 @@
     years?: Array<number>
     riskCircles?: Array<any>
     themeCircles?: Array<any>
+    activeRisk?: string | null
   }>(), {
     years: () => [2020, 2021, 2022, 2023, 2024, 2025],
     riskCircles: () => [],
-    themeCircles: () => []
+    themeCircles: () => [],
+    activeRisk: null
+  });
+
+  // highlight member projects when a risk is summoned from the legend
+  watch(() => props.activeRisk, (label) => {
+    if (label) {
+      overRisk(label);
+    } else {
+      outRisk();
+    }
   });
 
   // watch props.projects
@@ -312,9 +332,10 @@
     // 01: configure UMAP
     const umap = new UMAP({
       nComponents: 2,          // Project to 2D
-      nNeighbors: 3,           // Adjust based on data size
-      minDist: 0.1,            // Controls clustering 0.1
-      // metric: 'cosine',        // Use cosine distance (angular)
+      nNeighbors: 12,          // Capture more global structure for ~46 points
+      minDist: 0.4,            // Spread points apart to reduce crowding
+      distanceFn: cosine,      // Fraction of shared categories (equal-weight 0/1 sets)
+      random: mulberry32(42),  // Seeded so the layout is reproducible
     });
 
     // Step 3: Fit UMAP and transform data

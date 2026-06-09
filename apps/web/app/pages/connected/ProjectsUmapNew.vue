@@ -4,7 +4,7 @@
       n="04"
       kicker="PROJECTS UMAP"
       title="Projects UMAP"
-      intro="Projects placed in 2-D semantic space from the climate risks and themes they address. Projects that sit close together work on similar problems; dashed rings group the projects sharing a climate risk."
+      intro="Projects placed in 2-D semantic space from the climate risks and themes they address. Projects that sit close together work on similar problems; hover a climate risk in the legend to reveal the dashed ring grouping its projects."
       help-title="Reading the plot"
       help="Position comes from a UMAP projection of each project's risk/theme profile — axes have no units. Bubble size reflects funding relative to duration; the stacked shadow scales with the number of participating entities."
     />
@@ -17,6 +17,7 @@
             :years="yearsRange"
             :riskCircles="riskItems"
             :themeCircles="themeItems"
+            :active-risk="activeRisk"
           />
         </div>
 
@@ -36,13 +37,24 @@
           <header class="flex items-center gap-2 border-b border-neutral-darkest px-4 py-3">
             <span class="font-mono text-xs font-bold tracking-[0.06em]">CLIMATE-RISK CLUSTERS</span>
             <CaHelp title="Clusters" align="right" :w="260">
-              Each dashed ring on the plot encloses the projects tackling one climate risk.
-              Hover a ring to highlight its projects.
+              Each dashed ring encloses the projects tackling one climate risk.
+              Hover a risk below to reveal its ring; click to keep it pinned.
             </CaHelp>
           </header>
           <ul class="flex flex-col gap-2 p-4">
-            <li v-for="risk in riskItems" :key="risk.value" class="flex items-center gap-2.5">
-              <span class="h-3 w-3 shrink-0 rounded-full border-2 border-dashed border-neutral-dark" />
+            <li
+              v-for="risk in riskItems"
+              :key="risk.value"
+              class="flex cursor-pointer items-center gap-2.5 transition-opacity"
+              :class="pinnedRisk && pinnedRisk !== risk.label ? 'opacity-40' : ''"
+              @mouseenter="activeRisk = risk.label"
+              @mouseleave="activeRisk = pinnedRisk"
+              @click="togglePinnedRisk(risk.label)"
+            >
+              <span
+                class="h-3 w-3 shrink-0 rounded-full border-2 border-dashed transition-colors"
+                :class="activeRisk === risk.label ? 'border-trust-blue bg-trust-blue-light/40' : 'border-neutral-dark'"
+              />
               <span class="font-mono text-[11px] text-neutral-darkest">{{ risk.label }}</span>
             </li>
           </ul>
@@ -61,6 +73,14 @@ import * as d3 from "d3";
   const supabase = useSupabaseClient();
 
   const padding = 48;
+
+  // Risk ring shown on the plot: hover a legend item to preview, click to pin it.
+  const activeRisk = ref<string | null>(null);
+  const pinnedRisk = ref<string | null>(null);
+  const togglePinnedRisk = (label: string) => {
+    pinnedRisk.value = pinnedRisk.value === label ? null : label;
+    activeRisk.value = pinnedRisk.value;
+  };
 
   // ProjectEntityRow type (matches database schema)
   type ProjectEntityRow = {
