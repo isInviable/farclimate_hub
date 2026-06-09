@@ -40,8 +40,27 @@ const getItemSubtitle = (item: any) => {
   return '';
 };
 
-const getCordisUrl = (projectId: string) => {
-  return `http://cordis.europa.eu/project/id/${projectId}`;
+const getCordisProjectUrl = (cordisId: string) => {
+  return `http://cordis.europa.eu/project/id/${cordisId}`;
+};
+
+const getCordisOrganizationUrl = (cordisId: string) => {
+  return `http://cordis.europa.eu/organization/id/${cordisId}`;
+};
+
+const getItemUrl = (item: any) => {
+  if (props.type === "Projects" && item.cordis_id) {
+    return getCordisProjectUrl(item.cordis_id);
+  }
+  if (props.type === "Institutions" && item.cordis_id) {
+    return getCordisOrganizationUrl(item.cordis_id);
+  }
+  return null;
+};
+
+const getInstitutionWebsiteUrl = (item: any) => {
+  const url = item.address_url?.trim();
+  return url || null;
 };
 </script>
 
@@ -62,8 +81,8 @@ const getCordisUrl = (projectId: string) => {
         <div class="flex flex-col">
           <div class="font-medium text-gray-900">
             <a
-              v-if="type === 'Projects' && (item as any).cordis_id"
-              :href="getCordisUrl((item as any).cordis_id)"
+              v-if="getItemUrl(item as any)"
+              :href="getItemUrl(item as any)!"
               target="_blank"
               rel="noopener noreferrer"
               class="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -76,6 +95,19 @@ const getCordisUrl = (projectId: string) => {
           </div>
           <div v-if="getItemSubtitle(item as any)" class="text-sm text-gray-500 mt-1">
             {{ getItemSubtitle(item as any) }}
+          </div>
+          <div
+            v-if="type === 'Institutions' && getInstitutionWebsiteUrl(item as any)"
+            class="text-xs text-gray-400 mt-1"
+          >
+            <a
+              :href="getInstitutionWebsiteUrl(item as any)!"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+            >
+              Website
+            </a>
           </div>
           <div v-if="type === 'Projects' && (item as any).totalCost" class="text-xs text-gray-400 mt-1">
             Cost: {{ formatter((item as any).totalCost) }} €

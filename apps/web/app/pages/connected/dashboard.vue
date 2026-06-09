@@ -56,6 +56,8 @@ const processedDataBase = computed(() => {
 
   const entities = (rawEntities.value || []).map((e: any) => ({
     id: e.id,
+    cordis_id: e.cordis_id,
+    address_url: e.address_url || null,
     country: e.address_country || "Unknown",
     legal_name: e.legal_name,
     short_name: e.short_name,
@@ -611,12 +613,7 @@ const statStripItems = computed(() => [
     accent: "#1e63a2",
     items: processedData.value.entities,
   },
-  {
-    label: "Products",
-    value: totalProducts.value,
-    accent: "#9e9e14",
-    items: processedData.value.products,
-  },
+  
 ]);
 </script>
 

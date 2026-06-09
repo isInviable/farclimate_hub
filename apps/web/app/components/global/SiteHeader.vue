@@ -24,7 +24,7 @@
           <UButton
             :variant="isSolutionsActive ? 'solid' : 'outline'"
             size="lg"
-            class="rounded-md text-white font-bold"
+            class="rounded-md text-white font-bold bg-black/50"
             color="primary"
             :to="localePath('/explorer/')"
           >{{ $t('header.solutions') }}</UButton>
