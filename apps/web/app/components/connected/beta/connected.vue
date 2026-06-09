@@ -1,150 +1,89 @@
 <template>
   <div ref="el" class="h-full w-full bg-neutral-lightest">
-      <svg :width="width" :height="height" :viewBox="viewBox">
-        <defs>
-          <filter id="dropShadow" x="0" y="0" width="200%" height="200%">
-            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="black" flood-opacity="0.5" />
-          </filter>
-        </defs>
-
-        <!-- references 
-        <g>
-          <line
-            v-for="(i,index) in StritesHeightStacked"
-            :key="i"
-            :x1="leftAxis "
-            :y1="my * i"
-            :x2="rightAxis"
-            :y2=" my * i"
-            stroke="rgba(0,0,0,0.1)"
-            stroke-dasharray="2 2"
-            
-          />
-          
-
-          <line
-            :key="'v1'"
-            :x1="leftAxis "
-            :y1="0"
-            :x2="leftAxis "
-            :y2="height "
-            stroke="rgba(0,0,0,0.15)"
-            stroke-dasharray="2 2"
-          />
-         
-
-          <line
-            :key="'v1'"
-            :x1="rightAxis "
-            :y1="0"
-            :x2="rightAxis "
-            :y2="height "
-            stroke="rgba(0,0,0,0.15)"
-            stroke-dasharray="2 2"
-          />
-        </g>
--->
-
-        <!-- one circle for each project as mini circle lower-->
-        <circle
-            v-for="project in projects"
-            :key="'circle-' + project.id"
-            :cx="(scaleX(project.id) ?? 0) + scaleX.bandwidth() / 2"
-            :cy="my * 3.5"
-            :r="1.5"
-            :class="overedProjectIds.includes(project.id) || overedProjectIds.length == 0 ? 'fill-black' : 'fill-gray-300'"
-          
+      <svg v-if="isSvgReady" :width="width" :height="height" :viewBox="viewBox">
+        <g :transform="`translate(0, ${chartPaddingTop})`">
+        <!-- risk lines for each project -->
+        <path
+          v-for="link in riskLinkPaths"
+          :key="link.key"
+          :d="link.d"
+          fill="none"
+          :stroke="isRiskLinkHighlighted(link.projectId, link.risk) ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'"
+          :stroke-width="isRiskLinkHighlighted(link.projectId, link.risk) ? '2' : '1'"
+          :opacity="isRiskLinkHighlighted(link.projectId, link.risk) ? 1 : 0.2"
         />
 
-        <!-- risk lines for each project -->
-        <g 
-            v-for="project in projects"
-            :key="'risk-line-' + project.id"
-          >
-            <path
-              v-for="risk in project.risks || []"
-              :key="project.id + '-' + risk"
-              :d="d3.linkVertical()({
-                source: [(scaleX(project.id) ?? 0) + scaleX.bandwidth() / 2, my*2 ],
-                target: [(scaleXRisksNew(risk) ?? 0) + scaleXRisksNew.bandwidth() / 2, my]
-              }) || ''"
-              fill="none"
-              :stroke="(overedRiskLabels.includes(risk) && overedProjectIds.includes(project.id)) ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'"
-              :stroke-width="(overedRiskLabels.includes(risk) && overedProjectIds.includes(project.id)) ? '2' : '1'"
-            />
-        </g>
+        <!-- country ISO lines for each project -->
+        <path
+          v-for="link in countryLinkPaths"
+          :key="link.key"
+          :d="link.d"
+          fill="none"
+          :stroke="isProjectLinkHighlighted(link.projectId) ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'"
+          :stroke-width="isProjectLinkHighlighted(link.projectId) ? '1' : '1'"
+          :opacity="isProjectLinkHighlighted(link.projectId) ? 0.7 : 0.2"
+        />
 
-       
-
-          <!-- country ISO lines for each project -->
-          <g 
-            v-for="project in projects"
-            :key="'country-line-' + project.id" 
-          >
-            <path
-              v-for="countryIso in project.countriesIsoArray || []"
-              :key="project.id + '-' + countryIso"
-              :d="d3.linkVertical()({
-                source: [(scaleX(project.id) ?? 0) + scaleX.bandwidth() / 2, my * 3.5],
-                target: [scaleXEntityRegions(entityRegionStacks.find(s => s.regionIsoCode === countryIso)?.from || 0) + (scaleXEntityRegions(entityRegionStacks.find(s => s.regionIsoCode === countryIso)?.to || 0) - scaleXEntityRegions(entityRegionStacks.find(s => s.regionIsoCode === countryIso)?.from || 0))/2, my * 4.5]
-              }) || ''"
-              fill="none"
-              :stroke="overedProjectIds.includes(project.id) ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'"
-              :stroke-width="overedProjectIds.includes(project.id) ? '2' : '1'"
-              :opacity="overedProjectIds.includes(project.id) ? '1' : '0.2'"
-            />
-          </g>
-
-
-       
-        <!-- projects  -->
-        <g>
-         
-
-          <!-- lower rect -->
-          <rect
-            v-for="project in projects"
-            :key="project.id"
-            :x="scaleX(project.id)"
-            :y="scaleY(project.end_year ?? 0) - scaleX.bandwidth()/2"
-            :width="scaleX.bandwidth()"
-            :height="scaleY(project.start_year ?? 0) - scaleY(project.end_year ?? 0) + scaleX.bandwidth()/2"
-            :class="overedProjectIds.includes(project.id) || overedProjectIds.length == 0 ? 'fill-[#1E63A2]' : 'fill-gray-300'"
-            class="cursor-pointer transition-colors duration-300"
-            stroke="black"
-            stroke-width="1"
-            :rx="scaleX.bandwidth()/2"
-            @mouseover="(e) => { overProjects(project.id); showTooltip(e, { title: project.acronym || project.title || project.id, subtitle: `${project.start_year || '?'} - ${project.end_year || '?'}`, value: project.total_cost, valueLabel: 'Total Cost' }) }"
+        <!-- projects: thin vertical line + hollow top dot + solid bottom dot -->
+        <g v-for="project in projects" :key="'project-' + project.id">
+          <line
+            :x1="projectCenterX(project.id)"
+            :y1="projectEndY(project)"
+            :x2="projectCenterX(project.id)"
+            :y2="projectStartY(project)"
+            stroke="transparent"
+            stroke-width="14"
+            class="cursor-pointer"
+            @mouseover="(e) => onProjectHover(e, project)"
             @mousemove="updateTooltipPosition"
-            @mouseout="() => { outProjects(); hideTooltip() }"
+            @mouseout="onProjectLeave"
+            @click="emit('selectProject', project.id)"
           />
-         
-          <!-- one circle for each project at endYear y -->
-          <circle
-            v-for="project in projects"
-            :key="'circle-end-' + project.id"
-            :cx="(scaleX(project.id) ?? 0) + scaleX.bandwidth() / 2"
-            :cy="scaleY(project.end_year ?? 0)"
-            :r="scaleX.bandwidth()/2"         
-            class="fill-white stroke-black stroke-1"
-          />  
 
-           <!-- one circle for each project as mini circle upper-->
-          <circle
-            v-for="project in projects"
-            :key="'circle-' + project.id"
-            :cx="(scaleX(project.id) ?? 0) + scaleX.bandwidth() / 2"
-            :cy="my * 2"
-            :r="1.5"
-            :class="overedProjectIds.includes(project.id) || overedProjectIds.length == 0 ? 'fill-black' : 'fill-gray-300'"
+          <line
+            :x1="projectCenterX(project.id)"
+            :y1="projectEndY(project)"
+            :x2="projectCenterX(project.id)"
+            :y2="projectStartY(project)"
+            :stroke="projectStroke(project.id)"
+            :stroke-width="hoveredProjectId === project.id ? 2 : 1.5"
+            class="pointer-events-none transition-all duration-300"
           />
-          
+
+          <circle
+            v-show="hoveredProjectId === project.id"
+            :cx="projectCenterX(project.id)"
+            :cy="projectEndY(project)"
+            :r="projectTopDotR + 4"
+            fill="none"
+            stroke="#1e63a2"
+            stroke-width="1.5"
+            class="pointer-events-none transition-opacity duration-300"
+          />
+
+          <circle
+            :cx="projectCenterX(project.id)"
+            :cy="projectEndY(project)"
+            :r="projectTopDotR"
+            fill="white"
+            :stroke="projectStroke(project.id)"
+            :stroke-width="hoveredProjectId === project.id ? 2 : 1"
+            class="pointer-events-none transition-all duration-300"
+          />
+
+          <circle
+            :cx="projectCenterX(project.id)"
+            :cy="projectStartY(project)"
+            :r="projectBottomDotR"
+            :fill="projectStroke(project.id)"
+            class="pointer-events-none transition-all duration-300"
+          />
         </g>
 
-        <!-- years lables on the left of the diagram -->
+        <!-- years labels on the left of the diagram -->
         <g>
           <text
-            v-for="year in Array.from({ length: maxEndYear - minStartYear + 1 }, (_, i) => minStartYear + i)"
+            v-for="year in yearLabels"
             :key="'label-' + year"
             :x="leftAxis"
             :y="scaleY(year) + 4"
@@ -156,99 +95,118 @@
           </text>
         </g>
 
-        <!-- risks cilinders -->
-         <g>
-           
-          <circle
-            v-for="(stack, index) in riskStacks"
-            :key="'risk-circle-' + stack.riskLabel"
-            :cx="(scaleXRisksNew(stack.riskLabel) ?? 0) + scaleXRisksNew.bandwidth() / 2"
-            :cy="scaleYRisks(0)"
-            :r="scaleX.bandwidth()/2"     
-            :class="overedRiskLabels.includes(stack.riskLabel) || overedRiskLabels.length == 0 ? 'fill-white stroke-black' : 'fill-gray-300'"
-            class="transition-colors duration-300 cursor-pointer"
-            stroke-width="1"
-            @mouseover="(e) => { overRisks(stack.riskLabel); showTooltip(e, { title: stack.riskLabel, value: stack.count, valueLabel: 'Projects' }) }"
+        <!-- risks: thin vertical line + hollow top dot + solid bottom dot -->
+        <g v-for="stack in riskStacks" :key="'risk-' + stack.riskLabel">
+          <line
+            :x1="riskCenterX(stack.riskLabel)"
+            :y1="riskTopY(stack.count)"
+            :x2="riskCenterX(stack.riskLabel)"
+            :y2="riskBottomY()"
+            stroke="transparent"
+            stroke-width="14"
+            class="cursor-pointer"
+            @mouseover="(e) => onRiskHover(e, stack)"
             @mousemove="updateTooltipPosition"
-            @mouseout="() => { outRisks(); hideTooltip() }"
+            @mouseout="onRiskLeave"
           />
-   
 
-          <!-- a rounded rect connecting the two circles-->
-            <rect
-                v-for="(stack, index) in riskStacks"
-                :key="'risk-rect-' + stack.riskLabel"
-                :x="(scaleXRisksNew(stack.riskLabel) ?? 0) + scaleXRisksNew.bandwidth() / 2 - scaleX.bandwidth()/2"
-                :y="scaleYRisks(stack.count) - scaleX.bandwidth()/2"
-                :width="scaleX.bandwidth()"
-                :height="(scaleYRisks(0) - scaleYRisks(stack.count)) + scaleX.bandwidth()"
-                :rx="scaleX.bandwidth()/2"
-                :class="overedRiskLabels.includes(stack.riskLabel) || overedRiskLabels.length == 0 ? 'fill-[#1E63A2]' : 'fill-gray-100'"
-                class="transition-colors duration-300 stroke-black cursor-pointer"
-                @mouseover="(e) => { overRisks(stack.riskLabel); showTooltip(e, { title: stack.riskLabel, value: stack.count, valueLabel: 'Projects' }) }"
-                @mousemove="updateTooltipPosition"
-                @mouseout="() => { outRisks(); hideTooltip() }"
-            />
+          <line
+            :x1="riskCenterX(stack.riskLabel)"
+            :y1="riskTopY(stack.count)"
+            :x2="riskCenterX(stack.riskLabel)"
+            :y2="riskBottomY()"
+            :stroke="riskStroke(stack.riskLabel)"
+            :stroke-width="hoveredRiskLabel === stack.riskLabel ? 2 : 1.5"
+            class="pointer-events-none transition-all duration-300"
+          />
 
-        <!-- top circle same x y according to new scaleY for risks and risks count-->
-            <circle
-                 v-for="(stack, index) in riskStacks"
-                :key="'risk-circle-top-' + stack.riskLabel"
-                :cx="(scaleXRisksNew(stack.riskLabel) ?? 0) + scaleXRisksNew.bandwidth() / 2"
-                :cy="scaleYRisks(stack.count)"
-                :r="scaleX.bandwidth()/2"     
-                :class="overedRiskLabels.includes(stack.riskLabel) || overedRiskLabels.length == 0 ? 'fill-white ' : 'fill-white'"
-                class="transition-colors duration-300 stroke-black cursor-pointer"
-                stroke-width="1"
-                @mouseover="(e) => { overRisks(stack.riskLabel); showTooltip(e, { title: stack.riskLabel, value: stack.count, valueLabel: 'Projects' }) }"
-                @mousemove="updateTooltipPosition"
-                @mouseout="() => { outRisks(); hideTooltip() }"
-            />
+          <circle
+            v-show="hoveredRiskLabel === stack.riskLabel"
+            :cx="riskCenterX(stack.riskLabel)"
+            :cy="riskTopY(stack.count)"
+            :r="projectTopDotR + 4"
+            fill="none"
+            stroke="#1e63a2"
+            stroke-width="1.5"
+            class="pointer-events-none transition-opacity duration-300"
+          />
 
+          <circle
+            :cx="riskCenterX(stack.riskLabel)"
+            :cy="riskTopY(stack.count)"
+            :r="projectTopDotR"
+            fill="white"
+            :stroke="riskStroke(stack.riskLabel)"
+            :stroke-width="hoveredRiskLabel === stack.riskLabel ? 2 : 1"
+            class="pointer-events-none transition-all duration-300"
+          />
 
-            
-         </g>
+          <circle
+            :cx="riskCenterX(stack.riskLabel)"
+            :cy="riskBottomY()"
+            :r="projectBottomDotR"
+            :fill="riskStroke(stack.riskLabel)"
+            class="pointer-events-none transition-all duration-300"
+          />
 
+          <text
+            :x="riskCenterX(stack.riskLabel)"
+            :y="riskLabelY(stack.count, stack.riskLabel)"
+            text-anchor="middle"
+            class="pointer-events-none font-mono text-[7px] transition-colors duration-300"
+            :class="isRiskHighlighted(stack.riskLabel) ? 'fill-gray-900' : 'fill-gray-500'"
+          >
+            <tspan
+              v-for="(line, i) in riskLabelLines(stack.riskLabel)"
+              :key="i"
+              :x="riskCenterX(stack.riskLabel)"
+              :dy="i === 0 ? 0 : 9"
+            >
+              {{ line }}
+            </tspan>
+          </text>
+        </g>
 
         <!-- countries ISO small dots and labels -->
         <g>
           <circle
             v-for="country in entityRegionStacks"
             :key="'country-dot-' + country.regionIsoCode"
-            :cx="scaleXEntityRegions(country.from) + (scaleXEntityRegions(country.to) - scaleXEntityRegions(country.from))/2"
-            :cy="my * 4.5"
+            :cx="countryCenterX(country)"
+            :cy="entityBandTop"
             r="1.5"
-            :class="overedIsoCodes.includes(country.regionIsoCode) || overedIsoCodes.length == 0 ? 'fill-black' : 'fill-gray-300'"
+            :class="isIsoHighlighted(country.regionIsoCode) ? 'fill-black' : 'fill-gray-300'"
             class="cursor-pointer"
-            @mouseover="(e) => showTooltip(e, { title: country.regionIsoCode, value: country.count, valueLabel: 'Entities' })"
+            @mouseover="(e) => onCountryHover(e, country)"
             @mousemove="updateTooltipPosition"
-            @mouseout="hideTooltip"
+            @mouseout="onCountryLeave"
           />
 
-          <!-- lower dots for countries-->
            <circle
             v-for="country in entityRegionStacks"
             :key="'country-dot-lower-' + country.regionIsoCode"
-            :cx="scaleXEntityRegions(country.from) + (scaleXEntityRegions(country.to) - scaleXEntityRegions(country.from))/2"
-            :cy="my * 6"
+            :cx="countryCenterX(country)"
+            :cy="entityBandBottom"
             r="1.5"
-            :class="overedIsoCodes.includes(country.regionIsoCode) || overedIsoCodes.length == 0 ? 'fill-black' : 'fill-gray-300'"
+            :class="isIsoHighlighted(country.regionIsoCode) ? 'fill-black' : 'fill-gray-300'"
             class="cursor-pointer"
-            @mouseover="(e) => showTooltip(e, { title: country.regionIsoCode, value: country.count, valueLabel: 'Entities' })"
+            @mouseover="(e) => onCountryHover(e, country)"
             @mousemove="updateTooltipPosition"
-            @mouseout="hideTooltip"
+            @mouseout="onCountryLeave"
           />
 
-          <g v-for="country in entityRegionStacks">
+          <g v-for="country in entityRegionStacks" :key="'country-label-g-' + country.regionIsoCode">
             <text
               v-if="country.count > 12"
-              :key="'country-label-' + country.regionIsoCode"
-              :x="scaleXEntityRegions(country.from) + (scaleXEntityRegions(country.to) - scaleXEntityRegions(country.from))/2"
-              :y="my*6"
-              class="text-[8px]  font-mono"
-              :class="overedIsoCodes.includes(country.regionIsoCode) || overedIsoCodes.length == 0 ? 'fill-gray-600' : 'fill-gray-300'"
+              :x="countryCenterX(country)"
+              :y="entityBandBottom"
+              class="pointer-events-auto cursor-pointer text-[8px] font-mono transition-colors duration-300"
+              :class="isIsoHighlighted(country.regionIsoCode) ? 'fill-gray-900' : 'fill-gray-300'"
               text-anchor="middle"
               dy="1rem"
+              @mouseover="(e) => onCountryHover(e, country)"
+              @mousemove="updateTooltipPosition"
+              @mouseout="onCountryLeave"
             >
             {{ country.regionIsoCode }}
             </text>
@@ -256,25 +214,27 @@
         </g>
 
         <!-- entities -->
-        <g filter="url(#dropShadow)">
+        <g>
           <circle
             v-for="entity in entitiesWithStripPositions"
             :key="'entity-circle-' + entity.id"
             :cx="entity.radarX"
             :cy="entity.radarY"
-            :r="overedEntitiesIds.includes(entity.id) ? entity.radarRadius * 2 : entity.radarRadius"
+            :r="entityDisplayRadius(entity)"
             :fill="organizationActivityTypeColorScale((entity as any).organization_activity_type_name)"
             class="transition-all duration-300 cursor-pointer"
-            :class="overedEntitiesIds.includes(entity.id) || overedEntitiesIds.length == 0 ? 'grayscale-0' : 'grayscale-100 opacity-10'"
-            @mouseover="(e) => showTooltip(e, { title: (entity as any).short_name || (entity as any).legal_name || entity.id, subtitle: (entity as any).organization_activity_type_name, value: (entity as any).projectsTotalCost, valueLabel: 'Total Cost' })"
+            :class="entityVisualClass(entity.id)"
+            :opacity="entityVisualOpacity(entity.id)"
+            @mouseover="(e) => onEntityHover(e, entity)"
             @mousemove="updateTooltipPosition"
-            @mouseout="hideTooltip"
+            @mouseout="onEntityLeave"
           />
         </g>
+        </g>
       </svg>
-    
+
     <!-- Tooltip -->
-    <div 
+    <div
       v-if="tooltip.visible"
       class="fixed z-50 border border-neutral-darkest bg-neutral-lightest p-2 text-sm shadow-lg pointer-events-none"
       :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }"
@@ -283,6 +243,9 @@
       <div v-if="tooltip.subtitle" class="mt-1 text-xs text-neutral-dark">{{ tooltip.subtitle }}</div>
       <div v-if="tooltip.value !== undefined" class="mt-1">
         <span class="font-medium">{{ tooltip.valueLabel }}: {{ typeof tooltip.value === 'number' ? tooltip.value.toLocaleString() : tooltip.value }}</span>
+      </div>
+      <div v-if="tooltip.hint" class="mt-1.5 font-mono text-2xs tracking-[0.08em] text-neutral-dark">
+        {{ tooltip.hint }}
       </div>
     </div>
   </div>
@@ -293,106 +256,37 @@
   import { useTemplateRef } from 'vue'
   import * as d3 from "d3";
   import { CA_CAT_LIST } from "~/utils/connectedColors";
+  import europeMap from "~/assets/data/europe.json";
+
+  const isoToName = Object.fromEntries(
+    europeMap.features.map((f: { properties: { ISO2: string; NAME: string } }) => [
+      f.properties.ISO2,
+      f.properties.NAME,
+    ])
+  );
 
   const el = useTemplateRef('el')
   const { width, height } = useElementSize(el)
-  // calculate viewBox dimensions based on width and height
+  const isSvgReady = computed(() => width.value > 0 && height.value > 0);
   const viewBox = computed(() => `0 0 ${width.value} ${height.value}`);
 
-  // SVG save functionality
-  const saveSVG = () => {
-    if (!el.value) return;
-    
-    const svgElement = el.value.querySelector('svg');
-    if (!svgElement) return;
-    
-    // Clone the SVG to avoid modifying the original
-    const svgClone = svgElement.cloneNode(true) as SVGElement;
-    
-    // Add XML declaration and namespace
-    svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svgClone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-    
-    // Create CSS styles for the classes used in the SVG
-    const cssStyles = `
-      .fill-gray-300 { fill: #d1d5db; }
-      .fill-gray-400 { fill: #9ca3af; }
-      .fill-gray-500 { fill: #6b7280; }
-      .fill-gray-600 { fill: #4b5563; }
-      .fill-gray-900 { fill: #111827; }
-      .fill-white { fill: #ffffff; }
-      .fill-black { fill: #000000; }
-      .stroke-gray-200 { stroke: #e5e7eb; }
-      .stroke-gray-400 { stroke: #9ca3af; }
-      .stroke-black { stroke: #000000; }
-      .text-9px { font-size: 9px; }
-      .text-8px { font-size: 8px; }
-      .text-10px { font-size: 10px; }
-      .font-mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace; }
-      .cursor-pointer { cursor: pointer; }
-      .transition-colors { transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; }
-      .transition-all { transition: all 0.15s ease-in-out; }
-      .duration-300 { transition-duration: 0.3s; }
-      .grayscale-0 { filter: grayscale(0); }
-      .grayscale-100 { filter: grayscale(1); }
-      .opacity-10 { opacity: 0.1; }
-      .hover\\:stroke-gray-400:hover { stroke: #9ca3af; }
-      .stroke-1 { stroke-width: 1px; }
-    `;
-    
-    // Create style element
-    const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-    styleElement.textContent = cssStyles;
-    
-    // Insert style at the beginning of SVG
-    svgClone.insertBefore(styleElement, svgClone.firstChild);
-    
-    // Create the SVG content
-    const svgContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + svgClone.outerHTML;
-    
-    // Create and download the file
-    const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `connected-diagram-${new Date().toISOString().slice(0, 10)}.svg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
-  };
+  const linkVertical = d3.linkVertical();
 
-  // Keyboard event handler
-  const handleKeydown = (event: KeyboardEvent) => {
-    if (event.key === 's' || event.key === 'S') {
-      event.preventDefault();
-      saveSVG();
-    }
-  };
-
-  // variables for dimensions
-  const my = computed(() => height.value / 8); // stripes height module
-
-  // Horizontal chart bounds — use nearly the full container width (the old
-  // (width - height) / 2 margins assumed a square viewport and left huge
-  // empty gutters on wide screens).
+  const legendReserve = computed(() => Math.max(88, height.value * 0.12));
+  const chartPaddingTop = computed(() => Math.max(20, (height.value - legendReserve.value) * 0.05));
+  const layoutHeight = computed(() => height.value - legendReserve.value - chartPaddingTop.value);
+  const my = computed(() => layoutHeight.value / 8);
+  // Cap tallest risk bar so two-line labels fit above the top dot (y grows downward).
+  const riskBandTopY = computed(() => {
+    const twoLineLabelHeight = 20;
+    const gapAboveDot = 6;
+    return twoLineLabelHeight + projectTopDotR + gapAboveDot;
+  });
+  const entityBandTop = computed(() => my.value * 4.25);
+  const entityBandBottom = computed(() => my.value * 6.75);
   const chartPaddingX = computed(() => 56);
   const leftAxis = computed(() => chartPaddingX.value);
   const rightAxis = computed(() => width.value - chartPaddingX.value);
-
-
-  const StripesHeight = [1,1,1.5,1,1.5,1,1]
-  const StritesHeightStacked = computed(() => {
-    const stacks: number[] = [];
-    let currentHeight = 0;
-    StripesHeight.forEach((h) => {
-      currentHeight += h;
-      stacks.push(currentHeight);
-    });
-    return stacks;
-  });
 
   const props = defineProps<{
     projects: any[];
@@ -400,19 +294,25 @@
     entities: any[];
   }>();
 
-  // minimum start year and maximum end year from projects prop
+  const emit = defineEmits<{
+    selectProject: [id: string];
+  }>();
+
   const minStartYear = computed(() => {
     return d3.min(props.projects, (d: any) => d.start_year) || new Date().getFullYear();
   });
   const maxEndYear = computed(() => {
     return d3.max(props.projects, (d: any) => d.end_year) || new Date().getFullYear();
   });
-  // max total_cost from projects prop
   const maxTotalCost = computed(() => {
     return d3.max(props.projects, (d: any) => d.total_cost) || 0;
   });
 
-  // an horizontal scaleX for projects: starting at (width-height)/2 ending at width -  (width-height)/2
+  const yearLabels = computed(() => {
+    const len = maxEndYear.value - minStartYear.value + 1;
+    return Array.from({ length: len }, (_, i) => minStartYear.value + i);
+  });
+
   const scaleY = computed(() => {
     return d3.scaleLinear()
       .domain([minStartYear.value, maxEndYear.value])
@@ -426,63 +326,87 @@
       .padding(0.25);
   });
 
-  const thisYear = new Date().getFullYear();
+  const projectTopDotR = 4;
+  const projectBottomDotR = 2;
 
-  // loop props.risks to get stacked count values (from, to)
+  function projectCenterX(projectId: string) {
+    return (scaleX.value(projectId) ?? 0) + scaleX.value.bandwidth() / 2;
+  }
+
+  function projectEndY(project: { end_year?: number | null }) {
+    return scaleY.value(project.end_year ?? 0);
+  }
+
+  function projectStartY(project: { start_year?: number | null }) {
+    return scaleY.value(project.start_year ?? 0);
+  }
+
+  function projectStroke(projectId: string) {
+    return isProjectHighlighted(projectId) ? '#1E63A2' : '#9ca3af';
+  }
+
+  function riskCenterX(riskLabel: string) {
+    return (scaleXRisksNew.value(riskLabel) ?? 0) + scaleXRisksNew.value.bandwidth() / 2;
+  }
+
+  function riskTopY(count: number) {
+    return scaleYRisks.value(count);
+  }
+
+  function riskBottomY() {
+    return scaleYRisks.value(0);
+  }
+
+  function riskStroke(riskLabel: string) {
+    return isRiskHighlighted(riskLabel) ? '#1E63A2' : '#9ca3af';
+  }
+
+  function riskLabelLines(label: string): string[] {
+    const words = label.trim().split(/\s+/);
+    if (words.length <= 2) return [label];
+    return [words.slice(0, 2).join(' '), words.slice(2).join(' ')];
+  }
+
+  function riskLabelY(count: number, label: string) {
+    const base = riskTopY(count) - projectTopDotR - 6;
+    return riskLabelLines(label).length > 1 ? base - 9 : base;
+  }
+
   const riskStacks = computed(() => {
     const stacks: Array<{ riskLabel: string; count: number; from: number; to: number }> = [];
     let currentCount = 0;
-    
+
     props.risks.forEach((riskObj) => {
       const riskLabel = riskObj.risk;
       const count = riskObj.count;
-      
-      stacks.push({ 
-        riskLabel, 
-        count, 
-        from: currentCount, 
-        to: currentCount + count 
+
+      stacks.push({
+        riskLabel,
+        count,
+        from: currentCount,
+        to: currentCount + count
       });
-      
+
       currentCount += count;
     });
-    
+
     return stacks;
   });
 
-  // an horizontal scaleX, for risks, from 0 to max count
-  const scaleXRisks = computed(() => {
-    const maxCount = d3.max(riskStacks.value, (d) => d.to) || 0;
+  const scaleXRisksNew = computed(() => {
+    return d3.scaleBand()
+      .domain(riskStacks.value.map(d => d.riskLabel))
+      .range([leftAxis.value, rightAxis.value])
+      .padding(0.1);
+  });
+
+  const scaleYRisks = computed(() => {
+    const maxCount = d3.max(riskStacks.value, (d) => d.count) || 0;
     return d3.scaleLinear()
       .domain([0, maxCount])
-      .range([leftAxis.value, rightAxis.value]);
+      .range([my.value, riskBandTopY.value]);
   });
 
-    const scaleXRisksNew = computed(() => {
-        return d3.scaleBand()
-        .domain(riskStacks.value.map(d => d.riskLabel))
-        .range([leftAxis.value, rightAxis.value])
-        .padding(0.1);
-    });
-
-    // a new scaleY for risks
-    // from 0 to max count in props.risks
-    // from my to my/2 (max)
-    const scaleYRisks = computed(() => {
-        const maxCount = d3.max(riskStacks.value, (d) => d.count) || 0;
-        return d3.scaleLinear()
-        .domain([0, maxCount])
-        .range([ my.value, my.value/2 ]);
-    });
-
-
-  // local data processing
-  // get max projectsTotalCost from entities prop
-  const maxEntitiesProjectsTotalCost = computed(() => {
-    return d3.max(props.entities, (d) => d.projectsTotalCost) || 0;
-  });
-
-  // get unique organization_activity_type_name from entities prop with entities count
   const entityTypes = computed(() => {
     const typeCountMap = new Map<string, number>();
     props.entities.forEach((entity: any) => {
@@ -491,14 +415,13 @@
         typeCountMap.set(entity.organization_activity_type_name, currentCount + 1);
       }
     });
-    
+
     return Array.from(typeCountMap.entries()).map(([activityType, count]) => ({
       activityType,
       count
     })).sort((a, b) => b.count - a.count);
   });
 
-  // same as for entitity types but for related_region_iso_code property
   const entityRegions = computed(() => {
     const regionCountMap = new Map<string, number>();
     props.entities.forEach((entity: any) => {
@@ -506,52 +429,41 @@
         const currentCount = regionCountMap.get(entity.related_region_iso_code) || 0;
         regionCountMap.set(entity.related_region_iso_code, currentCount + 1);
       }
-    }); 
-    
+    });
+
     return Array.from(regionCountMap.entries()).map(([regionIsoCode, count]) => ({
       regionIsoCode,
       count
     })).sort((a, b) => b.count - a.count);
   });
 
-  // get max count value from entityTypes and entityRegions
-  const maxEntityTypeCount = computed(() => {
-    return d3.max(entityTypes.value, (d) => d.count) || 0;
+  const organizationActivityTypeColorScale = computed(() => {
+    return d3.scaleOrdinal<string, string>()
+      .domain(entityTypes.value.map(d => d.activityType))
+      .range(CA_CAT_LIST);
   });
 
-  const maxEntityRegionCount = computed(() => {
-    return d3.max(entityRegions.value, (d) => d.count) || 0;
-  }); 
-
-   // a d3 color scale for entity organizationActivityType
-   const organizationActivityTypeColorScale = computed(() => {
-      return d3.scaleOrdinal<string, string>()
-        .domain(entityTypes.value.map(d => d.activityType))
-        .range(CA_CAT_LIST);
-  });
-
-  // as for riskStacks
-  // a computed function to get entityRegions stacked count values (from, to)
   const entityRegionStacks = computed(() => {
     const stacks: Array<{ regionIsoCode: string; count: number; from: number; to: number }> = [];
-    let currentCount = 0; 
+    let currentCount = 0;
     entityRegions.value.forEach((regionObj) => {
-      const regionIsoCode = regionObj.regionIsoCode;
-      const count = regionObj.count;
-      
-      stacks.push({ 
-        regionIsoCode, 
-        count, 
-        from: currentCount, 
-        to: currentCount + count 
+      stacks.push({
+        regionIsoCode: regionObj.regionIsoCode,
+        count: regionObj.count,
+        from: currentCount,
+        to: currentCount + regionObj.count
       });
-      
-      currentCount += count;
+      currentCount += regionObj.count;
     });
     return stacks;
   });
 
-  // a scaleLinear X for entityRegions from 0 to entities.length
+  const regionStackByIso = computed(() => {
+    const map = new Map<string, { regionIsoCode: string; count: number; from: number; to: number }>();
+    entityRegionStacks.value.forEach((stack) => map.set(stack.regionIsoCode, stack));
+    return map;
+  });
+
   const scaleXEntityRegions = computed(() => {
     const maxCount = d3.max(entityRegionStacks.value, (d) => d.to) || 0;
     return d3.scaleLinear()
@@ -559,7 +471,6 @@
       .range([leftAxis.value, rightAxis.value]);
   });
 
-  // entities grouped by JUST projectsCount 
   const entitiesByProjectsCount = computed(() => {
     const groupMap = new Map<number, string[]>();
     props.entities.forEach((entity) => {
@@ -576,109 +487,244 @@
     })).sort((a, b) => b.projectsCount - a.projectsCount);
   });
 
-  // as for entityRegionStacks
-  // a computed function to get entities by projectsCount stacks values (from, to)
   const entitiesByProjectsCountStacks = computed(() => {
     const stacks: Array<{ projectsCount: number; count: number; from: number; to: number }> = [];
-    let currentCount = 0; 
+    let currentCount = 0;
     entitiesByProjectsCount.value.forEach((group) => {
-      const projectsCount = group.projectsCount;
-      const count = group.entitiesCount;
-      
-      stacks.push({ 
-        projectsCount, 
-        count, 
-        from: currentCount, 
-        to: currentCount + count 
+      stacks.push({
+        projectsCount: group.projectsCount,
+        count: group.entitiesCount,
+        from: currentCount,
+        to: currentCount + group.entitiesCount
       });
-      
-      currentCount += count;
+      currentCount += group.entitiesCount;
     });
     return stacks;
   });
 
-  // a scaleLinear Y for entities by projectsCount from 0 to entities.length
   const scaleYEntitiesByProjectsCount = computed(() => {
     const maxCount = d3.max(entitiesByProjectsCountStacks.value, (d) => d.to) || 0;
     return d3.scaleLinear()
       .domain([0, maxCount])
-      .range([ my.value*4.5, my.value*6 ]);
+      .range([my.value * 4.5, my.value * 6.5]);
   });
 
+  // Stable random jitter per entity — matches the old Math.random scatter without
+  // re-shuffling on every resize/hover recompute.
+  const entityJitterById = shallowRef(new Map<string, { jx: number; jy: number }>());
+
+  watch(
+    () => props.entities.map((e) => e.id).join(','),
+    () => {
+      const map = new Map<string, { jx: number; jy: number }>();
+      props.entities.forEach((entity) => {
+        map.set(entity.id, { jx: Math.random(), jy: Math.random() });
+      });
+      entityJitterById.value = map;
+    },
+    { immediate: true }
+  );
+
   const resolveCircleCollisions = (circles: any[], maxIterations = 100) => {
-  let moved;
-  for (let iter = 0; iter < maxIterations; iter++) {
-    moved = false;
-    for (let i = 0; i < circles.length; i++) {
-      for (let j = i + 1; j < circles.length; j++) {
-        const a = circles[i];
-        const b = circles[j];
-        const dx = b.radarX - a.radarX;
-        const dy = b.radarY - a.radarY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const minDist = a.radarRadius + b.radarRadius + 2; // add some padding
-        if (dist < minDist && dist > 0) {
-          // Overlap detected, move each circle away from the other
-          const overlap = (minDist - dist) / 2;
-          const ox = (dx / dist) * overlap;
-          const oy = (dy / dist) * overlap;
-          a.radarX -= ox;
-          a.radarY -= oy;
-          b.radarX += ox;
-          b.radarY += oy;
-          moved = true;
+    let moved;
+    for (let iter = 0; iter < maxIterations; iter++) {
+      moved = false;
+      for (let i = 0; i < circles.length; i++) {
+        for (let j = i + 1; j < circles.length; j++) {
+          const a = circles[i];
+          const b = circles[j];
+          const dx = b.radarX - a.radarX;
+          const dy = b.radarY - a.radarY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minDist = a.radarRadius + b.radarRadius + 2;
+          if (dist < minDist && dist > 0) {
+            const overlap = (minDist - dist) / 2;
+            const ox = (dx / dist) * overlap;
+            const oy = (dy / dist) * overlap;
+            a.radarX -= ox;
+            a.radarY -= oy;
+            b.radarX += ox;
+            b.radarY += oy;
+            moved = true;
+          }
         }
       }
+      if (!moved) break;
     }
-    if (!moved) break; // Stop if no circles were moved
-  }
-  return circles;
+    return circles;
   };
 
-  // assign stripX and stripY to entities
-  // x by entityRegionStacks
-  // y by entitiesByProjectsCountStacks
   const entitiesWithStripPositions = computed(() => {
+    const sxRegions = scaleXEntityRegions.value;
+    const syProjectsCount = scaleYEntitiesByProjectsCount.value;
+    const maxCost = maxTotalCost.value;
+    const jitterMap = entityJitterById.value;
+
     const circles = props.entities.map((entity) => {
+      const regionStack = entityRegionStacks.value.find(
+        (s) => s.regionIsoCode === (entity as any).related_region_iso_code
+      );
+      const projectsCountStack = entitiesByProjectsCountStacks.value.find(
+        (s) => s.projectsCount === entity.projectsCount
+      );
 
-      const regionStack = entityRegionStacks.value.find(s => s.regionIsoCode === (entity as any).related_region_iso_code);
+      const xFrom = sxRegions(regionStack?.from || 0);
+      const xTo = sxRegions(regionStack?.to || 0);
+      const xDelta = xTo - xFrom - 8;
 
-      const projectsCountStack = entitiesByProjectsCountStacks.value.find(s => s.projectsCount === entity.projectsCount);
+      const yFrom = syProjectsCount(projectsCountStack?.from || 0);
+      const yTo = syProjectsCount(projectsCountStack?.to || 0);
+      const yDelta = yTo - yFrom;
 
-      let xFrom = scaleXEntityRegions.value(regionStack?.from || 0);
-      let xTo = scaleXEntityRegions.value(regionStack?.to || 0);
-      let xDelta = xTo - xFrom -8;
-
-      let yFrom = scaleYEntitiesByProjectsCount.value(projectsCountStack?.from || 0);
-      let yTo = scaleYEntitiesByProjectsCount.value(projectsCountStack?.to || 0);
-      let yDelta = yTo - yFrom;
+      const jitter = jitterMap.get(entity.id) ?? { jx: 0.5, jy: 0.5 };
 
       return {
         ...entity,
-
-        radarX: xFrom + Math.random () * xDelta,
-        radarY: yFrom + Math.random () * yDelta,  
-        radarRadius: 2 + (entity.projectsTotalCost/ maxTotalCost.value * 7)
+        radarX: xFrom + jitter.jx * xDelta,
+        radarY: yFrom + jitter.jy * yDelta,
+        radarRadius: 2.5 + (entity.projectsTotalCost / maxCost * 8)
       };
     });
-    // return circles;
-     return resolveCircleCollisions(circles);
+
+    return resolveCircleCollisions(circles);
   });
 
+  const riskLinkPaths = computed(() => {
+    if (!isSvgReady.value) return [];
 
+    const sx = scaleX.value;
+    const srx = scaleXRisksNew.value;
+    const paths: Array<{ key: string; projectId: string; risk: string; d: string }> = [];
 
+    const sy = scaleY.value;
+    props.projects.forEach((project) => {
+      const sourceX = (sx(project.id) ?? 0) + sx.bandwidth() / 2;
+      const sourceY = sy(project.end_year ?? 0);
+      (project.risks || []).forEach((risk: string) => {
+        const targetX = (srx(risk) ?? 0) + srx.bandwidth() / 2;
+        paths.push({
+          key: `${project.id}-${risk}`,
+          projectId: project.id,
+          risk,
+          d: linkVertical({
+            source: [sourceX, sourceY],
+            target: [targetX, riskBottomY()]
+          }) || ''
+        });
+      });
+    });
 
+    return paths;
+  });
 
+  const countryLinkPaths = computed(() => {
+    if (!isSvgReady.value) return [];
 
+    const sx = scaleX.value;
+    const sxRegions = scaleXEntityRegions.value;
+    const sy = scaleY.value;
+    const paths: Array<{ key: string; projectId: string; d: string }> = [];
 
+    props.projects.forEach((project) => {
+      const sourceX = (sx(project.id) ?? 0) + sx.bandwidth() / 2;
+      const sourceY = sy(project.start_year ?? 0);
+      (project.countriesIsoArray || []).forEach((countryIso: string) => {
+        const stack = regionStackByIso.value.get(countryIso);
+        const from = stack?.from || 0;
+        const to = stack?.to || 0;
+        const targetX = sxRegions(from) + (sxRegions(to) - sxRegions(from)) / 2;
+        paths.push({
+          key: `${project.id}-${countryIso}`,
+          projectId: project.id,
+          d: linkVertical({
+            source: [sourceX, sourceY],
+            target: [targetX, entityBandTop.value]
+          }) || ''
+        });
+      });
+    });
 
-  // UI variables and functions
-  const overedProjectIds = ref<string[]>([]);
-  const overedRiskLabels = ref<string[]>([]);
-  const overedEntitiesIds = ref<string[]>([]);
-  const overedIsoCodes = ref<string[]>([]);
+    return paths;
+  });
 
-  // Tooltip state
+  function countryCenterX(country: { from: number; to: number }) {
+    const sx = scaleXEntityRegions.value;
+    return sx(country.from) + (sx(country.to) - sx(country.from)) / 2;
+  }
+
+  const entityIdsByCountry = computed(() => {
+    const map = new Map<string, string[]>();
+    props.entities.forEach((entity) => {
+      const iso = (entity as any).related_region_iso_code as string | undefined;
+      if (!iso) return;
+      if (!map.has(iso)) map.set(iso, []);
+      map.get(iso)!.push(entity.id);
+    });
+    return map;
+  });
+
+  const countryNameByIso = computed(() => {
+    const map = new Map<string, string>();
+    props.entities.forEach((entity) => {
+      const iso = (entity as any).related_region_iso_code as string | undefined;
+      const name = (entity as any).address_country as string | undefined;
+      if (iso && name && !map.has(iso)) map.set(iso, name);
+    });
+    return map;
+  });
+
+  function countryFullName(iso: string) {
+    return isoToName[iso] || countryNameByIso.value.get(iso) || iso;
+  }
+
+  const hoveredProjectId = ref<string | null>(null);
+  const hoveredRiskLabel = ref<string | null>(null);
+  const hoveredEntityId = ref<string | null>(null);
+  const overedProjectIds = ref<Set<string>>(new Set());
+  const overedRiskLabels = ref<Set<string>>(new Set());
+  const overedEntitiesIds = ref<Set<string>>(new Set());
+  const overedIsoCodes = ref<Set<string>>(new Set());
+
+  const noProjectHighlight = computed(() => overedProjectIds.value.size === 0);
+  const noRiskHighlight = computed(() => overedRiskLabels.value.size === 0);
+  const noEntityHighlight = computed(() => overedEntitiesIds.value.size === 0);
+  const noIsoHighlight = computed(() => overedIsoCodes.value.size === 0);
+
+  const isProjectHighlighted = (id: string) => noProjectHighlight.value || overedProjectIds.value.has(id);
+  const isProjectLinkHighlighted = (id: string) =>
+    !noProjectHighlight.value && overedProjectIds.value.has(id);
+  const isRiskHighlighted = (risk: string) => noRiskHighlight.value || overedRiskLabels.value.has(risk);
+  const isRiskLinkHighlighted = (projectId: string, risk: string) =>
+    !noRiskHighlight.value
+    && !noProjectHighlight.value
+    && overedRiskLabels.value.has(risk)
+    && overedProjectIds.value.has(projectId);
+  const isIsoHighlighted = (iso: string) => noIsoHighlight.value || overedIsoCodes.value.has(iso);
+  const isEntityHighlighted = (id: string) => noEntityHighlight.value || overedEntitiesIds.value.has(id);
+
+  const entityDisplayRadius = (entity: { id: string; radarRadius: number }) => {
+    if (hoveredEntityId.value === entity.id) return entity.radarRadius * 1.8;
+    if (!noEntityHighlight.value && overedEntitiesIds.value.has(entity.id)) return entity.radarRadius * 2.0;
+    return entity.radarRadius;
+  };
+
+  const entityVisualOpacity = (id: string) => {
+    if (hoveredEntityId.value) {
+      return hoveredEntityId.value === id ? 1 : 0.1;
+    }
+    if (!noEntityHighlight.value) {
+      return overedEntitiesIds.value.has(id) ? 1 : 0.1;
+    }
+    return 1;
+  };
+
+  const entityVisualClass = (id: string) => {
+    const active = hoveredEntityId.value
+      ? hoveredEntityId.value === id
+      : isEntityHighlighted(id);
+    return active ? 'grayscale-0' : 'grayscale-100';
+  };
+
   const tooltip = ref({
     visible: false,
     x: 0,
@@ -686,10 +732,11 @@
     title: '',
     subtitle: '',
     value: undefined as number | undefined,
-    valueLabel: ''
+    valueLabel: '',
+    hint: '' as string | undefined
   });
 
-  const showTooltip = (event: MouseEvent, data: { title: string; subtitle?: string; value?: number; valueLabel?: string }) => {
+  const showTooltip = (event: MouseEvent, data: { title: string; subtitle?: string; value?: number; valueLabel?: string; hint?: string }) => {
     tooltip.value = {
       visible: true,
       x: event.clientX + 10,
@@ -697,7 +744,8 @@
       title: data.title,
       subtitle: data.subtitle || '',
       value: data.value,
-      valueLabel: data.valueLabel || 'Value'
+      valueLabel: data.valueLabel || 'Value',
+      hint: data.hint
     };
   };
 
@@ -712,48 +760,156 @@
     }
   };
 
-  const overProjects = (prj:string) => {
-    overedRiskLabels.value = props.projects.find(p => p.id == prj)?.risks || [];
-    overedProjectIds.value = [prj];
-    overedEntitiesIds.value = props.entities.filter(e => e.projects?.includes(prj)).map(e => e.id);
+  const onRiskHover = (
+    event: MouseEvent,
+    stack: { riskLabel: string; count: number }
+  ) => {
+    hoveredEntityId.value = null;
+    hoveredProjectId.value = null;
+    hoveredRiskLabel.value = stack.riskLabel;
+    overRisks(stack.riskLabel);
+    showTooltip(event, {
+      title: stack.riskLabel,
+      value: stack.count,
+      valueLabel: 'Projects',
+    });
+  };
 
-    const myPrj = props.projects.find(p => p.id == prj);
-    if (myPrj) {
-     overedIsoCodes.value = myPrj.countriesIsoArray || [];
-     overedEntitiesIds.value = myPrj.entities || [];
-    } 
+  const onRiskLeave = () => {
+    outRisks();
+    hideTooltip();
+  };
 
+  const onProjectHover = (event: MouseEvent, project: any) => {
+    hoveredEntityId.value = null;
+    hoveredRiskLabel.value = null;
+    hoveredProjectId.value = project.id;
+    overProjects(project.id);
+    showTooltip(event, {
+      title: project.acronym || project.title || project.id,
+      subtitle: `${project.start_year || '?'} - ${project.end_year || '?'}`,
+      value: project.total_cost,
+      valueLabel: 'Total Cost',
+      hint: 'Click for details'
+    });
+  };
+
+  const onProjectLeave = () => {
+    hoveredProjectId.value = null;
+    outProjects();
+    hideTooltip();
+  };
+
+  const onEntityHover = (event: MouseEvent, entity: any) => {
+    hoveredProjectId.value = null;
+    hoveredRiskLabel.value = null;
+    hoveredEntityId.value = entity.id;
+    overEntity(entity);
+    showTooltip(event, {
+      title: entity.short_name || entity.legal_name || entity.id,
+      subtitle: entity.organization_activity_type_name,
+      value: entity.projectsTotalCost,
+      valueLabel: 'Total Cost'
+    });
+  };
+
+  const onEntityLeave = () => {
+    hoveredEntityId.value = null;
+    outEntity();
+    hideTooltip();
+  };
+
+  const overEntity = (entity: any) => {
+    const projectIds = (entity.projects || []).map((p: { id: string }) => p.id);
+    overedProjectIds.value = new Set(projectIds);
+    overedEntitiesIds.value = new Set([entity.id]);
+
+    const riskSet = new Set<string>();
+    const isoSet = new Set<string>();
+    if (entity.related_region_iso_code) {
+      isoSet.add(entity.related_region_iso_code);
+    }
+    projectIds.forEach((pid: string) => {
+      const prj = props.projects.find((p) => p.id === pid);
+      if (!prj) return;
+      (prj.risks || []).forEach((risk: string) => riskSet.add(risk));
+      (prj.countriesIsoArray || []).forEach((iso: string) => isoSet.add(iso));
+    });
+    overedRiskLabels.value = riskSet;
+    overedIsoCodes.value = isoSet;
+  };
+
+  const outEntity = () => {
+    overedProjectIds.value = new Set();
+    overedRiskLabels.value = new Set();
+    overedEntitiesIds.value = new Set();
+    overedIsoCodes.value = new Set();
+  };
+
+  const onCountryHover = (
+    event: MouseEvent,
+    country: { regionIsoCode: string; count: number }
+  ) => {
+    hoveredEntityId.value = null;
+    hoveredProjectId.value = null;
+    hoveredRiskLabel.value = null;
+    const iso = country.regionIsoCode;
+    overedIsoCodes.value = new Set([iso]);
+    overedEntitiesIds.value = new Set(entityIdsByCountry.value.get(iso) || []);
+    overedProjectIds.value = new Set();
+    overedRiskLabels.value = new Set();
+    showTooltip(event, {
+      title: countryFullName(iso),
+      subtitle: iso,
+      value: country.count,
+      valueLabel: 'Entities',
+    });
+  };
+
+  const onCountryLeave = () => {
+    overedIsoCodes.value = new Set();
+    overedEntitiesIds.value = new Set();
+    hideTooltip();
+  };
+
+  const overProjects = (prj: string) => {
+    const myPrj = props.projects.find(p => p.id === prj);
+    overedRiskLabels.value = new Set(myPrj?.risks || []);
+    overedProjectIds.value = new Set([prj]);
+    overedEntitiesIds.value = new Set(myPrj?.entities || []);
+    overedIsoCodes.value = new Set(myPrj?.countriesIsoArray || []);
   };
 
   const outProjects = () => {
-    overedRiskLabels.value = [];
-    overedProjectIds.value = [];
-    overedEntitiesIds.value = [];
-    overedIsoCodes.value = [];
+    overedRiskLabels.value = new Set();
+    overedProjectIds.value = new Set();
+    overedEntitiesIds.value = new Set();
+    overedIsoCodes.value = new Set();
   };
 
-  const overRisks = (risk:string) => {
-    overedProjectIds.value = props.projects.filter(p => p.risks?.includes(risk)).map(p => p.id);
-    overedRiskLabels.value = [risk];
-
+  const overRisks = (risk: string) => {
+    hoveredEntityId.value = null;
+    hoveredProjectId.value = null;
     const myProjects = props.projects.filter(p => p.risks?.includes(risk));
+    overedProjectIds.value = new Set(myProjects.map(p => p.id));
+    overedRiskLabels.value = new Set([risk]);
+
     const isoSet = new Set<string>();
-
-    let entitiesOutput = new Set<string>();
-
+    const entitiesOutput = new Set<string>();
     myProjects.forEach(prj => {
       (prj.countriesIsoArray || []).forEach((iso: string) => isoSet.add(iso));
       (prj.entities || []).forEach((entId: string) => entitiesOutput.add(entId));
     });
-    overedIsoCodes.value = Array.from(isoSet);
-    overedEntitiesIds.value = Array.from(entitiesOutput);
+    overedIsoCodes.value = isoSet;
+    overedEntitiesIds.value = entitiesOutput;
   };
 
   const outRisks = () => {
-    overedProjectIds.value = [];
-    overedRiskLabels.value = [];
-    overedEntitiesIds.value = [];
-    overedIsoCodes.value = [];
+    hoveredRiskLabel.value = null;
+    overedProjectIds.value = new Set();
+    overedRiskLabels.value = new Set();
+    overedEntitiesIds.value = new Set();
+    overedIsoCodes.value = new Set();
   };
 
 </script>
