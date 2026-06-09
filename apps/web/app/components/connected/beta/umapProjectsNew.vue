@@ -5,41 +5,45 @@
 
       <!-- shadows -->
       <rect
-        v-for="(project, index) in umapVisualVariables" :key="index"
+        v-for="(project, index) in umapVisualVariables" :key="'shadow-' + index"
         :x="project.r*-1"
         :y="0"
         :width="project.r * 2"
         :height="(project.r * 2) + (Math.abs(scaleZ(project.entitiesCount) ) )"
-        class="fill-gray-300 pointer-events-none"
+        class="fill-gray-300 pointer-events-none transition-opacity duration-300"
+        :opacity="projectDimOpacity(project.id)"
         :rx="project.r"
         :transform="'translate(' + (project.x ) + ',' + (project.y + (scaleZ(project.entitiesCount) ) ) + ') rotate(-30)'"
       />
 
       <!-- half shadows-->
        <rect
-        v-for="(project, index) in umapVisualVariables" :key="index"
+        v-for="(project, index) in umapVisualVariables" :key="'half-shadow-' + index"
         :x="project.r*-1"
         :y="0"
         :width="project.r * 2"
         :height="project.r"
-        class="fill-gray-300 pointer-events-none"
-       
+        class="fill-gray-300 pointer-events-none transition-opacity duration-300"
+        :opacity="projectDimOpacity(project.id)"
         :transform="'translate(' + (project.x ) + ',' + (project.y + (scaleZ(project.entitiesCount)) ) + ') rotate(-30)'"
       />
 
-      <!-- risk circles -->
+      <!-- cluster rings — stroke only; non-active rings fade on hover/select -->
       <circle
-        v-for="(risk, i) in circlesArray"
-        v-show="risk.label === props.activeRisk"
-        :key="i"
-        :cx="risk.x"
-        :cy="risk.y"
-        :r="risk.r" 
-        stroke-width="2" stroke-dasharray="4 4" 
-        class="fill-transparent hover:fill-trust-blue-light/30 transition-all duration-300 stroke-neutral-dark cursor-pointer"
-        @mouseover="(e) => { overRisk(risk.label); showTooltip(e, { title: risk.label, value: risk.count, valueLabel: 'Projects' }) }"
-        @mousemove="updateTooltipPosition"
-        @mouseout="() => { outRisk(); hideTooltip() }"
+        v-for="(cluster, i) in circlesArray"
+        :key="'ring-' + i"
+        :cx="cluster.x"
+        :cy="cluster.y"
+        :r="cluster.r"
+        fill="none"
+        stroke-width="2"
+        stroke-dasharray="4 4"
+        class="pointer-events-none transition-opacity duration-300"
+        :class="cluster.label === props.activeCategory
+          ? 'stroke-trust-blue-darkest'
+          : 'stroke-neutral-light'"
+        :opacity="clusterRingOpacity(cluster.label)"
+        :stroke-opacity="cluster.label === props.activeCategory ? 0.9 : 0.45"
       />
 
       <!-- projects cylinders -->
@@ -49,19 +53,34 @@
 
         <!-- rounded rects connecting top and base circles -->
         <rect
-          v-for="(project, index) in umapVisualVariables" :key="index"
+          v-for="(project, index) in umapVisualVariables" :key="'body-' + index"
           :x="project.x - project.r"
           :y="project.y - project.r"
           :width="project.r * 2"
           :height="Math.abs(scaleZ(project.entitiesCount)) + project.r * 2"
           :rx="project.r"
-          :class="(activeProjectsArray.includes(project.id) || !activeProjectsArray.length) ? 'fill-[#1E63A2]' : 'fill-gray-500'"
-          class="transition-colors duration-300 cursor-pointer"
-          @mouseover="(e) => showTooltip(e, getProjectTooltipData(project))"
+          class="fill-[#1E63A2] transition-opacity duration-300 cursor-pointer"
+          :opacity="projectDimOpacity(project.id)"
+          @mouseover="(e) => onProjectHover(e, project)"
           @mousemove="updateTooltipPosition"
-          @mouseout="hideTooltip"
+          @mouseout="onProjectLeave"
+          @click="emit('selectProject', project.id)"
         />
-         
+
+        <!-- highlight ring on project hover only -->
+        <circle
+          v-for="(project, index) in umapVisualVariables"
+          v-show="hoveredProjectId === project.id"
+          :key="'highlight-' + index"
+          :cx="project.x"
+          :cy="project.y"
+          :r="project.r + 5"
+          fill="none"
+          stroke="#1e63a2"
+          stroke-width="3"
+          class="pointer-events-none transition-opacity duration-300"
+          :opacity="projectDimOpacity(project.id)"
+        />
 
         <!-- base circles -->
         <circle
@@ -69,13 +88,16 @@
           :cx="project.x"
           :cy="project.y"
           :r="project.r"
-          :stroke="'black'"
-          :stroke-width="'2'"
-          :class="(activeProjectsArray.includes(project.id) || !activeProjectsArray.length) ? 'fill-white' : 'fill-gray-400'"
-          class="transition-colors duration-300 cursor-pointer"
-          @mouseover="(e) => showTooltip(e, getProjectTooltipData(project))"
+          class="transition-all duration-300 cursor-pointer"
+          :class="hoveredProjectId === project.id
+            ? 'fill-trust-blue-lightest stroke-trust-blue-darkest'
+            : 'fill-white stroke-neutral-darkest'"
+          :stroke-width="hoveredProjectId === project.id ? 3 : 2"
+          :opacity="projectDimOpacity(project.id)"
+          @mouseover="(e) => onProjectHover(e, project)"
           @mousemove="updateTooltipPosition"
-          @mouseout="hideTooltip"
+          @mouseout="onProjectLeave"
+          @click="emit('selectProject', project.id)"
         />
         
 
@@ -194,33 +216,41 @@
   };
 
 
-  // props
+  type CategoryMode = 'risks' | 'themes';
+
+  const emit = defineEmits<{
+    selectProject: [id: string];
+  }>();
+
   const props = withDefaults(defineProps<{
     projects: Array<any>
     years?: Array<number>
     riskCircles?: Array<any>
     themeCircles?: Array<any>
-    activeRisk?: string | null
+    categoryMode?: CategoryMode
+    activeCategory?: string | null
   }>(), {
     years: () => [2020, 2021, 2022, 2023, 2024, 2025],
     riskCircles: () => [],
     themeCircles: () => [],
-    activeRisk: null
+    categoryMode: 'risks',
+    activeCategory: null
   });
 
-  // highlight member projects when a risk is summoned from the legend
-  watch(() => props.activeRisk, (label) => {
+  const umapSeedForMode = (mode: CategoryMode) => (mode === 'risks' ? 42 : 43);
+
+  watch(() => props.activeCategory, (label) => {
     if (label) {
-      overRisk(label);
+      overCluster(label);
     } else {
-      outRisk();
+      outCluster();
     }
   });
 
-  // watch props.projects
   watch(() => props.projects, (newProjects: Array<any>) => {
     if (newProjects && newProjects.length > 0) {
       updateUmap(newProjects);
+      updateClusterCircles();
     }
   });
 
@@ -335,7 +365,7 @@
       nNeighbors: 12,          // Capture more global structure for ~46 points
       minDist: 0.4,            // Spread points apart to reduce crowding
       distanceFn: cosine,      // Fraction of shared categories (equal-weight 0/1 sets)
-      random: mulberry32(42),  // Seeded so the layout is reproducible
+      random: mulberry32(umapSeedForMode(props.categoryMode)),
     });
 
     // Step 3: Fit UMAP and transform data
@@ -373,92 +403,55 @@
   //  the array of circles objects as reactive variable
   const circlesArray = ref<Array<any>>([]);
 
-  const updateRiskCircles = (newCircles: Array<any>) => {
+  const updateClusterCircles = () => {
+    if (!umapVisualVariables.value?.length) return;
 
-    // loop newCircles labels
-    // add a "count" property to each circle based on how many projects have that risk
+    const field = props.categoryMode === 'risks' ? 'risks' : 'themes';
+    const sourceCircles = props.categoryMode === 'risks'
+      ? props.riskCircles.map((c) => ({ ...c }))
+      : props.themeCircles.map((c) => ({ ...c }));
 
-    newCircles.forEach((circle) => {
-      const prjArray = umapVisualVariables.value.filter((project: any) => 
-        project.risks && project.risks.includes(circle.label)
-      ).map((p: any) => p.id);
+    sourceCircles.forEach((circle) => {
+      const prjArray = umapVisualVariables.value
+        .filter((project: any) => project[field]?.includes(circle.label))
+        .map((p: any) => p.id);
 
       circle.projects = prjArray;
-      // for each project in prjArray
-      // get its x,y from umapVisualVariables
-      // add to each circle a "projectsLocs
-      // formatted as array of objects { x: number, y: number}
       circle.projectsLocs = prjArray.map((prjId: string) => {
         const prj = umapVisualVariables.value.find((p: any) => p.id === prjId);
-        return { x: prj.x,  y: prj.y };
+        return { x: prj.x, y: prj.y };
       });
-
       circle.count = prjArray.length;
     });
 
-   
-    // filter by count > 0
-    const filteredCircles = newCircles.filter(circle => circle.count > 0);  
-    // loop filteredCircles 
-    // for each circle, compute the smallest enclosing circle of its projectsLocs
+    const filteredCircles = sourceCircles.filter((circle) => circle.count > 0);
     filteredCircles.forEach((circle) => {
-      if (circle.projectsLocs && circle.projectsLocs.length > 0) {
+      if (circle.projectsLocs?.length > 0) {
         const sec = smallestEnclosingCircle(circle.projectsLocs);
         circle.x = sec.x;
         circle.y = sec.y;
-        circle.r = sec.r + 16; // add some padding
+        circle.r = sec.r + 16;
       }
     });
 
     circlesArray.value = filteredCircles.sort((a, b) => b.r - a.r);
   };
 
-  // a new function similar to updateRiskCircles but for themes
-  const updateThemeCircles = (newCircles: Array<any>) => {  
-    // loop newCircles labels
-    // add a "count" property to each circle based on how many projects have that theme
+  const activeProjectsArray = ref<string[]>([]);
+  const hoveredProjectId = ref<string | null>(null);
+  const DIMMED_OPACITY = 0.1;
 
-    newCircles.forEach((circle) => {
-      const prjArray = umapVisualVariables.value.filter((project: any) => 
-        project.themes && project.themes.includes(circle.label)
-      ).map((p: any) => p.id);
+  const isSelectionActive = computed(() => activeProjectsArray.value.length > 0);
 
-      circle.projects = prjArray;
-      // for each project in prjArray
-      // get its x,y from umapVisualVariables
-      // add to each circle a "projectsLocs
-      // formatted as array of objects { x: number, y: number}
-      circle.projectsLocs = prjArray.map((prjId: string) => {
-        const prj = umapVisualVariables.value.find((p: any) => p.id === prjId);
-        return { x: prj.x,  y: prj.y };
-      });
-
-      circle.count = prjArray.length;
-    });
-
-
-    // filter by count > 0
-    const filteredCircles = newCircles.filter(circle => circle.count > 0);  
-    // loop filteredCircles 
-    // for each circle, compute the smallest enclosing circle of its projectsLocs
-    filteredCircles.forEach((circle) => {
-      if (circle.projectsLocs && circle.projectsLocs.length > 0) {
-        const sec = smallestEnclosingCircle(circle.projectsLocs);
-        circle.x = sec.x;
-        circle.y = sec.y;
-        circle.r = sec.r + 16; // add some padding
-      }
-    });
-    
-    // sort filteredCircle by radius 
-    filteredCircles.sort((a, b) => a.r - b.r);
-
-    circlesArray.value = filteredCircles;
+  const projectDimOpacity = (projectId: string) => {
+    if (!isSelectionActive.value) return 1;
+    return activeProjectsArray.value.includes(projectId) ? 1 : DIMMED_OPACITY;
   };
 
-  // UI variables
-  const overedRisk = ref<string>('');
-  const activeProjectsArray = ref<string[]>([]);
+  const clusterRingOpacity = (label: string) => {
+    if (!props.activeCategory) return 1;
+    return label === props.activeCategory ? 1 : DIMMED_OPACITY;
+  };
 
   // Tooltip state
   const tooltip = ref({
@@ -491,6 +484,16 @@
     tooltip.value.visible = false;
   };
 
+  const onProjectHover = (event: MouseEvent, project: any) => {
+    hoveredProjectId.value = project.id;
+    showTooltip(event, getProjectTooltipData(project));
+  };
+
+  const onProjectLeave = () => {
+    hoveredProjectId.value = null;
+    hideTooltip();
+  };
+
   const updateTooltipPosition = (event: MouseEvent) => {
     if (tooltip.value.visible) {
       tooltip.value.x = event.clientX + 10;
@@ -513,18 +516,21 @@
     };
   };
 
-  const overRisk = (riskLabel: string) => {
-    overedRisk.value = riskLabel;
-    const circle = circlesArray.value.find(c => c.label === riskLabel);
-    if (circle) {
-      activeProjectsArray.value = circle.projects;
-    }
-    // console.log('Over risk:', riskLabel, 'Active projects:', activeProjectsArray.value);
+  const overCluster = (label: string) => {
+    const circle = circlesArray.value.find((c) => c.label === label);
+    activeProjectsArray.value = circle?.projects ?? [];
   };
 
-  const outRisk = () => {
-    overedRisk.value = '';
+  const outCluster = () => {
     activeProjectsArray.value = [];
+  };
+
+  const restoreClusterHighlight = () => {
+    if (props.activeCategory) {
+      overCluster(props.activeCategory);
+    } else {
+      outCluster();
+    }
   };
 
   onMounted(() => {
@@ -532,7 +538,7 @@
     window.addEventListener('keydown', handleKeydown);
 
     updateUmap(props.projects);
-    updateRiskCircles(props.riskCircles);
+    updateClusterCircles();
   });
 
   onUnmounted(() => {

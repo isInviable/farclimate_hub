@@ -1,4 +1,5 @@
 import { useSupabaseClient } from "~/composables/useSupabaseClient";
+import type { CordisProjectDetail } from "~/types/cordis";
 
 // Core table fetchers (mirror of legacy /api/tables.* endpoints)
 
@@ -404,12 +405,27 @@ export async function fetchProjectEntities(projectId: string) {
 
 export async function fetchProjectProducts(projectId: string) {
   const supabase = getSupabaseClient();
+
+  const { data: links, error: linksError } = await supabase
+    .from("product_projects")
+    .select("product_id")
+    .eq("project_id", projectId);
+
+  if (linksError) throw linksError;
+
+  const productIds = Array.from(
+    new Set((links ?? []).map((row) => row.product_id as string)),
+  );
+
+  if (productIds.length === 0) {
+    return { projectId, products: [] };
+  }
+
   const { data, error } = await supabase
     .from("products_cordis")
     .select(
       `
       product_id,
-      product_projects!inner(project_id),
       title,
       details_authors,
       details_journal_number,
@@ -425,9 +441,9 @@ export async function fetchProjectProducts(projectId: string) {
       sub_type_title,
       doi,
       issn
-    `
+    `,
     )
-    .eq("product_projects.project_id", projectId)
+    .in("product_id", productIds)
     .order("details_published_year", { ascending: false })
     .order("title", { ascending: true });
 
@@ -436,7 +452,7 @@ export async function fetchProjectProducts(projectId: string) {
   const rows =
     (data ?? []).map((row: any) => ({
       id: row.product_id as string,
-      projectId: (row.product_projects as any)?.[0]?.project_id as string,
+      projectId,
       title: row.title as string | null,
       detailsAuthors: row.details_authors as string | null,
       detailsJournalNumber: row.details_journal_number as string | null,
@@ -585,13 +601,14 @@ export async function fetchEntityDetail(id: string) {
   };
 }
 
-export async function fetchProjectDetail(id: string) {
+export async function fetchProjectDetail(id: string): Promise<CordisProjectDetail> {
   const supabase = getSupabaseClient();
   const { data: projectRow, error: projectError } = await supabase
     .from("projects_cordis")
     .select(
       `
       id,
+      cordis_id,
       acronym,
       title,
       teaser,
@@ -600,9 +617,7 @@ export async function fetchProjectDetail(id: string) {
       ec_max_contribution,
       start_date,
       end_date,
-      duration,
-      risks,
-      themes
+      duration
     `
     )
     .eq("id", id)
@@ -617,6 +632,7 @@ export async function fetchProjectDetail(id: string) {
 
   const project = {
     id: projectRow.id,
+    cordisId: projectRow.cordis_id ?? null,
     acronym: projectRow.acronym ?? "",
     title: projectRow.title ?? "",
     teaser: projectRow.teaser ?? "",
@@ -626,8 +642,6 @@ export async function fetchProjectDetail(id: string) {
     startDate: projectRow.start_date ?? null,
     endDate: projectRow.end_date ?? null,
     duration: projectRow.duration ?? null,
-    risks: projectRow.risks ? String(projectRow.risks).split("|").filter(Boolean) : [],
-    themes: projectRow.themes ? String(projectRow.themes).split("|").filter(Boolean) : [],
   };
 
   const [riskRows, themeRows, entitiesResult, productsResult] = await Promise.all([
@@ -658,6 +672,9 @@ export async function fetchProjectDetail(id: string) {
     fetchProjectEntities(id),
     fetchProjectProducts(id),
   ]);
+
+  if (riskRows.error) throw riskRows.error;
+  if (themeRows.error) throw themeRows.error;
 
   const risks =
     (riskRows.data ?? []).map((row: any) => row.aux_climate_risks).filter(Boolean) ??

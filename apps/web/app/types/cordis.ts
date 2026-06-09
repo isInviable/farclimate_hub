@@ -98,4 +98,50 @@ export interface ProductWithCustomAndProjects extends ProductBase {
   project_labels?: string[];
 }
 
+export interface CordisProjectDetailProject {
+  id: string;
+  cordisId: string | null;
+  acronym: string;
+  title: string;
+  teaser: string;
+  keywords: string;
+  totalCost: number | null;
+  ecMaxContribution: number | null;
+  startDate: string | null;
+  endDate: string | null;
+  duration: number | null;
+}
+
+export interface CordisProjectDetailEntity {
+  id: string;
+  type: string | null;
+  entityOrder: number | null;
+  totalCost: number | null;
+  ecContribution: number | null;
+  netEcContribution: number | null;
+  sme: number | null;
+  terminated: number | null;
+  legalName: string | null;
+  shortName: string | null;
+  addressCountry: string | null;
+  organizationActivityType: string | null;
+}
+
+export interface CordisProjectDetailProduct {
+  id: string;
+  projectId?: string;
+  title: string | null;
+  detailsAuthors: string | null;
+  detailsPublishedYear: string | null;
+  typeTitle: string | null;
+  productTypeName: string | null;
+}
+
+export interface CordisProjectDetail {
+  project: CordisProjectDetailProject;
+  risks: AuxClimateRisk[];
+  themes: AuxTheme[];
+  entities: CordisProjectDetailEntity[];
+  products: CordisProjectDetailProduct[];
+}
 

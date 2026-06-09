@@ -4,9 +4,9 @@
       n="04"
       kicker="PROJECTS UMAP"
       title="Projects UMAP"
-      intro="Projects placed in 2-D semantic space from the climate risks and themes they address. Projects that sit close together work on similar problems; hover a climate risk in the legend to reveal the dashed ring grouping its projects."
+      intro="Projects placed in 2-D semantic space from the climate risks or themes they address — switch view below. Projects that sit close together share similar categories; hover a legend item to highlight its cluster and fade the rest."
       help-title="Reading the plot"
-      help="Position comes from a UMAP projection of each project's risk/theme profile — axes have no units. Bubble size reflects funding relative to duration; the stacked shadow scales with the number of participating entities."
+      help="Position comes from a UMAP projection of the active view (risks or themes) — axes have no units. Bubble size reflects funding relative to duration; the stacked shadow scales with the number of participating entities."
     />
 
     <div class="mx-auto w-full max-w-[1920px] px-7 py-7 pb-24">
@@ -15,11 +15,15 @@
           <UmapProjectsNew
             :projects="projectItems"
             :years="yearsRange"
-            :riskCircles="riskItems"
-            :themeCircles="themeItems"
-            :active-risk="activeRisk"
+            :risk-circles="riskItems"
+            :theme-circles="themeItems"
+            :category-mode="categoryMode"
+            :active-category="activeCategory"
+            @select-project="openProject"
           />
         </div>
+
+        <CaProjectDetailModal v-model:open="isOpen" :project-id="projectId" />
 
         <!-- bubble-size legend -->
         <div class="absolute bottom-3 left-3 z-10 border border-neutral-darkest bg-neutral-lightest p-3">
@@ -32,30 +36,47 @@
           </div>
         </div>
 
-        <!-- climate-risk clusters (floating panel) -->
+        <!-- category clusters (floating panel) -->
         <div class="absolute right-3 top-3 z-10 max-h-[calc(100%-24px)] w-[280px] overflow-y-auto border border-neutral-darkest bg-neutral-lightest">
+          <div class="flex border-b border-neutral-darkest">
+            <button
+              type="button"
+              class="flex-1 border-r border-neutral-darkest px-3 py-2.5 font-mono text-2xs font-bold tracking-[0.12em] transition-colors"
+              :class="categoryMode === 'risks' ? 'bg-neutral-darkest text-neutral-lightest' : 'text-neutral-dark hover:bg-neutral-lighter'"
+              @click="setCategoryMode('risks')"
+            >
+              RISKS
+            </button>
+            <button
+              type="button"
+              class="flex-1 px-3 py-2.5 font-mono text-2xs font-bold tracking-[0.12em] transition-colors"
+              :class="categoryMode === 'themes' ? 'bg-neutral-darkest text-neutral-lightest' : 'text-neutral-dark hover:bg-neutral-lighter'"
+              @click="setCategoryMode('themes')"
+            >
+              THEMES
+            </button>
+          </div>
           <header class="flex items-center gap-2 border-b border-neutral-darkest px-4 py-3">
-            <span class="font-mono text-xs font-bold tracking-[0.06em]">CLIMATE-RISK CLUSTERS</span>
+            <span class="font-mono text-xs font-bold tracking-[0.06em]">{{ legendTitle }}</span>
             <CaHelp title="Clusters" align="right" :w="260">
-              Each dashed ring encloses the projects tackling one climate risk.
-              Hover a risk below to reveal its ring; click to keep it pinned.
+              {{ legendHelp }}
             </CaHelp>
           </header>
           <ul class="flex flex-col gap-2 p-4">
             <li
-              v-for="risk in riskItems"
-              :key="risk.value"
+              v-for="item in legendItems"
+              :key="item.value"
               class="flex cursor-pointer items-center gap-2.5 transition-opacity"
-              :class="pinnedRisk && pinnedRisk !== risk.label ? 'opacity-40' : ''"
-              @mouseenter="activeRisk = risk.label"
-              @mouseleave="activeRisk = pinnedRisk"
-              @click="togglePinnedRisk(risk.label)"
+              :class="pinnedCategory && pinnedCategory !== item.label ? 'opacity-40' : ''"
+              @mouseenter="activeCategory = item.label"
+              @mouseleave="activeCategory = pinnedCategory"
+              @click="togglePinnedCategory(item.label)"
             >
               <span
                 class="h-3 w-3 shrink-0 rounded-full border-2 border-dashed transition-colors"
-                :class="activeRisk === risk.label ? 'border-trust-blue bg-trust-blue-light/40' : 'border-neutral-dark'"
+                :class="activeCategory === item.label ? 'border-trust-blue bg-trust-blue-light/40' : 'border-neutral-dark'"
               />
-              <span class="font-mono text-[11px] text-neutral-darkest">{{ risk.label }}</span>
+              <span class="font-mono text-[11px] text-neutral-darkest">{{ item.label }}</span>
             </li>
           </ul>
         </div>
@@ -74,13 +95,39 @@ import * as d3 from "d3";
 
   const padding = 48;
 
-  // Risk ring shown on the plot: hover a legend item to preview, click to pin it.
-  const activeRisk = ref<string | null>(null);
-  const pinnedRisk = ref<string | null>(null);
-  const togglePinnedRisk = (label: string) => {
-    pinnedRisk.value = pinnedRisk.value === label ? null : label;
-    activeRisk.value = pinnedRisk.value;
+  type CategoryMode = 'risks' | 'themes';
+
+  const { isOpen, projectId, openProject } = useProjectDetailModal();
+
+  const categoryMode = ref<CategoryMode>('risks');
+  const activeCategory = ref<string | null>(null);
+  const pinnedCategory = ref<string | null>(null);
+
+  const setCategoryMode = (mode: CategoryMode) => {
+    if (categoryMode.value === mode) return;
+    categoryMode.value = mode;
+    activeCategory.value = null;
+    pinnedCategory.value = null;
   };
+
+  const togglePinnedCategory = (label: string) => {
+    pinnedCategory.value = pinnedCategory.value === label ? null : label;
+    activeCategory.value = pinnedCategory.value;
+  };
+
+  const legendItems = computed(() =>
+    categoryMode.value === 'risks' ? riskItems.value : themeItems.value
+  );
+
+  const legendTitle = computed(() =>
+    categoryMode.value === 'risks' ? 'CLIMATE-RISK CLUSTERS' : 'THEME CLUSTERS'
+  );
+
+  const legendHelp = computed(() =>
+    categoryMode.value === 'risks'
+      ? 'Soft dashed rings show all risk clusters. Hover a risk below to emphasize its ring and fade non-matching projects; click to pin.'
+      : 'Soft dashed rings show all theme clusters. Hover a theme below to emphasize its ring and fade non-matching projects; click to pin.'
+  );
 
   // ProjectEntityRow type (matches database schema)
   type ProjectEntityRow = {
@@ -287,7 +334,7 @@ import * as d3 from "d3";
     }))
   );
 
-  const projectItems = computed(() =>(projectsWithEntities.value ?? []).map((project) => ({
+  const projectItems = computed(() => (projectsWithEntities.value ?? []).map((project) => ({
     id: project.id,
     label: project.title ?? project.id,
     value: project.id,
@@ -300,28 +347,13 @@ import * as d3 from "d3";
     themes: project.themes ?? undefined,
     entities: project.entities,
     entitiesCount: project.entitiesCount,
-    umapDimensions: fillUmapDimensions(project) 
-    }))
-  );
+    umapDimensions: fillUmapDimensions(project, categoryMode.value),
+  })));
 
-  // a function to fill umapDimensions based on risks and themes
-  const fillUmapDimensions = (project: any) => {
-    const dimensions: number[] = [];
-    themeItems.value.forEach((theme) => {
-      if (project.themes && project.themes.includes(theme.label)) {
-        dimensions.push(1);
-      } else {
-        dimensions.push(0);
-      }
-    });
-    riskItems.value.forEach((risk) => {
-      if (project.risks && project.risks.includes(risk.label)) {
-        dimensions.push(1);
-      } else {
-        dimensions.push(0);
-      }
-    });
-    return dimensions;
+  const fillUmapDimensions = (project: any, mode: CategoryMode) => {
+    const items = mode === 'risks' ? riskItems.value : themeItems.value;
+    const values = mode === 'risks' ? project.risks : project.themes;
+    return items.map((item) => (values?.includes(item.label) ? 1 : 0));
   };
 
   // min and max dates
