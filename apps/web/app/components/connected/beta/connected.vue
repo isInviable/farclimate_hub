@@ -730,8 +730,8 @@
   };
 
   const entityDisplayRadius = (entity: { id: string; radarRadius: number }) => {
-    if (hoveredEntityId.value === entity.id) return entity.radarRadius * 1.8;
-    if (!noEntityHighlight.value && overedEntitiesIds.value.has(entity.id)) return entity.radarRadius * 2.0;
+    if (hoveredEntityId.value === entity.id) return entity.radarRadius * 1.1;
+    if (!noEntityHighlight.value && overedEntitiesIds.value.has(entity.id)) return entity.radarRadius * 1.2;
     return entity.radarRadius;
   };
 

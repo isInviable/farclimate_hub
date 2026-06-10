@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'connected' });
 
+import { CONNECTED_CORDIS_KEYS } from "~/composables/useConnectedCordisData";
 import {
   fetchProjectsTable,
   fetchEntitiesTable,
@@ -31,14 +32,14 @@ function formatInvestment(value: number) {
 }
 
 // Fetch all data
-const { data: rawProjects } = await useAsyncData("dashboard-projects", fetchProjectsTable);
-const { data: rawEntities } = await useAsyncData("dashboard-entities", fetchEntitiesTable);
-const { data: rawProducts } = await useAsyncData("dashboard-products", fetchProductsTable);
-const { data: rawProjectEntities } = await useAsyncData("dashboard-project-entities", fetchProjectEntitiesTable);
-const { data: rawProjectRisks } = await useAsyncData("dashboard-project-risks", fetchProjectRisksTable);
-const { data: rawProjectThemes } = await useAsyncData("dashboard-project-themes", fetchProjectThemesTable);
-const { data: rawRisks } = await useAsyncData("dashboard-risks", fetchAuxClimateRisks);
-const { data: rawThemes } = await useAsyncData("dashboard-themes", fetchAuxThemes);
+const { data: rawProjects } = await useAsyncData(CONNECTED_CORDIS_KEYS.projects, fetchProjectsTable);
+const { data: rawEntities } = await useAsyncData(CONNECTED_CORDIS_KEYS.entities, fetchEntitiesTable);
+const { data: rawProducts } = await useAsyncData(CONNECTED_CORDIS_KEYS.products, fetchProductsTable);
+const { data: rawProjectEntities } = await useAsyncData(CONNECTED_CORDIS_KEYS.projectEntities, fetchProjectEntitiesTable);
+const { data: rawProjectRisks } = await useAsyncData(CONNECTED_CORDIS_KEYS.projectRisks, fetchProjectRisksTable);
+const { data: rawProjectThemes } = await useAsyncData(CONNECTED_CORDIS_KEYS.projectThemes, fetchProjectThemesTable);
+const { data: rawRisks } = await useAsyncData(CONNECTED_CORDIS_KEYS.risks, fetchAuxClimateRisks);
+const { data: rawThemes } = await useAsyncData(CONNECTED_CORDIS_KEYS.themes, fetchAuxThemes);
 
 // Process base data
 const processedDataBase = computed(() => {

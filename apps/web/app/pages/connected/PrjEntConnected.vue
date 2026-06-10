@@ -144,22 +144,9 @@ import { caOrdinalColor } from "~/utils/connectedColors";
 import { fundingFromLog, fundingToLog } from "~/utils/entityFundingScale";
 
 const route = useRoute();
-const supabase = useSupabaseClient();
 const { isOpen, projectId, openProject } = useProjectDetailModal();
 
-type ProjectEntityRow = {
-  project_id: string;
-  entity_id: string;
-  type: string | null;
-  entity_order: number | null;
-  total_cost: number | null;
-  ec_contribution: number | null;
-  net_ec_contribution: number | null;
-  sme: number | null;
-  terminated: number | null;
-};
-
-type ProjectOption = ProjectRow & {
+type ProjectOption = Omit<ProjectRow, "risks" | "themes"> & {
   start_year: number | null;
   end_year: number | null;
   risks: string[] | undefined;
@@ -169,6 +156,7 @@ type EntityWithProjects = EntityRow & {
   projects: (ProjectOption & { total_cost: number | null })[];
   projectsCount: number;
   projectsTotalCost: number;
+  organization_activity_type_name?: string | null;
 };
 
 type ProjectWithEntities = ProjectOption & {
@@ -177,167 +165,55 @@ type ProjectWithEntities = ProjectOption & {
   countriesIsoArray: string[];
 };
 
-type PrjEntConnectedData = {
-  projectOptions: ProjectOption[];
-  projectEntitiesRows: ProjectEntityRow[];
-  entityRows: EntityRow[];
-};
+const { indexes, ready, entityTypes } = useConnectedCordisIndexes();
 
-const { data: pageData, pending } = await useAsyncData<PrjEntConnectedData>(
-  'prj-ent-connected-data',
-  async () => {
-    const [
-      { data: projectsData, error: projectsError },
-      { data: projectEntitiesData, error: projectEntitiesError },
-      { data: entitiesData, error: entitiesError },
-      { data: entityTypes, error: entityTypesError },
-    ] = await Promise.all([
-      supabase
-        .from('projects_cordis')
-        .select('id, title, acronym, start_date, end_date, total_cost, duration')
-        .order('start_date', { ascending: false }),
-      supabase
-        .from('project_entities')
-        .select('project_id, entity_id, type, entity_order, total_cost, ec_contribution, net_ec_contribution, sme, terminated')
-        .order('project_id', { ascending: true }),
-      supabase
-        .from('entities_cordis')
-        .select('id, vat_number, legal_name, short_name, address_country, related_region_iso_code, organization_activity_type_id')
-        .order('legal_name'),
-      supabase
-        .from('aux_entity_types')
-        .select('id, name')
-        .order('name'),
-    ]);
+const entityRows = computed(() => {
+  const typeNameById = new Map((entityTypes.value ?? []).map((t) => [t.id, t.name]));
+  return (indexes.value?.entitiesWithProjects ?? []).map((entity) => ({
+    ...entity,
+    organization_activity_type_name: entity.organization_activity_type_id
+      ? typeNameById.get(entity.organization_activity_type_id) ?? null
+      : null,
+  }));
+});
 
-    if (projectsError) throw projectsError;
-    if (projectEntitiesError) throw projectEntitiesError;
-    if (entitiesError) throw entitiesError;
-    if (entityTypesError) throw entityTypesError;
-
-    const projectIds = (projectsData ?? []).map((p) => p.id);
-    let riskLinks: { project_id: string; risk_id: number }[] = [];
-    let risks: { id: number; name: string }[] = [];
-
-    if (projectIds.length > 0) {
-      const [
-        { data: riskLinksData, error: riskLinksError },
-        { data: risksData, error: risksError },
-      ] = await Promise.all([
-        supabase
-          .from('project_risks')
-          .select('project_id, risk_id')
-          .in('project_id', projectIds),
-        supabase.from('aux_climate_risks').select('id, name'),
-      ]);
-
-      if (riskLinksError) throw riskLinksError;
-      if (risksError) throw risksError;
-      riskLinks = riskLinksData ?? [];
-      risks = risksData ?? [];
-    }
-
-    const riskNameById = new Map<number, string>();
-    risks.forEach((r) => riskNameById.set(r.id, r.name));
-
-    const risksByProject = new Map<string, string[]>();
-    riskLinks.forEach((link) => {
-      if (!link.project_id || !link.risk_id) return;
-      const riskName = riskNameById.get(link.risk_id);
-      if (!riskName) return;
-      const pid = String(link.project_id);
-      if (!risksByProject.has(pid)) risksByProject.set(pid, []);
-      risksByProject.get(pid)!.push(riskName);
-    });
-
-    const projectOptions: ProjectOption[] = (projectsData ?? []).map((project) => {
-      const pid = String(project.id);
-      const projectRisks = risksByProject.get(pid) ?? [];
-      return {
-        ...project,
-        risks: projectRisks.length > 0 ? projectRisks : undefined,
-        start_year: project.start_date ? new Date(project.start_date).getFullYear() : null,
-        end_year: project.end_date ? new Date(project.end_date).getFullYear() : null,
-      };
-    });
-
-    const entityTypeNameById = new Map<number, string>();
-    (entityTypes ?? []).forEach((et) => entityTypeNameById.set(et.id, et.name));
-
-    const entityRows: EntityRow[] = (entitiesData ?? []).map((entity) => ({
-      ...entity,
-      organization_activity_type_name: entity.organization_activity_type_id
-        ? entityTypeNameById.get(entity.organization_activity_type_id) || null
-        : null,
-    }));
-
-    return {
-      projectOptions,
-      projectEntitiesRows: (projectEntitiesData ?? []) as ProjectEntityRow[],
-      entityRows,
-    };
-  }
+const connectedEntities = computed<EntityWithProjects[]>(() =>
+  entityRows.value.map((entity) => ({
+    ...entity,
+    projects: entity.projects.map((project) => ({
+      ...project,
+      start_year: project.start_date ? new Date(project.start_date).getFullYear() : null,
+      end_year: project.end_date ? new Date(project.end_date).getFullYear() : null,
+      risks: project.risksList.length > 0 ? project.risksList : undefined,
+    })),
+  }))
 );
 
-const projectOptions = computed(() => pageData.value?.projectOptions ?? []);
-const projectEntitiesRows = computed(() => pageData.value?.projectEntitiesRows ?? []);
-const entityRows = computed(() => pageData.value?.entityRows ?? []);
-
-const projectById = computed(() => {
-  const map = new Map<string, ProjectOption>();
-  projectOptions.value.forEach((p) => map.set(p.id, p));
-  return map;
-});
-
-const connectedEntities = computed<EntityWithProjects[]>(() => {
-  const entityById = new Map<string, EntityRow>();
-  entityRows.value.forEach((e) => entityById.set(e.id, e));
-
-  const entityMap = new Map<string, EntityWithProjects>();
-  const projects = projectById.value;
-
-  projectEntitiesRows.value.forEach((pe) => {
-    const entityRow = entityById.get(pe.entity_id);
-    const project = projects.get(pe.project_id);
-    if (!entityRow || !project) return;
-
-    let entity = entityMap.get(pe.entity_id);
-    if (!entity) {
-      entity = { ...entityRow, projects: [], projectsCount: 0, projectsTotalCost: 0 };
-      entityMap.set(pe.entity_id, entity);
-    }
-    entity.projects.push({ ...project, total_cost: pe.total_cost });
-    entity.projectsCount = entity.projects.length;
-    entity.projectsTotalCost += pe.total_cost ?? 0;
-  });
-
-  return Array.from(entityMap.values());
-});
-
 const projectsWithEntities = computed<ProjectWithEntities[]>(() => {
-  const projectMap = new Map<string, ProjectWithEntities>();
-  projectOptions.value.forEach((project) => {
-    projectMap.set(project.id, { ...project, entities: [], entitiesCount: 0, countriesIsoArray: [] });
-  });
+  if (!indexes.value) return [];
 
-  connectedEntities.value.forEach((entity) => {
-    entity.projects.forEach((project) => {
-      const proj = projectMap.get(project.id);
-      if (!proj) return;
-      proj.entities.push(entity.id);
-      proj.entitiesCount = proj.entities.length;
-      if (entity.related_region_iso_code && !proj.countriesIsoArray.includes(entity.related_region_iso_code)) {
-        proj.countriesIsoArray.push(entity.related_region_iso_code);
-      }
-    });
-  });
+  return indexes.value.projectsWithSimpleEntities.map((project) => {
+    const countriesIsoArray = new Set<string>();
+    for (const entityRef of project.entities) {
+      const entity = indexes.value!.entityById.get(entityRef.id);
+      if (entity?.related_region_iso_code) countriesIsoArray.add(entity.related_region_iso_code);
+    }
 
-  return Array.from(projectMap.values());
+    return {
+      ...project,
+      start_year: project.start_date ? new Date(project.start_date).getFullYear() : null,
+      end_year: project.end_date ? new Date(project.end_date).getFullYear() : null,
+      risks: project.risksList.length > 0 ? project.risksList : undefined,
+      entities: project.entities.map((e) => e.id),
+      entitiesCount: project.entitiesCount,
+      countriesIsoArray: [...countriesIsoArray],
+    };
+  });
 });
 
 const riskItems = computed(() => {
   const map = new Map<string, number>();
-  projectOptions.value.forEach((project) => {
+  projectsWithEntities.value.forEach((project) => {
     (project.risks ?? []).forEach((risk) => {
       map.set(risk, (map.get(risk) || 0) + 1);
     });
@@ -348,7 +224,7 @@ const riskItems = computed(() => {
 });
 
 const isChartReady = computed(
-  () => !pending.value && projectsWithEntities.value.length > 0
+  () => ready.value && projectsWithEntities.value.length > 0
 );
 
 const entityTypeLegend = computed(() => {

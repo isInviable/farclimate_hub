@@ -24,9 +24,12 @@
 
             <!-- title count and caret -->
             <div class="flex items-center justify-between px-3 pb-1.5 pt-2">
-                <p class="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-darkest">{{ title }}</p>
+                <div class="flex min-w-0 items-center gap-1.5">
+                    <p class="font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-darkest">{{ title }}</p>
+                    <slot name="help" />
+                </div>
 
-                <div class="flex items-center gap-1">
+                <div class="flex shrink-0 items-center gap-1">
                     <p class="font-mono text-2xs text-neutral-dark">{{ count_active }} / {{ tot }}</p>
                     <Icon 
                         name="mdi:caret-down"
@@ -63,12 +66,14 @@
         tot: number;
         count_active: number;
         count_selected?: number;
+        defaultOpen?: boolean;
     }>(), {
         count_active: 0,
-        count_selected: 0
+        count_selected: 0,
+        defaultOpen: false,
     });
 
-    const isOpen = ref(false);
+    const isOpen = ref(props.defaultOpen);
 
     const toggleOpen = () => {
         isOpen.value = !isOpen.value;
