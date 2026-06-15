@@ -2,10 +2,10 @@
   <div
     class="sticky top-0 z-30 flex overflow-y-hidden items-center overflow-x-auto border-b border-neutral-darkest bg-neutral-lightest px-7"
   >
-    <span class="mr-6 shrink-0 font-mono text-2xs font-bold tracking-[0.2em] text-neutral-dark">
+    <!-- <span class="mr-6 shrink-0 font-mono text-2xs font-bold tracking-[0.2em] text-neutral-dark">
       CONNECTED ACTION
-    </span>
-    <nav class="flex">
+    </span> -->
+    <nav class="flex justify-end">
       <NuxtLinkLocale
         v-for="item in connectedNav"
         :key="item.to"
@@ -17,9 +17,9 @@
             : 'border-transparent text-neutral-dark hover:text-neutral-darkest'
         "
       >
-        <span class="text-[13px] leading-none">{{ item.glyph }}</span>
+        <span class="text-sm leading-none">{{ item.glyph }}</span>
         <span
-          class="font-mono text-[11px] tracking-[0.05em]"
+          class="font-mono text-2xs tracking-widest"
           :class="isActive(item.to) ? 'font-bold' : 'font-medium'"
         >
           {{ item.label.toUpperCase() }}
