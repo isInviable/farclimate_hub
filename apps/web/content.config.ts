@@ -218,12 +218,6 @@ export const homeSchema = z.object({
 })
 
 export const footerSchema = z.object({
-  newsletter: z.object({
-    description: z.string(),
-    emailPlaceholder: z.string(),
-    subscribe: z.string(),
-    consent: z.string(),
-  }),
   mainMenu: z.object({
     title: z.string(),
     links: z.array(
@@ -244,6 +238,7 @@ export const footerSchema = z.object({
     ),
   }),
   copyright: z.string(),
+  copyrightHref: z.string().optional(),
   legal: z.array(
     z.object({
       label: z.string(),

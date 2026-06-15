@@ -1,10 +1,4 @@
 {
-  "newsletter": {
-    "description": "Suscríbete al boletín para estar al día de novedades y lanzamientos.",
-    "emailPlaceholder": "Introduce tu correo",
-    "subscribe": "Suscribirse",
-    "consent": "Al suscribirte aceptas nuestra política de privacidad."
-  },
   "mainMenu": {
     "title": "Menú principal",
     "links": [
@@ -34,40 +28,29 @@
     "title": "Síguenos",
     "links": [
       {
-        "label": "Facebook",
-        "href": "#"
-      },
-      {
-        "label": "Instagram",
-        "href": "#"
+        "label": "LinkedIn",
+        "href": "https://www.linkedin.com/company/farclimate-project"
       },
       {
         "label": "X",
-        "href": "#"
-      },
-      {
-        "label": "LinkedIn",
-        "href": "#"
+        "href": "https://twitter.com/farclimate_he"
       },
       {
         "label": "Youtube",
-        "href": "#"
+        "href": "https://www.youtube.com/@FARCLIMATEProject"
       }
     ]
   },
-  "copyright": "© 2025 Transformation HUB. Todos los derechos reservados.",
+  "copyright": "Copyright © 2026 FARCLIMATE. Todos los derechos reservados.",
+  "copyrightHref": "https://farclimate-project.eu",
   "legal": [
     {
       "label": "Política de privacidad",
-      "href": "#"
+      "href": "https://farclimate-project.eu/privacy-policy/"
     },
     {
-      "label": "Términos de servicio",
-      "href": "#"
-    },
-    {
-      "label": "Configuración de cookies",
-      "href": "#"
+      "label": "Política de cookies",
+      "href": "https://farclimate-project.eu/cookie-policy/"
     }
   ]
 }
