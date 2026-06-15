@@ -249,8 +249,9 @@ const additions = {
     },
     viewModes: {
       compare: "Compare",
+      analyse: "Analyse",
       byBioRegions: "By bioRegions",
-      images: "Images",
+      cardView: "Cards",
       tabsAria: "View mode",
       mindmap: "Mind map",
       mapEmptyTitle: "No locations to display",
@@ -502,8 +503,9 @@ const additions = {
     },
     viewModes: {
       compare: "Comparar",
+      analyse: "Analizar",
       byBioRegions: "Por biorregiones",
-      images: "Imágenes",
+      cardView: "Tarjetas",
       tabsAria: "Modo de vista",
       mindmap: "Mapa mental",
       mapEmptyTitle: "No hay ubicaciones que mostrar",
@@ -761,8 +763,9 @@ const additions = {
     },
     viewModes: {
       compare: "Confronta",
+      analyse: "Analizza",
       byBioRegions: "Per biorregioni",
-      images: "Immagini",
+      cardView: "Schede",
       tabsAria: "Modalità di visualizzazione",
       mindmap: "Mappa mentale",
       mapEmptyTitle: "Nessuna posizione da mostrare",

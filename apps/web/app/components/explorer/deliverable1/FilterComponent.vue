@@ -102,7 +102,7 @@ const emit = defineEmits<{
 
 // Reactive state
 const isEnabled = ref(props.enabled);
-const isExpanded = ref(true);
+const isExpanded = ref(props.enabled);
 const filterValue = ref(props.initialValue);
 
 // Methods
@@ -168,6 +168,7 @@ const getFilterStatus = () => {
 // Watch for external changes
 watch(() => props.enabled, (newVal) => {
   isEnabled.value = newVal;
+  isExpanded.value = newVal;
 });
 
 watch(

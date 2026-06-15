@@ -92,7 +92,7 @@
 
           <!-- Instagram View -->
           <ViewModeInstagram
-            v-else-if="viewMode === 'instagram'"
+            v-else-if="viewMode === 'cardView'"
             :results="visibleResults"
             @document-selected="handleDocumentSelected"
           />
@@ -283,15 +283,16 @@ const props = defineProps({
 const pageTitle = computed(() => props.title || t('explorer.meta.title'));
 
 // Reactive state
-const viewMode = ref("list");
+const viewMode = ref("cardView");
 
 // Editorial view tabs (kept in same order/IDs as before to preserve behavior)
 const viewTabs = computed(() => [
+  { id: "cardView", label: t("viewModes.cardView"), icon: "mdi:image-multiple-outline" },
   { id: "list", label: t("viewModes.list"), icon: "mdi:view-list" },
-  { id: "grid", label: t("viewModes.compare"), icon: "mdi:view-grid" },
+  { id: "grid", label: t("viewModes.analyse"), icon: "mdi:view-grid" },
   { id: "map", label: t("viewModes.map"), icon: "mdi:map-outline" },
   { id: "bubble", label: t("viewModes.byBioRegions"), icon: "mdi:chart-bubble" },
-  { id: "instagram", label: t("viewModes.images"), icon: "mdi:image-multiple-outline" },
+  
 ] as const);
 const searchStore = useSearchStore();
 const route = useRoute();
