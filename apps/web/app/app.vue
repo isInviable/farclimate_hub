@@ -11,8 +11,8 @@ useHead({
   }
 })
 
-const title = 'FarClimate Knowledge Hub'
-const description = 'FarClimate Knowledge Hub is a platform for sharing knowledge and solutions for climate adaptation.'
+const title = 'FARCLIMATE Transformation Hub'
+const description = 'FARCLIMATE Transformation Hub is a platform for sharing knowledge and solutions for climate adaptation.'
 
 useSeoMeta({
   title,

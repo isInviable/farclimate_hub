@@ -1,4 +1,4 @@
-# Far Climate — Data pipelines
+# FARCLIMATE — Data pipelines
 
 Carga de estudios de caso de Climate-ADAPT hasta la base de datos. Lista ordenada de pasos; el detalle de cada uno está en el README del proyecto correspondiente.
 

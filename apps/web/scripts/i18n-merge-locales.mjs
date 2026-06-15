@@ -189,8 +189,8 @@ const additions = {
       videoSummaryModal: "Video summary",
     },
     header: {
-      brandTitle: "FarClimate Transformation Hub",
-      brandTitleLine1: "FarClimate",
+      brandTitle: "FARCLIMATE Transformation Hub",
+      brandTitleLine1: "FARCLIMATE",
       brandTitleLine2: "Transformation Hub",
       solutions: "Solutions",
       stories: "Stories",
@@ -437,8 +437,8 @@ const additions = {
       videoSummaryModal: "Resumen en vídeo",
     },
     header: {
-      brandTitle: "FarClimate Transformation Hub",
-      brandTitleLine1: "FarClimate",
+      brandTitle: "FARCLIMATE Transformation Hub",
+      brandTitleLine1: "FARCLIMATE",
       brandTitleLine2: "Transformation Hub",
       solutions: "Soluciones",
       stories: "Historias",
@@ -696,8 +696,8 @@ const additions = {
       videoSummaryModal: "Riepilogo video",
     },
     header: {
-      brandTitle: "FarClimate Transformation Hub",
-      brandTitleLine1: "FarClimate",
+      brandTitle: "FARCLIMATE Transformation Hub",
+      brandTitleLine1: "FARCLIMATE",
       brandTitleLine2: "Transformation Hub",
       solutions: "Soluzioni",
       stories: "Storie",

@@ -1,6 +1,6 @@
 ## Context
 
-The FarClimate Transformation HUB web app (`apps/web`) is a Nuxt 3 application using Nuxt UI, Tailwind CSS v4, and TypeScript. The existing `default` layout provides the site-wide `SiteHeader` (with transparent/overlay mode) and `SiteFooter`. The Figma handoff (node 296-3285) defines the exact visual requirements for the skills catalog page.
+The FARCLIMATE Transformation HUB web app (`apps/web`) is a Nuxt 3 application using Nuxt UI, Tailwind CSS v4, and TypeScript. The existing `default` layout provides the site-wide `SiteHeader` (with transparent/overlay mode) and `SiteFooter`. The Figma handoff (node 296-3285) defines the exact visual requirements for the skills catalog page.
 
 Current state: no skills page exists. Existing pages in `pages/` follow a consistent pattern: a single `.vue` page file using `<script setup lang="ts">` that imports components from `components/`.
 

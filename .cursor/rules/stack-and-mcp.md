@@ -20,4 +20,4 @@ alwaysApply: false
 
 ## Project context
 
-- Farclimate HUB: structured data platform for climate case studies; Explorer, Connected (visualizations + admin), static pages. Supabase (PostgreSQL + storage), multilingual schema, stable IDs.
+- FARCLIMATE HUB: structured data platform for climate case studies; Explorer, Connected (visualizations + admin), static pages. Supabase (PostgreSQL + storage), multilingual schema, stable IDs.

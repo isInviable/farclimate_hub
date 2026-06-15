@@ -13,7 +13,7 @@ export const POWERPOINT_MIME_TYPE =
 
 export const POWERPOINT_LOGO_PATH = "/img/icono-farclimate.png"
 
-export const POWERPOINT_BRAND_NAME = "FarClimate"
+export const POWERPOINT_BRAND_NAME = "FARCLIMATE"
 
 /** Wide 16:9 slide size (inches) for layout math */
 const SLIDE_W = 13.333
@@ -79,7 +79,7 @@ export interface PowerPointLayoutContext {
   logoData?: string
 }
 
-/** Warm palette inspired by the FarClimate tree logo */
+/** Warm palette inspired by the FARCLIMATE tree logo */
 const COLORS = {
   navy: "1E3A5F",
   teal: "0D9488",

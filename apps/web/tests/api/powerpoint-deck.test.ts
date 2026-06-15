@@ -92,7 +92,7 @@ describe("PowerPoint deck builder", () => {
     const fake = fakePresentation()
     definePowerPointMasters(fake.pres, {
       deckTitle: "Regional briefing",
-      brandName: "FarClimate",
+      brandName: "FARCLIMATE",
       logoData: "image/png;base64,abc",
     })
 

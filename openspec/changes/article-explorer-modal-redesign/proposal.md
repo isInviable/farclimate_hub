@@ -1,6 +1,6 @@
 ## Why
 
-The explorer article experience is being aligned with the FarClimate handoff design: a near-fullscreen blocking article modal with a two-level navigation model, clear information hierarchy (chat / recipe / summary), horizontal "deck" navigation between sub-sections, and decorative backgrounds on text-heavy slides. The current `USlideover` plus single-scroll `UTabs` does not match that model or the map / contacts / references split.
+The explorer article experience is being aligned with the FARCLIMATE handoff design: a near-fullscreen blocking article modal with a two-level navigation model, clear information hierarchy (chat / recipe / summary), horizontal "deck" navigation between sub-sections, and decorative backgrounds on text-heavy slides. The current `USlideover` plus single-scroll `UTabs` does not match that model or the map / contacts / references split.
 
 This is a **full replacement** of the current article view: the new layout is the only article UI in the app. `ArticleSidePanel` (explorer) wraps it in a blocking modal; full-page article routes embed the same component without the modal shell. There is no second variant.
 
@@ -45,7 +45,7 @@ This is a **full replacement** of the current article view: the new layout is th
 - **i18n**: Existing `tabs.summary` and `tabs.chat` keys reused; add `tabs.recipe` if missing; add per-slide labels (`main`, `contacts_and_references`, `map`) and the source-link label (already covered by `explorer-article-source-link`).
 - **Accessibility**: Modal focus management; `aria-current` on the active rolling-menu item; `aria-disabled` on prev/next at deck edges; `aria-live="polite"` for slide-index changes; decorative layers `aria-hidden`. Keyboard arrow-key slide navigation is a nice-to-have (not required for v1).
 - **Figma**:
-  - [Modal shell — Summary / Main](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FarClimate---Handoff--Copy-?node-id=2578-11081)
-  - [Summary / Map slide](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FarClimate---Handoff--Copy-?node-id=2578-11241)
-  - [Summary / Contact & references slide](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FarClimate---Handoff--Copy-?node-id=2578-11344)
-  - [Recipe slide example](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FarClimate---Handoff--Copy-?node-id=2572-10935)
+  - [Modal shell — Summary / Main](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FARCLIMATE---Handoff--Copy-?node-id=2578-11081)
+  - [Summary / Map slide](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FARCLIMATE---Handoff--Copy-?node-id=2578-11241)
+  - [Summary / Contact & references slide](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FARCLIMATE---Handoff--Copy-?node-id=2578-11344)
+  - [Recipe slide example](https://www.figma.com/design/KNlbYcaBvoareidZk5WT3K/FARCLIMATE---Handoff--Copy-?node-id=2572-10935)
