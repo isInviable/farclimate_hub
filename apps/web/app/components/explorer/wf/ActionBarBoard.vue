@@ -1,5 +1,5 @@
 <template>
-  <ActionBarBase>
+  <ActionBarBase variant="accent">
     <template #left>
       <button
         type="button"
