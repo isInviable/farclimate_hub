@@ -228,6 +228,7 @@
             @mouseover="(e) => onEntityHover(e, entity)"
             @mousemove="updateTooltipPosition"
             @mouseout="onEntityLeave"
+            @click="onEntityClick(entity)"
           />
         </g>
         </g>
@@ -304,6 +305,7 @@
 
   const emit = defineEmits<{
     selectProject: [id: string];
+    selectEntity: [id: string];
   }>();
 
   const minStartYear = computed(() => {
@@ -839,8 +841,14 @@
       title: entity.short_name || entity.legal_name || entity.id,
       subtitle: entity.organization_activity_type_name,
       value: entity.projectsTotalCost,
-      valueLabel: 'Total Cost'
+      valueLabel: 'Total Cost',
+      hint: 'Click for details'
     });
+  };
+
+  const onEntityClick = (entity: any) => {
+    if (!isEntityInFundingRange(entity.id)) return;
+    emit('selectEntity', entity.id);
   };
 
   const onEntityLeave = () => {

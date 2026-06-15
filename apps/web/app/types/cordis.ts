@@ -145,3 +145,44 @@ export interface CordisProjectDetail {
   products: CordisProjectDetailProduct[];
 }
 
+export interface CordisEntityDetailEntity {
+  id: string;
+  vatNumber: string | null;
+  legalName: string | null;
+  shortName: string | null;
+  addressStreet: string | null;
+  addressCity: string | null;
+  addressPostalCode: string | null;
+  addressCountry: string | null;
+  addressUrl: string | null;
+  addressGeolocation: string | null;
+  organizationActivityType: string | null;
+  relatedRegionName: string | null;
+  relatedRegionNutsCode: string | null;
+  relatedRegionIsoCode: string | null;
+  relatedNutsCodeNutsCode: string | null;
+}
+
+export interface CordisEntityDetailProject {
+  projectId: string;
+  type: string | null;
+  entityOrder: number | null;
+  totalCost: number | null;
+  ecContribution: number | null;
+  netEcContribution: number | null;
+  sme: number | null;
+  terminated: number | null;
+  title: string | null;
+  acronym: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  projectTotalCost: number | null;
+  projectEcMaxContribution: number | null;
+}
+
+export interface CordisEntityDetail {
+  entity: CordisEntityDetailEntity;
+  projects: CordisEntityDetailProject[];
+  projectCount: number;
+}
+

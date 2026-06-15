@@ -1,5 +1,5 @@
 import { useSupabaseClient } from "~/composables/useSupabaseClient";
-import type { CordisProjectDetail } from "~/types/cordis";
+import type { CordisEntityDetail, CordisProjectDetail } from "~/types/cordis";
 
 // Core table fetchers (mirror of legacy /api/tables.* endpoints)
 
@@ -476,7 +476,7 @@ export async function fetchProjectProducts(projectId: string) {
   };
 }
 
-export async function fetchEntityDetail(id: string) {
+export async function fetchEntityDetail(id: string): Promise<CordisEntityDetail> {
   const supabase = getSupabaseClient();
   const { data: entityRow, error: entityError } = await supabase
     .from("entities_cordis")

@@ -24,10 +24,16 @@
             :entity-funding-min="entityFundingMin"
             :entity-funding-max="entityFundingMax"
             @select-project="openProject"
+            @select-entity="openEntity"
           />
         </div>
 
-        <CaProjectDetailModal v-model:open="isOpen" :project-id="projectId" />
+        <CaProjectDetailModal
+          v-model:open="isOpen"
+          :project-id="projectId"
+          @select-entity="onSelectEntityFromProject"
+        />
+        <CaEntityDetailModal v-model:open="isEntityOpen" :entity-id="entityId" />
 
         <!-- section labels (right edge) -->
         <div
@@ -144,7 +150,13 @@ import { caOrdinalColor } from "~/utils/connectedColors";
 import { fundingFromLog, fundingToLog } from "~/utils/entityFundingScale";
 
 const route = useRoute();
-const { isOpen, projectId, openProject } = useProjectDetailModal();
+const { isOpen, projectId, openProject, closeProject } = useProjectDetailModal();
+const { isOpen: isEntityOpen, entityId, openEntity } = useEntityDetailModal();
+
+function onSelectEntityFromProject(id: string) {
+  closeProject();
+  openEntity(id);
+}
 
 type ProjectOption = Omit<ProjectRow, "risks" | "themes"> & {
   start_year: number | null;

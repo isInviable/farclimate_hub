@@ -101,7 +101,8 @@
             <div
               v-for="entity in detail.entities"
               :key="entity.id"
-              class="border-b border-neutral-lighter px-3 py-2 last:border-b-0"
+              class="cursor-pointer border-b border-neutral-lighter px-3 py-2 last:border-b-0 transition-colors hover:bg-neutral-lighter/60"
+              @click="emit('selectEntity', entity.id)"
             >
               <div class="text-sm font-medium text-neutral-darkest">
                 {{ entity.legalName || entity.shortName || entity.id }}
@@ -166,6 +167,10 @@ import type { CordisProjectDetail } from '~/types/cordis';
 import { getCordisProjectUrl, parseCordisKeywords } from '~/utils/cordisLinks';
 
 const open = defineModel<boolean>('open', { default: false });
+
+const emit = defineEmits<{
+  selectEntity: [id: string];
+}>();
 
 const props = defineProps<{
   projectId: string | null;

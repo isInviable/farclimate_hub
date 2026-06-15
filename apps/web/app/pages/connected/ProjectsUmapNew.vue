@@ -27,7 +27,12 @@
           />
         </div>
 
-        <CaProjectDetailModal v-model:open="isOpen" :project-id="projectId" />
+        <CaProjectDetailModal
+          v-model:open="isOpen"
+          :project-id="projectId"
+          @select-entity="onSelectEntityFromProject"
+        />
+        <CaEntityDetailModal v-model:open="isEntityOpen" :entity-id="entityId" />
 
         <!-- bubble-size legend -->
         <div class="absolute bottom-3 left-3 z-10 border border-neutral-darkest bg-neutral-lightest p-3">
@@ -95,7 +100,13 @@ import * as d3 from "d3";
 
 type CategoryMode = "risks" | "themes";
 
-const { isOpen, projectId, openProject } = useProjectDetailModal();
+const { isOpen, projectId, openProject, closeProject } = useProjectDetailModal();
+const { isOpen: isEntityOpen, entityId, openEntity } = useEntityDetailModal();
+
+function onSelectEntityFromProject(id: string) {
+  closeProject();
+  openEntity(id);
+}
 const { indexes, ready } = useConnectedCordisIndexes();
 
 const categoryMode = ref<CategoryMode>("risks");
