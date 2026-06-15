@@ -143,37 +143,39 @@ const mainFeatures = computed(() => [
     image: "/img/home/explorer.jpg",
   },
   {
-    key: "board",
-    title: t("explorer.index.features.board.title"),
-    description: t("explorer.index.features.board.description"),
-    image: "/img/home/board.jpg",
+    key: "compare",
+    title: t("explorer.index.features.compare.title"),
+    description: t("explorer.index.features.compare.description"),
+    image: "/img/home/compare.jpg",
   },
-  {
-    key: "share",
-    title: t("explorer.index.features.share.title"),
-    description: t("explorer.index.features.share.description"),
-    image: "/img/home/grouped.jpg",
-  },
-]);
 
-const aiFeatures = computed(() => [
   {
     key: "curate",
     title: t("explorer.index.features.curate.title"),
     description: t("explorer.index.features.curate.description"),
     image: "/img/home/mindmap.jpg",
   },
+]);
+
+const aiFeatures = computed(() => [
   {
-    key: "compare",
-    title: t("explorer.index.features.compare.title"),
-    description: t("explorer.index.features.compare.description"),
-    image: "/img/home/compare.jpg",
+    key: "board",
+    title: t("explorer.index.features.board.title"),
+    description: t("explorer.index.features.board.description"),
+    image: "/img/home/board.jpg",
   },
+
   {
     key: "generate",
     title: t("explorer.index.features.generate.title"),
     description: t("explorer.index.features.generate.description"),
     image: "/img/home/presentacion.jpg",
+  },
+  {
+    key: "share",
+    title: t("explorer.index.features.share.title"),
+    description: t("explorer.index.features.share.description"),
+    image: "/img/home/grouped.jpg",
   },
 ]);
 

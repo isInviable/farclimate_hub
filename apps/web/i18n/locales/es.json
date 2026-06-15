@@ -60,7 +60,7 @@
           "description": "Selecciona un conjunto de casos y usa la IA para destacar temas, riesgos y conclusiones más pertinentes a tu contexto."
         },
         "compare": {
-          "title": "Comparar artículos",
+          "title": "Analiza",
           "description": "Compara artículos en paralelo para contrastar enfoques, regiones y resultados sin perder el material de origen."
         },
         "generate": {

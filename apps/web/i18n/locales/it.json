@@ -60,7 +60,7 @@
           "description": "Seleziona un insieme di casi e usa l’IA per evidenziare temi, rischi e insegnamenti più rilevanti per il tuo contesto."
         },
         "compare": {
-          "title": "Confronta gli articoli",
+          "title": "Analizzare",
           "description": "Metti gli articoli a confronto per comparare approcci, regioni e risultati senza perdere il materiale di origine."
         },
         "generate": {

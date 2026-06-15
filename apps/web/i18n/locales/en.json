@@ -60,7 +60,7 @@
           "description": "Select a set of case studies and use AI to surface themes, risks, and takeaways that are most relevant to your context."
         },
         "compare": {
-          "title": "Compare articles",
+          "title": "Analyse",
           "description": "Place articles side by side to compare approaches, regions, and outcomes without losing track of the source material."
         },
         "generate": {
