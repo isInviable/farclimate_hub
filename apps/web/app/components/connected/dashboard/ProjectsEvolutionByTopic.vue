@@ -18,14 +18,15 @@ const props = defineProps({
 });
 
 const containerRef = ref<HTMLElement | null>(null);
-const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
+const { width: containerWidth } = useElementSize(containerRef);
 
-const maxHeight = 800; // Maximum height for the scrollable area
-const padding = { top: 10, right:0, bottom: 0, left: 0 };
-const chartWidth = computed(() => {
-  // Chart takes up remaining space after title column
-  return (containerWidth.value || 800) * 0.6; // 60% for chart, 40% for title
-});
+const maxHeight = 800;
+const axisHeight = 40;
+const xAxisPadding = 28;
+const padding = { top: 10, right: xAxisPadding, bottom: 0, left: xAxisPadding };
+const chartWidth = computed(() => (containerWidth.value || 800) * 0.6);
+const titleWidth = computed(() => (containerWidth.value || 800) * 0.4);
+const plotWidth = computed(() => Math.max(0, chartWidth.value - padding.left - padding.right));
 
 // Get all years from data
 const allYears = computed(() => {
@@ -41,15 +42,22 @@ const yearRange = computed(() => {
   return [min(allYears.value) || 0, max(allYears.value) || 0];
 });
 
-// Scales
 const xScale = computed(() => {
-  if (chartWidth.value <= 0 || yearRange.value[0] === yearRange.value[1]) {
-    return scaleLinear().domain([0, 1]).range([0, chartWidth.value]);
+  if (plotWidth.value <= 0 || yearRange.value[0] === yearRange.value[1]) {
+    return scaleLinear().domain([0, 1]).range([padding.left, chartWidth.value - padding.right]);
   }
   return scaleLinear()
     .domain(yearRange.value)
-    .range([0, chartWidth.value]);
+    .range([padding.left, chartWidth.value - padding.right]);
 });
+
+const xTicks = computed(() => {
+  if (allYears.value.length === 0) return [];
+  if (allYears.value.length <= 14) return allYears.value;
+  return xScale.value.ticks(Math.min(8, allYears.value.length));
+});
+
+const chartAreaHeight = computed(() => axisHeight + maxHeight);
 
 const getYScale = (maxValue: number) => {
   if (maxValue === 0) return scaleLinear().domain([0, 1]).range([props.rowHeight - padding.top, padding.top]);
@@ -129,13 +137,6 @@ function scrollDown() {
   if (canScrollDown.value) scrollIndex.value++;
 }
 
-const visibleTopics = computed(() => {
-  return processedTopics.value.slice(
-    scrollIndex.value,
-    scrollIndex.value + maxVisibleRows.value
-  );
-});
-
 // Tooltip state
 const tooltip = ref<{
   visible: boolean;
@@ -149,8 +150,8 @@ const tooltip = ref<{
 function showTooltip(event: MouseEvent, point: { year: number; count: number }, topicLabel: string, rowIndex: number) {
   const svgElement = (event.currentTarget as HTMLElement).closest('svg');
   if (!svgElement) return;
-  
-  const topic = processedTopics.value[scrollIndex.value + rowIndex];
+
+  const topic = processedTopics.value[rowIndex];
   if (!topic) return;
   
   const svgRect = svgElement.getBoundingClientRect();
@@ -184,96 +185,159 @@ const hoveredSvgIndex = ref<number | null>(null);
         PROJECTS EVOLUTION <span class="text-neutral-dark font-normal">BY</span> TOPIC
       </h2>
       
-      <div class="relative" :style="{ maxHeight: `${maxHeight}px`, overflow: 'hidden' }">
-        <!-- Scrollable content -->
-        <div
-          ref="scrollContainerRef"
-          class="transition-transform duration-300"
-          :style="{ transform: `translateY(-${scrollIndex * rowHeight}px)` }"
-        >
-          <!-- Each topic row -->
-          <div
-            v-for="(topic, index) in processedTopics"
-            :key="topic.id"
-            class="flex "
-            :style="{ height: `${rowHeight}px` }"
+      <div class="relative flex">
+        <!-- Chart column: x-axis + scrollable sparklines -->
+        <div class="relative shrink-0" :style="{ width: `${chartWidth}px` }">
+          <!-- Vertical grid lines: axis through visible chart area -->
+          <svg
+            class="pointer-events-none absolute left-0 top-0 z-0"
+            :width="chartWidth"
+            :height="chartAreaHeight"
+            aria-hidden="true"
           >
-            <!-- First column: SVG chart -->
-            <div class="flex-1 relative" :style="{ width: `${chartWidth}px` }">
-              <svg
-                :width="chartWidth"
-                :height="rowHeight"
-                class="overflow-visible"
-                @mouseenter="hoveredSvgIndex = index"
-                @mouseleave="hoveredSvgIndex = null; hideTooltip()"
+            <line
+              v-for="year in xTicks"
+              :key="`grid-${year}`"
+              :x1="xScale(year)"
+              :y1="0"
+              :x2="xScale(year)"
+              :y2="chartAreaHeight"
+              stroke="#e8e8e8"
+              stroke-width="1"
+            />
+          </svg>
+
+          <!-- Year axis -->
+          <svg
+            :width="chartWidth"
+            :height="axisHeight"
+            class="relative z-10 block overflow-visible"
+            aria-hidden="true"
+          >
+            <line
+              :x1="padding.left"
+              :y1="axisHeight - 1"
+              :x2="chartWidth - padding.right"
+              :y2="axisHeight - 1"
+              stroke="#100007"
+              stroke-width="1"
+            />
+            <g v-for="year in xTicks" :key="`tick-${year}`">
+              <line
+                :x1="xScale(year)"
+                :y1="axisHeight - 10"
+                :x2="xScale(year)"
+                :y2="axisHeight - 1"
+                stroke="#aaa"
+                stroke-width="1"
+              />
+              <text
+                :x="xScale(year)"
+                :y="axisHeight - 14"
+                text-anchor="middle"
+                class="axis-year-label"
               >
-                <!-- Baseline (x-axis at 0) - acts as separator -->
-                <line
-                  :x1="0"
-                  :y1="topic.baselineY"
-                  :x2="chartWidth"
-                  :y2="topic.baselineY"
-                  stroke="#aaa"
-                  stroke-width="1"
-                />
+                {{ year }}
+              </text>
+            </g>
+          </svg>
 
-                <!-- Line chart -->
-                <path
-                  v-if="topic.path"
-                  :d="topic.path"
-                  fill="none"
-                  stroke="#1e63a2"
-                  stroke-width="2"
-                  class="transition-all"
-                />
+          <div class="relative z-10" :style="{ maxHeight: `${maxHeight}px`, overflow: 'hidden' }">
+            <div
+              class="transition-transform duration-300"
+              :style="{ transform: `translateY(-${scrollIndex * rowHeight}px)` }"
+            >
+              <div
+                v-for="(topic, index) in processedTopics"
+                :key="topic.id"
+                :style="{ height: `${rowHeight}px` }"
+              >
+                <svg
+                  :width="chartWidth"
+                  :height="rowHeight"
+                  class="relative z-10 overflow-visible"
+                  @mouseenter="hoveredSvgIndex = index"
+                  @mouseleave="hoveredSvgIndex = null; hideTooltip()"
+                >
+                  <!-- Baseline (y = 0) -->
+                  <line
+                    :x1="padding.left"
+                    :y1="topic.baselineY"
+                    :x2="chartWidth - padding.right"
+                    :y2="topic.baselineY"
+                    stroke="#ccc"
+                    stroke-width="1"
+                  />
 
-                <!-- All data points - visible when hovering over SVG -->
-                <circle
-                  v-for="(point, pointIndex) in topic.points"
-                  :key="pointIndex"
-                  :cx="point.x"
-                  :cy="point.y"
-                  :r="hoveredSvgIndex === index ? 4 : 0"
-                  :fill="hoveredSvgIndex === index ? '#1e63a2' : 'transparent'"
-                  :stroke="hoveredSvgIndex === index ? 'white' : 'transparent'"
-                  :stroke-width="hoveredSvgIndex === index ? 2 : 0"
-                  class="cursor-pointer transition-all pointer-events-none"
-                />
-
-                <!-- Hover detection circles (invisible, larger radius) -->
-                <circle
-                  v-for="(point, pointIndex) in topic.points"
-                  :key="`hover-${pointIndex}`"
-                  :cx="point.x"
-                  :cy="point.y"
-                  r="8"
-                  fill="transparent"
-                  stroke="transparent"
-                  class="cursor-pointer"
-                  @mouseenter="showTooltip($event, { year: point.year, count: point.count }, topic.label, index)"
-                  @mouseleave="hideTooltip"
-                />
-
-                <!-- Highlighted point with tooltip -->
-                <template v-for="(point, pointIndex) in topic.points" :key="`tooltip-${pointIndex}`">
-                  <circle
-                    v-if="tooltip?.visible && tooltip.topicLabel === topic.label && tooltip.year === point.year"
-                    :cx="point.x"
-                    :cy="point.y"
-                    r="6"
-                    fill="#1e63a2"
-                    fill-opacity="0.3"
+                  <path
+                    v-if="topic.path"
+                    :d="topic.path"
+                    fill="none"
                     stroke="#1e63a2"
                     stroke-width="2"
-                    class="pointer-events-none"
+                    class="transition-all"
                   />
-                </template>
-              </svg>
-            </div>
 
-            <!-- Second column: Topic title -->
-            <div class="flex items-center px-4" :style="{ width: `${(containerWidth || 800) * 0.4}px` }">
-              <span class="text-sm text-gray-700">{{ topic.label }}</span>
+                  <circle
+                    v-for="(point, pointIndex) in topic.points"
+                    :key="pointIndex"
+                    :cx="point.x"
+                    :cy="point.y"
+                    :r="hoveredSvgIndex === index ? 4 : 0"
+                    :fill="hoveredSvgIndex === index ? '#1e63a2' : 'transparent'"
+                    :stroke="hoveredSvgIndex === index ? 'white' : 'transparent'"
+                    :stroke-width="hoveredSvgIndex === index ? 2 : 0"
+                    class="pointer-events-none cursor-pointer transition-all"
+                  />
+
+                  <circle
+                    v-for="(point, pointIndex) in topic.points"
+                    :key="`hover-${pointIndex}`"
+                    :cx="point.x"
+                    :cy="point.y"
+                    r="8"
+                    fill="transparent"
+                    stroke="transparent"
+                    class="cursor-pointer"
+                    @mouseenter="showTooltip($event, { year: point.year, count: point.count }, topic.label, index)"
+                    @mouseleave="hideTooltip"
+                  />
+
+                  <template v-for="(point, pointIndex) in topic.points" :key="`tooltip-${pointIndex}`">
+                    <circle
+                      v-if="tooltip?.visible && tooltip.topicLabel === topic.label && tooltip.year === point.year"
+                      :cx="point.x"
+                      :cy="point.y"
+                      r="6"
+                      fill="#1e63a2"
+                      fill-opacity="0.3"
+                      stroke="#1e63a2"
+                      stroke-width="2"
+                      class="pointer-events-none"
+                    />
+                  </template>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic labels column -->
+        <div class="shrink-0" :style="{ width: `${titleWidth}px` }">
+          <div :style="{ height: `${axisHeight}px` }" aria-hidden="true" />
+          <div class="relative" :style="{ maxHeight: `${maxHeight}px`, overflow: 'hidden' }">
+            <div
+              class="transition-transform duration-300"
+              :style="{ transform: `translateY(-${scrollIndex * rowHeight}px)` }"
+            >
+              <div
+                v-for="topic in processedTopics"
+                :key="`label-${topic.id}`"
+                class="flex items-center px-4"
+                :style="{ height: `${rowHeight}px` }"
+              >
+                <span class="text-sm text-gray-700">{{ topic.label }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -281,7 +345,8 @@ const hoveredSvgIndex = ref<number | null>(null);
         <!-- Scroll controls -->
         <div
           v-if="processedTopics.length > maxVisibleRows"
-          class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2"
+          class="absolute right-4 flex flex-col gap-2"
+          :style="{ top: `${axisHeight + maxHeight / 2}px`, transform: 'translateY(-50%)' }"
         >
           <!-- Scroll up button -->
           <button
@@ -358,3 +423,10 @@ const hoveredSvgIndex = ref<number | null>(null);
   </div>
 </template>
 
+<style scoped>
+.axis-year-label {
+  font-size: 11px;
+  fill: #666;
+  font-family: "Martian Mono", monospace;
+}
+</style>
