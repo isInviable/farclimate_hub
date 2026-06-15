@@ -6,7 +6,7 @@
       title="Entities Map"
       intro="Where the network lives. Every participating organisation is placed on the map of Europe; filter by climate risk or theme to see which regions are involved, and hover a NUTS3 region for its breakdown."
       help-title="Reading the map"
-      help="Dot size reflects the total project funding tied to each entity; colour deepens with the number of projects it joins. Selecting risks or themes dims everything outside the matching projects."
+      help="Dot size reflects the total project funding tied to each entity; colour deepens with the number of projects it joins. In Entities mode: click a dot to filter, Shift+click to open the organization profile."
     />
 
     <div class="mx-auto w-full max-w-[1920px]  mb-24">
@@ -29,6 +29,7 @@
               @hover-nuts="hoveredNutsId = $event"
               @toggle-nuts="toggleNuts"
               @toggle-entity="toggleEntity"
+              @select-entity="openEntity"
             />
           </div>
 
@@ -146,12 +147,15 @@
         </UTabs>
       </template>
     </UModal>
+
+    <CaEntityDetailModal v-model:open="isEntityOpen" :entity-id="entityId" />
   </div>
 </template>
 
 <script lang="ts" setup>
 definePageMeta({ layout: "connected" });
 
+const { isOpen: isEntityOpen, entityId, openEntity } = useEntityDetailModal();
 const { indexes, ready, error, geo } = useConnectedCordisIndexes();
 
 const filters = useEntitiesMapFilters(indexes);

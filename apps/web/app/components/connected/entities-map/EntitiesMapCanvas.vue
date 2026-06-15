@@ -64,7 +64,7 @@
           @mouseover="onEntityHover($event, entity)"
           @mousemove="onEntityHover($event, entity)"
           @mouseleave="onEntityLeave"
-          @click.stop="onEntityClick(entity)"
+          @click.stop="onEntityClick(entity, $event)"
         />
       </g>
     </svg>
@@ -83,6 +83,9 @@
       <div v-if="tooltip.detail" class="mt-1 text-xs text-neutral-dark">
         {{ tooltip.detail }}
       </div>
+      <p v-if="tooltip.hint" class="mt-1.5 font-mono text-2xs text-neutral-dark">
+        {{ tooltip.hint }}
+      </p>
     </div>
 
     <div
@@ -150,6 +153,7 @@ const emit = defineEmits<{
   hoverNuts: [nutsId: string | null];
   toggleNuts: [nutsId: string];
   toggleEntity: [entityId: string];
+  selectEntity: [entityId: string];
 }>();
 
 const el = useTemplateRef("el");
@@ -187,6 +191,7 @@ const tooltip = ref({
   title: "",
   subtitle: "",
   detail: "",
+  hint: "",
 });
 
 const graticulePath = computed(() => basePath.value?.(graticule) ?? "");
@@ -316,6 +321,7 @@ function onEntityHover(event: MouseEvent, entity: PlacedEntity) {
     title: entity.short_name || entity.legal_name || entity.id,
     subtitle: entity.legal_name && entity.short_name ? entity.legal_name : "",
     detail: `${entity.projectsCount ?? 0} projects · ${(entity.projectsTotalCost ?? 0).toLocaleString()} €`,
+    hint: "Click to filter · Shift+click for details",
   };
 }
 
@@ -330,8 +336,16 @@ function updateTooltipPosition(event: MouseEvent) {
   tooltip.value.y = event.clientY - 12;
 }
 
-function onEntityClick(entity: PlacedEntity) {
+function isDetailsClick(event: MouseEvent) {
+  return event.shiftKey || event.metaKey || event.ctrlKey;
+}
+
+function onEntityClick(entity: PlacedEntity, event: MouseEvent) {
   if (!isEntityInteractive(entity)) return;
+  if (isDetailsClick(event)) {
+    emit("selectEntity", entity.id);
+    return;
+  }
   emit("toggleEntity", entity.id);
 }
 

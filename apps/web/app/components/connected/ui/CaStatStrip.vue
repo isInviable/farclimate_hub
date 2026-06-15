@@ -36,9 +36,12 @@
         :type="activeItem.label"
         :items="activeItem.items ?? []"
         :formatter="activeItem.formatter"
+        @select-entity="openEntity"
       />
     </template>
   </USlideover>
+
+  <CaEntityDetailModal v-model:open="isEntityOpen" :entity-id="entityId" />
 </template>
 
 <script setup lang="ts">
@@ -60,6 +63,7 @@ defineProps<Props>();
 
 const slideoverOpen = ref(false);
 const activeItem = ref<CaStatStripItem | null>(null);
+const { isOpen: isEntityOpen, entityId, openEntity } = useEntityDetailModal();
 
 function format(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);

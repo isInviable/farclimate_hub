@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const emit = defineEmits<{
+  selectEntity: [id: string];
+}>();
+
 const props = defineProps({
   type: {
     type: String,
@@ -62,6 +66,11 @@ const getInstitutionWebsiteUrl = (item: any) => {
   const url = item.address_url?.trim();
   return url || null;
 };
+
+function onInstitutionClick(item: any) {
+  if (props.type !== 'Institutions' || !item?.id) return;
+  emit('selectEntity', item.id);
+}
 </script>
 
 <template>
@@ -76,16 +85,19 @@ const getInstitutionWebsiteUrl = (item: any) => {
       <div
         v-for="(item, index) in items"
         :key="(item as any).id || index"
-        class="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        class="p-3 border border-gray-200 rounded-lg transition-colors"
+        :class="type === 'Institutions' ? 'cursor-pointer hover:bg-gray-50' : ''"
+        @click="type === 'Institutions' ? onInstitutionClick(item) : undefined"
       >
         <div class="flex flex-col">
           <div class="font-medium text-gray-900">
             <a
-              v-if="getItemUrl(item as any)"
+              v-if="type === 'Projects' && getItemUrl(item as any)"
               :href="getItemUrl(item as any)!"
               target="_blank"
               rel="noopener noreferrer"
               class="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+              @click.stop
             >
               {{ getItemTitle(item as any) }}
             </a>
@@ -105,10 +117,14 @@ const getInstitutionWebsiteUrl = (item: any) => {
               target="_blank"
               rel="noopener noreferrer"
               class="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+              @click.stop
             >
               Website
             </a>
           </div>
+          <p v-if="type === 'Institutions'" class="mt-1 font-mono text-2xs text-neutral-dark">
+            Click for details
+          </p>
           <div v-if="type === 'Projects' && (item as any).totalCost" class="text-xs text-gray-400 mt-1">
             Cost: {{ formatter((item as any).totalCost) }} €
           </div>
