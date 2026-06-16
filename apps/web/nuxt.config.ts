@@ -76,6 +76,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { prerender: true },
+    '/es': { prerender: true },
+    '/it': { prerender: true },
     '/connected/**': { ssr: false, },
     '/explorer/**': { ssr: false, }
   },

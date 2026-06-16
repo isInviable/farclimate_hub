@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+const { locale } = useI18n()
+
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -7,7 +9,7 @@ useHead({
     { rel: 'icon', type: 'image/png', href: '/img/icono-farclimate.png' }
   ],
   htmlAttrs: {
-    lang: 'en'
+    lang: () => locale.value
   }
 })
 

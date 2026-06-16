@@ -45,7 +45,7 @@
 
         <div class="flex-1" />
 
-        <!-- Language Switcher (segmented EN/ES) -->
+        <!-- Language Switcher -->
         <div
           class="hidden sm:inline-flex items-stretch h-9 border"
           :class="mode ? 'border-neutral-lightest' : 'border-neutral-darkest'"
@@ -158,16 +158,22 @@ async function handleLogout() {
   await router.push("/explorer/explorer");
 }
 
-const { locale, locales } = useI18n();
+const { locale, locales, setLocale } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
 
 const currentLocale = computed(() => locale.value);
 const availableLocales = computed(() => locales.value);
 
-function switchLanguage(localeCode: "en" | "es") {
+async function switchLanguage(localeCode: "en" | "es" | "it") {
   const path = switchLocalePath(localeCode);
-  if (path) {
-    navigateTo(path);
+  if (!path) return;
+
+  if (locale.value !== localeCode) {
+    await setLocale(localeCode);
+  }
+
+  if (route.path !== path) {
+    await navigateTo(path);
   }
 }
 </script>
