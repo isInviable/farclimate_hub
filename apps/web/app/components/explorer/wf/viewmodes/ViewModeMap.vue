@@ -12,21 +12,7 @@
       </div>
     </div>
     
-    <!-- Map actions -->
-    <div v-if="mapPoints.length > 0" class="flex justify-start gap-4 mt-4 pt-4 border-t border-gray-200">
-      <button class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-        <Icon name="mdi:download" class="w-4 h-4" />
-        <span class="text-sm">{{ $t('viewModes.downloadPng') }}</span>
-      </button>
-      <button class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-        <Icon name="mdi:share-variant" class="w-4 h-4" />
-        <span class="text-sm">{{ $t('viewModes.shareMap') }}</span>
-      </button>
-      <button class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-        <Icon name="mdi:fullscreen" class="w-4 h-4" />
-        <span class="text-sm">{{ $t('viewModes.fullscreen') }}</span>
-      </button>
-    </div>
+    
   </section>
 </template>
 
