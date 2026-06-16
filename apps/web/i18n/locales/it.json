@@ -555,13 +555,13 @@
     "summary": "Panoramica",
     "recipe": "Ricetta",
     "chat": "Chat",
-    "contacts": "Contatti"
+    "contacts": "Contatti e riferimenti"
   },
   "summary": {
     "slides": {
       "main": "Sintesi",
       "contacts": "Contatti e riferimenti",
-      "map": "Mappa"
+      "map": "Località"
     },
     "empty": {
       "economic": "Nessun dato economico disponibile"
@@ -570,7 +570,7 @@
   "recipe": {
     "nav": {
       "summaryPlus": "Sintesi+",
-      "map": "Mappa"
+      "map": "Località"
     },
     "emptyTitle": "Nessun contenuto ricetta",
     "emptyDescription": "Non è presente una ricetta strutturata nel database per questo caso studio nella lingua corrente. Se ti aspetti dati qui, applica l’ultima SQL per get_documents_by_ids (recipe_ingredients) e verifica che la pipeline abbia inviato le righe knowledge.recipe.",
@@ -651,7 +651,7 @@
     "sector": "Settore",
     "date": "Data",
     "hazards": "Rischi",
-    "typeOfSolution": "Tipo di soluzione",
+    "typeOfSolution": "Approccio di adattamento",
     "whoIsInvolved": "Chi è coinvolto",
     "geographicalScope": "Ambito geografico",
     "economicData": "Dati economici",

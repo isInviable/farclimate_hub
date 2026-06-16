@@ -3,16 +3,16 @@
   "hero": {
     "backLabel": "Back to Stories",
     "tags": ["Agriculture"],
-    "title": "Water-Smart Agriculture in Extremadura",
-    "subtitle": "Farmers adopted precision irrigation and drought-resilient crops, cutting water use while maintaining yields.",
-    "date": "24 Nov. 2025",
-    "readTime": "3 min. read",
+    "title": "Cultivating resilience in the heart of Turin",
+    "subtitle": "Through urban agriculture and community-led initiatives, Gabriella Esposito is helping citizens reconnect with nature and reimagine greener, more resilient neighbourhoods.",
+    "date": "5 Sep. 2025",
+    "readTime": "5 min. read",
     "author": {
-      "name": "María González",
+      "name": "Gabriella Esposito",
       "organization": "FARCLIMATE",
       "avatar": "/img/stories/avatar.png"
     },
     "backgroundImage": "/img/stories/card-3.png"
   },
-  "comingSoon": "Full story content is being prepared and will be available soon."
+  "comingSoon": "Through urban agriculture and community-led initiatives, Gabriella Esposito is helping citizens reconnect with nature and reimagine greener, more resilient neighbourhoods."
 }

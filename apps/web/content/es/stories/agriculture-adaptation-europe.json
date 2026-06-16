@@ -1,0 +1,18 @@
+{
+  "slug": "agriculture-adaptation-europe",
+  "hero": {
+    "backLabel": "Back to Stories",
+    "tags": ["Agriculture"],
+    "title": "Where tradition meets transformation",
+    "subtitle": "Joana Saavedra represents a new generation of winegrowers, showing how Atlantic communities can preserve their heritage while embracing innovation and adapting to a changing climate.",
+    "date": "12 Dec. 2025",
+    "readTime": "4 min. read",
+    "author": {
+      "name": "Joana Saavedra",
+      "organization": "FARCLIMATE",
+      "avatar": "/img/stories/avatar.png"
+    },
+    "backgroundImage": "/img/stories/card-3.png"
+  },
+  "comingSoon": "Joana Saavedra represents a new generation of winegrowers, showing how Atlantic communities can preserve their heritage while embracing innovation and adapting to a changing climate."
+}

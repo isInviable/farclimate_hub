@@ -1,15 +1,15 @@
 <template>
-  <div class="flex flex-col h-full min-h-0">
-    <div v-if="mapPoints.length > 0" class="flex-1 min-h-0">
+  <div>
+    <div v-if="mapPoints.length > 0" class="h-[min(70vh,480px)] min-h-[320px] w-full">
       <MapBase
         :points="mapPoints"
         :fit-to-bounds="false"
-        class="w-full h-full min-h-[320px] rounded-md overflow-hidden border border-default"
+        class="h-full w-full rounded-md overflow-hidden border border-default"
       />
     </div>
     <div
       v-else
-      class="flex-1 flex items-center justify-center min-h-[320px] rounded-md border border-dashed border-default bg-elevated/40"
+      class="flex min-h-[320px] items-center justify-center rounded-md border border-dashed border-default bg-elevated/40"
     >
       <UAlert
         color="neutral"
@@ -27,6 +27,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import MapBase from "../MapBase.vue";
+import { parseDocumentLatLon } from "@/utils/explorerBioregions";
 
 interface MapPoint {
   label?: string;
@@ -45,19 +46,12 @@ const props = defineProps<{
 const { t: $t } = useI18n();
 
 const mapPoints = computed<MapPoint[]>(() => {
-  const loc = props.document?.location;
-  if (
-    !Array.isArray(loc) ||
-    loc.length !== 2 ||
-    typeof loc[0] !== "number" ||
-    typeof loc[1] !== "number"
-  ) {
-    return [];
-  }
+  const coords = parseDocumentLatLon(props.document?.location);
+  if (!coords) return [];
   return [
     {
       label: typeof props.document?.title === "string" ? props.document.title : "",
-      location: { lat: loc[0], lon: loc[1] },
+      location: coords,
       articleId: props.document?.id,
     },
   ];

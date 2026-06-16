@@ -6,47 +6,62 @@
   },
   "cards": [
     {
-      "slug": "restoring-forest-resilience",
-      "tag": "Forestry",
-      "title": "Restoring forest resilience in the Pyrenees",
-      "date": "24 Nov. 2025",
-      "readTime": "3 min. read",
+      "slug": "water-smart-agriculture-extremadura",
+      "tag": "Agriculture",
+      "title": "Cultivating resilience in the heart of Turin",
+      "date": "5 Sep. 2025",
+      "readTime": "5 min. read",
       "author": {
-        "name": "Maria López",
+        "name": "Gabriella Esposito",
         "organization": "FARCLIMATE",
         "avatar": "/img/stories/avatar.png"
       },
-      "excerpt": "A participatory approach to reforest degraded slopes while strengthening local governance and fire-risk planning.",
-      "image": "/img/stories/card-1.png",
+      "excerpt": "Through urban agriculture and community-led initiatives, Gabriella Esposito is helping citizens reconnect with nature and reimagine greener, more resilient neighbourhoods.",
+      "image": "/img/stories/card-3.png",
       "readLabel": "Read"
     },
     {
       "slug": "sustainable-fisheries-galicia",
       "tag": "Fisheries",
-      "title": "Sustainable fisheries in Galicia",
+      "title": "Building resilience through cooperation",
       "date": "18 Oct. 2025",
       "readTime": "4 min. read",
       "author": {
-        "name": "João Silva",
+        "name": "María del Carmen Vázquez",
         "organization": "FARCLIMATE",
         "avatar": "/img/stories/avatar.png"
       },
-      "excerpt": "Fishers, scientists, and policymakers co-design monitoring tools to balance livelihoods with ecosystem recovery.",
+      "excerpt": "Strong partnerships and shared decision-making are at the heart of Maria del Carmen Vázquez's vision for resilient fisheries and thriving coastal communities.",
       "image": "/img/stories/card-2.png",
       "readLabel": "Read"
     },
     {
-      "slug": "water-smart-agriculture-extremadura",
-      "tag": "Agriculture",
-      "title": "Water-smart agriculture in Extremadura",
-      "date": "5 Sep. 2025",
-      "readTime": "5 min. read",
+      "slug": "restoring-forest-resilience",
+      "tag": "Forestry",
+      "title": "Healing connections with the forest",
+      "date": "24 Nov. 2025",
+      "readTime": "3 min. read",
       "author": {
-        "name": "Elena Rossi",
+        "name": "Lorena Parada",
         "organization": "FARCLIMATE",
         "avatar": "/img/stories/avatar.png"
       },
-      "excerpt": "Irrigation cooperatives pilot soil-moisture sensors and drought-tolerant varieties to secure harvests under heat stress.",
+      "excerpt": "Lorena Parada is showing how reconnecting people with nature can breathe new life into rural communities, turning forests into spaces for wellbeing, learning and resilience.",
+      "image": "/img/stories/card-1.png",
+      "readLabel": "Read"
+    },
+    {
+      "slug": "agriculture-adaptation-europe",
+      "tag": "Agriculture",
+      "title": "Where tradition meets transformation",
+      "date": "12 Dec. 2025",
+      "readTime": "4 min. read",
+      "author": {
+        "name": "Joana Saavedra",
+        "organization": "FARCLIMATE",
+        "avatar": "/img/stories/avatar.png"
+      },
+      "excerpt": "Joana Saavedra represents a new generation of winegrowers, showing how Atlantic communities can preserve their heritage while embracing innovation and adapting to a changing climate.",
       "image": "/img/stories/card-3.png",
       "readLabel": "Read"
     }

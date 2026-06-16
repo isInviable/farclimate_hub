@@ -3,16 +3,16 @@
   "hero": {
     "backLabel": "Back to Stories",
     "tags": ["Fisheries"],
-    "title": "Sustainable Fisheries in Galicia",
-    "subtitle": "Local fishers partnered with NGOs to test adaptive gear and seasonal closures along the Galician coast.",
-    "date": "24 Nov. 2025",
-    "readTime": "3 min. read",
+    "title": "Building resilience through cooperation",
+    "subtitle": "Strong partnerships and shared decision-making are at the heart of Maria del Carmen Vázquez's vision for resilient fisheries and thriving coastal communities.",
+    "date": "18 Oct. 2025",
+    "readTime": "4 min. read",
     "author": {
-      "name": "María González",
+      "name": "María del Carmen Vázquez",
       "organization": "FARCLIMATE",
       "avatar": "/img/stories/avatar.png"
     },
     "backgroundImage": "/img/stories/card-2.png"
   },
-  "comingSoon": "Full story content is being prepared and will be available soon."
+  "comingSoon": "Strong partnerships and shared decision-making are at the heart of Maria del Carmen Vázquez's vision for resilient fisheries and thriving coastal communities."
 }

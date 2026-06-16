@@ -93,6 +93,12 @@
       "genericTip": "Refresh the page or try again later."
     }
   },
+  "connected": {
+    "index": {
+      "heroTitle": "Explore the EU Climate Adaptation Mission ecosystem",
+      "heroIntro": "Browse the network of projects and organisations shaping climate adaptation across Europe. Four lenses reveal how Mission-funded initiatives connect across topics, places and partnerships."
+    }
+  },
   "pins": {
     "notesPlaceholder": "Add notes to this pin",
     "saveNotes": "Save",
@@ -557,13 +563,13 @@
     "summary": "Overview",
     "recipe": "Recipe",
     "chat": "Chat",
-    "contacts": "Contacts"
+    "contacts": "Contact and references"
   },
   "summary": {
     "slides": {
       "main": "Summary",
-      "contacts": "Contact & references",
-      "map": "Map"
+      "contacts": "Contact and references",
+      "map": "Location"
     },
     "empty": {
       "economic": "No economic data available"
@@ -572,7 +578,7 @@
   "recipe": {
     "nav": {
       "summaryPlus": "Summary+",
-      "map": "Map"
+      "map": "Location"
     },
     "emptyTitle": "No recipe content",
     "emptyDescription": "There is no structured recipe in the database for this case study in the current language. If you expect data here, apply the latest SQL for get_documents_by_ids (recipe_ingredients) and ensure the pipeline has pushed knowledge.recipe rows.",
@@ -653,7 +659,7 @@
     "sector": "Sector",
     "date": "Date",
     "hazards": "Hazards",
-    "typeOfSolution": "Type of solution",
+    "typeOfSolution": "Adaptation approach",
     "whoIsInvolved": "Who is involved",
     "geographicalScope": "Geographical scope",
     "economicData": "Economic data",

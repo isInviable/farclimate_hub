@@ -22,6 +22,11 @@ const MAPBOX_ACCESS_TOKEN = config.public.mapbox.accessToken;
 
 const isMapLoaded = ref(false);
 const mapRef = shallowRef<mapboxgl.Map | null>(null);
+let resizeObserver: ResizeObserver | null = null;
+
+function resizeMap(): void {
+  mapRef.value?.resize();
+}
 
 interface LocationPoint {
   label: string;
@@ -195,7 +200,24 @@ onMounted(() => {
       }
     }
     isMapLoaded.value = true;
+    nextTick(() => {
+      resizeMap();
+    });
   });
+
+  if (mapContainer.value) {
+    resizeObserver = new ResizeObserver(() => {
+      resizeMap();
+    });
+    resizeObserver.observe(mapContainer.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+  mapRef.value?.remove();
+  mapRef.value = null;
 });
 </script>
 

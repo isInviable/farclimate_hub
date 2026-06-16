@@ -93,6 +93,12 @@
       "genericTip": "Actualiza la página o inténtalo de nuevo más tarde."
     }
   },
+  "connected": {
+    "index": {
+      "heroTitle": "Explora el ecosistema de la Misión de Adaptación Climática de la UE",
+      "heroIntro": "Navega por la red de proyectos y organizaciones que impulsan la adaptación climática en Europa. Cuatro perspectivas muestran cómo se conectan las iniciativas financiadas por la Misión en temas, lugares y alianzas."
+    }
+  },
   "pins": {
     "notesPlaceholder": "Añade notas a este marcador",
     "saveNotes": "Guardar",
@@ -569,13 +575,13 @@
     "summary": "Vista general",
     "recipe": "Receta",
     "chat": "Chat",
-    "contacts": "Contactos"
+    "contacts": "Contacto y referencias"
   },
   "summary": {
     "slides": {
       "main": "Resumen",
-      "contacts": "Contactos y referencias",
-      "map": "Mapa"
+      "contacts": "Contacto y referencias",
+      "map": "Ubicación"
     },
     "empty": {
       "economic": "No hay datos económicos disponibles"
@@ -584,7 +590,7 @@
   "recipe": {
     "nav": {
       "summaryPlus": "Resumen+",
-      "map": "Mapa"
+      "map": "Ubicación"
     },
     "emptyTitle": "Sin contenido de receta",
     "emptyDescription": "No hay una receta estructurada en la base de datos para este caso de estudio en el idioma actual. Si esperabas datos, aplica el SQL actualizado de get_documents_by_ids (recipe_ingredients) y asegúrate de que el pipeline haya cargado filas en knowledge.recipe.",
@@ -651,7 +657,7 @@
     "sector": "Sector",
     "date": "Fecha",
     "hazards": "Peligros",
-    "typeOfSolution": "Tipo de solución",
+    "typeOfSolution": "Enfoque de adaptación",
     "whoIsInvolved": "Quién está involucrado",
     "geographicalScope": "Ámbito geográfico",
     "economicData": "Datos económicos",
