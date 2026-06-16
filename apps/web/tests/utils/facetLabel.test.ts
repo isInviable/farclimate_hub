@@ -49,6 +49,29 @@ describe("facetLabelFromMap", () => {
     );
   });
 
+  it("translates no-identificados from locale inventory", () => {
+    const es = require("../../i18n/locales/es.json") as {
+      facets: typeof sampleMap;
+    };
+    const en = require("../../i18n/locales/en.json") as {
+      facets: typeof sampleMap;
+    };
+    expect(
+      facetLabelFromMap(
+        "biogeographical_regions",
+        "no-identificados",
+        es.facets,
+      ),
+    ).toBe("No identificados");
+    expect(
+      facetLabelFromMap(
+        "biogeographical_regions",
+        "no-identificados",
+        en.facets,
+      ),
+    ).toBe("Not identified");
+  });
+
   it("trims whitespace before lookup and fallback", () => {
     expect(facetLabelFromMap("climate_impacts", "  Droughts  ", sampleMap)).toBe(
       "Sequías",

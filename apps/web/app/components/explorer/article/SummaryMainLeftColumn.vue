@@ -40,7 +40,7 @@
           :key="tag"
           class="inline-block rounded-full border border-neutral-darkest px-3.5 py-1.5 font-mono text-[11px] font-semibold tracking-[0.04em] text-neutral-darkest"
         >
-          {{ tag }}
+          {{ facetLabel('biogeographical_regions', tag) }}
         </span>
       </div>
     </div>
@@ -100,6 +100,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const { facetLabel } = useFacetLabel();
 
 function firstNonEmptyString(...candidates: unknown[]): string {
   for (const v of candidates) {

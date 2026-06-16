@@ -211,7 +211,8 @@ function buildFacets(locale) {
     facets[category] = {};
     for (const value of inventory[category]) {
       if (locale === "en") {
-        facets[category][value] = value;
+        facets[category][value] =
+          value === "no-identificados" ? "Not identified" : value;
         continue;
       }
       const translated = lookupTranslation(locale, category, value);
