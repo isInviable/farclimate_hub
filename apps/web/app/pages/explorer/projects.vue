@@ -136,6 +136,10 @@ definePageMeta({
   layout: "explorer",
 });
 
+const route = useRoute();
+const { t } = useI18n();
+const localePath = useLocalePath();
+
 useHead({
   title: () => `${t("projects.dashboard.metaTitle")} - Deliverable 1`,
   meta: [
@@ -145,9 +149,6 @@ useHead({
     },
   ],
 });
-
-const route = useRoute();
-const { t } = useI18n();
 const projectsStore = useProjectsStore();
 const pinsApi = usePinsSupabase();
 const { isAuthenticated } = useAccess();
@@ -167,8 +168,8 @@ const loginLink = computed(() => {
   const returnTo =
     route?.fullPath && route.fullPath !== "/login"
       ? route.fullPath
-      : "/explorer/projects";
-  return `/login?returnTo=${encodeURIComponent(returnTo)}`;
+      : localePath("/explorer/projects");
+  return `${localePath("/login")}?returnTo=${encodeURIComponent(returnTo)}`;
 });
 
 const showCreateModal = ref(false);

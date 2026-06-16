@@ -279,7 +279,7 @@ const projectMenuItems = computed((): DropdownMenuItem[][] => {
     {
       label: t('projects.header.projectsDashboard'),
       icon: 'material-symbols-light:dashboard',
-      onSelect: () => navigateTo('/explorer/projects')
+      onSelect: () => navigateTo(localePath('/explorer/projects'))
     }
   ]);
 
