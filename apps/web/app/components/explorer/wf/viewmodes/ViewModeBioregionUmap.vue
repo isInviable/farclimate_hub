@@ -1,18 +1,73 @@
 <template>
   <section class="relative p-4">
+    <div class="mb-4 max-w-[760px]">
+      <p class="font-sans text-[15px] leading-snug text-neutral-darker">
+        {{ $t('viewModes.umapIntro') }}
+      </p>
+      <p class="mt-2 font-sans text-sm leading-snug text-neutral-dark">
+        {{ $t('viewModes.umapIntroNote') }}
+      </p>
+    </div>
+
     <div
       v-if="results.length === 0"
       class="flex flex-col items-center justify-center py-16 text-gray-500 rounded-lg border border-gray-200 bg-gray-50"
     >
       <UIcon name="i-heroicons-circle-stack-20-solid" class="w-12 h-12 text-gray-300 mb-3" />
       <p class="text-lg font-medium">{{ $t('viewModes.umapEmpty') }}</p>
-      <p class="text-sm">Run a search or adjust filters to see biogeographical regions</p>
+      <p class="text-sm">{{ $t('viewModes.umapEmptyDescription') }}</p>
     </div>
     <ClientOnly v-else>
       <div
         ref="el"
-        class="w-full h-screen min-h-[480px] rounded-lg border border-gray-200 bg-neutral-lightest overflow-hidden"
+        class="relative w-full h-[60vh] min-h-[400px] rounded-lg border border-gray-200 bg-neutral-lightest overflow-hidden"
       >
+        <!-- Continent legend -->
+        <div
+          v-if="legendItems.length > 0"
+          class="absolute right-3 top-3 z-10 max-h-[calc(100%-24px)] w-[260px] overflow-y-auto border border-neutral-darkest bg-neutral-lightest shadow-sm"
+        >
+          <header class="border-b border-neutral-darkest px-4 py-3">
+            <p class="font-mono text-xs font-bold tracking-[0.06em] text-neutral-darkest">
+              {{ $t('viewModes.umapContinentLegendTitle') }}
+            </p>
+            <p class="mt-1 text-2xs text-neutral-dark leading-snug">
+              {{ $t('viewModes.umapContinentLegendHelp') }}
+            </p>
+          </header>
+          <ul class="flex flex-col gap-2 p-4">
+            <li
+              v-for="item in legendItems"
+              :key="item.region"
+              class="flex cursor-pointer items-center gap-2.5 transition-opacity"
+              :class="pinnedRegion && pinnedRegion !== item.region ? 'opacity-40' : ''"
+              @mouseenter="focusedRegion = item.region"
+              @mouseleave="focusedRegion = pinnedRegion"
+              @click="togglePinnedRegion(item.region)"
+            >
+              <span
+                class="h-3 w-3 shrink-0 rounded-full border-2 border-dashed transition-colors"
+                :style="{
+                  borderColor: bioregionColor(item.region),
+                  backgroundColor:
+                    focusedRegion === item.region
+                      ? `${bioregionColor(item.region)}33`
+                      : 'transparent',
+                }"
+              />
+              <span class="min-w-0 flex-1 font-mono text-[11px] text-neutral-darkest leading-tight">
+                {{ displayRegionLabel(item.region) }}
+              </span>
+              <span class="font-mono text-2xs text-neutral-dark tabular-nums">
+                {{ item.count }}
+              </span>
+            </li>
+          </ul>
+          <p class="border-t border-neutral-darkest px-4 py-2 text-2xs text-neutral-dark leading-snug">
+            {{ $t('viewModes.umapBridgeHint') }}
+          </p>
+        </div>
+
         <svg
           v-if="width > 0 && height > 0"
           :width="width"
@@ -23,7 +78,6 @@
           @pointerdown.capture="onCanvasPointerDown"
         >
           <rect width="100%" height="100%" class="fill-neutral-lightest pointer-events-none" />
-          <!-- Hit target under the chart: clicks here clear region focus (gaps in <g> pass through). -->
           <rect
             width="100%"
             height="100%"
@@ -33,7 +87,6 @@
           />
 
           <g class="pointer-events-none" :transform="`translate(${panX}, ${panY})`">
-            <!-- One dashed circle per bioregion (groups hits that carry that region) -->
             <circle
               v-for="c in layoutRegionCircles"
               :key="'reg-' + c.region"
@@ -42,41 +95,61 @@
               :r="c.r"
               :opacity="opacityForRegion(c.region)"
               data-umap-region="1"
-              class="pointer-events-auto cursor-grab fill-gray-400/5 stroke-gray-400 transition-all duration-200 hover:fill-gray-400/20 hover:stroke-gray-500"
+              class="pointer-events-auto cursor-grab transition-all duration-200"
+              :fill="ringFill(c.region)"
+              :stroke="bioregionColor(c.region)"
+              :stroke-opacity="ringStrokeOpacity(c.region)"
               stroke-width="2"
-              stroke-dasharray="6 4"
+              :stroke-dasharray="isUnidentifiedRegion(c.region) ? '3 5' : '6 4'"
               @mouseenter="(e) => showRegionTip(e, c)"
               @mousemove="moveTip"
               @mouseleave="hideTip"
               @click.stop="onRegionClick(c)"
             />
 
-            <!-- One dot = one search result -->
+            <!-- Bridge halo for multi-region hits -->
+            <circle
+              v-for="d in bridgeDocs"
+              :key="'bridge-' + d.hitId"
+              :cx="d.x"
+              :cy="d.y"
+              :r="dotRadius(d) + 4"
+              :opacity="opacityForDoc(d) * 0.35"
+              :stroke="bioregionColor(primaryBioregion(d.regions))"
+              fill="none"
+              stroke-width="2"
+              stroke-dasharray="3 3"
+              class="pointer-events-none transition-all duration-200"
+            />
+
             <circle
               v-for="d in layoutDocs"
               :key="'hit-' + d.hitId"
               :cx="d.x"
               :cy="d.y"
-              :r="DOT_R"
+              :r="dotRadius(d)"
               :opacity="opacityForDoc(d)"
               data-umap-hit="1"
-              class="fill-[#1E63A2] stroke-gray-900 stroke-2 cursor-pointer transition-all duration-200 hover:fill-[#154a7a] hover:stroke-black pointer-events-auto"
+              class="cursor-pointer transition-all duration-200 pointer-events-auto"
+              :fill="dotFill(d)"
+              :stroke="dotStroke(d)"
+              :stroke-width="isBioregionBridge(d.regions) ? 3 : 2"
               @mouseenter="(e) => showDocTip(e, d)"
               @mousemove="moveTip"
               @mouseleave="hideTip"
               @click.stop="onDocClick(d)"
             />
 
-            <!-- Region name always visible (no hover) -->
             <text
               v-for="c in layoutRegionCircles"
               :key="'lbl-' + c.region"
               :x="c.cx"
               :y="c.labelY"
-              :opacity="opacityForRegion(c.region)"
+              :opacity="labelOpacityForRegion(c.region)"
               text-anchor="middle"
               dominant-baseline="middle"
-              class="pointer-events-none select-none fill-gray-900 text-[11px] font-semibold transition-opacity duration-200"
+              class="pointer-events-none select-none text-[11px] font-semibold transition-opacity duration-200"
+              :fill="bioregionColor(c.region)"
               style="paint-order: stroke fill; stroke: rgba(255, 255, 255, 0.95); stroke-width: 3.5px; stroke-linejoin: round"
             >
               {{ displayRegionLabel(c.region) }}
@@ -99,7 +172,7 @@
       </div>
       <template #fallback>
         <div
-          class="flex min-h-[480px] items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500"
+          class="flex min-h-[400px] items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500"
         >
           <UIcon name="i-heroicons-arrow-path-20-solid" class="h-8 w-8 animate-spin" />
         </div>
@@ -112,15 +185,24 @@
 import { useElementSize } from '@vueuse/core'
 import * as d3 from 'd3'
 import smallestEnclosingCircle from 'smallest-enclosing-circle'
-import { UMAP } from 'umap-js'
 import type { ArticleDetail, SearchResult } from '@/types/search'
-import { buildPerHitUmapVectors, type SearchHitLike } from '@/utils/explorerBioregions'
+import {
+  bioregionColor,
+  bioregionFill,
+  buildPerHitUmapVectors,
+  isBioregionBridge,
+  isUnidentifiedRegion,
+  primaryBioregion,
+  type SearchHitLike,
+} from '@/utils/explorerBioregions'
+import { runDeterministicUmap } from '@/utils/umapLayout'
 import { useFacetLabel } from '@/composables/useFacetLabel'
 
 const { facetLabel } = useFacetLabel()
+const { t } = useI18n()
 
-/** Same radius for every search-result dot (v1: no size encoding). */
 const DOT_R = 8
+const BRIDGE_EXTRA_R = 2
 const REGION_PAD = 14
 
 const props = withDefaults(
@@ -143,7 +225,6 @@ type DocLayout = {
   y: number
   title: string
   doc: SearchResult | null | undefined
-  /** Normalized bioregions for this hit (incl. no-identificados when applicable). */
   regions: string[]
 }
 
@@ -153,14 +234,12 @@ type RegionCircleLayout = {
   cy: number
   r: number
   count: number
-  /** Vertical center of the label (SVG px). */
   labelY: number
 }
 
 const layoutDocs = ref<DocLayout[]>([])
 const layoutRegionCircles = ref<RegionCircleLayout[]>([])
 
-/** Pan offset (px) for draggable canvas */
 const panX = ref(0)
 const panY = ref(0)
 
@@ -174,36 +253,78 @@ type CanvasDragState = {
 }
 
 const canvasDrag = ref<CanvasDragState | null>(null)
-/** Suppress hit-dot click after a pan gesture (same pointer sequence). */
 const blockDocClick = ref(false)
 
 const isGrabbing = computed(() => Boolean(canvasDrag.value?.active))
 
-/** When set, other regions and hits not in this region are faded. Cleared by clicking empty SVG. */
 const focusedRegion = ref<string | null>(null)
+const pinnedRegion = ref<string | null>(null)
 
-const FADED_OPACITY = 0.12
+const DIMMED_OPACITY = 0.1
+const DEFAULT_RING_STROKE_OPACITY = 0.25
+
+const legendItems = computed(() =>
+  [...layoutRegionCircles.value].sort((a, b) => b.count - a.count || a.region.localeCompare(b.region))
+)
+
+const bridgeDocs = computed(() => layoutDocs.value.filter((d) => isBioregionBridge(d.regions)))
 
 function opacityForRegion(name: string) {
   const f = focusedRegion.value
   if (!f) return 1
-  return f === name ? 1 : FADED_OPACITY
+  return f === name ? 1 : DIMMED_OPACITY
 }
 
 function opacityForDoc(d: DocLayout) {
   const f = focusedRegion.value
   if (!f) return 1
-  return d.regions.includes(f) ? 1 : FADED_OPACITY
+  return d.regions.includes(f) ? 1 : DIMMED_OPACITY
+}
+
+function labelOpacityForRegion(name: string) {
+  const f = focusedRegion.value
+  if (!f) return 0.85
+  return f === name ? 1 : DIMMED_OPACITY
+}
+
+function ringStrokeOpacity(region: string) {
+  const f = focusedRegion.value
+  if (!f) return DEFAULT_RING_STROKE_OPACITY
+  return f === region ? 0.9 : DIMMED_OPACITY
+}
+
+function ringFill(region: string) {
+  const f = focusedRegion.value
+  const alpha = !f ? 0.04 : f === region ? 0.12 : 0.02
+  return bioregionFill(region, alpha)
+}
+
+function dotRadius(d: DocLayout) {
+  return isBioregionBridge(d.regions) ? DOT_R + BRIDGE_EXTRA_R : DOT_R
+}
+
+function dotFill(d: DocLayout) {
+  if (isBioregionBridge(d.regions)) return '#fffbf8'
+  return bioregionColor(primaryBioregion(d.regions))
+}
+
+function dotStroke(d: DocLayout) {
+  return bioregionColor(primaryBioregion(d.regions))
 }
 
 function clearFocusedRegion() {
   focusedRegion.value = null
+  pinnedRegion.value = null
+}
+
+function togglePinnedRegion(region: string) {
+  pinnedRegion.value = pinnedRegion.value === region ? null : region
+  focusedRegion.value = pinnedRegion.value
 }
 
 function onRegionClick(c: RegionCircleLayout) {
-  console.log('onRegionClick', c)
   if (blockDocClick.value) return
-  focusedRegion.value = c.region
+  togglePinnedRegion(c.region)
 }
 
 const tooltip = reactive({
@@ -217,17 +338,22 @@ const tooltip = reactive({
 function showDocTip(e: MouseEvent, d: DocLayout) {
   tooltip.visible = true
   tooltip.title = d.title || 'Untitled'
-  tooltip.subtitle =
-    d.regions.length > 0
-      ? `Bioregions:\n${d.regions.map((r) => `• ${displayRegionLabel(r)}`).join('\n')}`
-      : 'Bioregions:\n• —'
+  const regionLines = d.regions.map((r) => `• ${displayRegionLabel(r)}`).join('\n')
+  if (isBioregionBridge(d.regions)) {
+    tooltip.subtitle = `${t('viewModes.umapBridgeSpans')}\n${regionLines}`
+  } else {
+    tooltip.subtitle = `${t('viewModes.umapBioregionsLabel')}\n${regionLines || '• —'}`
+  }
   moveTip(e)
 }
 
 function showRegionTip(e: MouseEvent, c: RegionCircleLayout) {
   tooltip.visible = true
   tooltip.title = displayRegionLabel(c.region)
-  tooltip.subtitle = `${c.count} case ${c.count === 1 ? 'study' : 'studies'} in this region`
+  tooltip.subtitle =
+    c.count === 1
+      ? t('viewModes.umapRegionCountOne')
+      : t('viewModes.umapRegionCountMany', { count: c.count })
   moveTip(e)
 }
 
@@ -247,7 +373,6 @@ function onDocClick(d: DocLayout) {
 
 const PAN_DRAG_THRESHOLD_PX = 5
 
-/** Removes window listeners installed for panning (see onCanvasPointerDown). */
 let detachPanWindowListeners: (() => void) | null = null
 
 function onCanvasPointerDown(e: PointerEvent) {
@@ -263,11 +388,6 @@ function onCanvasPointerDown(e: PointerEvent) {
     active: false,
   }
 
-  /**
-   * Avoid svg.setPointerCapture: it retargets the click to the SVG, so
-   * @click on region / hit circles never runs (hover still works).
-   * Track drag on window instead so native click reaches the correct target.
-   */
   const onMove = (ev: PointerEvent) => {
     const d = canvasDrag.value
     if (!d || ev.pointerId !== d.pointerId) return
@@ -322,7 +442,6 @@ function displayRegionLabel(name: string) {
   return `${translated.slice(0, REGION_LABEL_MAX - 1)}…`
 }
 
-/** Place label above the circle, or below if it would clip the top of the SVG. */
 function regionLabelY(cy: number, r: number, svgH: number): number {
   const margin = 12
   const offset = 14
@@ -386,24 +505,16 @@ function computeLayout(w: number, h: number): {
     embedding = [[0, 0]]
   } else {
     try {
-      const n = hits.length
-      const nNeighbors = Math.min(n - 1, Math.max(2, Math.min(15, Math.ceil(Math.sqrt(n)))))
-      const umap = new UMAP({
-        nComponents: 2,
-        nNeighbors,
-        minDist: 0.1,
+      embedding = runDeterministicUmap(rows, {
+        nPoints: hits.length,
+        seed: 42,
+        nNeighbors: 12,
+        minDist: 0.4,
       })
-      const nEpochs = umap.initializeFit(rows)
-      const steps = Math.min(nEpochs, 300)
-      for (let i = 0; i < steps; i++) umap.step()
-      embedding = umap.getEmbedding() as [number, number][]
-      if (embedding.some((p) => !Number.isFinite(p[0]) || !Number.isFinite(p[1]))) {
-        throw new Error('non-finite embedding')
-      }
     } catch {
       embedding = hits.map((_, i) => {
-        const t = (2 * Math.PI * i) / hits.length
-        return [Math.cos(t) * 0.5, Math.sin(t) * 0.5] as [number, number]
+        const angle = (2 * Math.PI * i) / hits.length
+        return [Math.cos(angle) * 0.5, Math.sin(angle) * 0.5] as [number, number]
       })
     }
   }
@@ -419,11 +530,12 @@ function computeLayout(w: number, h: number): {
 
   const docCircles = hits.map((hit, i) => {
     const emb = embedding[i]!
+    const regions = perHitRegions[i]!
     return {
       hitId: hit.id,
       x: scaleX(emb[0]!),
       y: scaleY(emb[1]!),
-      r: DOT_R,
+      r: isBioregionBridge(regions) ? DOT_R + BRIDGE_EXTRA_R : DOT_R,
       title: hit.document?.title ?? 'Untitled',
       doc: hit.document,
     }
@@ -486,6 +598,7 @@ watch(
     panX.value = 0
     panY.value = 0
     focusedRegion.value = null
+    pinnedRegion.value = null
     const { docs, regions } = computeLayout(width.value, height.value)
     layoutDocs.value = docs
     layoutRegionCircles.value = regions

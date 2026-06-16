@@ -2,6 +2,55 @@ import type { ArticleDetail, SearchResult } from '@/types/search'
 
 const NO_REGION = 'no-identificados'
 
+/** Bioregion multi-hot dominates geography in UMAP distance (continents > map coords). */
+export const BIO_WEIGHT = 2.5
+export const GEO_WEIGHT = 1.0
+export const JITTER_WEIGHT = 0.5
+
+/** Fixed palette for EU biogeographical regions (continent metaphor). */
+export const BIOREGION_COLORS: Record<string, string> = {
+  Alpine: '#1e63a2',
+  Arctic: '#5b9bd5',
+  Atlantic: '#154a7a',
+  Boreal: '#9e9e14',
+  Continental: '#dabd03',
+  Mediterranean: '#c45c26',
+  Pannonian: '#6b4c9a',
+  [NO_REGION]: '#9ca3af',
+}
+
+export function bioregionColor(region: string): string {
+  return BIOREGION_COLORS[region] ?? '#1e63a2'
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!m?.[1] || !m[2] || !m[3]) return null
+  return { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
+}
+
+export function bioregionFill(region: string, alpha: number): string {
+  const rgb = hexToRgb(bioregionColor(region))
+  if (!rgb) return `rgba(30, 99, 162, ${alpha})`
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+}
+
+export function isUnidentifiedRegion(region: string): boolean {
+  return region === NO_REGION
+}
+
+/** Hit spans two or more bioregions (bridge between continents). */
+export function isBioregionBridge(regions: string[]): boolean {
+  return regions.length >= 2
+}
+
+/** Primary region for dot color: first named region, else fallback. */
+export function primaryBioregion(regions: string[]): string {
+  const named = regions.filter((r) => r !== NO_REGION).sort((a, b) => a.localeCompare(b))
+  if (named.length > 0) return named[0]!
+  return regions[0] ?? NO_REGION
+}
+
 /** Normalize raw `biogeographical_regions` field (string or array); empty list if unusable. */
 export function normalizeBiogeographicalRegionsRaw(value: unknown): string[] {
   if (value === null || value === undefined) return []
@@ -171,17 +220,17 @@ export function buildPerHitUmapVectors(hits: SearchHitLike[]): {
     const row = new Array(k + 3).fill(0)
     for (const r of perHitRegions[hi]!) {
       const i = idx.get(r)
-      if (i !== undefined) row[i] = 1
+      if (i !== undefined) row[i] = BIO_WEIGHT
     }
     const p = parsed[hi]
     if (p) {
-      row[GEO_LAT] = minMax01(p.lat, minLat, maxLat)
-      row[GEO_LON] = minMax01(p.lon, minLon, maxLon)
+      row[GEO_LAT] = minMax01(p.lat, minLat, maxLat) * GEO_WEIGHT
+      row[GEO_LON] = minMax01(p.lon, minLon, maxLon) * GEO_WEIGHT
     } else {
-      row[GEO_LAT] = 0.5
-      row[GEO_LON] = 0.5
+      row[GEO_LAT] = 0.5 * GEO_WEIGHT
+      row[GEO_LON] = 0.5 * GEO_WEIGHT
     }
-    row[JITTER] = umapJitter01(hit.id, 0)
+    row[JITTER] = umapJitter01(hit.id, 0) * JITTER_WEIGHT
     return row
   })
 
