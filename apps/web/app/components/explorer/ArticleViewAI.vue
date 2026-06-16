@@ -1,7 +1,7 @@
 <template>
   <div
     class="article-view relative isolate flex h-full min-h-0 w-full min-w-0 flex-col"
-    :class="chrome === 'page' ? 'mx-auto container' : 'overflow-hidden p-6 pt-4'"
+    :class="chrome === 'page' ? 'mx-auto container min-h-0 flex-1 overflow-hidden' : 'overflow-hidden p-6 pt-4'"
   >
     <ArticleTextSelectionCapture
       source-view="article"

@@ -1,11 +1,16 @@
 <template>
-  <div class="">
-    <div v-if="pending" class="container mx-auto py-8 px-4 space-y-4">
+  <div class="flex min-h-0 flex-1 flex-col">
+    <div v-if="pending" class="container mx-auto px-4 py-8 space-y-4">
       <USkeleton class="h-10 w-2/3 max-w-xl" />
       <USkeleton class="h-48 w-full max-w-4xl" />
       <USkeleton class="h-64 w-full max-w-4xl" />
     </div>
-    <ArticleViewAI v-else-if="article" :document="article" chrome="page" class="h-full w-full" />
+    <ArticleViewAI
+      v-else-if="article"
+      :document="article"
+      chrome="page"
+      class="min-h-0 flex-1"
+    />
   </div>
 </template>
 
@@ -43,7 +48,7 @@ watch(error, (e) => {
   }
 })
 definePageMeta({
-  layout: 'explorer',
+  layout: 'article',
 });
 
 
