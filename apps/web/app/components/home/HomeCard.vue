@@ -18,8 +18,8 @@
         size="xl"
         block
         class="mt-6"
-        color="neutral"
-        variant="outline"
+        color="primary"
+        variant="subtle"
       >
         {{ buttonLabel }}
       </UButton>
