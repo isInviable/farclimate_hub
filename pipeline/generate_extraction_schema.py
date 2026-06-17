@@ -81,6 +81,16 @@ FIELDS_REDUNDANT_WITH_FULLTEXT = frozenset({
     "lifetime",
 })
 
+# Fields parsed in Python (extract_from_html.parse_content_metadata_from_html) via
+# label-based matching. They MUST NOT be emitted in the CSS schema: positional
+# selectors (h5:nth-of-type(N)) mis-assign these when Climate-ADAPT omits empty rows.
+FIELDS_PARSED_IN_PYTHON = frozenset({
+    "keywords",
+    "climate_impacts",
+    "adaptation_approaches",
+    "sectors",
+})
+
 # Overlay: exact field definitions for Climate-ADAPT. Applied after LLM generation to fix known selectors.
 CLIMATE_ADAPT_FIELD_OVERLAY = [
     {"name": "subtitle", "selector": ".case-studies-review-image-wrapper + div p:first-of-type", "type": "text"},
@@ -178,14 +188,14 @@ def _schema_to_css(schema: dict) -> dict:
 
 def _apply_climate_adapt_overlay(schema: dict) -> dict:
     """Merge Climate-ADAPT field overlay into schema so key fields use known-good selectors.
-    Drops fields that are redundant with fulltext."""
+    Drops fields that are redundant with fulltext or parsed in Python."""
     if not schema or "fields" not in schema:
         return schema
     overlay_by_name = {f["name"]: f for f in CLIMATE_ADAPT_FIELD_OVERLAY}
     fields_out = []
     for field in schema["fields"]:
         name = field.get("name")
-        if name in FIELDS_REDUNDANT_WITH_FULLTEXT:
+        if name in FIELDS_REDUNDANT_WITH_FULLTEXT or name in FIELDS_PARSED_IN_PYTHON:
             continue
         if name in overlay_by_name:
             fields_out.append(json.loads(json.dumps(overlay_by_name[name])))

@@ -1,0 +1,53 @@
+{
+  "_comment": "Canonical Climate-ADAPT taxonomy used by verify_extracted.py to validate extracted facet values. Source of truth for verification; do NOT confuse with apps/web/scripts/facet-value-inventory.json (a generated snapshot of live data). Update deliberately when the upstream taxonomy changes.",
+  "climate_impacts": [
+    "Droughts",
+    "Extreme cold",
+    "Extreme heat",
+    "Flooding",
+    "Ice and Snow",
+    "Non specific",
+    "Sea Level Rise",
+    "Storms",
+    "Water Scarcity",
+    "Wildfires"
+  ],
+  "adaptation_approaches": [
+    "Adaptation Measures and Actions",
+    "Adaptation Plans and Strategies",
+    "Climate services",
+    "Cost-benefit analysis and maintenance costs",
+    "Economic aspects",
+    "Environmental aspects",
+    "Just Resilience",
+    "MRE",
+    "Mitigation aspects",
+    "Nature-based solutions",
+    "Observations and Scenarios",
+    "Replication/upscaling potential",
+    "Sector Policies",
+    "Societal aspects",
+    "Vulnerability Assessment"
+  ],
+  "sectors": [
+    "Agriculture",
+    "Biodiversity protection",
+    "Buildings",
+    "Business and industry",
+    "Coastal areas",
+    "Cultural heritage",
+    "Disaster Risk Reduction",
+    "Energy",
+    "Financial",
+    "Forestry",
+    "Health",
+    "Land use planning",
+    "Marine and Fisheries",
+    "Mountain areas",
+    "Non specific",
+    "Tourism",
+    "Transport",
+    "Urban",
+    "Water management"
+  ]
+}

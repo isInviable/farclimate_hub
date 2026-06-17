@@ -209,6 +209,74 @@ def parse_geochar_from_html(html: str) -> tuple[dict, str | None]:
 
 
 # ---------------------------------------------------------------------------
+# .content-metadata label-based parsing
+# ---------------------------------------------------------------------------
+
+# Map normalized h5 label text (trailing colon stripped, lowercased) to output field.
+_CONTENT_METADATA_LABEL_TO_KEY = {
+    "keywords": "keywords",
+    "climate impacts": "climate_impacts",
+    "adaptation approaches": "adaptation_approaches",
+    "sectors": "sectors",
+}
+
+
+def _extract_content_metadata_block(html: str) -> str:
+    """Extract inner HTML of the first div whose class contains "content-metadata".
+
+    Returns empty string when not found. Uses a depth counter so nested <div>s
+    inside the block don't terminate matching early.
+    """
+    m = re.search(r'<div[^>]*class="[^"]*content-metadata[^"]*"[^>]*>', html, re.IGNORECASE)
+    if not m:
+        return ""
+    start = m.end()
+    depth = 1
+    pos = start
+    while pos < len(html) and depth > 0:
+        next_open = html.find("<div", pos)
+        next_close = html.find("</div>", pos)
+        if next_close == -1:
+            break
+        if next_open != -1 and next_open < next_close:
+            depth += 1
+            pos = next_open + 4
+        else:
+            depth -= 1
+            if depth == 0:
+                return html[start:next_close].strip()
+            pos = next_close + 6
+    return ""
+
+
+def parse_content_metadata_from_html(html: str) -> dict:
+    """Parse keywords / climate_impacts / adaptation_approaches / sectors by <h5> label.
+
+    Climate-ADAPT omits empty metadata rows, so positional selectors are
+    unreliable. Match each <h5> label by its text and read the immediately
+    following <p>/<span>, comma-splitting into a trimmed list. Labels not present
+    on the page yield an empty list. Returns a dict for the target fields.
+    """
+    out = {key: [] for key in _CONTENT_METADATA_LABEL_TO_KEY.values()}
+    block = _extract_content_metadata_block(html)
+    if not block:
+        return out
+
+    pattern = re.compile(
+        r"<h5[^>]*>(.*?)</h5>\s*<(p|span)[^>]*>(.*?)</\2>",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for m in pattern.finditer(block):
+        label = re.sub(r"<[^>]+>", "", m.group(1)).strip().rstrip(":").lower().strip()
+        key = _CONTENT_METADATA_LABEL_TO_KEY.get(label)
+        if not key:
+            continue
+        value = re.sub(r"<[^>]+>", "", m.group(3)).strip()
+        out[key] = [s.strip() for s in value.split(",") if s.strip()]
+    return out
+
+
+# ---------------------------------------------------------------------------
 # window.__data extraction (Volto/Plone server-side initial state)
 # ---------------------------------------------------------------------------
 
@@ -550,6 +618,12 @@ def main():
             **item,
         }
         _normalize_array_fields(item)
+
+        # Overwrite keywords / climate_impacts / adaptation_approaches / sectors using
+        # label-based parsing of .content-metadata. The CSS schema relied on positional
+        # selectors (h5:nth-of-type(N) / h5 + span) which mis-assign fields when
+        # Climate-ADAPT omits empty rows.
+        item.update(parse_content_metadata_from_html(html))
 
         # Overwrite geographic_characterisation and set health_impact from .geochar (label-based parsing)
         geo_obj, health_impact_val = parse_geochar_from_html(html)

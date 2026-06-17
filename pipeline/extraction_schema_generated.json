@@ -96,26 +96,6 @@
       "type": "text"
     },
     {
-      "name": "keywords",
-      "selector": ".content-metadata > h5 + span",
-      "type": "text"
-    },
-    {
-      "name": "climate_impacts",
-      "selector": ".content-metadata > h5:nth-of-type(3) + p",
-      "type": "text"
-    },
-    {
-      "name": "adaptation_approaches",
-      "selector": ".content-metadata > h5:nth-of-type(4) + p",
-      "type": "text"
-    },
-    {
-      "name": "sectors",
-      "selector": ".content-metadata > h5:nth-of-type(5) + p",
-      "type": "text"
-    },
-    {
       "name": "governance_level",
       "selector": ".content-metadata > h5:nth-of-type(6) + span",
       "type": "text"
