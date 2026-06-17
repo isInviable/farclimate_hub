@@ -59,9 +59,14 @@
         </div>
 
         <!-- Results Display -->
-        <div class="rounded-md min-h-[600px]">
+        <div class="relative rounded-md min-h-[600px]">
+          <ExplorerSearchLoadingOverlay
+            v-if="showExplorerSearchLoading && visibleResults.length === 0"
+            standalone
+          />
+
           <ExplorerSearchEmptyState
-            v-if="showExplorerEmptyResults"
+            v-else-if="showExplorerEmptyResults"
             :variant="emptyResultsVariant"
             :search-term="emptyResultsSearchTerm"
           />
@@ -123,6 +128,10 @@
             </div>
           </div>
           </template>
+
+          <ExplorerSearchLoadingOverlay
+            v-if="showExplorerSearchLoading && visibleResults.length > 0"
+          />
         </div>
       </main>
     </div>
@@ -299,6 +308,7 @@ const route = useRoute();
 const router = useRouter();
 const { search: hybridSearch, loadAll, loadPage, isSearching: _hybridSearching, facetFilters } = useHybridSearch();
 const appliedSearchQuery = ref("");
+const explorerBootstrapping = ref(true);
 
 function getDocumentUidFromQuery(
   q: typeof route.query
@@ -643,8 +653,15 @@ function toggleBlock(block: string) {
 /** Server-returned page hits; facet filtering is applied in POST /api/explorer-search. */
 const visibleResults = computed(() => searchStore.resultsData?.hits ?? []);
 
+const showExplorerSearchLoading = computed(
+  () => explorerBootstrapping.value || isSearching.value
+);
+
 const showExplorerEmptyResults = computed(
-  () => !isSearching.value && visibleResults.value.length === 0
+  () =>
+    !explorerBootstrapping.value &&
+    !isSearching.value &&
+    visibleResults.value.length === 0
 );
 
 const emptyResultsSearchTerm = computed(
@@ -689,13 +706,17 @@ function handleSidePanelNavigate(uid: string) {
 
 // Lifecycle
 onMounted(async () => {
-  await loadCorpusMetadata();
+  try {
+    await loadCorpusMetadata();
 
-  await applyExplorerRouteSearchBootstrap();
+    await applyExplorerRouteSearchBootstrap();
 
-  const docUid = getDocumentUidFromQuery(route.query);
-  if (docUid) {
-    await openDocumentFromQueryParam(docUid);
+    const docUid = getDocumentUidFromQuery(route.query);
+    if (docUid) {
+      await openDocumentFromQueryParam(docUid);
+    }
+  } finally {
+    explorerBootstrapping.value = false;
   }
 
   // Fetch demo map data similar to solutionsNakedAlt
