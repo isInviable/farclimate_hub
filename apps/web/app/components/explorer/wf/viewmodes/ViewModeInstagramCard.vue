@@ -6,8 +6,7 @@
     ]"
   >
     <CapturableBlock
-      pin-kind="text_segment"
-      :title="title"
+      pin-kind="document"
       :preview="pinPreview"
       :payload="{ markdown: pinPreview }"
       :chrome="false"

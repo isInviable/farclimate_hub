@@ -108,8 +108,7 @@
 
             <ViewModeGridHitContext :document="hit.document">
               <CapturableBlock
-                pin-kind="text_segment"
-                :title="hit.document?.title ?? ''"
+                pin-kind="document"
                 :preview="hit.document?.title ?? ''"
                 :payload="{ markdown: hit.document?.title ?? '' }"
                 :chrome="false"
