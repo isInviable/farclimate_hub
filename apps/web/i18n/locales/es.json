@@ -95,8 +95,62 @@
   },
   "connected": {
     "index": {
+      "metaTitle": "Acción Conectada",
+      "metaDescription": "Explora la red de proyectos y organizaciones de la Misión de Adaptación Climática de la UE en cuatro vistas interactivas.",
+      "eyebrow": "Acción Conectada",
       "heroTitle": "Explora el ecosistema de la Misión de Adaptación Climática de la UE",
-      "heroIntro": "Navega por la red de proyectos y organizaciones que impulsan la adaptación climática en Europa. Cuatro perspectivas muestran cómo se conectan las iniciativas financiadas por la Misión en temas, lugares y alianzas."
+      "heroIntro": "Navega por la red de proyectos y organizaciones que impulsan la adaptación climática en Europa. Cuatro perspectivas muestran cómo se conectan las iniciativas financiadas por la Misión en temas, lugares y alianzas.",
+      "stats": {
+        "projects": "proyectos",
+        "entities": "entidades",
+        "countries": "países",
+        "themes": "temas"
+      },
+      "cardsHeading": "Cuatro formas de explorar",
+      "helpTitle": "Cómo usar esta sección",
+      "helpBody": "Cada tarjeta abre una visualización en vivo. Usa la barra de pestañas superior para cambiar entre ellas en cualquier momento; cada vista incluye una breve explicación y consejos de ayuda.",
+      "cards": {
+        "dashboard": {
+          "title": "Panel",
+          "lede": "Toda la red de un vistazo.",
+          "body": "Cifras clave y dónde se concentra el trabajo: entidades por país y proyectos por tema de adaptación.",
+          "shows": [
+            "Totales de proyectos y entidades",
+            "Entidades por país",
+            "Proyectos por tema"
+          ]
+        },
+        "map": {
+          "title": "Mapa de entidades",
+          "lede": "Dónde están los participantes.",
+          "body": "Cada organización participante en un mapa de Europa, filtrable por riesgo climático, tema y proyecto.",
+          "shows": [
+            "Entidades geolocalizadas",
+            "Filtro por riesgo / tema",
+            "Detalle de región NUTS3"
+          ]
+        },
+        "network": {
+          "title": "Conexiones proyecto–entidad",
+          "lede": "Quién trabaja con quién.",
+          "body": "Una red que vincula cada proyecto con las entidades que participaron: proyectos ordenados por año de inicio y entidades agrupadas por país.",
+          "shows": [
+            "Proyectos ↔ entidades",
+            "Ordenados por año",
+            "Enlaces de socios compartidos"
+          ]
+        },
+        "umap": {
+          "title": "UMAP de proyectos",
+          "lede": "Cómo se relacionan los proyectos por tema.",
+          "body": "Proyectos posicionados en un espacio semántico 2D: los que están cerca abordan temas de adaptación similares.",
+          "shows": [
+            "Disposición semántica 2D",
+            "Agrupaciones temáticas",
+            "Tamaño = entidades implicadas"
+          ]
+        }
+      }
     }
   },
   "pins": {

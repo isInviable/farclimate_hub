@@ -95,8 +95,62 @@
   },
   "connected": {
     "index": {
+      "metaTitle": "Connected Action",
+      "metaDescription": "Browse the EU Climate Adaptation Mission network of projects and organisations across four interactive views.",
+      "eyebrow": "Connected Action",
       "heroTitle": "Explore the EU Climate Adaptation Mission ecosystem",
-      "heroIntro": "Browse the network of projects and organisations shaping climate adaptation across Europe. Four lenses reveal how Mission-funded initiatives connect across topics, places and partnerships."
+      "heroIntro": "Browse the network of projects and organisations shaping climate adaptation across Europe. Four lenses reveal how Mission-funded initiatives connect across topics, places and partnerships.",
+      "stats": {
+        "projects": "projects",
+        "entities": "entities",
+        "countries": "countries",
+        "themes": "themes"
+      },
+      "cardsHeading": "Four ways to explore",
+      "helpTitle": "How to use this",
+      "helpBody": "Each card opens a live visualization. Use the tab bar at the top to switch between them at any time; every view has its own short explainer and help tips.",
+      "cards": {
+        "dashboard": {
+          "title": "Dashboard",
+          "lede": "The whole network at a glance.",
+          "body": "Headline counts plus where the work concentrates — entities per country and projects by adaptation topic.",
+          "shows": [
+            "Project & entity totals",
+            "Entities per country",
+            "Projects by topic"
+          ]
+        },
+        "map": {
+          "title": "Entities Map",
+          "lede": "Where the participants are.",
+          "body": "Every participating organisation placed on a map of Europe, filterable by climate risk, theme and project.",
+          "shows": [
+            "Geo-located entities",
+            "Filter by risk / theme",
+            "NUTS3 region detail"
+          ]
+        },
+        "network": {
+          "title": "Project–Entity Connections",
+          "lede": "Who works with whom.",
+          "body": "A network linking each project to the entities that took part — projects ordered by start year, entities grouped by country.",
+          "shows": [
+            "Projects ↔ entities",
+            "Ordered by year",
+            "Shared-partner links"
+          ]
+        },
+        "umap": {
+          "title": "Projects UMAP",
+          "lede": "How projects relate by topic.",
+          "body": "Projects positioned in 2-D semantic space — those sitting close together tackle similar adaptation themes.",
+          "shows": [
+            "Semantic 2-D layout",
+            "Thematic clusters",
+            "Size = entities involved"
+          ]
+        }
+      }
     }
   },
   "pins": {

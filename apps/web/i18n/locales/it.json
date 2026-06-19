@@ -93,6 +93,66 @@
       "genericTip": "Aggiorna la pagina o riprova più tardi."
     }
   },
+  "connected": {
+    "index": {
+      "metaTitle": "Azione Connessa",
+      "metaDescription": "Esplora la rete di progetti e organizzazioni della Missione UE per l’adattamento climatico in quattro viste interattive.",
+      "eyebrow": "Azione Connessa",
+      "heroTitle": "Esplora l’ecosistema della Missione UE per l’adattamento climatico",
+      "heroIntro": "Naviga nella rete di progetti e organizzazioni che guidano l’adattamento climatico in Europa. Quattro prospettive mostrano come le iniziative finanziate dalla Missione si collegano tra temi, luoghi e partnership.",
+      "stats": {
+        "projects": "progetti",
+        "entities": "entità",
+        "countries": "paesi",
+        "themes": "temi"
+      },
+      "cardsHeading": "Quattro modi per esplorare",
+      "helpTitle": "Come usare questa sezione",
+      "helpBody": "Ogni scheda apre una visualizzazione live. Usa la barra delle schede in alto per passare da una all’altra in qualsiasi momento; ogni vista ha una breve spiegazione e suggerimenti di aiuto.",
+      "cards": {
+        "dashboard": {
+          "title": "Dashboard",
+          "lede": "L’intera rete a colpo d’occhio.",
+          "body": "Numeri principali e dove si concentra il lavoro: entità per paese e progetti per tema di adattamento.",
+          "shows": [
+            "Totali progetti ed entità",
+            "Entità per paese",
+            "Progetti per tema"
+          ]
+        },
+        "map": {
+          "title": "Mappa delle entità",
+          "lede": "Dove si trovano i partecipanti.",
+          "body": "Ogni organizzazione partecipante su una mappa d’Europa, filtrabile per rischio climatico, tema e progetto.",
+          "shows": [
+            "Entità geolocalizzate",
+            "Filtro per rischio / tema",
+            "Dettaglio regione NUTS3"
+          ]
+        },
+        "network": {
+          "title": "Collegamenti progetto–entità",
+          "lede": "Chi lavora con chi.",
+          "body": "Una rete che collega ogni progetto alle entità coinvolte: progetti ordinati per anno di inizio ed entità raggruppate per paese.",
+          "shows": [
+            "Progetti ↔ entità",
+            "Ordinati per anno",
+            "Collegamenti tra partner condivisi"
+          ]
+        },
+        "umap": {
+          "title": "UMAP dei progetti",
+          "lede": "Come i progetti si relazionano per tema.",
+          "body": "Progetti posizionati in uno spazio semantico 2D: quelli vicini affrontano temi di adattamento simili.",
+          "shows": [
+            "Layout semantico 2D",
+            "Cluster tematici",
+            "Dimensione = entità coinvolte"
+          ]
+        }
+      }
+    }
+  },
   "pins": {
     "notesPlaceholder": "Aggiungi note a questo pin",
     "saveNotes": "Salva",
