@@ -5,13 +5,17 @@
  * Usage:
  *   NUXT_TEST_BASE_URL=http://localhost:3000 node scripts/multilang-search-report.mjs
  */
-import { writeFileSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "../../..");
 const REPORT_PATH = resolve(REPO_ROOT, "docs/multilang-free-text-search-report.md");
+const PARITY_REPORT_PATH = resolve(
+  REPO_ROOT,
+  "pipeline/caches/translation_parity_report.json",
+);
 
 const MATRIX = [
   {
@@ -74,7 +78,66 @@ function uidFromHit(hit) {
   return hit.document?.document_uid ?? hit.document_uid ?? null;
 }
 
-function buildReport(snapshots, generatedAt) {
+function loadParityReport() {
+  if (!existsSync(PARITY_REPORT_PATH)) return null;
+  try {
+    return JSON.parse(readFileSync(PARITY_REPORT_PATH, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function buildParitySection(parity) {
+  if (!parity || typeof parity !== "object") return [];
+
+  const rows = [];
+  for (const [sourceFile, langs] of Object.entries(parity)) {
+    for (const [lang, stats] of Object.entries(langs)) {
+      rows.push({
+        sourceFile,
+        lang,
+        sourceLen: stats.source_len ?? 0,
+        translatedLen: stats.translated_len ?? 0,
+        ratio: stats.ratio ?? 0,
+        belowFloor: Boolean(stats.below_floor),
+      });
+    }
+  }
+  if (rows.length === 0) return [];
+
+  rows.sort((a, b) => a.ratio - b.ratio);
+  const below = rows.filter((r) => r.belowFloor);
+  const ratios = rows.map((r) => r.ratio);
+  const avgRatio = ratios.reduce((s, r) => s + r, 0) / ratios.length;
+
+  const lines = [
+    "## Translation length parity (pipeline)",
+    "",
+    `Source: \`pipeline/caches/translation_parity_report.json\` (${rows.length} document×lang pairs).`,
+    "",
+    `Average fulltext length ratio (translated/source): **${avgRatio.toFixed(2)}**.`,
+    `Below floor (ratio < 0.5): **${below.length}**.`,
+    "",
+  ];
+
+  if (below.length > 0) {
+    lines.push("| Source file | Lang | Source len | Translated len | Ratio |", "|-------------|------|------------|----------------|-------|");
+    for (const r of below.slice(0, 20)) {
+      lines.push(
+        `| \`${r.sourceFile}\` | ${r.lang} | ${r.sourceLen} | ${r.translatedLen} | ${r.ratio.toFixed(2)} |`,
+      );
+    }
+    if (below.length > 20) {
+      lines.push("", `_…and ${below.length - 20} more below floor._`, "");
+    } else {
+      lines.push("");
+    }
+  }
+
+  return lines;
+}
+
+function buildReport(snapshots, generatedAt, parity) {
   const lines = [
     "# Multilingual free-text search parity report",
     "",
@@ -105,6 +168,11 @@ function buildReport(snapshots, generatedAt) {
     "3. **Infrastructure is per-language** (separate fulltext + embeddings per `lang`); gaps are mostly vocabulary and translation coverage, not facet logic.",
     "4. **Italian FTS** was fixed (index/query both use `italian`); remaining IT gaps vs EN are content/synonym issues.",
     "",
+  );
+
+  lines.push(...buildParitySection(parity));
+
+  lines.push(
     "## Detail by intent",
     "",
   );
@@ -203,7 +271,7 @@ for (const row of MATRIX) {
   });
 }
 
-const md = buildReport(snapshots, new Date().toISOString());
+const md = buildReport(snapshots, new Date().toISOString(), loadParityReport());
 writeFileSync(REPORT_PATH, md, "utf8");
 console.log(`Wrote ${REPORT_PATH}`);
 for (const s of snapshots) {

@@ -23,6 +23,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -56,6 +57,15 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 TRANSLATION_CACHE_FILE = CACHE_DIR / "translation_cache.json"
 RECIPE_TRANSLATION_CACHE_FILE = CACHE_DIR / "recipe_translation_cache.json"
 RECIPE_TRANSLATION_CACHE_VERSION = "v2"
+TRANSLATION_CACHE_VERSION = "v3"
+FULLTEXT_CHUNK_CHAR_BUDGET = 4000
+FULLTEXT_SINGLE_CALL_THRESHOLD = 4000
+MAX_TRANSLATION_OUTPUT_TOKENS = 8192
+LENGTH_PARITY_FLOOR = 0.5
+PARITY_REPORT_FILE = CACHE_DIR / "translation_parity_report.json"
+
+HEADING_RE = re.compile(r"^#{1,6}\s")
+FENCE_RE = re.compile(r"^```")
 
 # ISO 639-1 → English name for prompts. Bare codes like "it" confuse LLMs (ambiguous vs. English "it").
 TARGET_LANGUAGE_LABELS: dict[str, str] = {
@@ -112,6 +122,220 @@ def _save_json_cache(path: Path, cache: dict) -> None:
 
 global_translation_cache = _load_json_cache(TRANSLATION_CACHE_FILE)
 global_recipe_translation_cache = _load_json_cache(RECIPE_TRANSLATION_CACHE_FILE)
+parity_report: dict[str, dict[str, dict]] = {}
+
+
+def _text_fingerprint(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _translation_generate_config() -> types.GenerateContentConfig:
+    return types.GenerateContentConfig(
+        max_output_tokens=MAX_TRANSLATION_OUTPUT_TOKENS,
+        temperature=0,
+        thinking_config=types.ThinkingConfig(thinking_budget=0),
+    )
+
+
+def _split_markdown_sections(text: str) -> list[str]:
+    """Split at markdown headings when outside fenced code blocks."""
+    if not text:
+        return []
+    lines = text.splitlines(keepends=True)
+    if not lines:
+        return [text] if text.strip() else []
+
+    sections: list[str] = []
+    buf: list[str] = []
+    in_fence = False
+
+    def flush() -> None:
+        if buf:
+            chunk = "".join(buf)
+            if chunk.strip():
+                sections.append(chunk)
+            buf.clear()
+
+    for line in lines:
+        stripped = line.strip()
+        if FENCE_RE.match(stripped):
+            in_fence = not in_fence
+            buf.append(line)
+            continue
+        if not in_fence and HEADING_RE.match(stripped) and buf:
+            flush()
+        buf.append(line)
+
+    flush()
+    return sections if sections else [text]
+
+
+def _split_on_blank_lines(text: str, max_chars: int) -> list[str]:
+    """Split oversized prose on blank-line boundaries (never inside fences)."""
+    parts: list[str] = []
+    buf: list[str] = []
+    in_fence = False
+
+    def flush() -> None:
+        if buf:
+            chunk = "".join(buf)
+            if chunk.strip():
+                parts.append(chunk)
+            buf.clear()
+
+    for line in text.splitlines(keepends=True):
+        stripped = line.strip()
+        if FENCE_RE.match(stripped):
+            in_fence = not in_fence
+            buf.append(line)
+            continue
+        if not in_fence and stripped == "" and buf:
+            flush()
+            buf.append(line)
+            continue
+        buf.append(line)
+
+    flush()
+    if not parts:
+        return [text]
+
+    packed: list[str] = []
+    current = ""
+    for part in parts:
+        if len(part) > max_chars:
+            if current:
+                packed.append(current)
+                current = ""
+            for i in range(0, len(part), max_chars):
+                packed.append(part[i : i + max_chars])
+            continue
+        if current and len(current) + len(part) > max_chars:
+            packed.append(current)
+            current = part
+        else:
+            current = current + part if current else part
+    if current:
+        packed.append(current)
+    return packed
+
+
+def _pack_sections_into_chunks(sections: list[str], max_chars: int) -> list[str]:
+    chunks: list[str] = []
+    current = ""
+    for section in sections:
+        units = [section] if len(section) <= max_chars else _split_on_blank_lines(section, max_chars)
+        for unit in units:
+            if len(unit) > max_chars:
+                if current:
+                    chunks.append(current)
+                    current = ""
+                for i in range(0, len(unit), max_chars):
+                    chunks.append(unit[i : i + max_chars])
+                continue
+            if current and len(current) + len(unit) > max_chars:
+                chunks.append(current)
+                current = unit
+            else:
+                current = current + unit if current else unit
+    if current:
+        chunks.append(current)
+    return chunks if chunks else sections
+
+
+def _chunk_fulltext(text: str) -> list[str]:
+    src = text.strip()
+    if not src:
+        return []
+    if len(src) <= FULLTEXT_SINGLE_CALL_THRESHOLD:
+        return [src]
+    sections = _split_markdown_sections(src)
+    return _pack_sections_into_chunks(sections, FULLTEXT_CHUNK_CHAR_BUDGET)
+
+
+def _field_prompt_instructions(field: str) -> tuple[str, str]:
+    if field == "fulltext":
+        extra = (
+            "- Preserve the markdown structure (headings, bullet lists, code blocks) as much as possible.\n"
+            "- Preserve links and URLs; translate only the descriptive text.\n"
+        )
+        length_hint = "- Keep roughly the same length and level of detail as the original.\n"
+    elif field == "summary":
+        extra = "- Keep it as one or two paragraphs of continuous text.\n"
+        length_hint = "- Length target: roughly 150–250 words.\n"
+    elif field == "title":
+        extra = "- Return a single-line title only, without quotes or extra commentary.\n"
+        length_hint = "- Keep it concise and natural in the target language.\n"
+    else:
+        extra = "- Keep formatting minimal; plain text is fine.\n"
+        length_hint = "- Preserve meaning and nuance; do not add explanations.\n"
+    return extra, length_hint
+
+
+def _extract_response_text(response) -> str:  # noqa: ANN001
+    result_text: str | None = None
+    if hasattr(response, "text") and response.text:
+        result_text = response.text
+    elif hasattr(response, "candidates") and response.candidates:
+        candidate = response.candidates[0]
+        if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
+            if isinstance(candidate.content.parts, list):
+                result_text = "".join(
+                    [p.get("text", "") if isinstance(p, dict) else str(p) for p in candidate.content.parts]
+                )
+            else:
+                result_text = str(candidate.content.parts)
+        elif hasattr(candidate.content, "text"):
+            result_text = candidate.content.text
+    return (result_text or "").strip()
+
+
+def _call_gemini_translate(src: str, target_lang: str, field: str) -> str:
+    extra, length_hint = _field_prompt_instructions(field)
+    lang_label = _target_language_label(target_lang)
+    prompt = (
+        f"Translate the following {field} from English into {lang_label} (ISO 639-1 language code: {target_lang}).\n"
+        "- The text comes from a climate change adaptation case study.\n"
+        f"{extra}"
+        f"{length_hint}"
+        "- Do NOT add any explanations, notes, or metadata; return ONLY the translated text.\n\n"
+        f"Original {field}:\n"
+        f"{src}"
+    )
+    response = genai_client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=prompt,
+        config=_translation_generate_config(),
+    )
+    return _extract_response_text(response)
+
+
+def _record_length_parity(source_file: str, target_lang: str, source_len: int, translated_len: int) -> None:
+    ratio = translated_len / source_len if source_len else 0.0
+    below_floor = ratio < LENGTH_PARITY_FLOOR
+    entry = {
+        "source_len": source_len,
+        "translated_len": translated_len,
+        "ratio": round(ratio, 4),
+        "below_floor": below_floor,
+    }
+    parity_report.setdefault(source_file, {})[target_lang] = entry
+    if below_floor:
+        print(
+            f"WARNING: fulltext length parity below floor ({ratio:.2f} < {LENGTH_PARITY_FLOOR}) "
+            f"for {source_file} [{target_lang}]",
+            file=sys.stderr,
+        )
+
+
+def _save_parity_report() -> None:
+    if not parity_report:
+        return
+    try:
+        PARITY_REPORT_FILE.write_text(json.dumps(parity_report, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"Wrote parity report: {PARITY_REPORT_FILE.relative_to(REPO_ROOT)}")
+    except Exception as e:  # noqa: BLE001
+        print(f"Error saving parity report: {e}", file=sys.stderr)
+
 
 
 def _coerce_recipe_value(val) -> str:  # noqa: ANN001
@@ -288,83 +512,68 @@ def _translate_text(text: str, target_lang: str, field: str) -> str:
     """
     Translate a single text field to target_lang, with caching.
 
-    field is one of: fulltext, title, summary, subtitle.
+    field is one of: fulltext, title, summary, subtitle, or recipe_* keys.
+    For fulltext, use _translate_fulltext instead.
     """
     global global_translation_cache
     if not text:
         return ""
 
-    # To keep prompts reasonable, truncate very long texts (mostly relevant for fulltext).
     src = text.strip()
-    if len(src) > 20000:
-        src = src[:20000]
-
-    # v2: prompts use explicit language names (v1 used bare codes like "it" and caused wrong languages).
-    cache_version = "v2"
-    cache_key = f"{cache_version}:{target_lang}:{field}:{src}"
+    cache_key = f"{TRANSLATION_CACHE_VERSION}:{target_lang}:{field}:{src}"
     if cache_key in global_translation_cache:
-        return global_translation_cache[cache_key]
-
-    # Field-specific instructions
-    if field == "fulltext":
-        extra = (
-            "- Preserve the markdown structure (headings, bullet lists, code blocks) as much as possible.\n"
-            "- Preserve links and URLs; translate only the descriptive text.\n"
-        )
-        length_hint = "- Keep roughly the same length and level of detail as the original.\n"
-    elif field == "summary":
-        extra = "- Keep it as one or two paragraphs of continuous text.\n"
-        length_hint = "- Length target: roughly 150–250 words.\n"
-    elif field == "title":
-        extra = "- Return a single-line title only, without quotes or extra commentary.\n"
-        length_hint = "- Keep it concise and natural in the target language.\n"
-    else:  # subtitle or other short fields
-        extra = "- Keep formatting minimal; plain text is fine.\n"
-        length_hint = "- Preserve meaning and nuance; do not add explanations.\n"
-
-    lang_label = _target_language_label(target_lang)
-    prompt = (
-        f"Translate the following {field} from English into {lang_label} (ISO 639-1 language code: {target_lang}).\n"
-        "- The text comes from a climate change adaptation case study.\n"
-        f"{extra}"
-        f"{length_hint}"
-        "- Do NOT add any explanations, notes, or metadata; return ONLY the translated text.\n\n"
-        f"Original {field}:\n"
-        f"{src}"
-    )
+        cached = global_translation_cache[cache_key]
+        if isinstance(cached, str) and cached:
+            return cached
 
     try:
         print(f"Translating field '{field}' to {target_lang}...")
-        response = genai_client.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(max_output_tokens=1200),
-        )
-
-        result_text: str | None = None
-        if hasattr(response, "text") and response.text:
-            result_text = response.text
-        elif hasattr(response, "candidates") and response.candidates:
-            candidate = response.candidates[0]
-            if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
-                if isinstance(candidate.content.parts, list):
-                    result_text = "".join(
-                        [p.get("text", "") if isinstance(p, dict) else str(p) for p in candidate.content.parts]
-                    )
-                else:
-                    result_text = str(candidate.content.parts)
-            elif hasattr(candidate.content, "text"):
-                result_text = candidate.content.text
-
-        translated = (result_text or "").strip()
-        global_translation_cache[cache_key] = translated
-        _save_json_cache(TRANSLATION_CACHE_FILE, global_translation_cache)
+        translated = _call_gemini_translate(src, target_lang, field)
+        if translated:
+            global_translation_cache[cache_key] = translated
+            _save_json_cache(TRANSLATION_CACHE_FILE, global_translation_cache)
         return translated
     except Exception as e:  # noqa: BLE001
         print(f"Error translating field '{field}' to {target_lang}: {e}", file=sys.stderr)
-        global_translation_cache[cache_key] = ""
-        _save_json_cache(TRANSLATION_CACHE_FILE, global_translation_cache)
         return ""
+
+
+def _translate_fulltext(text: str, target_lang: str, source_file: str = "") -> str:
+    """Translate fulltext with section-aware chunking and length-parity validation."""
+    global global_translation_cache
+    src = text.strip()
+    if not src:
+        return ""
+
+    chunks = _chunk_fulltext(src)
+    translated_parts: list[str] = []
+
+    for i, chunk in enumerate(chunks):
+        chunk_field = "fulltext" if len(chunks) == 1 else f"fulltext_chunk_{i}"
+        cache_key = f"{TRANSLATION_CACHE_VERSION}:{target_lang}:fulltext:{_text_fingerprint(chunk)}"
+        if cache_key in global_translation_cache:
+            cached = global_translation_cache[cache_key]
+            if isinstance(cached, str) and cached:
+                translated_parts.append(cached)
+                continue
+
+        try:
+            label = f"fulltext chunk {i + 1}/{len(chunks)}" if len(chunks) > 1 else "fulltext"
+            print(f"Translating {label} to {target_lang}...")
+            translated = _call_gemini_translate(chunk, target_lang, "fulltext")
+            if not translated:
+                print(f"Error: empty translation for {label} [{target_lang}]", file=sys.stderr)
+                return ""
+            global_translation_cache[cache_key] = translated
+            _save_json_cache(TRANSLATION_CACHE_FILE, global_translation_cache)
+            translated_parts.append(translated)
+        except Exception as e:  # noqa: BLE001
+            print(f"Error translating fulltext chunk to {target_lang}: {e}", file=sys.stderr)
+            return ""
+
+    result = "".join(translated_parts)
+    _record_length_parity(source_file, target_lang, len(src), len(result))
+    return result
 
 
 def translate_record(data: dict, target_lang: str) -> dict:
@@ -382,10 +591,13 @@ def translate_record(data: dict, target_lang: str) -> dict:
         "lang": target_lang,
     }
 
-    for field in ("title", "subtitle", "summary", "fulltext"):
+    for field in ("title", "subtitle", "summary"):
         original = data.get(field, "")
         translated = _translate_text(original, target_lang, field)
         result[field] = translated
+
+    original_fulltext = data.get("fulltext", "")
+    result["fulltext"] = _translate_fulltext(original_fulltext, target_lang, source_file)
 
     recipe = data.get("recipe")
     if isinstance(recipe, dict):
@@ -467,6 +679,7 @@ def main() -> int:
     for path in files:
         process_file(path, args.input, args.lang)
 
+    _save_parity_report()
     print("Translation complete.")
     return 0
 
