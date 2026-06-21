@@ -272,7 +272,7 @@ definePageMeta({
 
 // SEO head
 useHead({
-  title: () => `${t('explorer.meta.title')} - Deliverable 1`,
+  title: () => `${t('explorer.meta.title')} `,
   meta: [
     {
       name: "description",

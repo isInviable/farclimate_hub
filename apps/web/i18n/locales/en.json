@@ -598,7 +598,6 @@
     "umapIntro": "This chart groups case studies by EU biogeographical regions — distinct ecological zones used to organise climate adaptation work across Europe. Each dot is one case study; coloured dashed circles surround the studies attributed to each region. Studies that sit close together share similar regional tags.",
     "umapIntroNote": "For ecological management, the EU is divided into distinct biogeographical regions. These are used to implement the Natura 2000 Biogeographical Regions process to protect habitats and species.",
     "umapEmptyDescription": "Run a search or adjust filters to see biogeographical regions",
-    "umapContinentLegendTitle": "CONTINENTS",
     "umapContinentLegendHelp": "Hover a bioregion to highlight its case studies; click to pin.",
     "umapBridgeHint": "Larger dots with a dashed halo span multiple bioregions.",
     "umapBridgeSpans": "Spans bioregions:",
@@ -904,6 +903,7 @@
       "create": "Failed to create project",
       "update": "Failed to update project",
       "delete": "Failed to delete project",
+      "cannotDeleteLast": "You must keep at least one project. Create another project before deleting this one.",
       "notAuthenticated": "Not authenticated"
     }
   },

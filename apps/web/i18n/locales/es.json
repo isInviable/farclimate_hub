@@ -590,7 +590,6 @@
     "umapIntro": "Este gráfico agrupa los casos de estudio por biorregiones de la UE — zonas ecológicas distintas que organizan el trabajo de adaptación climática en Europa. Cada punto es un caso de estudio; los círculos discontinuos de colores rodean los estudios atribuidos a cada región. Los estudios cercanos comparten etiquetas regionales similares.",
     "umapIntroNote": "Para la gestión ecológica, la UE se divide en biorregiones distintas. Se utilizan para aplicar el proceso de Biorregiones del Natura 2000 a fin de proteger hábitats y especies.",
     "umapEmptyDescription": "Realiza una búsqueda o ajusta los filtros para ver las biorregiones",
-    "umapContinentLegendTitle": "CONTINENTES",
     "umapContinentLegendHelp": "Pasa el cursor sobre una biorregión para resaltar sus casos; haz clic para fijar.",
     "umapBridgeHint": "Los puntos más grandes con halo discontinuo abarcan varias biorregiones.",
     "umapBridgeSpans": "Abarca biorregiones:",
@@ -902,6 +901,7 @@
       "create": "No se pudo crear el proyecto",
       "update": "No se pudo actualizar el proyecto",
       "delete": "No se pudo eliminar el proyecto",
+      "cannotDeleteLast": "Debes conservar al menos un proyecto. Crea otro proyecto antes de eliminar este.",
       "notAuthenticated": "No autenticado"
     }
   },

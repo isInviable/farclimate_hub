@@ -29,7 +29,7 @@
         >
           <header class="border-b border-neutral-darkest px-4 py-3">
             <p class="font-mono text-xs font-bold tracking-[0.06em] text-neutral-darkest">
-              {{ $t('viewModes.umapContinentLegendTitle') }}
+              {{ $t('viewModes.umapBioregionsLabel') }}
             </p>
             <p class="mt-1 text-2xs text-neutral-dark leading-snug">
               {{ $t('viewModes.umapContinentLegendHelp') }}

@@ -2,6 +2,19 @@ import type { Project } from "~/types/projects";
 
 const PROJECTS_STORAGE_KEY = "farclimate-current-project-id";
 
+/** Stable prefix in Postgres raise from `human.prevent_delete_last_project()`. */
+export const HUMAN_LAST_PROJECT_ERROR_MARKER = "HUMAN_LAST_PROJECT";
+
+function isLastProjectDeleteError(e: unknown): boolean {
+  const message =
+    e && typeof e === "object" && "message" in e
+      ? String((e as { message: unknown }).message)
+      : e instanceof Error
+        ? e.message
+        : String(e ?? "");
+  return message.includes(HUMAN_LAST_PROJECT_ERROR_MARKER);
+}
+
 export function useProjectsSupabase() {
   const supabase = useSupabaseClient();
   const { isAuthenticated, requireAuthForPersistence } = useAccess();
@@ -123,7 +136,11 @@ export function useProjectsSupabase() {
       await fetchProjects();
       return true;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : t("projects.errors.delete");
+      error.value = isLastProjectDeleteError(e)
+        ? t("projects.errors.cannotDeleteLast")
+        : e instanceof Error
+          ? e.message
+          : t("projects.errors.delete");
       return false;
     } finally {
       loading.value = false;

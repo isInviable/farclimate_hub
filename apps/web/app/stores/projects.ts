@@ -82,13 +82,14 @@ export const useProjectsStore = defineStore("projects", () => {
     await supabase.updateProject(projectId, { name: newName });
   }
 
-  async function deleteProject(projectId: string) {
+  async function deleteProject(projectId: string): Promise<boolean> {
     const ok = await supabase.deleteProject(projectId);
     if (ok && currentProjectId.value === projectId) {
       const next = supabase.validateCurrentProjectId(null);
       currentProjectId.value = next;
       supabase.setStoredCurrentProjectId(next);
     }
+    return ok;
   }
 
   function getAllProjects(): Project[] {

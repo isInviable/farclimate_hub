@@ -27,7 +27,7 @@ Current setup includes:
    - Creates durable schema `human`.
    - Creates `human.profiles` with one-to-one identity mapping to `auth.users(id)`.
    - Enables owner-only RLS (`id = auth.uid()`) for `select` and `update` to `authenticated`.
-   - Creates an auth trigger/function so new auth users automatically get a profile row.
+   - Creates an auth trigger/function so new auth users automatically get a profile row and a default project named `"Default project"` (pinboard created by the `human.projects` after-insert trigger in step 6).
    - Includes validation checks to prevent `anon` access and broad cross-user policy mistakes.
 
 4. `04_human_projects.sql`
@@ -77,6 +77,11 @@ Current setup includes:
    - Enables RLS on all skills tables: anonymous users can read only published skills content, while writes require the `connected_admin` JWT claim.
    - Seeds the initial one-level tag taxonomy and placeholder skills content for English, Spanish, and Italian.
    - Does not create or modify objects in the `human` or `knowledge` schemas.
+
+14. `10_human_default_project.sql`
+   - Updates `human.bootstrap_profile_from_auth_user()` so signup provisions a default `"Default project"` (for existing deployed environments; greenfield installs also get this from step 3).
+   - Adds `human.prevent_delete_last_project()` (`BEFORE DELETE` on `human.projects`) so users cannot delete their last owned project. The raised message includes the stable prefix `HUMAN_LAST_PROJECT` for frontend detection.
+   - **No backfill** for legacy users without projects; they must create a project manually in the app.
 
 ## Usage
 

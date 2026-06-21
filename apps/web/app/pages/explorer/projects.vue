@@ -141,7 +141,7 @@ const { t } = useI18n();
 const localePath = useLocalePath();
 
 useHead({
-  title: () => `${t("projects.dashboard.metaTitle")} - Deliverable 1`,
+  title: () => `${t("projects.dashboard.metaTitle")} `,
   meta: [
     {
       name: "description",
@@ -249,7 +249,10 @@ async function deleteProjectAction(projectId: string) {
     t("projects.dashboard.confirmDeleteNamed", { name: project.name }),
   );
   if (confirmDelete) {
-    await projectsStore.deleteProject(projectId);
+    const deleted = await projectsStore.deleteProject(projectId);
+    if (!deleted && projectsStore.error) {
+      alert(projectsStore.error);
+    }
   }
 }
 

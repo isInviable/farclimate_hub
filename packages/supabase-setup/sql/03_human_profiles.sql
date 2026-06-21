@@ -74,11 +74,18 @@ begin
   )
   on conflict (id) do nothing;
 
+  if not exists (
+    select 1 from human.projects where owner_user_id = new.id
+  ) then
+    insert into human.projects (owner_user_id, name)
+    values (new.id, 'Default project');
+  end if;
+
   return new;
 end;
 $$;
 
-comment on function human.bootstrap_profile_from_auth_user() is 'Creates a human.profiles row for each new auth.users record.';
+comment on function human.bootstrap_profile_from_auth_user() is 'Creates a human.profiles row and default project for each new auth.users record.';
 
 revoke all on function human.bootstrap_profile_from_auth_user() from authenticated, anon, public;
 grant execute on function human.bootstrap_profile_from_auth_user() to service_role;
