@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
   const mode: 'property' | 'custom' =
     body?.mode === 'custom' ? 'custom' : 'property'
   const property = typeof body?.property === 'string' ? body.property : ''
-  console.log('property', property);
+  const locale = typeof body?.locale === 'string' ? body.locale : undefined
   const userPrompt =
     typeof body?.userPrompt === 'string' ? body.userPrompt.trim() : ''
   const rawItems = body?.items
@@ -120,6 +120,7 @@ export default defineEventHandler(async (event) => {
           property: mode === 'property' ? property : undefined,
           userPrompt: mode === 'custom' ? userPrompt : undefined,
           cacheId: item.cacheId,
+          locale,
         })
         return {
           id: item.id,

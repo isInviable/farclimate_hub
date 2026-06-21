@@ -248,7 +248,7 @@ const emit = defineEmits<{
   "page-change": [page: number]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const sel = useSearchSelectionStore()
 
 const selectedProperty = ref<GridCompareSelectValue>('subtitle')
@@ -354,11 +354,12 @@ function renderMarkdown(text: string) {
 }
 
 function cacheKeyForHit(hitId: string): string {
+  const lang = locale.value
   if (selectedProperty.value === 'custom') {
     const p = customComparePrompt.value.trim()
-    return `custom|${hitId}|${hashPrompt(p)}`
+    return `custom|${hitId}|${lang}|${hashPrompt(p)}`
   }
-  return `property|${hitId}|${selectedProperty.value}`
+  return `property|${hitId}|${lang}|${selectedProperty.value}`
 }
 
 function isLoading(id: string) {
@@ -474,8 +475,8 @@ async function fetchSummariesBatch(hits: SearchHit[]) {
 
     const body =
       mode === 'custom'
-        ? { mode: 'custom' as const, userPrompt, items }
-        : { mode: 'property' as const, property: property!, items }
+        ? { mode: 'custom' as const, userPrompt, items, locale: locale.value }
+        : { mode: 'property' as const, property: property!, items, locale: locale.value }
 
     const res = await $fetch<SummarizePropertyBatchResponseBody>(
       '/api/summarizePropertyBatch',
@@ -530,6 +531,7 @@ watch(
       selectedProperty.value,
       sel.selected.length,
       sel.selected.map((s) => s.id).join(','),
+      locale.value,
     ] as const,
   () => {
     void runPropertyGridSummaries()

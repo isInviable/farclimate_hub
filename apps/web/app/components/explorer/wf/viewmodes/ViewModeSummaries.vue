@@ -67,7 +67,10 @@
 </template>
 <script setup>
 import { ref, watch, computed } from "vue";
+import { useI18n } from "vue-i18n";
 import MarkdownIt from "markdown-it";
+
+const { locale } = useI18n();
 
 const props = defineProps({
   hits: {
@@ -140,7 +143,8 @@ async function generateSummaries() {
       body: {
         documents: extractedDocuments.value,
         prompt: "summarize the following documents",
-        cacheId: props.searchQuery + allTags,
+        cacheId: props.searchQuery + allTags + "|" + locale.value,
+        locale: locale.value,
       },
     });
     summaries.value = response.response;
@@ -153,8 +157,8 @@ async function generateSummaries() {
 }
 
 watch(
-  () => props.hits,
-  (newHits) => {
+  () => [props.hits, locale.value],
+  ([newHits]) => {
     if (newHits && newHits.length) {
       generateSummaries();
     } else {

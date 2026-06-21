@@ -1,6 +1,7 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 import { googleGenerativeModel } from "../utils/llmModelConfig";
+import { languageNameFromLocale } from "../utils/propertySummaryLlm";
 
 // Simple in-memory cache
 const responseCache = new Map<string, { response: any; timestamp: string }>();
@@ -9,6 +10,8 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const { documents, prompt, cacheId } = body;
+    const locale = typeof body?.locale === "string" ? body.locale : undefined;
+    const language = languageNameFromLocale(locale);
 
     if (!documents || !Array.isArray(documents) || !prompt) {
       throw createError({
@@ -53,6 +56,7 @@ export default defineEventHandler(async (event) => {
     Returned text in the descripton is Markdown, so you can include Markdown marks in the response. Explicitly include markdown marks for the main words within the list, not necessarily the first word.
     in the source text Articles id are identified by the string "articleId: " + id
     The response list of related articles should be an array of strings, each string is the id of an article.
+    Write every title and description in ${language}, regardless of the language of the source documents.
     `;
 
     const config = useRuntimeConfig();

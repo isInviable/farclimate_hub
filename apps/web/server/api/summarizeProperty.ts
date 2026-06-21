@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
     const userPrompt =
       typeof body?.userPrompt === 'string' ? body.userPrompt.trim() : ''
     const cacheId = typeof body?.cacheId === 'string' ? body.cacheId : ''
+    const locale = typeof body?.locale === 'string' ? body.locale : undefined
 
     if (!textRaw.trim()) {
       throw createError({
@@ -39,6 +40,7 @@ export default defineEventHandler(async (event) => {
         property: mode === 'property' ? property : undefined,
         userPrompt: mode === 'custom' ? userPrompt : undefined,
         cacheId,
+        locale,
       })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to generate summary'

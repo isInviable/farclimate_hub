@@ -6,6 +6,7 @@ export interface SummarizePropertyRequestBody {
   property?: string
   userPrompt?: string
   cacheId: string
+  locale?: string
 }
 
 export interface SummarizePropertyStructured {

@@ -23,8 +23,21 @@ export function truncatePropertySummaryInput(text: string): string {
   return `${t.slice(0, MAX_INPUT_CHARS - 1)}…`
 }
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  es: 'Spanish',
+  it: 'Italian',
+}
+
+/** Human-readable language name for the output locale; falls back to English. */
+export function languageNameFromLocale(locale?: string): string {
+  if (!locale) return LANGUAGE_NAMES.en
+  const base = locale.toLowerCase().split('-')[0]!
+  return LANGUAGE_NAMES[base] ?? LANGUAGE_NAMES.en
+}
+
 /** Shared rules for every grid “property” mode (no per-type branching inside the string). */
-function propertyPromptSharedInstructions(): string {
+function propertyPromptSharedInstructions(language: string): string {
   return `The summary should:
 1. Be no longer than 130 characters
 2. Capture the most important points
@@ -34,60 +47,66 @@ function propertyPromptSharedInstructions(): string {
 
 Include a separate “data” text only when it adds value: one tight line with the single most important quantitative or concrete figure from the context. If nothing quantitative fits, keep the data field short or empty.
 
-Write in the same language as the context. Use markdown where helpful.
+Write both the summary and the data field in ${language}, regardless of the language of the context. Use markdown where helpful.
 
 The API expects two fields: a concise summary and that optional data line.`
 }
 
-function wrapPropertyPrompt(text: string, taskParagraph: string): string {
-  return `Context:\n${text}\n\nYou are a research assistant specializing in climate change adaptation.\n\n${taskParagraph}\n\n${propertyPromptSharedInstructions()}`
+function wrapPropertyPrompt(text: string, taskParagraph: string, language: string): string {
+  return `Context:\n${text}\n\nYou are a research assistant specializing in climate change adaptation.\n\n${taskParagraph}\n\n${propertyPromptSharedInstructions(language)}`
 }
 
-function propertyPromptCostBenefit(text: string): string {
+function propertyPromptCostBenefit(text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Focus on **costs and benefits** (who pays, who gains, trade-offs). In the data field, surface the strongest **cost and/or benefit** amounts, ranges, or monetised figures mentioned.`
+    `Focus on **costs and benefits** (who pays, who gains, trade-offs). In the data field, surface the strongest **cost and/or benefit** amounts, ranges, or monetised figures mentioned.`,
+    language
   )
 }
 
-function propertyPromptImplementationTime(text: string): string {
+function propertyPromptImplementationTime(text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Focus on **implementation timing**: phases, milestones, start/end dates, durations, or how long activities took. In the data field, put the clearest **timeline figure** (e.g. years, months, or a dated span).`
+    `Focus on **implementation timing**: phases, milestones, start/end dates, durations, or how long activities took. In the data field, put the clearest **timeline figure** (e.g. years, months, or a dated span).`,
+    language
   )
 }
 
-function propertyPromptLifetime(text: string): string {
+function propertyPromptLifetime(text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Focus on **lifetime, durability, or how long effects last** (project lifespan, maintenance horizon, long-term performance). In the data field, highlight the most salient **duration or longevity** figure.`
+    `Focus on **lifetime, durability, or how long effects last** (project lifespan, maintenance horizon, long-term performance). In the data field, highlight the most salient **duration or longevity** figure.`,
+    language
   )
 }
 
-function propertyPromptStakeholderParticipation(text: string): string {
+function propertyPromptStakeholderParticipation(text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Focus on **who was involved** (actors, institutions, communities, governance) and **how they participated**. In the data field, prefer one concrete figure if present (e.g. number of participants, partners, consultations); otherwise a short named highlight.`
+    `Focus on **who was involved** (actors, institutions, communities, governance) and **how they participated**. In the data field, prefer one concrete figure if present (e.g. number of participants, partners, consultations); otherwise a short named highlight.`,
+    language
   )
 }
 
-function propertyPromptSuccessLimitations(text: string): string {
+function propertyPromptSuccessLimitations(text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Focus on **results, successes, and limitations** (what worked, what constrained delivery). In the data field, pick the **single most important quantitative outcome or limiting factor** and present it in bold if numeric.`
+    `Focus on **results, successes, and limitations** (what worked, what constrained delivery). In the data field, pick the **single most important quantitative outcome or limiting factor** and present it in bold if numeric.`,
+    language
   )
 }
 
-function propertyPromptGeneric(property: string, text: string): string {
+function propertyPromptGeneric(property: string, text: string, language: string): string {
   return wrapPropertyPrompt(
     text,
-    `Analyze the excerpt for the aspect labelled “${property}” in the app. Extract the essentials for comparison across case studies. In the data field, include the strongest concrete or quantitative detail, if any.`
+    `Analyze the excerpt for the aspect labelled “${property}” in the app. Extract the essentials for comparison across case studies. In the data field, include the strongest concrete or quantitative detail, if any.`,
+    language
   )
 }
 
 const PROPERTY_PROMPT_BUILDERS: Record<
   string,
-  (text: string) => string
+  (text: string, language: string) => string
 > = {
   cost_benefit: propertyPromptCostBenefit,
   implementation_time: propertyPromptImplementationTime,
@@ -96,19 +115,19 @@ const PROPERTY_PROMPT_BUILDERS: Record<
   success_limitations: propertyPromptSuccessLimitations,
 }
 
-function buildPropertyPrompt(property: string, text: string): string {
+function buildPropertyPrompt(property: string, text: string, language: string): string {
   const builder = PROPERTY_PROMPT_BUILDERS[property]
-  if (builder) return builder(text)
-  return propertyPromptGeneric(property, text)
+  if (builder) return builder(text, language)
+  return propertyPromptGeneric(property, text, language)
 }
 
-function buildCustomPrompt(userPrompt: string, text: string): string {
+function buildCustomPrompt(userPrompt: string, text: string, language: string): string {
   return `Context (one case study, excerpt only):\n${text}\n\n
 User question (answer using ONLY the context above; if the context does not contain the answer, say so briefly):
 ${userPrompt}
 
 You are a research assistant specializing in climate change adaptation.
-Respond in the same language as the context when possible.
+Write your answer (both the summary and the data field) in ${language}, regardless of the language of the context.
 
 The answer should:
 1. Be no longer than 130-150 characters for the main explanation
@@ -127,6 +146,7 @@ export async function runSummarizePropertyItem(params: {
   property?: string
   userPrompt?: string
   cacheId: string
+  locale?: string
 }): Promise<{ response: PropertySummaryStructured; timestamp: string }> {
   const {
     mode,
@@ -134,8 +154,10 @@ export async function runSummarizePropertyItem(params: {
     property = '',
     userPrompt = '',
     cacheId,
+    locale,
   } = params
   const text = truncatePropertySummaryInput(textRaw)
+  const language = languageNameFromLocale(locale)
 
   if (!text) {
     throw new Error('Missing or empty required field: text')
@@ -153,8 +175,8 @@ export async function runSummarizePropertyItem(params: {
 
   const fullPrompt =
     mode === 'custom'
-      ? buildCustomPrompt(userPrompt.trim(), text)
-      : buildPropertyPrompt(property, text)
+      ? buildCustomPrompt(userPrompt.trim(), text, language)
+      : buildPropertyPrompt(property, text, language)
 
   const config = useRuntimeConfig()
   const { output: object } = await generateText({
