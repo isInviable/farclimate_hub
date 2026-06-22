@@ -79,44 +79,10 @@
             v-else-if="resolvedDocument"
             ref="articleViewRef"
             :document="resolvedDocument"
+            :pins="pins"
             chrome="modal"
             class="h-full"
-          >
-            <template #pins-after>
-              <section
-                v-if="pins && pins.length > 0"
-                class="mx-6 mt-4 mb-6 rounded-lg border border-teal-200 bg-teal-50/60 p-4"
-              >
-                <header class="mb-3 flex items-baseline gap-2">
-                  <h3 class="text-sm font-semibold text-default">
-                    {{ $t("pins.drawer.pinsInArticleHeader") }}
-                  </h3>
-                  <span class="text-xs text-muted">({{ pins.length }})</span>
-                </header>
-                <ul class="divide-y divide-teal-200/60">
-                  <li
-                    v-for="pin in pins"
-                    :key="pin.id"
-                    class="py-3 first:pt-0 last:pb-0"
-                  >
-                    <div class="flex items-center gap-2">
-                      <span
-                        class="inline-block bg-teal-100 text-teal-800 text-[11px] px-2 py-0.5 rounded-full"
-                      >
-                        {{ pinKindLabel(pin.body_kind) }}
-                      </span>
-                    </div>
-                    <p
-                      v-if="pin.user_note?.trim()"
-                      class="mt-2 text-sm text-default whitespace-pre-wrap"
-                    >
-                      {{ pin.user_note }}
-                    </p>
-                  </li>
-                </ul>
-              </section>
-            </template>
-          </ArticleViewAI>
+          />
         </div>
       </div>
     </template>
@@ -194,7 +160,7 @@ export interface ArticlePanelNavItem {
   title: string;
 }
 
-const { t: $t, te } = useI18n();
+const { t: $t } = useI18n();
 
 const props = defineProps<{
   document?: ArticleDetail | null;
@@ -377,11 +343,6 @@ const headerTitle = computed(
 );
 
 const canPinDocument = computed<boolean>(() => !!resolvedDocument.value);
-
-function pinKindLabel(kind: string): string {
-  const key = `pins.kinds.${kind || "unknown"}`;
-  return te(key) ? $t(key) : $t("pins.kinds.unknown");
-}
 
 function handlePinClick(): void {
   if (!promptAuthForPersistence("pin")) return;

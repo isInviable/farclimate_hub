@@ -12,7 +12,7 @@
       :aria-selected="item.id === activeId"
       :aria-controls="ariaControlsFor(item.id)"
       :tabindex="item.id === activeId ? 0 : -1"
-      class="font-display rounded-sm text-base font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 md:text-lg"
+      class="font-display inline-flex items-center gap-2 rounded-sm text-base font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 md:text-lg"
       :class="
         item.id === activeId
           ? 'cursor-default text-neutral-darkest'
@@ -20,20 +20,30 @@
       "
       @click="handleClick(item.id)"
     >
-      {{ item.label }}
+      <span>{{ item.label }}</span>
+      <UBadge
+        v-if="item.badgeCount && item.badgeCount > 0"
+        color="error"
+        variant="solid"
+        size="sm"
+        class="min-w-5 justify-center"
+      >
+        {{ item.badgeCount }}
+      </UBadge>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Item {
+export interface ArticlePrimaryNavItem {
   id: string;
   label: string;
+  badgeCount?: number;
 }
 
 const props = withDefaults(
   defineProps<{
-    items: Item[];
+    items: ArticlePrimaryNavItem[];
     activeId: string;
     panelIdPrefix?: string;
   }>(),

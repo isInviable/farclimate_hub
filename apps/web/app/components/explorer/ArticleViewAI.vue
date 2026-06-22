@@ -225,11 +225,19 @@
           >
             <SummaryContactsSection :document="document" />
           </div>
+
+          <!-- Pins -->
+          <div
+            v-show="activePrimaryId === 'pins'"
+            id="article-primary-pins"
+            role="tabpanel"
+            class="relative h-full min-h-0 min-w-0 overflow-y-auto"
+          >
+            <ArticlePinsSection :pins="articlePins" />
+          </div>
         </div>
       </div>
     </ArticleTextSelectionCapture>
-
-    <slot name="pins-after" />
 
     <PinCaptureDialog
       v-model:open="documentPinDialogOpen"
@@ -251,12 +259,14 @@ import ArticleTextSelectionCapture from "./ArticleTextSelectionCapture.vue";
 import PinCaptureDialog from "./PinCaptureDialog.vue";
 import { PinArticleContextKey } from "./pinContext";
 import ArticlePrimaryNav from "./article/ArticlePrimaryNav.vue";
+import type { ArticlePrimaryNavItem } from "./article/ArticlePrimaryNav.vue";
 import ArticleSectionNav from "./article/ArticleSectionNav.vue";
 import type { ArticleNavItem } from "./article/ArticleSectionNav.vue";
 import SummaryMainLeftColumn from "./article/SummaryMainLeftColumn.vue";
 import SummaryMainContent from "./article/SummaryMainContent.vue";
 import SummaryMainGallery from "./article/SummaryMainGallery.vue";
 import SummaryContactsSection from "./article/SummaryContactsSection.vue";
+import ArticlePinsSection from "./article/ArticlePinsSection.vue";
 import SummaryMapSection from "./article/SummaryMapSection.vue";
 import RecipeSectionBody from "./article/RecipeSectionBody.vue";
 import RecipeSegmentHeading from "./article/RecipeSegmentHeading.vue";
@@ -267,12 +277,15 @@ import {
   type RecipeSection,
   type RecipeSectionKey,
 } from "@/composables/useArticleRecipe";
+import type { HumanPinRow } from "~/types/pins";
 
-type PrimaryId = "recipe" | "chat" | "contacts";
+type PrimaryId = "recipe" | "chat" | "contacts" | "pins";
 
 const props = withDefaults(
   defineProps<{
     document: Record<string, any>;
+    /** Explicit pins for this article (e.g. public board). When omitted, filters the shared pin store. */
+    pins?: HumanPinRow[];
     /**
      * Layout chrome the article view is rendered with. `modal` keeps the
      * compact internal padding used inside the explorer modal; `page` adds
@@ -287,16 +300,34 @@ const { t } = useI18n();
 const { pinCapture } = usePin();
 const pinsApi = usePinsSupabase();
 
-const primaryItems = computed(() => [
-  { id: "recipe", label: t("tabs.recipe") },
-  { id: "chat", label: t("tabs.chat") },
-  { id: "contacts", label: t("tabs.contacts") },
-]);
+const primaryItems = computed((): ArticlePrimaryNavItem[] => {
+  const items: ArticlePrimaryNavItem[] = [
+    { id: "recipe", label: t("tabs.recipe") },
+    { id: "chat", label: t("tabs.chat") },
+    { id: "contacts", label: t("tabs.contacts") },
+  ];
+  const count = articlePins.value.length;
+  if (count > 0) {
+    items.push({
+      id: "pins",
+      label: t("tabs.pins"),
+      badgeCount: count,
+    });
+  }
+  return items;
+});
 
 const activePrimaryId = ref<PrimaryId>("recipe");
 
 function onPrimaryChange(id: string): void {
-  if (id !== "recipe" && id !== "chat" && id !== "contacts") return;
+  if (
+    id !== "recipe" &&
+    id !== "chat" &&
+    id !== "contacts" &&
+    id !== "pins"
+  ) {
+    return;
+  }
   activePrimaryId.value = id;
   if (id === "recipe") {
     activeRecipeSegmentIndex.value = 0;
@@ -507,6 +538,22 @@ const pinDocumentUid = computed<string | null>(() => {
   if (typeof id === "string" && id.trim()) return id;
   return null;
 });
+
+const articlePins = computed<HumanPinRow[]>(() => {
+  if (props.pins !== undefined) return props.pins;
+  const uid = pinDocumentUid.value;
+  if (!uid) return [];
+  return pinsApi.pins.value.filter((p) => p.source_document_uid === uid);
+});
+
+watch(
+  () => articlePins.value.length,
+  (len) => {
+    if (len === 0 && activePrimaryId.value === "pins") {
+      activePrimaryId.value = "recipe";
+    }
+  },
+);
 
 const pinDocumentTitle = computed<string | null>(() => {
   const raw = (props.document as { title?: unknown } | null)?.title;
