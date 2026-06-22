@@ -5,6 +5,7 @@ import { createError } from "h3"
 import type { ArtifactMetadataResponse } from "~/types/artifacts"
 import type { PodcastVoiceOptions } from "~/types/podcastGeneration"
 import { validatePodcastScript } from "./podcastContext"
+import { stripPodcastScriptDirections } from "~/utils/podcastScript"
 import {
   assertOwnProject,
   insertPodcastArtifact,
@@ -123,6 +124,7 @@ export function validatePodcastTtsRequest(
 export async function synthesizePodcastSpeech(
   input: SynthesizePodcastSpeechInput
 ): Promise<SynthesizePodcastSpeechResult> {
+  const speakableScript = stripPodcastScriptDirections(input.script)
   if (input.apiKey) {
     const response = await fetch(
       `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(input.apiKey)}`,
@@ -130,7 +132,7 @@ export async function synthesizePodcastSpeech(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          input: input.ssml ? { ssml: input.script } : { text: input.script },
+          input: input.ssml ? { ssml: speakableScript } : { text: speakableScript },
           voice: {
             languageCode: input.voice.languageCode,
             name: input.voice.name,
@@ -165,7 +167,7 @@ export async function synthesizePodcastSpeech(
 
   const client = new textToSpeech.TextToSpeechClient()
   const [response] = await client.synthesizeSpeech({
-    input: input.ssml ? { ssml: input.script } : { text: input.script },
+    input: input.ssml ? { ssml: speakableScript } : { text: speakableScript },
     voice: {
       languageCode: input.voice.languageCode,
       name: input.voice.name,

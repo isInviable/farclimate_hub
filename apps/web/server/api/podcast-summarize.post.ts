@@ -3,6 +3,7 @@ import { generateText } from "ai"
 import { resolveLlmModelName } from "../utils/llmModelConfig"
 import { createError, defineEventHandler, readBody } from "h3"
 import type { PodcastSummarizeResponse } from "~/types/podcastGeneration"
+import { normalizePodcastScriptComments } from "~/utils/podcastScript"
 import {
   buildPodcastPrompt,
   fitTextToUtf8Bytes,
@@ -33,7 +34,7 @@ export default defineEventHandler(async (event): Promise<PodcastSummarizeRespons
   })
 
   return {
-    script: fitTextToUtf8Bytes(result.text),
+    script: fitTextToUtf8Bytes(normalizePodcastScriptComments(result.text)),
     sourceCount: request.sources.length,
     generatedAt: new Date().toISOString(),
     model: modelName,

@@ -130,6 +130,7 @@ describe("podcast summarize context", () => {
     expect(prompt).toContain('<source index="2"')
     expect(prompt).toContain("Shade corridors lower heat stress.")
     expect(prompt).toContain("Make it practical and short.")
+    expect(prompt).toContain("prefixed with #")
     expect(prompt).toContain("at most 3800 UTF-8 bytes")
   })
 
@@ -172,7 +173,7 @@ describe("podcast text-to-speech", () => {
     ])
 
     const result = await synthesizePodcastSpeech({
-      script: "Hello climate adaptation listeners.",
+      script: "# Intro music\nHello climate adaptation listeners.",
       ssml: false,
       voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
     })

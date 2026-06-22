@@ -238,6 +238,7 @@ import {
   type ResolvedDocumentContext,
 } from "~/utils/podcastSelection";
 import { assembleArtifactContext } from "~/utils/artifactSourceContext";
+import { stripPodcastScriptDirections } from "~/utils/podcastScript";
 import { usePinnedSelectionStore } from "@/stores/selection";
 import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
@@ -331,7 +332,7 @@ const selectionValidationMessage = computed(() => {
 });
 
 const scriptValidationMessage = computed(() => {
-  const bytes = utf8ByteLength(script.value.trim());
+  const bytes = utf8ByteLength(stripPodcastScriptDirections(script.value));
   if (bytes <= PODCAST_MAX_TTS_INPUT_BYTES) return null;
   return t("podcast.wizard.validation.scriptTooLong", {
     max: PODCAST_MAX_TTS_INPUT_BYTES,

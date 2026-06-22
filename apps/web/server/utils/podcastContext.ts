@@ -8,6 +8,7 @@ import {
   assembleArtifactContext,
   type ArtifactSourceInput,
 } from "~/utils/artifactSourceContext"
+import { stripPodcastScriptDirections } from "~/utils/podcastScript"
 
 export const PODCAST_MAX_SELECTED_ITEMS = ARTIFACT_MAX_SELECTED_ITEMS
 /** Google Text-to-Speech `input.text` / `input.ssml` limit is 4,000 bytes. */
@@ -216,7 +217,7 @@ export function validatePodcastContext(
 }
 
 export function validatePodcastScript(script: string): PodcastValidationResult {
-  const text = script.trim()
+  const text = stripPodcastScriptDirections(script.trim())
   if (!text) return { ok: false, message: "Podcast script is required" }
   const bytes = utf8ByteLength(text)
   if (bytes > PODCAST_MAX_TTS_INPUT_BYTES) {
@@ -278,6 +279,8 @@ Create an editable single-speaker script with:
 2. Three to five clear segments with smooth transitions.
 3. Concrete adaptation insights, examples, and caveats from the sources.
 4. A brief outro with practical takeaways.
+
+Production notes (music cues, segment labels, pauses, transitions) MUST be on their own lines prefixed with # so they are visible to editors but skipped by text-to-speech. Example: # Intro music fades in or # Segment 2: Urban heat. Do not wrap spoken narration in parenthetical stage directions.
 
 Keep the tone professional, accessible, and natural when read aloud. Do not include markdown tables.
 
