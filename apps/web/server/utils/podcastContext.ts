@@ -1,10 +1,15 @@
 import type {
+  PodcastArticleMetadata,
   PodcastSelectedSource,
   PodcastSummarizeRequest,
 } from "~/types/podcastGeneration"
+import {
+  ARTIFACT_MAX_SELECTED_ITEMS,
+  assembleArtifactContext,
+  type ArtifactSourceInput,
+} from "~/utils/artifactSourceContext"
 
-export const PODCAST_MAX_SELECTED_ITEMS = 12
-export const PODCAST_MAX_CONTEXT_CHARS = 60_000
+export const PODCAST_MAX_SELECTED_ITEMS = ARTIFACT_MAX_SELECTED_ITEMS
 /** Google Text-to-Speech `input.text` / `input.ssml` limit is 4,000 bytes. */
 export const PODCAST_MAX_TTS_INPUT_BYTES = 4_000
 /** Keep generated summaries below the hard TTS limit, leaving room for punctuation edits. */
@@ -17,6 +22,10 @@ export interface NormalizedPodcastSource {
   sourceDocumentUid: string | null
   userNote: string
   text: string
+  articleFullText: string
+  articleSummary: string
+  articleSubtitle: string
+  articleMetadata: PodcastArticleMetadata
 }
 
 export interface NormalizedPodcastSummarizeRequest {
@@ -70,6 +79,46 @@ function sourceTextFromRow(
   })
 }
 
+function stringArrayFrom(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.map(stringFrom).filter(Boolean)
+}
+
+function articleMetadataFromRow(
+  row: Record<string, unknown>,
+  data: Record<string, unknown>
+): PodcastArticleMetadata {
+  const meta = asRecord(row.articleMetadata ?? data.articleMetadata)
+  return {
+    keywords: stringArrayFrom(meta.keywords ?? row.keywords ?? data.keywords),
+    climateImpacts: stringArrayFrom(
+      meta.climateImpacts ?? row.climate_impacts ?? data.climate_impacts
+    ),
+    adaptationApproaches: stringArrayFrom(
+      meta.adaptationApproaches ?? row.adaptation_approaches ?? data.adaptation_approaches
+    ),
+    sectors: stringArrayFrom(meta.sectors ?? row.sectors ?? data.sectors),
+  }
+}
+
+function podcastSourcesToArtifactInputs(
+  sources: NormalizedPodcastSource[]
+): ArtifactSourceInput[] {
+  return sources.map((source) => ({
+    id: source.id,
+    title: source.title,
+    bodyKind: source.bodyKind,
+    sourceDocumentUid: source.sourceDocumentUid,
+    userNote: source.userNote,
+    text: source.text,
+    articleFullText: source.articleFullText,
+    articleSummary: source.articleSummary,
+    articleSubtitle: source.articleSubtitle,
+    articleMetadata: source.articleMetadata,
+    isImage: source.bodyKind === "image",
+  }))
+}
+
 export function normalizePodcastSummarizeRequest(
   body: unknown
 ): NormalizedPodcastSummarizeRequest {
@@ -115,6 +164,20 @@ export function normalizePodcastSummarizeRequest(
       sourceDocumentUid,
       userNote,
       text: sourceTextFromRow(row, data),
+      articleFullText:
+        stringFrom(row.articleFullText) ||
+        stringFrom(data.articleFullText) ||
+        stringFrom(row.fulltext) ||
+        stringFrom(data.fulltext),
+      articleSummary:
+        stringFrom(row.articleSummary) ||
+        stringFrom(data.articleSummary) ||
+        stringFrom(data.summary),
+      articleSubtitle:
+        stringFrom(row.articleSubtitle) ||
+        stringFrom(data.articleSubtitle) ||
+        stringFrom(data.subtitle),
+      articleMetadata: articleMetadataFromRow(row, data),
     }
   })
 
@@ -136,14 +199,17 @@ export function validatePodcastContext(
       message: `At most ${PODCAST_MAX_SELECTED_ITEMS} selected items can be used`,
     }
   }
-  const totalChars = request.sources.reduce((sum, source) => sum + source.text.length, 0)
-  if (totalChars === 0) {
+  const assembled = assembleArtifactContext(
+    podcastSourcesToArtifactInputs(request.sources)
+  )
+  if (!assembled.blocks) {
     return { ok: false, message: "Selected items must include text content" }
   }
-  if (totalChars > PODCAST_MAX_CONTEXT_CHARS) {
+  if (assembled.tooLarge) {
     return {
       ok: false,
-      message: `Selected text is too long; maximum is ${PODCAST_MAX_CONTEXT_CHARS} characters`,
+      message:
+        "Selected context is too large even after summarizing excerpts; please select fewer items",
     }
   }
   return { ok: true }
@@ -193,19 +259,9 @@ export function fitTextToUtf8Bytes(
 }
 
 export function buildPodcastPrompt(request: NormalizedPodcastSummarizeRequest): string {
-  const sourceBlocks = request.sources
-    .map((source, index) => {
-      const uid = source.sourceDocumentUid ?? "none"
-      const note = source.userNote ? `\nUser note: ${source.userNote}` : ""
-      return `Source ${index + 1}
-Pin id: ${source.id}
-Title: ${source.title}
-Body kind: ${source.bodyKind}
-Source document uid: ${uid}${note}
-Text:
-${source.text}`
-    })
-    .join("\n\n---\n\n")
+  const assembled = assembleArtifactContext(
+    podcastSourcesToArtifactInputs(request.sources)
+  )
 
   const extra = request.extraInstructions
     ? `\n\nExtra user instructions:\n${request.extraInstructions}`
@@ -214,6 +270,8 @@ ${source.text}`
   return `You are creating a concise podcast script for technical staff working on climate change adaptation.
 
 Use only the selected sources below. Preserve source boundaries while reasoning, avoid unsupported claims, and write for spoken audio rather than a written report.
+
+${assembled.guidance}
 
 Create an editable single-speaker script with:
 1. A short intro that frames the selected material.
@@ -226,7 +284,7 @@ Keep the tone professional, accessible, and natural when read aloud. Do not incl
 Hard length constraint: the final script MUST be at most ${PODCAST_SUMMARY_TARGET_BYTES} UTF-8 bytes so it can be sent to Google Text-to-Speech without truncation. Prefer a focused two-minute script over exhaustive coverage.
 
 Selected sources:
-${sourceBlocks}${extra}`
+${assembled.blocks}${extra}`
 }
 
 export function sourcePinIdsFromSources(sources: NormalizedPodcastSource[]): string[] {

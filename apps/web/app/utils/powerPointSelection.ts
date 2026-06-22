@@ -1,9 +1,14 @@
 import type { PresentationSelectedSource } from "~/types/presentationGeneration"
 import type { HumanPinRow } from "~/types/pins"
-import { countWords } from "./podcastSelection"
+import { countWords, type ResolvedDocumentContext } from "./podcastSelection"
+import {
+  ARTIFACT_MAX_CONTEXT_CHARS,
+  ARTIFACT_MAX_SELECTED_ITEMS,
+  EXCLUDED_BODY_KINDS,
+} from "~/utils/artifactSourceContext"
 
-export const POWERPOINT_MAX_SELECTED_ITEMS = 12
-export const POWERPOINT_MAX_CONTEXT_CHARS = 60_000
+export const POWERPOINT_MAX_SELECTED_ITEMS = ARTIFACT_MAX_SELECTED_ITEMS
+export const POWERPOINT_MAX_CONTEXT_CHARS = ARTIFACT_MAX_CONTEXT_CHARS
 export const POWERPOINT_MAX_SLIDES = 10
 
 export interface PowerPointSourcePreview {
@@ -42,9 +47,12 @@ function textFromMessages(value: unknown): string {
     .trim()
 }
 
-export function powerPointTextFromPin(pin: HumanPinRow, documentText = ""): string {
-  if (pin.body_kind === "document" && documentText.trim()) {
-    return documentText.trim()
+export function powerPointTextFromPin(
+  pin: HumanPinRow,
+  context?: ResolvedDocumentContext
+): string {
+  if (pin.body_kind === "document" && context?.fulltext.trim()) {
+    return context.fulltext.trim()
   }
 
   const data = asRecord(pin.body?.data)
@@ -80,10 +88,10 @@ export function powerPointImageSrcFromPin(pin: HumanPinRow): string | null {
 
 export function powerPointSourceFromPin(
   pin: HumanPinRow,
-  documentText = ""
+  context?: ResolvedDocumentContext
 ): PowerPointSourcePreview {
   const data = asRecord(pin.body?.data)
-  const text = powerPointTextFromPin(pin, documentText)
+  const text = powerPointTextFromPin(pin, context)
   const title =
     pin.source_title_snapshot?.trim() ||
     stringFrom(data.title) ||
@@ -107,6 +115,10 @@ export function powerPointSourceFromPin(
         ...data,
         ...(imageSrc ? { src: imageSrc } : {}),
       },
+      articleFullText: context?.fulltext ?? null,
+      articleSummary: context?.summary ?? null,
+      articleSubtitle: context?.subtitle ?? null,
+      articleMetadata: context?.metadata ?? null,
     },
   }
 }
@@ -114,16 +126,17 @@ export function powerPointSourceFromPin(
 export function selectedPowerPointSources(
   pins: HumanPinRow[],
   selectedIds: string[],
-  documentTextByUid: Record<string, string> = {}
+  documentContextByUid: Record<string, ResolvedDocumentContext> = {}
 ): PowerPointSourcePreview[] {
   const byId = new Map(pins.map((pin) => [pin.id, pin]))
   return selectedIds
     .map((id) => byId.get(id))
     .filter((pin): pin is HumanPinRow => Boolean(pin))
+    .filter((pin) => !EXCLUDED_BODY_KINDS.has(pin.body_kind))
     .map((pin) =>
       powerPointSourceFromPin(
         pin,
-        pin.source_document_uid ? documentTextByUid[pin.source_document_uid] : ""
+        pin.source_document_uid ? documentContextByUid[pin.source_document_uid] : undefined
       )
     )
 }

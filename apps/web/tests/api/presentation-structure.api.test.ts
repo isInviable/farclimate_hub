@@ -6,7 +6,6 @@ import {
 import {
   buildPresentationPrompt,
   normalizePresentationStructureRequest,
-  PRESENTATION_MAX_CONTEXT_CHARS,
   PRESENTATION_MAX_SELECTED_ITEMS,
   PRESENTATION_MAX_SLIDES,
   runPresentationStructureGeneration,
@@ -14,6 +13,7 @@ import {
   validatePresentationRequest,
   validatePresentationStructure,
 } from "../../server/utils/presentationStructure"
+import { ARTIFACT_MAX_CONTEXT_CHARS } from "../../app/utils/artifactSourceContext"
 
 function textItem(id: string, text = "Mangroves reduce coastal wave energy.") {
   return {
@@ -48,7 +48,7 @@ describe("presentation structure request validation", () => {
     })
   })
 
-  it("rejects oversized selected item count and context", () => {
+  it("rejects oversized selected item count and over-budget full documents", () => {
     const tooManyItems = normalizePresentationStructureRequest({
       items: Array.from({ length: PRESENTATION_MAX_SELECTED_ITEMS + 1 }, (_, index) =>
         textItem(`source-${index + 1}`)
@@ -59,12 +59,14 @@ describe("presentation structure request validation", () => {
       message: `At most ${PRESENTATION_MAX_SELECTED_ITEMS} selected items can be used`,
     })
 
+    // Full-document pins are never degraded, so an over-budget document is rejected.
     const oversized = normalizePresentationStructureRequest({
-      items: [textItem("source-1", "x".repeat(PRESENTATION_MAX_CONTEXT_CHARS + 1))],
+      items: [textItem("source-1", "x".repeat(ARTIFACT_MAX_CONTEXT_CHARS + 1))],
     })
     expect(validatePresentationRequest(oversized)).toEqual({
       ok: false,
-      message: `Selected text is too long; maximum is ${PRESENTATION_MAX_CONTEXT_CHARS} characters`,
+      message:
+        "Selected context is too large even after summarizing excerpts; please select fewer items",
     })
   })
 

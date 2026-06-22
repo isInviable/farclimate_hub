@@ -72,7 +72,12 @@ describe("PowerPoint selected source helpers", () => {
     ]
 
     const result = selectedPowerPointSources(pins, ["pin-b", "missing", "pin-a"], {
-      "doc-full": "Complete article text from the catalog.",
+      "doc-full": {
+        fulltext: "Complete article text from the catalog.",
+        summary: "",
+        subtitle: "",
+        metadata: {},
+      },
     })
 
     expect(result.map((item) => item.source.id)).toEqual(["pin-b", "pin-a"])

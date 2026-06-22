@@ -31,6 +31,15 @@
           :description="$t('podcast.wizard.loadingDocumentsDescription')"
         />
 
+        <UAlert
+          v-if="usingSummaries && !contextTooLarge"
+          color="warning"
+          variant="soft"
+          icon="i-heroicons-information-circle"
+          :title="$t('podcast.wizard.summariesNoticeTitle')"
+          :description="$t('podcast.wizard.summariesNoticeDescription')"
+        />
+
         <section v-if="step === 'review'" class="space-y-5">
           <UCard>
             <template #header>
@@ -49,13 +58,8 @@
                     }}
                   </p>
                 </div>
-                <UBadge color="neutral" variant="soft">
-                  {{
-                    $t("podcast.wizard.contextSize", {
-                      current: totalChars,
-                      max: PODCAST_MAX_CONTEXT_CHARS,
-                    })
-                  }}
+                <UBadge :color="contextTooLarge ? 'error' : 'neutral'" variant="soft">
+                  {{ $t("podcast.wizard.contextTokens", { tokens: estimatedTokens }) }}
                 </UBadge>
               </div>
             </template>
@@ -226,14 +230,14 @@ import type {
 } from "~/types/podcastGeneration";
 import type { HumanPinRow } from "~/types/pins";
 import {
-  PODCAST_MAX_CONTEXT_CHARS,
   PODCAST_MAX_SELECTED_ITEMS,
   PODCAST_MAX_TTS_INPUT_BYTES,
   selectedPodcastSources,
-  totalPodcastTextLength,
   totalPodcastWords,
   validatePodcastSelection,
+  type ResolvedDocumentContext,
 } from "~/utils/podcastSelection";
+import { assembleArtifactContext } from "~/utils/artifactSourceContext";
 import { usePinnedSelectionStore } from "@/stores/selection";
 import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
 
@@ -262,7 +266,7 @@ const script = ref("");
 const actionError = ref<string | null>(null);
 const summarizing = ref(false);
 const generatingAudio = ref(false);
-const documentTextByUid = ref<Record<string, string>>({});
+const documentContextByUid = ref<Record<string, ResolvedDocumentContext>>({});
 const loadingDocumentUids = ref<Set<string>>(new Set());
 
 const selectedIds = computed(() => selectionStore.selectedItems.map((item) => item.id));
@@ -271,17 +275,34 @@ const selectedDocumentUids = computed(() =>
     .filter(
       (pin) =>
         selectedIds.value.includes(pin.id) &&
-        pin.body_kind === "document" &&
         !!pin.source_document_uid
     )
     .map((pin) => pin.source_document_uid as string)
 );
 const documentTextLoading = computed(() => loadingDocumentUids.value.size > 0);
 const sourcePreviews = computed(() =>
-  selectedPodcastSources(props.pins, selectedIds.value, documentTextByUid.value)
+  selectedPodcastSources(props.pins, selectedIds.value, documentContextByUid.value)
 );
-const totalChars = computed(() => totalPodcastTextLength(sourcePreviews.value));
 const totalWords = computed(() => totalPodcastWords(sourcePreviews.value));
+const assembledContext = computed(() =>
+  assembleArtifactContext(
+    sourcePreviews.value.map((item) => ({
+      id: item.source.id,
+      title: item.source.title ?? "",
+      bodyKind: item.source.bodyKind ?? "unknown",
+      sourceDocumentUid: item.source.sourceDocumentUid ?? null,
+      userNote: item.source.userNote ?? "",
+      text: item.source.text ?? "",
+      articleFullText: item.source.articleFullText ?? "",
+      articleSummary: item.source.articleSummary ?? "",
+      articleSubtitle: item.source.articleSubtitle ?? "",
+      articleMetadata: item.source.articleMetadata ?? {},
+    }))
+  )
+);
+const estimatedTokens = computed(() => assembledContext.value.idealEstimatedTokens);
+const usingSummaries = computed(() => assembledContext.value.usedSummaries);
+const contextTooLarge = computed(() => assembledContext.value.tooLarge);
 const busy = computed(() => summarizing.value || generatingAudio.value);
 
 const steps = computed(() => [
@@ -292,6 +313,7 @@ const steps = computed(() => [
 
 const selectionValidationMessage = computed(() => {
   if (documentTextLoading.value) return null;
+  if (contextTooLarge.value) return t("podcast.wizard.validation.contextTooLarge");
   const validation = validatePodcastSelection(sourcePreviews.value);
   if (validation.ok) return null;
   switch (validation.code) {
@@ -415,7 +437,7 @@ function resetWizard() {
 async function loadSelectedDocumentTexts() {
   const lang = knowledgeApiLang(locale.value);
   const missingUids = [...new Set(selectedDocumentUids.value)].filter(
-    (uid) => !documentTextByUid.value[uid] && !loadingDocumentUids.value.has(uid)
+    (uid) => !documentContextByUid.value[uid] && !loadingDocumentUids.value.has(uid)
   );
   if (missingUids.length === 0) return;
 
@@ -423,15 +445,15 @@ async function loadSelectedDocumentTexts() {
   try {
     await Promise.all(
       missingUids.map(async (uid) => {
-        const response = await $fetch<{ document?: { fulltext?: string | null } }>(
+        const response = await $fetch<{ document?: ArticleDocumentResponse }>(
           "/api/document-by-uid",
           { query: { uid, lang } }
         );
-        const text = response.document?.fulltext?.trim() ?? "";
-        if (text) {
-          documentTextByUid.value = {
-            ...documentTextByUid.value,
-            [uid]: text,
+        const context = resolveDocumentContext(response.document);
+        if (context) {
+          documentContextByUid.value = {
+            ...documentContextByUid.value,
+            [uid]: context,
           };
         }
       })
@@ -443,6 +465,36 @@ async function loadSelectedDocumentTexts() {
     for (const uid of missingUids) next.delete(uid);
     loadingDocumentUids.value = next;
   }
+}
+
+interface ArticleDocumentResponse {
+  fulltext?: string | null;
+  summary?: string | null;
+  subtitle?: string | null;
+  keywords?: string[] | null;
+  climate_impacts?: string[] | null;
+  adaptation_approaches?: string[] | null;
+  sectors?: string[] | null;
+}
+
+function resolveDocumentContext(
+  document?: ArticleDocumentResponse
+): ResolvedDocumentContext | null {
+  if (!document) return null;
+  const fulltext = document.fulltext?.trim() ?? "";
+  const summary = document.summary?.trim() ?? "";
+  if (!fulltext && !summary) return null;
+  return {
+    fulltext,
+    summary,
+    subtitle: document.subtitle?.trim() ?? "",
+    metadata: {
+      keywords: document.keywords ?? undefined,
+      climateImpacts: document.climate_impacts ?? undefined,
+      adaptationApproaches: document.adaptation_approaches ?? undefined,
+      sectors: document.sectors ?? undefined,
+    },
+  };
 }
 
 function utf8ByteLength(text: string): number {

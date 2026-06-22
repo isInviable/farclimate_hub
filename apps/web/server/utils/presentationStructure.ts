@@ -2,15 +2,20 @@ import { google } from "@ai-sdk/google"
 import { generateText, Output } from "ai"
 import { z } from "zod"
 import type {
+  PresentationArticleMetadata,
   PresentationGenerationInstructions,
   PresentationImageReference,
   PresentationSelectedSource,
   PresentationStructure,
 } from "~/types/presentationGeneration"
 import { DEFAULT_GENERATIVE_MODEL_NAME } from "./llmModelConfig"
+import {
+  ARTIFACT_MAX_SELECTED_ITEMS,
+  assembleArtifactContext,
+  type ArtifactSourceInput,
+} from "~/utils/artifactSourceContext"
 
-export const PRESENTATION_MAX_SELECTED_ITEMS = 12
-export const PRESENTATION_MAX_CONTEXT_CHARS = 60_000
+export const PRESENTATION_MAX_SELECTED_ITEMS = ARTIFACT_MAX_SELECTED_ITEMS
 export const PRESENTATION_MAX_SLIDES = 10
 
 const optionalNonEmptyStringSchema = z.preprocess((value) => {
@@ -77,6 +82,10 @@ export interface NormalizedPresentationSource {
   userNote: string
   text: string
   image: PresentationImageReference | null
+  articleFullText: string
+  articleSummary: string
+  articleSubtitle: string
+  articleMetadata: PresentationArticleMetadata
 }
 
 export interface NormalizedPresentationInstructions {
@@ -151,6 +160,28 @@ function sourceTextFromRow(
     fulltext: stringFrom(row.fulltext),
     data,
   })
+}
+
+function stringArrayFrom(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value.map(stringFrom).filter(Boolean)
+}
+
+function articleMetadataFromRow(
+  row: Record<string, unknown>,
+  data: Record<string, unknown>
+): PresentationArticleMetadata {
+  const meta = asRecord(row.articleMetadata ?? data.articleMetadata)
+  return {
+    keywords: stringArrayFrom(meta.keywords ?? row.keywords ?? data.keywords),
+    climateImpacts: stringArrayFrom(
+      meta.climateImpacts ?? row.climate_impacts ?? data.climate_impacts
+    ),
+    adaptationApproaches: stringArrayFrom(
+      meta.adaptationApproaches ?? row.adaptation_approaches ?? data.adaptation_approaches
+    ),
+    sectors: stringArrayFrom(meta.sectors ?? row.sectors ?? data.sectors),
+  }
 }
 
 function instructionObjectFrom(value: unknown): PresentationGenerationInstructions {
@@ -257,6 +288,20 @@ export function normalizePresentationStructureRequest(
       userNote,
       text: sourceTextFromRow(row, data),
       image: imageFromSource(id, bodyKind, row, data),
+      articleFullText:
+        stringFrom(row.articleFullText) ||
+        stringFrom(data.articleFullText) ||
+        stringFrom(row.fulltext) ||
+        stringFrom(data.fulltext),
+      articleSummary:
+        stringFrom(row.articleSummary) ||
+        stringFrom(data.articleSummary) ||
+        stringFrom(data.summary),
+      articleSubtitle:
+        stringFrom(row.articleSubtitle) ||
+        stringFrom(data.articleSubtitle) ||
+        stringFrom(data.subtitle),
+      articleMetadata: articleMetadataFromRow(row, data),
     }
   })
 
@@ -272,6 +317,24 @@ export function normalizePresentationStructureRequest(
   }
 }
 
+export function presentationSourcesToArtifactInputs(
+  sources: NormalizedPresentationSource[]
+): ArtifactSourceInput[] {
+  return sources.map((source) => ({
+    id: source.id,
+    title: source.title,
+    bodyKind: source.bodyKind,
+    sourceDocumentUid: source.sourceDocumentUid,
+    userNote: source.userNote,
+    text: source.text,
+    articleFullText: source.articleFullText,
+    articleSummary: source.articleSummary,
+    articleSubtitle: source.articleSubtitle,
+    articleMetadata: source.articleMetadata,
+    isImage: source.image !== null,
+  }))
+}
+
 export function validatePresentationRequest(
   request: NormalizedPresentationStructureRequest
 ): PresentationValidationResult {
@@ -284,14 +347,17 @@ export function validatePresentationRequest(
       message: `At most ${PRESENTATION_MAX_SELECTED_ITEMS} selected items can be used`,
     }
   }
-  const totalChars = request.sources.reduce((sum, source) => sum + source.text.length, 0)
-  if (totalChars === 0) {
+  const assembled = assembleArtifactContext(
+    presentationSourcesToArtifactInputs(request.sources)
+  )
+  if (!assembled.blocks) {
     return { ok: false, message: "Selected items must include text content" }
   }
-  if (totalChars > PRESENTATION_MAX_CONTEXT_CHARS) {
+  if (assembled.tooLarge) {
     return {
       ok: false,
-      message: `Selected text is too long; maximum is ${PRESENTATION_MAX_CONTEXT_CHARS} characters`,
+      message:
+        "Selected context is too large even after summarizing excerpts; please select fewer items",
     }
   }
   const requestedSlides = request.instructions.slideCount
@@ -368,22 +434,17 @@ export function buildPresentationPrompt(
     request.instructions.audience ? `Audience: ${request.instructions.audience}` : "",
     request.instructions.extra ? `Extra: ${request.instructions.extra}` : "",
   ].filter(Boolean)
-  const sourceBlocks = request.sources
-    .map((source, index) => {
-      const uid = source.sourceDocumentUid ?? "none"
-      const note = source.userNote ? `\nUser note: ${source.userNote}` : ""
-      const image = source.image
-        ? `\nUsable image: sourceId=${source.image.sourceId}; alt=${source.image.alt ?? "none"}; caption=${source.image.caption ?? "none"}`
-        : "\nUsable image: none"
-      return `Source ${index + 1}
-Source id: ${source.id}
-Title: ${source.title}
-Body kind: ${source.bodyKind}
-Source document uid: ${uid}${note}${image}
-Text:
-${source.text}`
-    })
-    .join("\n\n---\n\n")
+  const assembled = assembleArtifactContext(
+    presentationSourcesToArtifactInputs(request.sources)
+  )
+  const imageList = images.length
+    ? `\n\nUsable images (reference by sourceId only):\n${images
+        .map(
+          (image) =>
+            `- sourceId=${image.sourceId}; alt=${image.alt ?? "none"}; caption=${image.caption ?? "none"}`
+        )
+        .join("\n")}`
+    : ""
 
   const userInstructions = instructionLines.length
     ? `\n\nUser instructions:\n${instructionLines.join("\n")}`
@@ -392,6 +453,8 @@ ${source.text}`
   return `You generate structured presentation outlines for climate change adaptation work.
 
 Use only the selected sources below. Return only JSON matching the provided schema. Do not include markdown fences, commentary, citations for users, or rendering/layout data.
+
+${assembled.guidance}
 
 Supported slide types:
 1. cover: { "type": "cover", "title": "...", "subtitle": "... optional", "debugSourceIds": ["source-id"] }
@@ -405,13 +468,13 @@ Top-level response shape:
 Rules:
 - Generate at most ${Math.min(requestedSlides, PRESENTATION_MAX_SLIDES)} slides.
 - Prefer concise slide titles and bullets suitable for a PowerPoint deck.
-- debugSourceIds are for developers only and must refer to selected Source id values.
+- debugSourceIds are for developers only and must refer to selected source_ids values.
 - Never invent source ids, image source ids, URLs, coordinates, fonts, colors, dimensions, or PptxGenJS options.
 - Image slides must reference selected images as an image object with image.sourceId only. Do not set image to a string. The application will attach the actual image URL later.
-- ${imageInstructions}
+- ${imageInstructions}${imageList}
 
 Selected sources:
-${sourceBlocks}${userInstructions}`
+${assembled.blocks}${userInstructions}`
 }
 
 export async function runPresentationStructureGeneration({

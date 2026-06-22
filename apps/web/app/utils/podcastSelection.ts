@@ -1,9 +1,28 @@
-import type { PodcastSelectedSource } from "~/types/podcastGeneration";
+import type {
+  PodcastArticleMetadata,
+  PodcastSelectedSource,
+} from "~/types/podcastGeneration";
 import type { HumanPinRow } from "~/types/pins";
+import {
+  ARTIFACT_MAX_CONTEXT_CHARS,
+  ARTIFACT_MAX_SELECTED_ITEMS,
+  EXCLUDED_BODY_KINDS,
+} from "~/utils/artifactSourceContext";
 
-export const PODCAST_MAX_SELECTED_ITEMS = 12;
-export const PODCAST_MAX_CONTEXT_CHARS = 60_000;
+export const PODCAST_MAX_SELECTED_ITEMS = ARTIFACT_MAX_SELECTED_ITEMS;
+export const PODCAST_MAX_CONTEXT_CHARS = ARTIFACT_MAX_CONTEXT_CHARS;
 export const PODCAST_MAX_TTS_INPUT_BYTES = 4_000;
+
+/** Resolved parent-article context fetched for a pin's source document. */
+export interface ResolvedDocumentContext {
+  fulltext: string;
+  summary: string;
+  subtitle: string;
+  metadata: PodcastArticleMetadata;
+}
+
+/** Pin kinds that contribute no useful text to a podcast script. */
+const PODCAST_EXCLUDED_BODY_KINDS = new Set([...EXCLUDED_BODY_KINDS, "image"]);
 
 export interface PodcastSourcePreview {
   source: PodcastSelectedSource;
@@ -40,9 +59,12 @@ function textFromMessages(value: unknown): string {
     .trim();
 }
 
-export function podcastTextFromPin(pin: HumanPinRow, documentText = ""): string {
-  if (pin.body_kind === "document" && documentText.trim()) {
-    return documentText.trim();
+export function podcastTextFromPin(
+  pin: HumanPinRow,
+  context?: ResolvedDocumentContext
+): string {
+  if (pin.body_kind === "document" && context?.fulltext.trim()) {
+    return context.fulltext.trim();
   }
 
   const data = asRecord(pin.body?.data);
@@ -61,10 +83,10 @@ export function podcastTextFromPin(pin: HumanPinRow, documentText = ""): string 
 
 export function podcastSourceFromPin(
   pin: HumanPinRow,
-  documentText = ""
+  context?: ResolvedDocumentContext
 ): PodcastSourcePreview {
   const data = asRecord(pin.body?.data);
-  const text = podcastTextFromPin(pin, documentText);
+  const text = podcastTextFromPin(pin, context);
   const title =
     pin.source_title_snapshot?.trim() ||
     stringFrom(data.title) ||
@@ -83,6 +105,10 @@ export function podcastSourceFromPin(
       userNote: pin.user_note,
       text,
       data,
+      articleFullText: context?.fulltext ?? null,
+      articleSummary: context?.summary ?? null,
+      articleSubtitle: context?.subtitle ?? null,
+      articleMetadata: context?.metadata ?? null,
     },
   };
 }
@@ -90,16 +116,17 @@ export function podcastSourceFromPin(
 export function selectedPodcastSources(
   pins: HumanPinRow[],
   selectedIds: string[],
-  documentTextByUid: Record<string, string> = {}
+  documentContextByUid: Record<string, ResolvedDocumentContext> = {}
 ): PodcastSourcePreview[] {
   const byId = new Map(pins.map((pin) => [pin.id, pin]));
   return selectedIds
     .map((id) => byId.get(id))
     .filter((pin): pin is HumanPinRow => Boolean(pin))
+    .filter((pin) => !PODCAST_EXCLUDED_BODY_KINDS.has(pin.body_kind))
     .map((pin) =>
       podcastSourceFromPin(
         pin,
-        pin.source_document_uid ? documentTextByUid[pin.source_document_uid] : ""
+        pin.source_document_uid ? documentContextByUid[pin.source_document_uid] : undefined
       )
     );
 }

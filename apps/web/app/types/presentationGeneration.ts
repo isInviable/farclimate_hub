@@ -1,3 +1,10 @@
+export interface PresentationArticleMetadata {
+  keywords?: string[]
+  climateImpacts?: string[]
+  adaptationApproaches?: string[]
+  sectors?: string[]
+}
+
 export interface PresentationSelectedSource {
   id: string
   title?: string | null
@@ -9,6 +16,11 @@ export interface PresentationSelectedSource {
   quote?: string | null
   fulltext?: string | null
   data?: Record<string, unknown> | null
+  /** Parent article context, resolved client-side for any pin with a source document. */
+  articleFullText?: string | null
+  articleSummary?: string | null
+  articleSubtitle?: string | null
+  articleMetadata?: PresentationArticleMetadata | null
 }
 
 export interface PresentationGenerationInstructions {

@@ -16,13 +16,8 @@
             }}
           </p>
         </div>
-        <UBadge color="neutral" variant="soft">
-          {{
-            $t("powerpoint.wizard.contextSize", {
-              current: chars,
-              max: maxChars,
-            })
-          }}
+        <UBadge :color="tooLarge ? 'error' : 'neutral'" variant="soft">
+          {{ $t("powerpoint.wizard.contextTokens", { tokens }) }}
         </UBadge>
       </div>
     </template>
@@ -71,5 +66,7 @@ defineProps<{
   maxChars: number
   words: number
   chars: number
+  tokens: number
+  tooLarge: boolean
 }>()
 </script>

@@ -63,7 +63,14 @@ describe("podcast selected source helpers", () => {
         }),
       ],
       ["pin-doc"],
-      { "doc-full": "Complete article text from the catalog." }
+      {
+        "doc-full": {
+          fulltext: "Complete article text from the catalog.",
+          summary: "",
+          subtitle: "",
+          metadata: {},
+        },
+      }
     );
 
     expect(result[0]?.source.text).toBe("Complete article text from the catalog.");
