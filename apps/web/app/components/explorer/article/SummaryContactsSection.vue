@@ -1,8 +1,5 @@
 <template>
-  <DecorativeCorner
-    src="/img/explorer/bg_image_contact.png"
-    corner="bottom-right"
-  />
+  
   <div v-if="!isFullyEmpty" class="mx-auto grid max-w-6xl grid-cols-1 gap-10 pt-9 lg:grid-cols-2 lg:gap-16">
     <!-- Left: contacts + websites (React SummaryContacts left column) -->
     <section class="min-w-0">
