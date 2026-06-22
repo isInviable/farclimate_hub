@@ -23,6 +23,7 @@
     "@ai-sdk/vue": "^3.0.99",
     "@google-cloud/text-to-speech": "^6.4.0",
     "@iconify-json/lucide": "^1.2.90",
+    "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.70",
     "@nuxt/content": "^3.14.0",
     "@nuxt/image": "2.0.0",

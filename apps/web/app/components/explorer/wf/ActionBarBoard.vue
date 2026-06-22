@@ -87,11 +87,7 @@ const actionOptions = computed(() => [
     value: "podcast",
     icon: "mdi:podcast",
   },
-  {
-    label: t("boardActions.videoSummary"),
-    value: "video",
-    icon: "mdi:video",
-  },
+  
 ]);
 
 watch(selectedAction, (value) => {
