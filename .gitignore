@@ -17,6 +17,9 @@ pipeline/caches/*
 # Environment files
 .env
 
+# Local database dumps (contain live data / PII)
+backups/
+
 # Node / pnpm
 node_modules/
 dist/
