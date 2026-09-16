@@ -13,6 +13,13 @@
     "db:truncate": "pnpm --filter @farclimate/db run db:truncate",
     "db:push": "pnpm --filter @farclimate/db run db:push",
     "db:reset": "pnpm --filter @farclimate/db run db:reset",
-    "db:backup": "bash scripts/backup-remote-db.sh"
+    "db:backup": "bash scripts/backup-remote-db.sh",
+    "cordis:download": "pnpm --filter @farclimate/cordis run cordis:download",
+    "cordis:parse": "pnpm --filter @farclimate/cordis run cordis:parse",
+    "cordis:create": "pnpm --filter @farclimate/cordis run cordis:create",
+    "cordis:push": "pnpm --filter @farclimate/cordis run cordis:push",
+    "cordis:audit": "pnpm --filter @farclimate/cordis run cordis:audit",
+    "cordis:audit-quality": "pnpm --filter @farclimate/cordis run cordis:audit-quality",
+    "cordis:drift": "pnpm --filter @farclimate/cordis run cordis:drift"
   }
 }

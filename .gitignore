@@ -29,6 +29,18 @@ old/*
 pipeline/images/*
 apps/web/test-output/
 
+# CORDIS pipeline generated artifacts
+packages/cordis/data/downloads/*
+!packages/cordis/data/downloads/.gitkeep
+packages/cordis/data/csv/*
+!packages/cordis/data/csv/.gitkeep
+packages/cordis/data/tmp/
+# Drift and refresh reports are the record of what was reconciled, so keep them.
+packages/cordis/data/audit_output/*
+!packages/cordis/data/audit_output/.gitkeep
+!packages/cordis/data/audit_output/*.md
+!packages/cordis/data/audit_output/*.csv
+
 *.mcp.json
 .cursor/mcp.json
 # Local Netlify folder
