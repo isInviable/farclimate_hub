@@ -1,0 +1,451 @@
+project_number,acronym,theme_id,theme_name,pdf_legend_name
+101037424,ARSINOE,2,behaviural change,Behavioural change
+101037424,ARSINOE,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101037424,ARSINOE,5,health and wellbeing,Health and wellbeing
+101037424,ARSINOE,6,infrastructure,Infrastructure
+101037424,ARSINOE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101037424,ARSINOE,8,land use and food systems,Land use and food systems
+101037424,ARSINOE,10,mainstreaming adaption,Mainstreaming adaptation
+101037424,ARSINOE,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112728,ClimEmpower,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112728,ClimEmpower,9,local economy systems,Local economic systems
+101214343,FairFuture,2,behaviural change,Behavioural change
+101214343,FairFuture,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214343,FairFuture,4,governance,Governance
+101214343,FairFuture,5,health and wellbeing,Health and wellbeing
+101214343,FairFuture,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214343,FairFuture,10,mainstreaming adaption,Mainstreaming adaptation
+101214343,FairFuture,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214343,FairFuture,12,transformative change,Transformative change
+101037084,IMPETUS,1,adaptation founding and finance,Adaptation funding & finance
+101037084,IMPETUS,2,behaviural change,Behavioural change
+101037084,IMPETUS,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101037084,IMPETUS,4,governance,Governance
+101037084,IMPETUS,5,health and wellbeing,Health and wellbeing
+101037084,IMPETUS,6,infrastructure,Infrastructure
+101037084,IMPETUS,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101037084,IMPETUS,8,land use and food systems,Land use and food systems
+101037084,IMPETUS,9,local economy systems,Local economic systems
+101037084,IMPETUS,10,mainstreaming adaption,Mainstreaming adaptation
+101037084,IMPETUS,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101037084,IMPETUS,12,transformative change,Transformative change
+101037084,IMPETUS,13,water management,Water management
+101212990,JUST4CARE,1,adaptation founding and finance,Adaptation funding & finance
+101212990,JUST4CARE,2,behaviural change,Behavioural change
+101212990,JUST4CARE,4,governance,Governance
+101212990,JUST4CARE,5,health and wellbeing,Health and wellbeing
+101212990,JUST4CARE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101212990,JUST4CARE,9,local economy systems,Local economic systems
+101212990,JUST4CARE,10,mainstreaming adaption,Mainstreaming adaptation
+101212990,JUST4CARE,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101212990,JUST4CARE,12,transformative change,Transformative change
+101214666,JustREACH,4,governance,Governance
+101214666,JustREACH,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214666,JustREACH,9,local economy systems,Local economic systems
+101214666,JustREACH,10,mainstreaming adaption,Mainstreaming adaptation
+101214666,JustREACH,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214666,JustREACH,12,transformative change,Transformative change
+101215174,JUSTSAFE,2,behaviural change,Behavioural change
+101215174,JUSTSAFE,4,governance,Governance
+101215174,JUSTSAFE,5,health and wellbeing,Health and wellbeing
+101215174,JUSTSAFE,6,infrastructure,Infrastructure
+101215174,JUSTSAFE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101215174,JUSTSAFE,9,local economy systems,Local economic systems
+101215174,JUSTSAFE,12,transformative change,Transformative change
+101093873,Regions4Climate,1,adaptation founding and finance,Adaptation funding & finance
+101093873,Regions4Climate,2,behaviural change,Behavioural change
+101093873,Regions4Climate,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101093873,Regions4Climate,4,governance,Governance
+101093873,Regions4Climate,6,infrastructure,Infrastructure
+101093873,Regions4Climate,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093873,Regions4Climate,9,local economy systems,Local economic systems
+101093873,Regions4Climate,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101093873,Regions4Climate,12,transformative change,Transformative change
+101093873,Regions4Climate,13,water management,Water management
+101093968,RESIST,1,adaptation founding and finance,Adaptation funding & finance
+101093968,RESIST,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101093968,RESIST,4,governance,Governance
+101093968,RESIST,6,infrastructure,Infrastructure
+101093968,RESIST,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093968,RESIST,10,mainstreaming adaption,Mainstreaming adaptation
+101093968,RESIST,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101093968,RESIST,12,transformative change,Transformative change
+101093968,RESIST,13,water management,Water management
+101212794,SMARTER,1,adaptation founding and finance,Adaptation funding & finance
+101212794,SMARTER,2,behaviural change,Behavioural change
+101212794,SMARTER,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101212794,SMARTER,4,governance,Governance
+101212794,SMARTER,5,health and wellbeing,Health and wellbeing
+101212794,SMARTER,9,local economy systems,Local economic systems
+101212794,SMARTER,10,mainstreaming adaption,Mainstreaming adaptation
+101212794,SMARTER,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101212794,SMARTER,12,transformative change,Transformative change
+101212761,SystR,1,adaptation founding and finance,Adaptation funding & finance
+101212761,SystR,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101212761,SystR,4,governance,Governance
+101212761,SystR,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101212761,SystR,10,mainstreaming adaption,Mainstreaming adaptation
+101212761,SystR,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214311,TiCCA4DANU,1,adaptation founding and finance,Adaptation funding & finance
+101214311,TiCCA4DANU,2,behaviural change,Behavioural change
+101214311,TiCCA4DANU,4,governance,Governance
+101214311,TiCCA4DANU,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214311,TiCCA4DANU,9,local economy systems,Local economic systems
+101214311,TiCCA4DANU,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214311,TiCCA4DANU,12,transformative change,Transformative change
+101036683,TransformAr,1,adaptation founding and finance,Adaptation funding & finance
+101036683,TransformAr,2,behaviural change,Behavioural change
+101036683,TransformAr,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101036683,TransformAr,4,governance,Governance
+101036683,TransformAr,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101036683,TransformAr,9,local economy systems,Local economic systems
+101036683,TransformAr,10,mainstreaming adaption,Mainstreaming adaptation
+101036683,TransformAr,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101036683,TransformAr,12,transformative change,Transformative change
+101036683,TransformAr,13,water management,Water management
+101215153,UNDERPIN,4,governance,Governance
+101215153,UNDERPIN,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101215153,UNDERPIN,10,mainstreaming adaption,Mainstreaming adaptation
+101215153,UNDERPIN,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101215153,UNDERPIN,12,transformative change,Transformative change
+101112837,VALORADA,2,behaviural change,Behavioural change
+101112837,VALORADA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112837,VALORADA,8,land use and food systems,Land use and food systems
+101112837,VALORADA,9,local economy systems,Local economic systems
+101112837,VALORADA,13,water management,Water management
+101212639,AdaptationHubs,1,adaptation founding and finance,Adaptation funding & finance
+101212639,AdaptationHubs,4,governance,Governance
+101212639,AdaptationHubs,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101212639,AdaptationHubs,10,mainstreaming adaption,Mainstreaming adaptation
+101093864,CLIMAAX,1,adaptation founding and finance,Adaptation funding & finance
+101093864,CLIMAAX,6,infrastructure,Infrastructure
+101093864,CLIMAAX,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093864,CLIMAAX,10,mainstreaming adaption,Mainstreaming adaptation
+101093864,CLIMAAX,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101093864,CLIMAAX,12,transformative change,Transformative change
+101093864,CLIMAAX,13,water management,Water management
+101093942,Pathways2Resilience,1,adaptation founding and finance,Adaptation funding & finance
+101093942,Pathways2Resilience,4,governance,Governance
+101093942,Pathways2Resilience,10,mainstreaming adaption,Mainstreaming adaptation
+101093942,Pathways2Resilience,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101093942,Pathways2Resilience,12,transformative change,Transformative change
+101036560,REGILIENCE,1,adaptation founding and finance,Adaptation funding & finance
+101036560,REGILIENCE,4,governance,Governance
+101036560,REGILIENCE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101036560,REGILIENCE,10,mainstreaming adaption,Mainstreaming adaptation
+101036560,REGILIENCE,12,transformative change,Transformative change
+101213634,REGILIENCE+,1,adaptation founding and finance,Adaptation funding & finance
+101213634,REGILIENCE+,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101213634,REGILIENCE+,4,governance,Governance
+101213634,REGILIENCE+,6,infrastructure,Infrastructure
+101213634,REGILIENCE+,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101213634,REGILIENCE+,8,land use and food systems,Land use and food systems
+101213634,REGILIENCE+,10,mainstreaming adaption,Mainstreaming adaptation
+101213634,REGILIENCE+,12,transformative change,Transformative change
+101213634,REGILIENCE+,13,water management,Water management
+101112737,ARCADIA,1,adaptation founding and finance,Adaptation funding & finance
+101112737,ARCADIA,2,behaviural change,Behavioural change
+101112737,ARCADIA,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112737,ARCADIA,4,governance,Governance
+101112737,ARCADIA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112737,ARCADIA,10,mainstreaming adaption,Mainstreaming adaptation
+101112737,ARCADIA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112737,ARCADIA,12,transformative change,Transformative change
+101112731,CARDIMED,2,behaviural change,Behavioural change
+101112731,CARDIMED,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112731,CARDIMED,4,governance,Governance
+101112731,CARDIMED,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112731,CARDIMED,8,land use and food systems,Land use and food systems
+101112731,CARDIMED,10,mainstreaming adaption,Mainstreaming adaptation
+101112731,CARDIMED,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112731,CARDIMED,12,transformative change,Transformative change
+101112731,CARDIMED,13,water management,Water management
+101213138,COAST-SCAPES,1,adaptation founding and finance,Adaptation funding & finance
+101213138,COAST-SCAPES,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101213138,COAST-SCAPES,4,governance,Governance
+101213138,COAST-SCAPES,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101213138,COAST-SCAPES,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139637,ClimaGen,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101139637,ClimaGen,4,governance,Governance
+101139637,ClimaGen,6,infrastructure,Infrastructure
+101139637,ClimaGen,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139637,ClimaGen,12,transformative change,Transformative change
+101139598,Commit2Green,1,adaptation founding and finance,Adaptation funding & finance
+101139598,Commit2Green,2,behaviural change,Behavioural change
+101139598,Commit2Green,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101139598,Commit2Green,4,governance,Governance
+101139598,Commit2Green,6,infrastructure,Infrastructure
+101139598,Commit2Green,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101139598,Commit2Green,10,mainstreaming adaption,Mainstreaming adaptation
+101139598,Commit2Green,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139598,Commit2Green,12,transformative change,Transformative change
+101112972,DesirMED,1,adaptation founding and finance,Adaptation funding & finance
+101112972,DesirMED,2,behaviural change,Behavioural change
+101112972,DesirMED,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112972,DesirMED,4,governance,Governance
+101112972,DesirMED,5,health and wellbeing,Health and wellbeing
+101112972,DesirMED,6,infrastructure,Infrastructure
+101112972,DesirMED,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112972,DesirMED,9,local economy systems,Local economic systems
+101112972,DesirMED,10,mainstreaming adaption,Mainstreaming adaptation
+101112972,DesirMED,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112972,DesirMED,12,transformative change,Transformative change
+101112972,DesirMED,13,water management,Water management
+101214172,GRACE,1,adaptation founding and finance,Adaptation funding & finance
+101214172,GRACE,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214172,GRACE,4,governance,Governance
+101214172,GRACE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214172,GRACE,8,land use and food systems,Land use and food systems
+101214172,GRACE,9,local economy systems,Local economic systems
+101214172,GRACE,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139730,GreenInCities,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101139730,GreenInCities,4,governance,Governance
+101139730,GreenInCities,5,health and wellbeing,Health and wellbeing
+101139730,GreenInCities,6,infrastructure,Infrastructure
+101139730,GreenInCities,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101139730,GreenInCities,9,local economy systems,Local economic systems
+101139730,GreenInCities,10,mainstreaming adaption,Mainstreaming adaptation
+101139730,GreenInCities,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139730,GreenInCities,12,transformative change,Transformative change
+101112781,LAND4CLIMATE,1,adaptation founding and finance,Adaptation funding & finance
+101112781,LAND4CLIMATE,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112781,LAND4CLIMATE,4,governance,Governance
+101112781,LAND4CLIMATE,8,land use and food systems,Land use and food systems
+101112781,LAND4CLIMATE,13,water management,Water management
+101112876,MountResilience,1,adaptation founding and finance,Adaptation funding & finance
+101112876,MountResilience,2,behaviural change,Behavioural change
+101112876,MountResilience,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112876,MountResilience,4,governance,Governance
+101112876,MountResilience,9,local economy systems,Local economic systems
+101112876,MountResilience,12,transformative change,Transformative change
+101112859,NATALIE,1,adaptation founding and finance,Adaptation funding & finance
+101112859,NATALIE,2,behaviural change,Behavioural change
+101112859,NATALIE,13,water management,Water management
+101112836,NBRACER,1,adaptation founding and finance,Adaptation funding & finance
+101112836,NBRACER,2,behaviural change,Behavioural change
+101112836,NBRACER,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112836,NBRACER,4,governance,Governance
+101112836,NBRACER,6,infrastructure,Infrastructure
+101112836,NBRACER,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112836,NBRACER,8,land use and food systems,Land use and food systems
+101112836,NBRACER,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112836,NBRACER,12,transformative change,Transformative change
+101112836,NBRACER,13,water management,Water management
+101214414,NURISH,1,adaptation founding and finance,Adaptation funding & finance
+101214414,NURISH,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214414,NURISH,4,governance,Governance
+101214414,NURISH,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214414,NURISH,8,land use and food systems,Land use and food systems
+101214414,NURISH,9,local economy systems,Local economic systems
+101214414,NURISH,10,mainstreaming adaption,Mainstreaming adaptation
+101214414,NURISH,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214414,NURISH,12,transformative change,Transformative change
+101214414,NURISH,13,water management,Water management
+101139636,ReGreeneration,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101139636,ReGreeneration,4,governance,Governance
+101139636,ReGreeneration,5,health and wellbeing,Health and wellbeing
+101139636,ReGreeneration,6,infrastructure,Infrastructure
+101139636,ReGreeneration,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101139636,ReGreeneration,9,local economy systems,Local economic systems
+101139636,ReGreeneration,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101139636,ReGreeneration,13,water management,Water management
+101214051,REHUBS,1,adaptation founding and finance,Adaptation funding & finance
+101214051,REHUBS,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214051,REHUBS,4,governance,Governance
+101214051,REHUBS,6,infrastructure,Infrastructure
+101214051,REHUBS,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214051,REHUBS,8,land use and food systems,Land use and food systems
+101214051,REHUBS,9,local economy systems,Local economic systems
+101214051,REHUBS,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214051,REHUBS,13,water management,Water management
+101214557,TerraTwin,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214557,TerraTwin,8,land use and food systems,Land use and food systems
+101214557,TerraTwin,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101213184,Trees4Adapt,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101213184,Trees4Adapt,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101213184,Trees4Adapt,8,land use and food systems,Land use and food systems
+101213184,Trees4Adapt,9,local economy systems,Local economic systems
+101213184,Trees4Adapt,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101213184,Trees4Adapt,13,water management,Water management
+101214563,BLOSSOM,1,adaptation founding and finance,Adaptation funding & finance
+101214563,BLOSSOM,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214563,BLOSSOM,4,governance,Governance
+101214563,BLOSSOM,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214563,BLOSSOM,10,mainstreaming adaption,Mainstreaming adaptation
+101214563,BLOSSOM,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214563,BLOSSOM,12,transformative change,Transformative change
+101214563,BLOSSOM,13,water management,Water management
+101139711,URBREATH,1,adaptation founding and finance,Adaptation funding & finance
+101139711,URBREATH,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101139711,URBREATH,4,governance,Governance
+101139711,URBREATH,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101139711,URBREATH,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112705,CLIMATEFIT,1,adaptation founding and finance,Adaptation funding & finance
+101112705,CLIMATEFIT,2,behaviural change,Behavioural change
+101112705,CLIMATEFIT,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112705,CLIMATEFIT,4,governance,Governance
+101112705,CLIMATEFIT,6,infrastructure,Infrastructure
+101112705,CLIMATEFIT,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112705,CLIMATEFIT,10,mainstreaming adaption,Mainstreaming adaptation
+101112705,CLIMATEFIT,12,transformative change,Transformative change
+101212947,CLIMINVEST,1,adaptation founding and finance,Adaptation funding & finance
+101212947,CLIMINVEST,4,governance,Governance
+101212947,CLIMINVEST,6,infrastructure,Infrastructure
+101212947,CLIMINVEST,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101212947,CLIMINVEST,9,local economy systems,Local economic systems
+101212947,CLIMINVEST,13,water management,Water management
+101112860,FARCLIMATE,2,behaviural change,Behavioural change
+101112860,FARCLIMATE,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112860,FARCLIMATE,4,governance,Governance
+101112860,FARCLIMATE,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112860,FARCLIMATE,9,local economy systems,Local economic systems
+101112860,FARCLIMATE,10,mainstreaming adaption,Mainstreaming adaptation
+101112860,FARCLIMATE,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112860,FARCLIMATE,12,transformative change,Transformative change
+101112841,PIISA,1,adaptation founding and finance,Adaptation funding & finance
+101112841,PIISA,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112841,PIISA,6,infrastructure,Infrastructure
+101112841,PIISA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112841,PIISA,8,land use and food systems,Land use and food systems
+101112841,PIISA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101214441,RISE-IN,1,adaptation founding and finance,Adaptation funding & finance
+101214441,RISE-IN,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101214441,RISE-IN,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101214441,RISE-IN,9,local economy systems,Local economic systems
+101214441,RISE-IN,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112867,SOTERIA,1,adaptation founding and finance,Adaptation funding & finance
+101112867,SOTERIA,2,behaviural change,Behavioural change
+101112867,SOTERIA,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112867,SOTERIA,4,governance,Governance
+101112867,SOTERIA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112867,SOTERIA,9,local economy systems,Local economic systems
+101112867,SOTERIA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157643,AURORA,1,adaptation founding and finance,Adaptation funding & finance
+101157643,AURORA,2,behaviural change,Behavioural change
+101157643,AURORA,4,governance,Governance
+101157643,AURORA,5,health and wellbeing,Health and wellbeing
+101157643,AURORA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101157643,AURORA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157643,AURORA,13,water management,Water management
+101157458,healthRiskADAPT,5,health and wellbeing,Health and wellbeing
+101157458,healthRiskADAPT,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101157458,healthRiskADAPT,10,mainstreaming adaption,Mainstreaming adaptation
+101157458,healthRiskADAPT,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157458,healthRiskADAPT,12,transformative change,Transformative change
+101156653,ISMED-CLIM,8,land use and food systems,Land use and food systems
+101156653,ISMED-CLIM,9,local economy systems,Local economic systems
+101156653,ISMED-CLIM,13,water management,Water management
+101155958,MOUNTADAPT,2,behaviural change,Behavioural change
+101155958,MOUNTADAPT,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101155958,MOUNTADAPT,4,governance,Governance
+101155958,MOUNTADAPT,5,health and wellbeing,Health and wellbeing
+101155958,MOUNTADAPT,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101155958,MOUNTADAPT,10,mainstreaming adaption,Mainstreaming adaptation
+101155958,MOUNTADAPT,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157447,GENESIS,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101157447,GENESIS,6,infrastructure,Infrastructure
+101157447,GENESIS,8,land use and food systems,Land use and food systems
+101157447,GENESIS,13,water management,Water management
+101093806,ICARIA,6,infrastructure,Infrastructure
+101093806,ICARIA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093806,ICARIA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157707,Med-IREN,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101157707,Med-IREN,4,governance,Governance
+101157707,Med-IREN,6,infrastructure,Infrastructure
+101157707,Med-IREN,10,mainstreaming adaption,Mainstreaming adaptation
+101157707,Med-IREN,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101157707,Med-IREN,13,water management,Water management
+101093854,MIRACA,6,infrastructure,Infrastructure
+101093854,MIRACA,9,local economy systems,Local economic systems
+101093854,MIRACA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101157448,NATURE-DEMO,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101157448,NATURE-DEMO,6,infrastructure,Infrastructure
+101157448,NATURE-DEMO,10,mainstreaming adaption,Mainstreaming adaptation
+101093939,RISKADAPT,4,governance,Governance
+101093939,RISKADAPT,5,health and wellbeing,Health and wellbeing
+101093939,RISKADAPT,6,infrastructure,Infrastructure
+101093939,RISKADAPT,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093939,RISKADAPT,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101156281,ClimaPannonia,1,adaptation founding and finance,Adaptation funding & finance
+101156281,ClimaPannonia,2,behaviural change,Behavioural change
+101156281,ClimaPannonia,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101156281,ClimaPannonia,4,governance,Governance
+101156281,ClimaPannonia,5,health and wellbeing,Health and wellbeing
+101156281,ClimaPannonia,6,infrastructure,Infrastructure
+101156281,ClimaPannonia,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101156281,ClimaPannonia,8,land use and food systems,Land use and food systems
+101156281,ClimaPannonia,9,local economy systems,Local economic systems
+101156281,ClimaPannonia,10,mainstreaming adaption,Mainstreaming adaptation
+101156281,ClimaPannonia,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101156281,ClimaPannonia,12,transformative change,Transformative change
+101156281,ClimaPannonia,13,water management,Water management
+101156076,DRYAD,1,adaptation founding and finance,Adaptation funding & finance
+101156076,DRYAD,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101156076,DRYAD,4,governance,Governance
+101156076,DRYAD,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101156076,DRYAD,9,local economy systems,Local economic systems
+101156076,DRYAD,10,mainstreaming adaption,Mainstreaming adaptation
+101156076,DRYAD,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101156076,DRYAD,12,transformative change,Transformative change
+101156076,DRYAD,13,water management,Water management
+101157094,Precilience,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101157094,Precilience,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101157094,Precilience,8,land use and food systems,Land use and food systems
+101157094,Precilience,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101155748,TRANSFORM,1,adaptation founding and finance,Adaptation funding & finance
+101155748,TRANSFORM,2,behaviural change,Behavioural change
+101155748,TRANSFORM,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101155748,TRANSFORM,4,governance,Governance
+101155748,TRANSFORM,8,land use and food systems,Land use and food systems
+101155748,TRANSFORM,9,local economy systems,Local economic systems
+101155748,TRANSFORM,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101155748,TRANSFORM,12,transformative change,Transformative change
+101093921,Adaptation AGORA,2,behaviural change,Behavioural change
+101093921,Adaptation AGORA,4,governance,Governance
+101093921,Adaptation AGORA,5,health and wellbeing,Health and wellbeing
+101093921,Adaptation AGORA,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101093921,Adaptation AGORA,9,local economy systems,Local economic systems
+101093921,Adaptation AGORA,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101093921,Adaptation AGORA,12,transformative change,Transformative change
+101094021,CLIMAS,2,behaviural change,Behavioural change
+101094021,CLIMAS,8,land use and food systems,Land use and food systems
+101094021,CLIMAS,10,mainstreaming adaption,Mainstreaming adaptation
+101094021,CLIMAS,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101094021,CLIMAS,12,transformative change,Transformative change
+101112919,OCEANIDS,1,adaptation founding and finance,Adaptation funding & finance
+101112919,OCEANIDS,2,behaviural change,Behavioural change
+101112919,OCEANIDS,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112919,OCEANIDS,4,governance,Governance
+101112919,OCEANIDS,5,health and wellbeing,Health and wellbeing
+101112919,OCEANIDS,6,infrastructure,Infrastructure
+101112919,OCEANIDS,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112919,OCEANIDS,9,local economy systems,Local economic systems
+101112919,OCEANIDS,10,mainstreaming adaption,Mainstreaming adaptation
+101112919,OCEANIDS,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112919,OCEANIDS,12,transformative change,Transformative change
+101112919,OCEANIDS,13,water management,Water management
+101112906,SpongeBoost,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112906,SpongeBoost,8,land use and food systems,Land use and food systems
+101112906,SpongeBoost,6,infrastructure,Infrastructure
+101112906,SpongeBoost,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112906,SpongeBoost,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112906,SpongeBoost,12,transformative change,Transformative change
+101112906,SpongeBoost,13,water management,Water management
+101112738,SpongeScapes,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101112738,SpongeScapes,4,governance,Governance
+101112738,SpongeScapes,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101112738,SpongeScapes,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101112738,SpongeScapes,13,water management,Water management
+101156116,SpongeWorks,1,adaptation founding and finance,Adaptation funding & finance
+101156116,SpongeWorks,2,behaviural change,Behavioural change
+101156116,SpongeWorks,3,ecosystems and nature-based solutions,Ecosystems and nature-based solutions
+101156116,SpongeWorks,4,governance,Governance
+101156116,SpongeWorks,5,health and wellbeing,Health and wellbeing
+101156116,SpongeWorks,6,infrastructure,Infrastructure
+101156116,SpongeWorks,7,kwnowledge and data on adaptation,Knowledge and data on adaptation
+101156116,SpongeWorks,8,land use and food systems,Land use and food systems
+101156116,SpongeWorks,9,local economy systems,Local economic systems
+101156116,SpongeWorks,10,mainstreaming adaption,Mainstreaming adaptation
+101156116,SpongeWorks,11,stakeholders and citizens engagement,Stakeholder and citizen engagement
+101156116,SpongeWorks,12,transformative change,Transformative change
+101156116,SpongeWorks,13,water management,Water management

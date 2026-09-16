@@ -1,0 +1,492 @@
+project_number,acronym,risk_id,risk_name,pdf_legend_name
+101037424,ARSINOE,2,drought,Drought
+101037424,ARSINOE,3,extreme heat,Extreme heat
+101037424,ARSINOE,4,flooding,Flooding
+101037424,ARSINOE,5,heavy precipitations,Heavy precipitation
+101037424,ARSINOE,8,sea level rise,Sea level rise
+101037424,ARSINOE,10,storms,Storms
+101037424,ARSINOE,13,wildfires,Wildfires
+101112728,ClimEmpower,2,drought,Drought
+101112728,ClimEmpower,3,extreme heat,Extreme heat
+101112728,ClimEmpower,4,flooding,Flooding
+101112728,ClimEmpower,11,surface air temperature increase,Surface air temperature increase
+101214343,FairFuture,2,drought,Drought
+101214343,FairFuture,3,extreme heat,Extreme heat
+101214343,FairFuture,4,flooding,Flooding
+101214343,FairFuture,5,heavy precipitations,Heavy precipitation
+101214343,FairFuture,13,wildfires,Wildfires
+101037084,IMPETUS,1,coastal erosion,Coastal erosion
+101037084,IMPETUS,2,drought,Drought
+101037084,IMPETUS,3,extreme heat,Extreme heat
+101037084,IMPETUS,4,flooding,Flooding
+101037084,IMPETUS,5,heavy precipitations,Heavy precipitation
+101037084,IMPETUS,6,Landslides,Landslides
+101037084,IMPETUS,7,Precipitation changes,Precipitation changes
+101037084,IMPETUS,8,sea level rise,Sea level rise
+101037084,IMPETUS,10,storms,Storms
+101037084,IMPETUS,11,surface air temperature increase,Surface air temperature increase
+101212990,JUST4CARE,3,extreme heat,Extreme heat
+101212990,JUST4CARE,4,flooding,Flooding
+101212990,JUST4CARE,5,heavy precipitations,Heavy precipitation
+101212990,JUST4CARE,7,Precipitation changes,Precipitation changes
+101212990,JUST4CARE,10,storms,Storms
+101212990,JUST4CARE,11,surface air temperature increase,Surface air temperature increase
+101214666,JustREACH,1,coastal erosion,Coastal erosion
+101214666,JustREACH,2,drought,Drought
+101214666,JustREACH,3,extreme heat,Extreme heat
+101214666,JustREACH,4,flooding,Flooding
+101214666,JustREACH,5,heavy precipitations,Heavy precipitation
+101214666,JustREACH,6,Landslides,Landslides
+101214666,JustREACH,7,Precipitation changes,Precipitation changes
+101214666,JustREACH,8,sea level rise,Sea level rise
+101214666,JustREACH,9,severe winds,Severe winds
+101214666,JustREACH,10,storms,Storms
+101214666,JustREACH,11,surface air temperature increase,Surface air temperature increase
+101214666,JustREACH,12,tropical cuclones,Tropical cyclones
+101214666,JustREACH,13,wildfires,Wildfires
+101215174,JUSTSAFE,2,drought,Drought
+101215174,JUSTSAFE,3,extreme heat,Extreme heat
+101215174,JUSTSAFE,4,flooding,Flooding
+101215174,JUSTSAFE,5,heavy precipitations,Heavy precipitation
+101215174,JUSTSAFE,7,Precipitation changes,Precipitation changes
+101215174,JUSTSAFE,10,storms,Storms
+101215174,JUSTSAFE,13,wildfires,Wildfires
+101093873,Regions4Climate,1,coastal erosion,Coastal erosion
+101093873,Regions4Climate,2,drought,Drought
+101093873,Regions4Climate,4,flooding,Flooding
+101093873,Regions4Climate,5,heavy precipitations,Heavy precipitation
+101093873,Regions4Climate,7,Precipitation changes,Precipitation changes
+101093873,Regions4Climate,8,sea level rise,Sea level rise
+101093873,Regions4Climate,11,surface air temperature increase,Surface air temperature increase
+101093873,Regions4Climate,12,tropical cuclones,Tropical cyclones
+101093873,Regions4Climate,13,wildfires,Wildfires
+101093968,RESIST,1,coastal erosion,Coastal erosion
+101093968,RESIST,2,drought,Drought
+101093968,RESIST,3,extreme heat,Extreme heat
+101093968,RESIST,4,flooding,Flooding
+101093968,RESIST,5,heavy precipitations,Heavy precipitation
+101093968,RESIST,8,sea level rise,Sea level rise
+101093968,RESIST,13,wildfires,Wildfires
+101212794,SMARTER,1,coastal erosion,Coastal erosion
+101212794,SMARTER,2,drought,Drought
+101212794,SMARTER,3,extreme heat,Extreme heat
+101212794,SMARTER,4,flooding,Flooding
+101212794,SMARTER,5,heavy precipitations,Heavy precipitation
+101212794,SMARTER,7,Precipitation changes,Precipitation changes
+101212794,SMARTER,8,sea level rise,Sea level rise
+101212794,SMARTER,10,storms,Storms
+101212761,SystR,1,coastal erosion,Coastal erosion
+101212761,SystR,2,drought,Drought
+101212761,SystR,3,extreme heat,Extreme heat
+101212761,SystR,4,flooding,Flooding
+101212761,SystR,5,heavy precipitations,Heavy precipitation
+101212761,SystR,7,Precipitation changes,Precipitation changes
+101212761,SystR,8,sea level rise,Sea level rise
+101212761,SystR,10,storms,Storms
+101212761,SystR,11,surface air temperature increase,Surface air temperature increase
+101214311,TiCCA4DANU,1,coastal erosion,Coastal erosion
+101214311,TiCCA4DANU,3,extreme heat,Extreme heat
+101214311,TiCCA4DANU,4,flooding,Flooding
+101214311,TiCCA4DANU,5,heavy precipitations,Heavy precipitation
+101214311,TiCCA4DANU,6,Landslides,Landslides
+101214311,TiCCA4DANU,7,Precipitation changes,Precipitation changes
+101214311,TiCCA4DANU,8,sea level rise,Sea level rise
+101214311,TiCCA4DANU,9,severe winds,Severe winds
+101214311,TiCCA4DANU,13,wildfires,Wildfires
+101036683,TransformAr,1,coastal erosion,Coastal erosion
+101036683,TransformAr,2,drought,Drought
+101036683,TransformAr,3,extreme heat,Extreme heat
+101036683,TransformAr,5,heavy precipitations,Heavy precipitation
+101036683,TransformAr,7,Precipitation changes,Precipitation changes
+101036683,TransformAr,8,sea level rise,Sea level rise
+101036683,TransformAr,10,storms,Storms
+101036683,TransformAr,11,surface air temperature increase,Surface air temperature increase
+101036683,TransformAr,12,tropical cuclones,Tropical cyclones
+101215153,UNDERPIN,1,coastal erosion,Coastal erosion
+101215153,UNDERPIN,2,drought,Drought
+101215153,UNDERPIN,3,extreme heat,Extreme heat
+101215153,UNDERPIN,4,flooding,Flooding
+101215153,UNDERPIN,5,heavy precipitations,Heavy precipitation
+101215153,UNDERPIN,6,Landslides,Landslides
+101215153,UNDERPIN,7,Precipitation changes,Precipitation changes
+101215153,UNDERPIN,8,sea level rise,Sea level rise
+101215153,UNDERPIN,9,severe winds,Severe winds
+101215153,UNDERPIN,10,storms,Storms
+101215153,UNDERPIN,11,surface air temperature increase,Surface air temperature increase
+101215153,UNDERPIN,13,wildfires,Wildfires
+101112837,VALORADA,1,coastal erosion,Coastal erosion
+101112837,VALORADA,2,drought,Drought
+101112837,VALORADA,3,extreme heat,Extreme heat
+101112837,VALORADA,4,flooding,Flooding
+101112837,VALORADA,5,heavy precipitations,Heavy precipitation
+101112837,VALORADA,7,Precipitation changes,Precipitation changes
+101112837,VALORADA,13,wildfires,Wildfires
+101212639,AdaptationHubs,1,coastal erosion,Coastal erosion
+101212639,AdaptationHubs,2,drought,Drought
+101212639,AdaptationHubs,3,extreme heat,Extreme heat
+101212639,AdaptationHubs,4,flooding,Flooding
+101212639,AdaptationHubs,5,heavy precipitations,Heavy precipitation
+101212639,AdaptationHubs,6,Landslides,Landslides
+101212639,AdaptationHubs,7,Precipitation changes,Precipitation changes
+101212639,AdaptationHubs,8,sea level rise,Sea level rise
+101212639,AdaptationHubs,9,severe winds,Severe winds
+101212639,AdaptationHubs,10,storms,Storms
+101212639,AdaptationHubs,11,surface air temperature increase,Surface air temperature increase
+101212639,AdaptationHubs,12,tropical cuclones,Tropical cyclones
+101212639,AdaptationHubs,13,wildfires,Wildfires
+101093864,CLIMAAX,2,drought,Drought
+101093864,CLIMAAX,3,extreme heat,Extreme heat
+101093864,CLIMAAX,4,flooding,Flooding
+101093864,CLIMAAX,5,heavy precipitations,Heavy precipitation
+101093864,CLIMAAX,7,Precipitation changes,Precipitation changes
+101093864,CLIMAAX,8,sea level rise,Sea level rise
+101093864,CLIMAAX,9,severe winds,Severe winds
+101093864,CLIMAAX,10,storms,Storms
+101093864,CLIMAAX,11,surface air temperature increase,Surface air temperature increase
+101093864,CLIMAAX,12,tropical cuclones,Tropical cyclones
+101093864,CLIMAAX,13,wildfires,Wildfires
+101093942,Pathways2Resilience,1,coastal erosion,Coastal erosion
+101093942,Pathways2Resilience,2,drought,Drought
+101093942,Pathways2Resilience,3,extreme heat,Extreme heat
+101093942,Pathways2Resilience,4,flooding,Flooding
+101093942,Pathways2Resilience,5,heavy precipitations,Heavy precipitation
+101093942,Pathways2Resilience,6,Landslides,Landslides
+101093942,Pathways2Resilience,7,Precipitation changes,Precipitation changes
+101093942,Pathways2Resilience,8,sea level rise,Sea level rise
+101093942,Pathways2Resilience,9,severe winds,Severe winds
+101093942,Pathways2Resilience,10,storms,Storms
+101093942,Pathways2Resilience,11,surface air temperature increase,Surface air temperature increase
+101093942,Pathways2Resilience,12,tropical cuclones,Tropical cyclones
+101093942,Pathways2Resilience,13,wildfires,Wildfires
+101036560,REGILIENCE,1,coastal erosion,Coastal erosion
+101036560,REGILIENCE,2,drought,Drought
+101036560,REGILIENCE,3,extreme heat,Extreme heat
+101036560,REGILIENCE,4,flooding,Flooding
+101036560,REGILIENCE,5,heavy precipitations,Heavy precipitation
+101036560,REGILIENCE,6,Landslides,Landslides
+101036560,REGILIENCE,7,Precipitation changes,Precipitation changes
+101036560,REGILIENCE,8,sea level rise,Sea level rise
+101036560,REGILIENCE,9,severe winds,Severe winds
+101036560,REGILIENCE,10,storms,Storms
+101036560,REGILIENCE,11,surface air temperature increase,Surface air temperature increase
+101036560,REGILIENCE,12,tropical cuclones,Tropical cyclones
+101036560,REGILIENCE,13,wildfires,Wildfires
+101213634,REGILIENCE+,1,coastal erosion,Coastal erosion
+101213634,REGILIENCE+,2,drought,Drought
+101213634,REGILIENCE+,3,extreme heat,Extreme heat
+101213634,REGILIENCE+,4,flooding,Flooding
+101213634,REGILIENCE+,5,heavy precipitations,Heavy precipitation
+101213634,REGILIENCE+,6,Landslides,Landslides
+101213634,REGILIENCE+,7,Precipitation changes,Precipitation changes
+101213634,REGILIENCE+,8,sea level rise,Sea level rise
+101213634,REGILIENCE+,9,severe winds,Severe winds
+101213634,REGILIENCE+,10,storms,Storms
+101213634,REGILIENCE+,11,surface air temperature increase,Surface air temperature increase
+101213634,REGILIENCE+,12,tropical cuclones,Tropical cyclones
+101213634,REGILIENCE+,13,wildfires,Wildfires
+101112737,ARCADIA,1,coastal erosion,Coastal erosion
+101112737,ARCADIA,2,drought,Drought
+101112737,ARCADIA,3,extreme heat,Extreme heat
+101112737,ARCADIA,4,flooding,Flooding
+101112737,ARCADIA,5,heavy precipitations,Heavy precipitation
+101112737,ARCADIA,6,Landslides,Landslides
+101112737,ARCADIA,8,sea level rise,Sea level rise
+101112737,ARCADIA,9,severe winds,Severe winds
+101112737,ARCADIA,10,storms,Storms
+101112737,ARCADIA,13,wildfires,Wildfires
+101112731,CARDIMED,1,coastal erosion,Coastal erosion
+101112731,CARDIMED,2,drought,Drought
+101112731,CARDIMED,3,extreme heat,Extreme heat
+101112731,CARDIMED,4,flooding,Flooding
+101112731,CARDIMED,5,heavy precipitations,Heavy precipitation
+101112731,CARDIMED,7,Precipitation changes,Precipitation changes
+101112731,CARDIMED,8,sea level rise,Sea level rise
+101112731,CARDIMED,10,storms,Storms
+101112731,CARDIMED,11,surface air temperature increase,Surface air temperature increase
+101112731,CARDIMED,13,wildfires,Wildfires
+101213138,COAST-SCAPES,1,coastal erosion,Coastal erosion
+101213138,COAST-SCAPES,4,flooding,Flooding
+101213138,COAST-SCAPES,5,heavy precipitations,Heavy precipitation
+101213138,COAST-SCAPES,8,sea level rise,Sea level rise
+101213138,COAST-SCAPES,6,Landslides,Landslides
+101213138,COAST-SCAPES,7,Precipitation changes,Precipitation changes
+101213138,COAST-SCAPES,10,storms,Storms
+101213138,COAST-SCAPES,3,extreme heat,Extreme heat
+101213138,COAST-SCAPES,12,tropical cuclones,Tropical cyclones
+101139637,ClimaGen,3,extreme heat,Extreme heat
+101139637,ClimaGen,4,flooding,Flooding
+101139637,ClimaGen,5,heavy precipitations,Heavy precipitation
+101139637,ClimaGen,6,Landslides,Landslides
+101139637,ClimaGen,11,surface air temperature increase,Surface air temperature increase
+101139598,Commit2Green,2,drought,Drought
+101139598,Commit2Green,3,extreme heat,Extreme heat
+101139598,Commit2Green,4,flooding,Flooding
+101139598,Commit2Green,5,heavy precipitations,Heavy precipitation
+101139598,Commit2Green,11,surface air temperature increase,Surface air temperature increase
+101112972,DesirMED,1,coastal erosion,Coastal erosion
+101112972,DesirMED,2,drought,Drought
+101112972,DesirMED,3,extreme heat,Extreme heat
+101112972,DesirMED,4,flooding,Flooding
+101112972,DesirMED,5,heavy precipitations,Heavy precipitation
+101112972,DesirMED,7,Precipitation changes,Precipitation changes
+101112972,DesirMED,8,sea level rise,Sea level rise
+101112972,DesirMED,11,surface air temperature increase,Surface air temperature increase
+101112972,DesirMED,13,wildfires,Wildfires
+101214172,GRACE,1,coastal erosion,Coastal erosion
+101214172,GRACE,2,drought,Drought
+101214172,GRACE,3,extreme heat,Extreme heat
+101214172,GRACE,4,flooding,Flooding
+101214172,GRACE,5,heavy precipitations,Heavy precipitation
+101214172,GRACE,6,Landslides,Landslides
+101214172,GRACE,7,Precipitation changes,Precipitation changes
+101214172,GRACE,8,sea level rise,Sea level rise
+101214172,GRACE,9,severe winds,Severe winds
+101214172,GRACE,10,storms,Storms
+101214172,GRACE,11,surface air temperature increase,Surface air temperature increase
+101214172,GRACE,13,wildfires,Wildfires
+101139730,GreenInCities,2,drought,Drought
+101139730,GreenInCities,3,extreme heat,Extreme heat
+101139730,GreenInCities,4,flooding,Flooding
+101139730,GreenInCities,5,heavy precipitations,Heavy precipitation
+101139730,GreenInCities,10,storms,Storms
+101139730,GreenInCities,11,surface air temperature increase,Surface air temperature increase
+101112781,LAND4CLIMATE,2,drought,Drought
+101112781,LAND4CLIMATE,3,extreme heat,Extreme heat
+101112781,LAND4CLIMATE,5,heavy precipitations,Heavy precipitation
+101112781,LAND4CLIMATE,8,sea level rise,Sea level rise
+101112876,MountResilience,2,drought,Drought
+101112876,MountResilience,5,heavy precipitations,Heavy precipitation
+101112876,MountResilience,6,Landslides,Landslides
+101112876,MountResilience,13,wildfires,Wildfires
+101112859,NATALIE,1,coastal erosion,Coastal erosion
+101112859,NATALIE,2,drought,Drought
+101112859,NATALIE,4,flooding,Flooding
+101112859,NATALIE,5,heavy precipitations,Heavy precipitation
+101112859,NATALIE,6,Landslides,Landslides
+101112859,NATALIE,8,sea level rise,Sea level rise
+101112859,NATALIE,13,wildfires,Wildfires
+101112836,NBRACER,1,coastal erosion,Coastal erosion
+101112836,NBRACER,2,drought,Drought
+101112836,NBRACER,3,extreme heat,Extreme heat
+101112836,NBRACER,4,flooding,Flooding
+101112836,NBRACER,5,heavy precipitations,Heavy precipitation
+101112836,NBRACER,6,Landslides,Landslides
+101112836,NBRACER,7,Precipitation changes,Precipitation changes
+101112836,NBRACER,8,sea level rise,Sea level rise
+101112836,NBRACER,13,wildfires,Wildfires
+101214414,NURISH,2,drought,Drought
+101214414,NURISH,3,extreme heat,Extreme heat
+101214414,NURISH,4,flooding,Flooding
+101214414,NURISH,5,heavy precipitations,Heavy precipitation
+101214414,NURISH,7,Precipitation changes,Precipitation changes
+101214414,NURISH,9,severe winds,Severe winds
+101214414,NURISH,10,storms,Storms
+101214414,NURISH,11,surface air temperature increase,Surface air temperature increase
+101214414,NURISH,13,wildfires,Wildfires
+101139636,ReGreeneration,3,extreme heat,Extreme heat
+101139636,ReGreeneration,4,flooding,Flooding
+101214051,REHUBS,2,drought,Drought
+101214051,REHUBS,3,extreme heat,Extreme heat
+101214051,REHUBS,4,flooding,Flooding
+101214051,REHUBS,5,heavy precipitations,Heavy precipitation
+101214051,REHUBS,7,Precipitation changes,Precipitation changes
+101214051,REHUBS,9,severe winds,Severe winds
+101214051,REHUBS,10,storms,Storms
+101214051,REHUBS,13,wildfires,Wildfires
+101214557,TerraTwin,1,coastal erosion,Coastal erosion
+101214557,TerraTwin,2,drought,Drought
+101214557,TerraTwin,3,extreme heat,Extreme heat
+101214557,TerraTwin,4,flooding,Flooding
+101214557,TerraTwin,5,heavy precipitations,Heavy precipitation
+101214557,TerraTwin,6,Landslides,Landslides
+101214557,TerraTwin,7,Precipitation changes,Precipitation changes
+101214557,TerraTwin,11,surface air temperature increase,Surface air temperature increase
+101214557,TerraTwin,13,wildfires,Wildfires
+101213184,Trees4Adapt,2,drought,Drought
+101213184,Trees4Adapt,3,extreme heat,Extreme heat
+101213184,Trees4Adapt,4,flooding,Flooding
+101213184,Trees4Adapt,5,heavy precipitations,Heavy precipitation
+101213184,Trees4Adapt,7,Precipitation changes,Precipitation changes
+101213184,Trees4Adapt,9,severe winds,Severe winds
+101213184,Trees4Adapt,10,storms,Storms
+101213184,Trees4Adapt,11,surface air temperature increase,Surface air temperature increase
+101213184,Trees4Adapt,13,wildfires,Wildfires
+101214563,BLOSSOM,2,drought,Drought
+101214563,BLOSSOM,3,extreme heat,Extreme heat
+101214563,BLOSSOM,4,flooding,Flooding
+101214563,BLOSSOM,5,heavy precipitations,Heavy precipitation
+101214563,BLOSSOM,9,severe winds,Severe winds
+101214563,BLOSSOM,11,surface air temperature increase,Surface air temperature increase
+101139711,URBREATH,3,extreme heat,Extreme heat
+101139711,URBREATH,4,flooding,Flooding
+101139711,URBREATH,5,heavy precipitations,Heavy precipitation
+101139711,URBREATH,10,storms,Storms
+101139711,URBREATH,11,surface air temperature increase,Surface air temperature increase
+101112705,CLIMATEFIT,1,coastal erosion,Coastal erosion
+101112705,CLIMATEFIT,2,drought,Drought
+101112705,CLIMATEFIT,3,extreme heat,Extreme heat
+101112705,CLIMATEFIT,4,flooding,Flooding
+101112705,CLIMATEFIT,5,heavy precipitations,Heavy precipitation
+101112705,CLIMATEFIT,6,Landslides,Landslides
+101112705,CLIMATEFIT,7,Precipitation changes,Precipitation changes
+101112705,CLIMATEFIT,8,sea level rise,Sea level rise
+101112705,CLIMATEFIT,9,severe winds,Severe winds
+101112705,CLIMATEFIT,10,storms,Storms
+101112705,CLIMATEFIT,11,surface air temperature increase,Surface air temperature increase
+101112705,CLIMATEFIT,12,tropical cuclones,Tropical cyclones
+101112705,CLIMATEFIT,13,wildfires,Wildfires
+101212947,CLIMINVEST,2,drought,Drought
+101212947,CLIMINVEST,3,extreme heat,Extreme heat
+101212947,CLIMINVEST,4,flooding,Flooding
+101212947,CLIMINVEST,5,heavy precipitations,Heavy precipitation
+101212947,CLIMINVEST,7,Precipitation changes,Precipitation changes
+101212947,CLIMINVEST,9,severe winds,Severe winds
+101212947,CLIMINVEST,10,storms,Storms
+101212947,CLIMINVEST,11,surface air temperature increase,Surface air temperature increase
+101112860,FARCLIMATE,1,coastal erosion,Coastal erosion
+101112860,FARCLIMATE,2,drought,Drought
+101112860,FARCLIMATE,3,extreme heat,Extreme heat
+101112860,FARCLIMATE,4,flooding,Flooding
+101112860,FARCLIMATE,7,Precipitation changes,Precipitation changes
+101112860,FARCLIMATE,8,sea level rise,Sea level rise
+101112860,FARCLIMATE,9,severe winds,Severe winds
+101112860,FARCLIMATE,10,storms,Storms
+101112860,FARCLIMATE,11,surface air temperature increase,Surface air temperature increase
+101112860,FARCLIMATE,13,wildfires,Wildfires
+101112841,PIISA,2,drought,Drought
+101112841,PIISA,3,extreme heat,Extreme heat
+101112841,PIISA,4,flooding,Flooding
+101112841,PIISA,5,heavy precipitations,Heavy precipitation
+101112841,PIISA,9,severe winds,Severe winds
+101112841,PIISA,10,storms,Storms
+101112841,PIISA,13,wildfires,Wildfires
+101214441,RISE-IN,2,drought,Drought
+101214441,RISE-IN,3,extreme heat,Extreme heat
+101214441,RISE-IN,4,flooding,Flooding
+101214441,RISE-IN,5,heavy precipitations,Heavy precipitation
+101214441,RISE-IN,10,storms,Storms
+101112867,SOTERIA,3,extreme heat,Extreme heat
+101112867,SOTERIA,4,flooding,Flooding
+101157643,AURORA,3,extreme heat,Extreme heat
+101157643,AURORA,4,flooding,Flooding
+101157643,AURORA,8,sea level rise,Sea level rise
+101157643,AURORA,13,wildfires,Wildfires
+101157458,healthRiskADAPT,3,extreme heat,Extreme heat
+101157458,healthRiskADAPT,13,wildfires,Wildfires
+101156653,ISMED-CLIM,1,coastal erosion,Coastal erosion
+101156653,ISMED-CLIM,6,Landslides,Landslides
+101156653,ISMED-CLIM,8,sea level rise,Sea level rise
+101156653,ISMED-CLIM,12,tropical cuclones,Tropical cyclones
+101155958,MOUNTADAPT,3,extreme heat,Extreme heat
+101155958,MOUNTADAPT,4,flooding,Flooding
+101155958,MOUNTADAPT,6,Landslides,Landslides
+101155958,MOUNTADAPT,11,surface air temperature increase,Surface air temperature increase
+101155958,MOUNTADAPT,13,wildfires,Wildfires
+101157447,GENESIS,2,drought,Drought
+101157447,GENESIS,3,extreme heat,Extreme heat
+101157447,GENESIS,5,heavy precipitations,Heavy precipitation
+101157447,GENESIS,8,sea level rise,Sea level rise
+101157447,GENESIS,10,storms,Storms
+101093806,ICARIA,2,drought,Drought
+101093806,ICARIA,3,extreme heat,Extreme heat
+101093806,ICARIA,4,flooding,Flooding
+101093806,ICARIA,5,heavy precipitations,Heavy precipitation
+101093806,ICARIA,8,sea level rise,Sea level rise
+101093806,ICARIA,9,severe winds,Severe winds
+101093806,ICARIA,13,wildfires,Wildfires
+101157707,Med-IREN,1,coastal erosion,Coastal erosion
+101157707,Med-IREN,2,drought,Drought
+101157707,Med-IREN,3,extreme heat,Extreme heat
+101157707,Med-IREN,4,flooding,Flooding
+101157707,Med-IREN,6,Landslides,Landslides
+101157707,Med-IREN,10,storms,Storms
+101157707,Med-IREN,13,wildfires,Wildfires
+101093854,MIRACA,2,drought,Drought
+101093854,MIRACA,3,extreme heat,Extreme heat
+101093854,MIRACA,4,flooding,Flooding
+101093854,MIRACA,5,heavy precipitations,Heavy precipitation
+101093854,MIRACA,6,Landslides,Landslides
+101093854,MIRACA,8,sea level rise,Sea level rise
+101093854,MIRACA,10,storms,Storms
+101093854,MIRACA,13,wildfires,Wildfires
+101157448,NATURE-DEMO,2,drought,Drought
+101157448,NATURE-DEMO,3,extreme heat,Extreme heat
+101157448,NATURE-DEMO,4,flooding,Flooding
+101157448,NATURE-DEMO,6,Landslides,Landslides
+101157448,NATURE-DEMO,7,Precipitation changes,Precipitation changes
+101157448,NATURE-DEMO,13,wildfires,Wildfires
+101093939,RISKADAPT,4,flooding,Flooding
+101093939,RISKADAPT,5,heavy precipitations,Heavy precipitation
+101093939,RISKADAPT,7,Precipitation changes,Precipitation changes
+101093939,RISKADAPT,9,severe winds,Severe winds
+101093939,RISKADAPT,10,storms,Storms
+101093939,RISKADAPT,11,surface air temperature increase,Surface air temperature increase
+101156281,ClimaPannonia,2,drought,Drought
+101156281,ClimaPannonia,3,extreme heat,Extreme heat
+101156281,ClimaPannonia,4,flooding,Flooding
+101156281,ClimaPannonia,5,heavy precipitations,Heavy precipitation
+101156281,ClimaPannonia,9,severe winds,Severe winds
+101156076,DRYAD,2,drought,Drought
+101156076,DRYAD,3,extreme heat,Extreme heat
+101156076,DRYAD,7,Precipitation changes,Precipitation changes
+101156076,DRYAD,11,surface air temperature increase,Surface air temperature increase
+101156076,DRYAD,13,wildfires,Wildfires
+101157094,Precilience,2,drought,Drought
+101157094,Precilience,3,extreme heat,Extreme heat
+101157094,Precilience,5,heavy precipitations,Heavy precipitation
+101157094,Precilience,7,Precipitation changes,Precipitation changes
+101157094,Precilience,9,severe winds,Severe winds
+101157094,Precilience,10,storms,Storms
+101157094,Precilience,11,surface air temperature increase,Surface air temperature increase
+101155748,TRANSFORM,2,drought,Drought
+101155748,TRANSFORM,3,extreme heat,Extreme heat
+101155748,TRANSFORM,7,Precipitation changes,Precipitation changes
+101155748,TRANSFORM,11,surface air temperature increase,Surface air temperature increase
+101093921,Adaptation AGORA,2,drought,Drought
+101093921,Adaptation AGORA,3,extreme heat,Extreme heat
+101093921,Adaptation AGORA,4,flooding,Flooding
+101093921,Adaptation AGORA,7,Precipitation changes,Precipitation changes
+101093921,Adaptation AGORA,11,surface air temperature increase,Surface air temperature increase
+101093921,Adaptation AGORA,13,wildfires,Wildfires
+101094021,CLIMAS,1,coastal erosion,Coastal erosion
+101094021,CLIMAS,2,drought,Drought
+101094021,CLIMAS,3,extreme heat,Extreme heat
+101094021,CLIMAS,4,flooding,Flooding
+101094021,CLIMAS,5,heavy precipitations,Heavy precipitation
+101094021,CLIMAS,6,Landslides,Landslides
+101094021,CLIMAS,7,Precipitation changes,Precipitation changes
+101094021,CLIMAS,8,sea level rise,Sea level rise
+101094021,CLIMAS,9,severe winds,Severe winds
+101094021,CLIMAS,10,storms,Storms
+101094021,CLIMAS,11,surface air temperature increase,Surface air temperature increase
+101094021,CLIMAS,12,tropical cuclones,Tropical cyclones
+101094021,CLIMAS,13,wildfires,Wildfires
+101112919,OCEANIDS,1,coastal erosion,Coastal erosion
+101112919,OCEANIDS,2,drought,Drought
+101112919,OCEANIDS,3,extreme heat,Extreme heat
+101112919,OCEANIDS,4,flooding,Flooding
+101112919,OCEANIDS,5,heavy precipitations,Heavy precipitation
+101112919,OCEANIDS,6,Landslides,Landslides
+101112919,OCEANIDS,7,Precipitation changes,Precipitation changes
+101112919,OCEANIDS,8,sea level rise,Sea level rise
+101112919,OCEANIDS,9,severe winds,Severe winds
+101112919,OCEANIDS,10,storms,Storms
+101112919,OCEANIDS,11,surface air temperature increase,Surface air temperature increase
+101112919,OCEANIDS,12,tropical cuclones,Tropical cyclones
+101112906,SpongeBoost,2,drought,Drought
+101112906,SpongeBoost,4,flooding,Flooding
+101112906,SpongeBoost,6,Landslides,Landslides
+101112906,SpongeBoost,7,Precipitation changes,Precipitation changes
+101112738,SpongeScapes,2,drought,Drought
+101112738,SpongeScapes,3,extreme heat,Extreme heat
+101112738,SpongeScapes,4,flooding,Flooding
+101112738,SpongeScapes,5,heavy precipitations,Heavy precipitation
+101112738,SpongeScapes,7,Precipitation changes,Precipitation changes
+101112738,SpongeScapes,11,surface air temperature increase,Surface air temperature increase
+101156116,SpongeWorks,2,drought,Drought
+101156116,SpongeWorks,4,flooding,Flooding
+101156116,SpongeWorks,5,heavy precipitations,Heavy precipitation
+101156116,SpongeWorks,6,Landslides,Landslides
+101156116,SpongeWorks,7,Precipitation changes,Precipitation changes
+101156116,SpongeWorks,11,surface air temperature increase,Surface air temperature increase
+101156116,SpongeWorks,13,wildfires,Wildfires

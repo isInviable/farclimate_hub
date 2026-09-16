@@ -1,0 +1,351 @@
+cordis_id,acronym,kind,tag_id,tag_name,action
+101214343,FairFuture,risk,2,Drought,added
+101214343,FairFuture,risk,3,Extreme heat,added
+101214343,FairFuture,risk,4,Flooding,added
+101214343,FairFuture,risk,5,Heavy precipitation,added
+101214343,FairFuture,risk,13,Wildfires,added
+101037084,IMPETUS,risk,1,Coastal erosion,added
+101037084,IMPETUS,risk,3,Extreme heat,added
+101037084,IMPETUS,risk,5,Heavy precipitation,added
+101037084,IMPETUS,risk,6,Landslides,added
+101037084,IMPETUS,risk,7,Precipitation changes,added
+101037084,IMPETUS,risk,10,Storms,added
+101212990,JUST4CARE,risk,3,Extreme heat,added
+101212990,JUST4CARE,risk,4,Flooding,added
+101212990,JUST4CARE,risk,5,Heavy precipitation,added
+101212990,JUST4CARE,risk,7,Precipitation changes,added
+101212990,JUST4CARE,risk,10,Storms,added
+101212990,JUST4CARE,risk,11,Surface air temperature increase,added
+101214666,JustREACH,risk,1,Coastal erosion,added
+101214666,JustREACH,risk,2,Drought,added
+101214666,JustREACH,risk,3,Extreme heat,added
+101214666,JustREACH,risk,4,Flooding,added
+101214666,JustREACH,risk,5,Heavy precipitation,added
+101214666,JustREACH,risk,6,Landslides,added
+101214666,JustREACH,risk,7,Precipitation changes,added
+101214666,JustREACH,risk,8,Sea level rise,added
+101214666,JustREACH,risk,9,Severe winds,added
+101214666,JustREACH,risk,10,Storms,added
+101214666,JustREACH,risk,11,Surface air temperature increase,added
+101214666,JustREACH,risk,12,Tropical cyclones,added
+101214666,JustREACH,risk,13,Wildfires,added
+101215174,JUSTSAFE,risk,2,Drought,added
+101215174,JUSTSAFE,risk,3,Extreme heat,added
+101215174,JUSTSAFE,risk,4,Flooding,added
+101215174,JUSTSAFE,risk,5,Heavy precipitation,added
+101215174,JUSTSAFE,risk,7,Precipitation changes,added
+101215174,JUSTSAFE,risk,10,Storms,added
+101215174,JUSTSAFE,risk,13,Wildfires,added
+101212794,SMARTER,risk,1,Coastal erosion,added
+101212794,SMARTER,risk,2,Drought,added
+101212794,SMARTER,risk,3,Extreme heat,added
+101212794,SMARTER,risk,4,Flooding,added
+101212794,SMARTER,risk,5,Heavy precipitation,added
+101212794,SMARTER,risk,7,Precipitation changes,added
+101212794,SMARTER,risk,8,Sea level rise,added
+101212794,SMARTER,risk,10,Storms,added
+101212761,SystR,risk,1,Coastal erosion,added
+101212761,SystR,risk,2,Drought,added
+101212761,SystR,risk,3,Extreme heat,added
+101212761,SystR,risk,4,Flooding,added
+101212761,SystR,risk,5,Heavy precipitation,added
+101212761,SystR,risk,7,Precipitation changes,added
+101212761,SystR,risk,8,Sea level rise,added
+101212761,SystR,risk,10,Storms,added
+101212761,SystR,risk,11,Surface air temperature increase,added
+101214311,TiCCA4Danu,risk,1,Coastal erosion,added
+101214311,TiCCA4Danu,risk,3,Extreme heat,added
+101214311,TiCCA4Danu,risk,4,Flooding,added
+101214311,TiCCA4Danu,risk,5,Heavy precipitation,added
+101214311,TiCCA4Danu,risk,6,Landslides,added
+101214311,TiCCA4Danu,risk,7,Precipitation changes,added
+101214311,TiCCA4Danu,risk,8,Sea level rise,added
+101214311,TiCCA4Danu,risk,9,Severe winds,added
+101214311,TiCCA4Danu,risk,13,Wildfires,added
+101215153,UNDERPIN,risk,1,Coastal erosion,added
+101215153,UNDERPIN,risk,2,Drought,added
+101215153,UNDERPIN,risk,3,Extreme heat,added
+101215153,UNDERPIN,risk,4,Flooding,added
+101215153,UNDERPIN,risk,5,Heavy precipitation,added
+101215153,UNDERPIN,risk,6,Landslides,added
+101215153,UNDERPIN,risk,7,Precipitation changes,added
+101215153,UNDERPIN,risk,8,Sea level rise,added
+101215153,UNDERPIN,risk,9,Severe winds,added
+101215153,UNDERPIN,risk,10,Storms,added
+101215153,UNDERPIN,risk,11,Surface air temperature increase,added
+101215153,UNDERPIN,risk,13,Wildfires,added
+101212639,AdaptationHubs,risk,1,Coastal erosion,added
+101212639,AdaptationHubs,risk,2,Drought,added
+101212639,AdaptationHubs,risk,3,Extreme heat,added
+101212639,AdaptationHubs,risk,4,Flooding,added
+101212639,AdaptationHubs,risk,5,Heavy precipitation,added
+101212639,AdaptationHubs,risk,6,Landslides,added
+101212639,AdaptationHubs,risk,7,Precipitation changes,added
+101212639,AdaptationHubs,risk,8,Sea level rise,added
+101212639,AdaptationHubs,risk,9,Severe winds,added
+101212639,AdaptationHubs,risk,10,Storms,added
+101212639,AdaptationHubs,risk,11,Surface air temperature increase,added
+101212639,AdaptationHubs,risk,12,Tropical cyclones,added
+101212639,AdaptationHubs,risk,13,Wildfires,added
+101213634,REGILIENCE-plus,risk,1,Coastal erosion,added
+101213634,REGILIENCE-plus,risk,2,Drought,added
+101213634,REGILIENCE-plus,risk,3,Extreme heat,added
+101213634,REGILIENCE-plus,risk,4,Flooding,added
+101213634,REGILIENCE-plus,risk,5,Heavy precipitation,added
+101213634,REGILIENCE-plus,risk,6,Landslides,added
+101213634,REGILIENCE-plus,risk,7,Precipitation changes,added
+101213634,REGILIENCE-plus,risk,8,Sea level rise,added
+101213634,REGILIENCE-plus,risk,9,Severe winds,added
+101213634,REGILIENCE-plus,risk,10,Storms,added
+101213634,REGILIENCE-plus,risk,11,Surface air temperature increase,added
+101213634,REGILIENCE-plus,risk,12,Tropical cyclones,added
+101213634,REGILIENCE-plus,risk,13,Wildfires,added
+101213138,COAST-SCAPES,risk,1,Coastal erosion,added
+101213138,COAST-SCAPES,risk,4,Flooding,added
+101213138,COAST-SCAPES,risk,5,Heavy precipitation,added
+101213138,COAST-SCAPES,risk,8,Sea level rise,added
+101213138,COAST-SCAPES,risk,6,Landslides,added
+101213138,COAST-SCAPES,risk,7,Precipitation changes,added
+101213138,COAST-SCAPES,risk,10,Storms,added
+101213138,COAST-SCAPES,risk,3,Extreme heat,added
+101213138,COAST-SCAPES,risk,12,Tropical cyclones,added
+101214172,GRACE,risk,1,Coastal erosion,added
+101214172,GRACE,risk,2,Drought,added
+101214172,GRACE,risk,3,Extreme heat,added
+101214172,GRACE,risk,4,Flooding,added
+101214172,GRACE,risk,5,Heavy precipitation,added
+101214172,GRACE,risk,6,Landslides,added
+101214172,GRACE,risk,7,Precipitation changes,added
+101214172,GRACE,risk,8,Sea level rise,added
+101214172,GRACE,risk,9,Severe winds,added
+101214172,GRACE,risk,10,Storms,added
+101214172,GRACE,risk,11,Surface air temperature increase,added
+101214172,GRACE,risk,13,Wildfires,added
+101112859,NATALIE,risk,1,Coastal erosion,added
+101112836,NBRACER,risk,6,Landslides,added
+101214414,NURISH,risk,2,Drought,added
+101214414,NURISH,risk,3,Extreme heat,added
+101214414,NURISH,risk,4,Flooding,added
+101214414,NURISH,risk,5,Heavy precipitation,added
+101214414,NURISH,risk,7,Precipitation changes,added
+101214414,NURISH,risk,9,Severe winds,added
+101214414,NURISH,risk,10,Storms,added
+101214414,NURISH,risk,11,Surface air temperature increase,added
+101214414,NURISH,risk,13,Wildfires,added
+101214051,REHUBS,risk,2,Drought,added
+101214051,REHUBS,risk,3,Extreme heat,added
+101214051,REHUBS,risk,4,Flooding,added
+101214051,REHUBS,risk,5,Heavy precipitation,added
+101214051,REHUBS,risk,7,Precipitation changes,added
+101214051,REHUBS,risk,9,Severe winds,added
+101214051,REHUBS,risk,10,Storms,added
+101214051,REHUBS,risk,13,Wildfires,added
+101214557,TerraTwin,risk,1,Coastal erosion,added
+101214557,TerraTwin,risk,2,Drought,added
+101214557,TerraTwin,risk,3,Extreme heat,added
+101214557,TerraTwin,risk,4,Flooding,added
+101214557,TerraTwin,risk,5,Heavy precipitation,added
+101214557,TerraTwin,risk,6,Landslides,added
+101214557,TerraTwin,risk,7,Precipitation changes,added
+101214557,TerraTwin,risk,11,Surface air temperature increase,added
+101214557,TerraTwin,risk,13,Wildfires,added
+101213184,Trees4Adapt,risk,2,Drought,added
+101213184,Trees4Adapt,risk,3,Extreme heat,added
+101213184,Trees4Adapt,risk,4,Flooding,added
+101213184,Trees4Adapt,risk,5,Heavy precipitation,added
+101213184,Trees4Adapt,risk,7,Precipitation changes,added
+101213184,Trees4Adapt,risk,9,Severe winds,added
+101213184,Trees4Adapt,risk,10,Storms,added
+101213184,Trees4Adapt,risk,11,Surface air temperature increase,added
+101213184,Trees4Adapt,risk,13,Wildfires,added
+101214563,BLOSSOM,risk,2,Drought,added
+101214563,BLOSSOM,risk,3,Extreme heat,added
+101214563,BLOSSOM,risk,4,Flooding,added
+101214563,BLOSSOM,risk,5,Heavy precipitation,added
+101214563,BLOSSOM,risk,9,Severe winds,added
+101214563,BLOSSOM,risk,11,Surface air temperature increase,added
+101139711,URBREATH,risk,11,Surface air temperature increase,added
+101212947,CLIMINVEST,risk,2,Drought,added
+101212947,CLIMINVEST,risk,3,Extreme heat,added
+101212947,CLIMINVEST,risk,4,Flooding,added
+101212947,CLIMINVEST,risk,5,Heavy precipitation,added
+101212947,CLIMINVEST,risk,7,Precipitation changes,added
+101212947,CLIMINVEST,risk,9,Severe winds,added
+101212947,CLIMINVEST,risk,10,Storms,added
+101212947,CLIMINVEST,risk,11,Surface air temperature increase,added
+101214441,RISE-IN,risk,2,Drought,added
+101214441,RISE-IN,risk,3,Extreme heat,added
+101214441,RISE-IN,risk,4,Flooding,added
+101214441,RISE-IN,risk,5,Heavy precipitation,added
+101214441,RISE-IN,risk,10,Storms,added
+101093939,RISKADAPT,risk,4,Flooding,added
+101093939,RISKADAPT,risk,7,Precipitation changes,added
+101093939,RISKADAPT,risk,10,Storms,added
+101093939,RISKADAPT,risk,11,Surface air temperature increase,added
+101112906,SpongeBoost,risk,6,Landslides,added
+101112906,SpongeBoost,risk,7,Precipitation changes,added
+101112738,SpongeScapes,risk,3,Extreme heat,added
+101112738,SpongeScapes,risk,11,Surface air temperature increase,added
+101139711,URBREATH,risk,13,Wildfires,removed
+101156653,ISMED-CLIM,risk,13,Wildfires,removed
+101093939,RISKADAPT,risk,3,Extreme heat,removed
+101093939,RISKADAPT,risk,8,Sea level rise,removed
+101214343,FairFuture,theme,2,Behavioural change,added
+101214343,FairFuture,theme,3,Ecosystems and nature-based solutions,added
+101214343,FairFuture,theme,4,Governance,added
+101214343,FairFuture,theme,5,Health and wellbeing,added
+101214343,FairFuture,theme,7,Knowledge and data on adaptation,added
+101214343,FairFuture,theme,10,Mainstreaming adaptation,added
+101214343,FairFuture,theme,11,Stakeholder and citizen engagement,added
+101214343,FairFuture,theme,12,Transformative change,added
+101037084,IMPETUS,theme,1,Adaptation funding & finance,added
+101037084,IMPETUS,theme,2,Behavioural change,added
+101037084,IMPETUS,theme,3,Ecosystems and nature-based solutions,added
+101037084,IMPETUS,theme,5,Health and wellbeing,added
+101037084,IMPETUS,theme,6,Infrastructure,added
+101037084,IMPETUS,theme,7,Knowledge and data on adaptation,added
+101037084,IMPETUS,theme,8,Land use and food systems,added
+101037084,IMPETUS,theme,12,Transformative change,added
+101037084,IMPETUS,theme,13,Water management,added
+101212990,JUST4CARE,theme,1,Adaptation funding & finance,added
+101212990,JUST4CARE,theme,2,Behavioural change,added
+101212990,JUST4CARE,theme,4,Governance,added
+101212990,JUST4CARE,theme,5,Health and wellbeing,added
+101212990,JUST4CARE,theme,7,Knowledge and data on adaptation,added
+101212990,JUST4CARE,theme,9,Local economic systems,added
+101212990,JUST4CARE,theme,10,Mainstreaming adaptation,added
+101212990,JUST4CARE,theme,11,Stakeholder and citizen engagement,added
+101212990,JUST4CARE,theme,12,Transformative change,added
+101214666,JustREACH,theme,4,Governance,added
+101214666,JustREACH,theme,7,Knowledge and data on adaptation,added
+101214666,JustREACH,theme,9,Local economic systems,added
+101214666,JustREACH,theme,10,Mainstreaming adaptation,added
+101214666,JustREACH,theme,11,Stakeholder and citizen engagement,added
+101214666,JustREACH,theme,12,Transformative change,added
+101215174,JUSTSAFE,theme,2,Behavioural change,added
+101215174,JUSTSAFE,theme,4,Governance,added
+101215174,JUSTSAFE,theme,5,Health and wellbeing,added
+101215174,JUSTSAFE,theme,6,Infrastructure,added
+101215174,JUSTSAFE,theme,7,Knowledge and data on adaptation,added
+101215174,JUSTSAFE,theme,9,Local economic systems,added
+101215174,JUSTSAFE,theme,12,Transformative change,added
+101093968,RESIST,theme,12,Transformative change,added
+101212794,SMARTER,theme,1,Adaptation funding & finance,added
+101212794,SMARTER,theme,2,Behavioural change,added
+101212794,SMARTER,theme,3,Ecosystems and nature-based solutions,added
+101212794,SMARTER,theme,4,Governance,added
+101212794,SMARTER,theme,5,Health and wellbeing,added
+101212794,SMARTER,theme,9,Local economic systems,added
+101212794,SMARTER,theme,10,Mainstreaming adaptation,added
+101212794,SMARTER,theme,11,Stakeholder and citizen engagement,added
+101212794,SMARTER,theme,12,Transformative change,added
+101212761,SystR,theme,1,Adaptation funding & finance,added
+101212761,SystR,theme,3,Ecosystems and nature-based solutions,added
+101212761,SystR,theme,4,Governance,added
+101212761,SystR,theme,7,Knowledge and data on adaptation,added
+101212761,SystR,theme,10,Mainstreaming adaptation,added
+101212761,SystR,theme,11,Stakeholder and citizen engagement,added
+101214311,TiCCA4Danu,theme,1,Adaptation funding & finance,added
+101214311,TiCCA4Danu,theme,2,Behavioural change,added
+101214311,TiCCA4Danu,theme,4,Governance,added
+101214311,TiCCA4Danu,theme,7,Knowledge and data on adaptation,added
+101214311,TiCCA4Danu,theme,9,Local economic systems,added
+101214311,TiCCA4Danu,theme,11,Stakeholder and citizen engagement,added
+101214311,TiCCA4Danu,theme,12,Transformative change,added
+101215153,UNDERPIN,theme,4,Governance,added
+101215153,UNDERPIN,theme,7,Knowledge and data on adaptation,added
+101215153,UNDERPIN,theme,10,Mainstreaming adaptation,added
+101215153,UNDERPIN,theme,11,Stakeholder and citizen engagement,added
+101215153,UNDERPIN,theme,12,Transformative change,added
+101212639,AdaptationHubs,theme,1,Adaptation funding & finance,added
+101212639,AdaptationHubs,theme,4,Governance,added
+101212639,AdaptationHubs,theme,7,Knowledge and data on adaptation,added
+101212639,AdaptationHubs,theme,10,Mainstreaming adaptation,added
+101213634,REGILIENCE-plus,theme,1,Adaptation funding & finance,added
+101213634,REGILIENCE-plus,theme,3,Ecosystems and nature-based solutions,added
+101213634,REGILIENCE-plus,theme,4,Governance,added
+101213634,REGILIENCE-plus,theme,6,Infrastructure,added
+101213634,REGILIENCE-plus,theme,7,Knowledge and data on adaptation,added
+101213634,REGILIENCE-plus,theme,8,Land use and food systems,added
+101213634,REGILIENCE-plus,theme,10,Mainstreaming adaptation,added
+101213634,REGILIENCE-plus,theme,12,Transformative change,added
+101213634,REGILIENCE-plus,theme,13,Water management,added
+101112731,CARDIMED,theme,13,Water management,added
+101213138,COAST-SCAPES,theme,1,Adaptation funding & finance,added
+101213138,COAST-SCAPES,theme,3,Ecosystems and nature-based solutions,added
+101213138,COAST-SCAPES,theme,4,Governance,added
+101213138,COAST-SCAPES,theme,7,Knowledge and data on adaptation,added
+101213138,COAST-SCAPES,theme,11,Stakeholder and citizen engagement,added
+101139598,Commit2Green,theme,1,Adaptation funding & finance,added
+101139598,Commit2Green,theme,11,Stakeholder and citizen engagement,added
+101214172,GRACE,theme,1,Adaptation funding & finance,added
+101214172,GRACE,theme,3,Ecosystems and nature-based solutions,added
+101214172,GRACE,theme,4,Governance,added
+101214172,GRACE,theme,7,Knowledge and data on adaptation,added
+101214172,GRACE,theme,8,Land use and food systems,added
+101214172,GRACE,theme,9,Local economic systems,added
+101214172,GRACE,theme,11,Stakeholder and citizen engagement,added
+101214414,NURISH,theme,1,Adaptation funding & finance,added
+101214414,NURISH,theme,3,Ecosystems and nature-based solutions,added
+101214414,NURISH,theme,4,Governance,added
+101214414,NURISH,theme,7,Knowledge and data on adaptation,added
+101214414,NURISH,theme,8,Land use and food systems,added
+101214414,NURISH,theme,9,Local economic systems,added
+101214414,NURISH,theme,10,Mainstreaming adaptation,added
+101214414,NURISH,theme,11,Stakeholder and citizen engagement,added
+101214414,NURISH,theme,12,Transformative change,added
+101214414,NURISH,theme,13,Water management,added
+101214051,REHUBS,theme,1,Adaptation funding & finance,added
+101214051,REHUBS,theme,3,Ecosystems and nature-based solutions,added
+101214051,REHUBS,theme,4,Governance,added
+101214051,REHUBS,theme,6,Infrastructure,added
+101214051,REHUBS,theme,7,Knowledge and data on adaptation,added
+101214051,REHUBS,theme,8,Land use and food systems,added
+101214051,REHUBS,theme,9,Local economic systems,added
+101214051,REHUBS,theme,11,Stakeholder and citizen engagement,added
+101214051,REHUBS,theme,13,Water management,added
+101214557,TerraTwin,theme,7,Knowledge and data on adaptation,added
+101214557,TerraTwin,theme,8,Land use and food systems,added
+101214557,TerraTwin,theme,11,Stakeholder and citizen engagement,added
+101213184,Trees4Adapt,theme,3,Ecosystems and nature-based solutions,added
+101213184,Trees4Adapt,theme,7,Knowledge and data on adaptation,added
+101213184,Trees4Adapt,theme,8,Land use and food systems,added
+101213184,Trees4Adapt,theme,9,Local economic systems,added
+101213184,Trees4Adapt,theme,11,Stakeholder and citizen engagement,added
+101213184,Trees4Adapt,theme,13,Water management,added
+101214563,BLOSSOM,theme,1,Adaptation funding & finance,added
+101214563,BLOSSOM,theme,3,Ecosystems and nature-based solutions,added
+101214563,BLOSSOM,theme,4,Governance,added
+101214563,BLOSSOM,theme,7,Knowledge and data on adaptation,added
+101214563,BLOSSOM,theme,10,Mainstreaming adaptation,added
+101214563,BLOSSOM,theme,11,Stakeholder and citizen engagement,added
+101214563,BLOSSOM,theme,12,Transformative change,added
+101214563,BLOSSOM,theme,13,Water management,added
+101212947,CLIMINVEST,theme,1,Adaptation funding & finance,added
+101212947,CLIMINVEST,theme,4,Governance,added
+101212947,CLIMINVEST,theme,6,Infrastructure,added
+101212947,CLIMINVEST,theme,7,Knowledge and data on adaptation,added
+101212947,CLIMINVEST,theme,9,Local economic systems,added
+101212947,CLIMINVEST,theme,13,Water management,added
+101214441,RISE-IN,theme,1,Adaptation funding & finance,added
+101214441,RISE-IN,theme,3,Ecosystems and nature-based solutions,added
+101214441,RISE-IN,theme,7,Knowledge and data on adaptation,added
+101214441,RISE-IN,theme,9,Local economic systems,added
+101214441,RISE-IN,theme,11,Stakeholder and citizen engagement,added
+101112867,SOTERIA,theme,2,Behavioural change,added
+101112867,SOTERIA,theme,3,Ecosystems and nature-based solutions,added
+101112867,SOTERIA,theme,4,Governance,added
+101112867,SOTERIA,theme,7,Knowledge and data on adaptation,added
+101112867,SOTERIA,theme,11,Stakeholder and citizen engagement,added
+101093939,RISKADAPT,theme,4,Governance,added
+101093939,RISKADAPT,theme,5,Health and wellbeing,added
+101093939,RISKADAPT,theme,11,Stakeholder and citizen engagement,added
+101112906,SpongeBoost,theme,6,Infrastructure,added
+101112906,SpongeBoost,theme,11,Stakeholder and citizen engagement,added
+101112906,SpongeBoost,theme,12,Transformative change,added
+101139711,URBREATH,theme,12,Transformative change,removed
+101156653,ISMED-CLIM,theme,7,Knowledge and data on adaptation,removed
+101036560,REGILIENCE,theme,6,Infrastructure,removed
+101112731,CARDIMED,theme,1,Adaptation funding & finance,removed
+101112737,ARCADIA,theme,13,Water management,removed
+101112859,NATALIE,theme,3,Ecosystems and nature-based solutions,removed
