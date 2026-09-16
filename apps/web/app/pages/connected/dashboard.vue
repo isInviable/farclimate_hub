@@ -84,9 +84,15 @@ const activeFilter = ref({
   label: "",
 });
 
-const yearRange = ref({
-  min: 2010,
-  max: 2025,
+const yearRange = computed(() => {
+  const years = processedDataBase.value.projects
+    .map((p) => p.year)
+    .filter((year): year is number => Number.isFinite(year));
+
+  return {
+    min: 2010,
+    max: years.length > 0 ? Math.max(...years) : new Date().getFullYear(),
+  };
 });
 
 const hasFilteredData = computed(() => activeFilter.value.filterType !== FILTER_TYPES.none);
