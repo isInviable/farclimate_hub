@@ -1,6 +1,9 @@
 {
   "name": "farclimate",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "better-sqlite3"
