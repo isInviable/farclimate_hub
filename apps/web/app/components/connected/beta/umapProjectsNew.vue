@@ -135,7 +135,7 @@
   import { useElementSize } from '@vueuse/core'
   import { useTemplateRef } from 'vue'
   import * as d3 from "d3";
-  import { UMAP, cosine } from 'umap-js';
+  import { UMAP, cosine } from '@/utils/umapLayout'
   import smallestEnclosingCircle from 'smallest-enclosing-circle'
 
   // deterministic PRNG so the UMAP layout is identical on every load

@@ -130,7 +130,7 @@
 
 <script setup>
 // import * as venn from "venn.js";
-import { UMAP } from "umap-js";
+import { UMAP } from "@/utils/umapLayout";
 import * as d3 from "d3";
 import smallestEnclosingCircle from "smallest-enclosing-circle";
 

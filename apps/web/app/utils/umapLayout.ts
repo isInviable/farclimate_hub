@@ -1,4 +1,25 @@
-import { UMAP, cosine } from 'umap-js'
+// umap-js is CommonJS and its entry only re-exports `UMAP`, so
+// `import { cosine } from 'umap-js'` throws under Nitro's native ESM.
+import { UMAP } from 'umap-js'
+
+export { UMAP }
+
+/** Same formula as the `cosine` that umap-js does not expose on its entry. */
+export function cosine(x: number[], y: number[]): number {
+  let result = 0
+  let normX = 0
+  let normY = 0
+  for (let i = 0; i < x.length; i++) {
+    const xi = x[i] ?? 0
+    const yi = y[i] ?? 0
+    result += xi * yi
+    normX += xi ** 2
+    normY += yi ** 2
+  }
+  if (normX === 0 && normY === 0) return 0
+  if (normX === 0 || normY === 0) return 1
+  return 1 - result / Math.sqrt(normX * normY)
+}
 
 /** Deterministic PRNG so UMAP layouts are identical on every load. */
 export const mulberry32 = (seed: number) => () => {

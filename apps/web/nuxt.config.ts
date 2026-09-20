@@ -78,8 +78,14 @@ export default defineNuxtConfig({
     '/': { prerender: true },
     '/es': { prerender: true },
     '/it': { prerender: true },
-    '/connected/**': { ssr: false, },
-    '/explorer/**': { ssr: false, }
+    // i18n strategy is prefix_except_default: unprefixed rules do not
+    // apply to /es/* or /it/*, so those locale paths would still SSR.
+    '/connected/**': { ssr: false },
+    '/es/connected/**': { ssr: false },
+    '/it/connected/**': { ssr: false },
+    '/explorer/**': { ssr: false },
+    '/es/explorer/**': { ssr: false },
+    '/it/explorer/**': { ssr: false }
   },
   compatibilityDate: '2025-01-15',
   vite: {
