@@ -163,6 +163,14 @@ const mapChartScopeHint = computed(() => {
   return "";
 });
 
+function continuousYears(years: Iterable<number>) {
+  const list = Array.from(years);
+  if (list.length === 0) return [];
+  const min = Math.min(...list);
+  const max = Math.max(...list);
+  return Array.from({ length: max - min + 1 }, (_, i) => min + i);
+}
+
 function entityIdsForProjects(
   projectIds: Set<string>,
   projectEntities: { projectId: string; entityId: string }[]
@@ -452,24 +460,22 @@ const dataForDashboard = computed(() => {
       count: projectsByRisk.get(risk.id) || 0,
       count_f: projectsByRiskFiltered.get(risk.id) || 0,
     })),
-    projectsByYear: Array.from(
-      new Set([...projectsByYear.keys(), ...projectsByYearFiltered.keys()])
-    )
-      .sort()
-      .map((year) => ({
-        label: year,
-        count: projectsByYear.get(year) || 0,
-        count_f: projectsByYearFiltered.get(year) || 0,
-      })),
-    investmentByYear: Array.from(
-      new Set([...investmentByYear.keys(), ...investmentByYearFiltered.keys()])
-    )
-      .sort()
-      .map((year) => ({
-        label: year,
-        count: investmentByYear.get(year) || 0,
-        count_f: investmentByYearFiltered.get(year) || 0,
-      })),
+    projectsByYear: continuousYears([
+      ...projectsByYear.keys(),
+      ...projectsByYearFiltered.keys(),
+    ]).map((year) => ({
+      label: year,
+      count: projectsByYear.get(year) || 0,
+      count_f: projectsByYearFiltered.get(year) || 0,
+    })),
+    investmentByYear: continuousYears([
+      ...investmentByYear.keys(),
+      ...investmentByYearFiltered.keys(),
+    ]).map((year) => ({
+      label: year,
+      count: investmentByYear.get(year) || 0,
+      count_f: investmentByYearFiltered.get(year) || 0,
+    })),
   };
 });
 
@@ -532,7 +538,7 @@ const dataForProjectsEvolutionByTopic = computed(() => {
   base.projects.forEach((p: any) => {
     if (p.year) allYears.add(p.year);
   });
-  const sortedYears = Array.from(allYears).sort((a, b) => a - b);
+  const sortedYears = continuousYears(allYears);
 
   // For each theme, count projects per year
   return base.themes.map((theme: any) => {
