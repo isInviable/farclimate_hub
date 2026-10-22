@@ -1,3 +1,10 @@
+# Start here
+
+The map of the repo, outstanding work, and what to run after a break is **[docs/README.md](README.md)**.
+
+CORDIS / Connected Action refresh (next catalogue edition, RLS follow-up): **[cordis-pipeline.md](cordis-pipeline.md)**.
+
+Local install and `pnpm dev`: **[getting-started.md](getting-started.md)**.
 
 # Documentación de referencia
 
