@@ -1,34 +1,5 @@
 import { defineCollection, defineContentConfig, z } from '@nuxt/content'
 
-const dimensionSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  icon: z.string(),
-})
-
-const sectorCardSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  image: z.string(),
-  titleClass: z.string(),
-  sector: z.string(),
-  buttonLabel: z.string(),
-})
-
-const whyMattersItemSchema = z.object({
-  text: z.string(),
-  icon: z.string(),
-})
-
-const platformStepSchema = z.object({
-  key: z.string(),
-  title: z.string(),
-  body: z.string(),
-  cta: z.string(),
-  image: z.string(),
-  imageAlt: z.string(),
-})
-
 const storyAuthorSchema = z.object({
   name: z.string(),
   organization: z.string(),
@@ -172,48 +143,56 @@ const storyShowcaseSchema = z.object({
   sections: z.array(storyShowcaseSectionSchema),
 })
 
+const introSegmentSchema = z.object({
+  text: z.string(),
+  keyword: z.boolean().optional(),
+})
+
 export const homeSchema = z.object({
   hero: z.object({
-    titleLine1: z.string(),
-    titleLine2: z.string(),
-    subtitle: z.string(),
-    cta: z.string(),
-    scrollLabel: z.string(),
+    wordmark: z.array(z.string()),
+    tagline: z.string(),
+    taglineSecondary: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+    intro: z.array(introSegmentSchema),
+    cta: z.object({
+      label: z.string(),
+      to: z.string(),
+      image: z.string(),
+    }),
   }),
-  sections: z.object({
-    inspiration: z.object({
-      number: z.string(),
+  stats: z.object({
+    image: z.string(),
+    imageAlt: z.string(),
+    items: z.array(
+      z.object({
+        prefix: z.string().optional(),
+        value: z.string(),
+        label: z.string(),
+      })
+    ),
+  }),
+})
+
+export const howToSchema = z.object({
+  hero: z.object({
+    title: z.string(),
+    intro: z.string(),
+  }),
+  steps: z.array(
+    z.object({
+      key: z.string(),
       title: z.string(),
-      intro: z.string(),
-      problemSpace: z.object({
-        title: z.string(),
-        description: z.string(),
-      }),
-      dimensions: z.array(dimensionSchema),
-      sectors: z.object({
-        title: z.string(),
-        description: z.string(),
-        cards: z.array(sectorCardSchema),
-      }),
-    }),
-    whyMatters: z.object({
-      number: z.string(),
-      title: z.string(),
-      intro: z.string(),
-      items: z.array(whyMattersItemSchema),
-    }),
-    platform: z.object({
-      number: z.string(),
-      title: z.string(),
-      steps: z.array(platformStepSchema),
-    }),
-    recipe: z.object({
-      number: z.string(),
-      title: z.string(),
-      intro: z.string(),
+      body: z.string(),
       image: z.string(),
       imageAlt: z.string(),
-    }),
+    })
+  ),
+  cta: z.object({
+    label: z.string(),
+    to: z.string(),
+    image: z.string(),
   }),
 })
 
@@ -274,6 +253,17 @@ function homeCollection(locale: string) {
   })
 }
 
+function howToCollection(locale: string) {
+  return defineCollection({
+    type: 'data',
+    source: {
+      include: `${locale}/how-to.json`,
+      cwd: 'content',
+    },
+    schema: howToSchema,
+  })
+}
+
 function footerCollection(locale: string) {
   return defineCollection({
     type: 'data',
@@ -328,6 +318,9 @@ export default defineContentConfig({
     home_en: homeCollection('en'),
     home_es: homeCollection('es'),
     home_it: homeCollection('it'),
+    how_to_en: howToCollection('en'),
+    how_to_es: howToCollection('es'),
+    how_to_it: howToCollection('it'),
     footer_en: footerCollection('en'),
     footer_es: footerCollection('es'),
     footer_it: footerCollection('it'),

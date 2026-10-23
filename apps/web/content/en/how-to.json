@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "title": "How to use the solutions",
+    "intro": "Seven steps to find an adaptation recipe, understand it and take it to your territory. Provisional copy, pending the design team's texts."
+  },
+  "steps": [
+    {
+      "key": "search",
+      "title": "Search",
+      "body": "Type what you need in the explorer: a risk, a sector or a territory. Filters narrow the results.",
+      "image": "/img/home/explorer.jpg",
+      "imageAlt": "Solutions explorer search screen"
+    },
+    {
+      "key": "compare",
+      "title": "Compare",
+      "body": "Select several solutions and look at them together to see what they share and where they differ.",
+      "image": "/img/home/compare.jpg",
+      "imageAlt": "Solution comparison view"
+    },
+    {
+      "key": "bioregion",
+      "title": "Group by bioregion",
+      "body": "Place the solutions in their bioregion to find experiences close to your context.",
+      "image": "/img/home/grouped.jpg",
+      "imageAlt": "Solutions grouped by bioregion"
+    },
+    {
+      "key": "recipe",
+      "title": "Read the recipe",
+      "body": "Each solution is a recipe of 15 components: the context, how it was done and what it achieved.",
+      "image": "/img/home/recipe-screenshot.png",
+      "imageAlt": "An adaptation recipe sheet"
+    },
+    {
+      "key": "chat",
+      "title": "Talk to the documents",
+      "body": "Ask the solution's documents what you cannot find on the sheet.",
+      "image": "/img/home/chat.jpg",
+      "imageAlt": "Conversation with a solution's documents"
+    },
+    {
+      "key": "board",
+      "title": "Save to a board",
+      "body": "Pin the solutions that matter and gather them on a board to revisit or share.",
+      "image": "/img/home/board.jpg",
+      "imageAlt": "Board with saved solutions"
+    },
+    {
+      "key": "present",
+      "title": "Create a presentation",
+      "body": "Generate a presentation from your board to explain it to your team or your community.",
+      "image": "/img/home/presentacion.jpg",
+      "imageAlt": "Presentation generated from a board"
+    }
+  ],
+  "cta": {
+    "label": "Enter solutions",
+    "to": "/explorer/",
+    "image": "/img/adaptarium/boton-9.png"
+  }
+}

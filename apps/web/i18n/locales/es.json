@@ -462,6 +462,17 @@
     "brandTitleLine2": "Transformation Hub",
     "connectedAction": "Connected Action"
   },
+  "siteNav": {
+    "solutions": "Soluciones",
+    "howTo": "¿Cómo usar las soluciones?",
+    "stories": "Historias",
+    "training": "Formación",
+    "network": "Trabajo en red",
+    "about": "Quiénes somos",
+    "home": "Volver al inicio",
+    "open": "Abrir menú",
+    "close": "Cerrar menú"
+  },
   "search": {
     "title": "Explorador de Soluciones",
     "placeholder": "¿Qué estás buscando?",

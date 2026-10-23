@@ -462,6 +462,17 @@
     "brandTitleLine2": "Transformation Hub",
     "connectedAction": "Connected Action"
   },
+  "siteNav": {
+    "solutions": "Solutions",
+    "howTo": "How to use the solutions",
+    "stories": "Stories",
+    "training": "Training",
+    "network": "Networking",
+    "about": "About us",
+    "home": "Back to home",
+    "open": "Open menu",
+    "close": "Close menu"
+  },
   "listActions": {
     "default": "Default",
     "topInsights": "Top insights",

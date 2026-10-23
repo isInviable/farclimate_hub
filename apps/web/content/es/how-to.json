@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "title": "Cómo usar las soluciones",
+    "intro": "Siete pasos para encontrar una receta de adaptación, entenderla y llevarla a tu territorio. Textos provisionales, pendientes del documento de textos del equipo de diseño."
+  },
+  "steps": [
+    {
+      "key": "search",
+      "title": "Busca",
+      "body": "Escribe lo que necesitas en el explorador: un riesgo, un sector o un territorio. Los filtros acotan los resultados.",
+      "image": "/img/home/explorer.jpg",
+      "imageAlt": "Pantalla de búsqueda del explorador de soluciones"
+    },
+    {
+      "key": "compare",
+      "title": "Compara",
+      "body": "Selecciona varias soluciones y míralas juntas para ver en qué se parecen y en qué se diferencian.",
+      "image": "/img/home/compare.jpg",
+      "imageAlt": "Vista de comparación de soluciones"
+    },
+    {
+      "key": "bioregion",
+      "title": "Agrupa por bioregión",
+      "body": "Sitúa las soluciones en su bioregión para encontrar experiencias cercanas a tu contexto.",
+      "image": "/img/home/grouped.jpg",
+      "imageAlt": "Soluciones agrupadas por bioregión"
+    },
+    {
+      "key": "recipe",
+      "title": "Lee la receta",
+      "body": "Cada solución se presenta como una receta de 15 componentes: contexto, cómo se hizo y qué se logró.",
+      "image": "/img/home/recipe-screenshot.png",
+      "imageAlt": "Ficha de una receta de adaptación"
+    },
+    {
+      "key": "chat",
+      "title": "Conversa con los documentos",
+      "body": "Pregunta a los documentos de la solución lo que no encuentras en la ficha.",
+      "image": "/img/home/chat.jpg",
+      "imageAlt": "Conversación con los documentos de una solución"
+    },
+    {
+      "key": "board",
+      "title": "Guarda en un tablero",
+      "body": "Marca las soluciones que te interesan y reúnelas en un tablero para volver a ellas o compartirlas.",
+      "image": "/img/home/board.jpg",
+      "imageAlt": "Tablero con soluciones guardadas"
+    },
+    {
+      "key": "present",
+      "title": "Crea una presentación",
+      "body": "Genera una presentación a partir de tu tablero para explicarla a tu equipo o a tu comunidad.",
+      "image": "/img/home/presentacion.jpg",
+      "imageAlt": "Presentación generada a partir de un tablero"
+    }
+  ],
+  "cta": {
+    "label": "Entrar a soluciones",
+    "to": "/explorer/",
+    "image": "/img/adaptarium/boton-9.png"
+  }
+}

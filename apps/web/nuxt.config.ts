@@ -50,6 +50,10 @@ export default defineNuxtConfig({
     {
       path: '~/components/stories',
       pathPrefix: false
+    },
+    {
+      path: '~/components/site',
+      pathPrefix: false
     }
   ],
   devtools: {
@@ -78,6 +82,9 @@ export default defineNuxtConfig({
     '/': { prerender: true },
     '/es': { prerender: true },
     '/it': { prerender: true },
+    '/how-to': { prerender: true },
+    '/es/how-to': { prerender: true },
+    '/it/how-to': { prerender: true },
     // i18n strategy is prefix_except_default: unprefixed rules do not
     // apply to /es/* or /it/*, so those locale paths would still SSR.
     '/connected/**': { ssr: false },
@@ -133,7 +140,11 @@ export default defineNuxtConfig({
     families: {
       Inter: [400, 500, 600, 700],
       'Martian Mono': [300, 400, 500, 600, 700],
-      Outfit: [400, 500, 600, 700, 800, 900]
+      Outfit: [400, 500, 600, 700, 800, 900],
+      'Julius Sans One': [400],
+      'Archivo Black': [400],
+      'Bebas Neue': [400],
+      Actor: [400]
     }
   }
 })

@@ -23,6 +23,12 @@
   --font-mono: "Martian Mono", monospace;
   --font-display: "Outfit", sans-serif;
 
+  /* ADAPTARIUM public-site fonts (site-redesign-adaptarium). Do not replace the families above. */
+  --font-adapt-title: "Julius Sans One", sans-serif;
+  --font-adapt-heavy: "Archivo Black", sans-serif;
+  --font-adapt-keyword: "Bebas Neue", sans-serif;
+  --font-adapt-body: "Actor", sans-serif;
+
   /* Extra step below default text-xs (0.75rem) → utilities text-2xs / text-2xs/… */
   --text-2xs: 0.625rem;
   --text-2xs--line-height: calc(1 / 0.625);
@@ -84,6 +90,19 @@
   --color-community-pink: #ff6aae;
   --color-community-pink-dark: #ff0777;
   --color-community-pink-darkest: #ca1768;
+
+  /* ADAPTARIUM palette (site-redesign-adaptarium). Namespaced so explorer tokens stay unchanged. */
+  --color-adapt-orange: #fc4b08;
+  --color-adapt-blue: #0f4fc4;
+  --color-adapt-teal: #249489;
+  --color-adapt-brown: #86592b;
+  --color-adapt-yellow: #fdbe0f;
+  --color-adapt-mist: #bcd2d5;
+  --color-adapt-sand: #eeeadf;
+  --color-adapt-ink: #2c2c2c;
+  --color-adapt-aqua: #85cec4;
+  /* Measured background of the sea-glass photographs. */
+  --color-adapt-paper: #f8e8d9;
 }
 
 :root {

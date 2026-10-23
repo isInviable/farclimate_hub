@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "title": "Come usare le soluzioni",
+    "intro": "Sette passi per trovare una ricetta di adattamento, capirla e portarla nel tuo territorio. Testi provvisori, in attesa del documento del team di design."
+  },
+  "steps": [
+    {
+      "key": "search",
+      "title": "Cerca",
+      "body": "Scrivi quello che ti serve nell'esploratore: un rischio, un settore o un territorio. I filtri restringono i risultati.",
+      "image": "/img/home/explorer.jpg",
+      "imageAlt": "Schermata di ricerca dell'esploratore di soluzioni"
+    },
+    {
+      "key": "compare",
+      "title": "Confronta",
+      "body": "Seleziona più soluzioni e guardale insieme per vedere cosa condividono e dove differiscono.",
+      "image": "/img/home/compare.jpg",
+      "imageAlt": "Vista di confronto delle soluzioni"
+    },
+    {
+      "key": "bioregion",
+      "title": "Raggruppa per bioregione",
+      "body": "Colloca le soluzioni nella loro bioregione per trovare esperienze vicine al tuo contesto.",
+      "image": "/img/home/grouped.jpg",
+      "imageAlt": "Soluzioni raggruppate per bioregione"
+    },
+    {
+      "key": "recipe",
+      "title": "Leggi la ricetta",
+      "body": "Ogni soluzione è una ricetta di 15 componenti: il contesto, come è stata fatta e cosa ha ottenuto.",
+      "image": "/img/home/recipe-screenshot.png",
+      "imageAlt": "Scheda di una ricetta di adattamento"
+    },
+    {
+      "key": "chat",
+      "title": "Dialoga con i documenti",
+      "body": "Chiedi ai documenti della soluzione quello che non trovi nella scheda.",
+      "image": "/img/home/chat.jpg",
+      "imageAlt": "Conversazione con i documenti di una soluzione"
+    },
+    {
+      "key": "board",
+      "title": "Salva in una bacheca",
+      "body": "Segna le soluzioni che ti interessano e riuniscile in una bacheca per rivederle o condividerle.",
+      "image": "/img/home/board.jpg",
+      "imageAlt": "Bacheca con soluzioni salvate"
+    },
+    {
+      "key": "present",
+      "title": "Crea una presentazione",
+      "body": "Genera una presentazione dalla tua bacheca per spiegarla al tuo team o alla tua comunità.",
+      "image": "/img/home/presentacion.jpg",
+      "imageAlt": "Presentazione generata da una bacheca"
+    }
+  ],
+  "cta": {
+    "label": "Entra nelle soluzioni",
+    "to": "/explorer/",
+    "image": "/img/adaptarium/boton-9.png"
+  }
+}

@@ -1,135 +1,33 @@
 {
   "hero": {
-    "titleLine1": "Benvenuto nel",
-    "titleLine2": "Transformation HUB",
-    "subtitle": "Impara da esperienze applicate, condividi soluzioni e connettiti con chi affronta le stesse sfide nei propri territori",
-    "cta": "SCOPRI DI PIÙ",
-    "scrollLabel": "Scorri al contenuto"
-  },
-  "sections": {
-    "inspiration": {
-      "number": "01.",
-      "title": "Ispirazione e apprendimento",
-      "intro": "Facciamo parte di una comunità colpita dai cambiamenti climatici, con un certo grado di conoscenza tecnica",
-      "problemSpace": {
-        "title": "Il nostro spazio problematico",
-        "description": "I cambiamenti climatici impattano i nostri territori in molti modi. Per comprenderli meglio consideriamo tre dimensioni chiave"
-      },
-      "dimensions": [
-        {
-          "title": "Attività di rischio",
-          "description": "Incendi, siccità, alluvioni, parassiti.",
-          "icon": "/img/icons/hazard.svg"
-        },
-        {
-          "title": "Agenti dell'habitat",
-          "description": "Ecosistemi, specie, attività umane",
-          "icon": "/img/icons/habitat.svg"
-        },
-        {
-          "title": "Scala territoriale",
-          "description": "Locale, regionale, bioregionale",
-          "icon": "/img/icons/location.svg"
-        }
-      ],
-      "sectors": {
-        "title": "Settori economici",
-        "description": "Attualmente la piattaforma si concentra su tre settori economici dove questi impatti sono più visibili. In futuro verranno aggiunti nuovi settori man mano che gli impatti climatici si diffondono e le esigenze di adattamento evolvono",
-        "cards": [
-          {
-            "title": "Pesca",
-            "description": "Riscaldamento oceanico, pesca eccessiva, erosione costiera",
-            "image": "/img/fisheries@2x.png",
-            "titleClass": "text-trust-blue-darkest",
-            "sector": "fisheries",
-            "buttonLabel": "Cerca"
-          },
-          {
-            "title": "Agricoltura",
-            "description": "Siccità, degradazione del suolo, parassiti, scarsità d'acqua",
-            "image": "/img/agriculture@2x.png",
-            "titleClass": "text-grounded-green-dark",
-            "sector": "agriculture",
-            "buttonLabel": "Cerca"
-          },
-          {
-            "title": "Selvicoltura",
-            "description": "Incendi, perdita di biodiversità, specie invasive",
-            "image": "/img/forestry@2x.png",
-            "titleClass": "text-community-pink-darkest",
-            "sector": "forestry",
-            "buttonLabel": "Cerca"
-          }
-        ]
-      }
-    },
-    "whyMatters": {
-      "number": "02.",
-      "title": "Perché è importante?",
-      "intro": "Internet è pieno di report, piattaforme e studi, ma chi lavora sul territorio ha bisogno di accesso pratico a",
-      "items": [
-        {
-          "text": "Tecnologie e pratiche testate in contesti reali",
-          "icon": "/img/home/why-gesture.png"
-        },
-        {
-          "text": "Modelli organizzativi e di governance che funzionano",
-          "icon": "/img/home/why-verified.png"
-        },
-        {
-          "text": "Approcci alla sostenibilità delle imprese",
-          "icon": "/img/home/why-eco.png"
-        },
-        {
-          "text": "Opportunità di finanziamento",
-          "icon": "/img/home/why-funding.png"
-        },
-        {
-          "text": "Esperienze da altre bioregioni",
-          "icon": "/img/home/why-landscape.png"
-        },
-        {
-          "text": "Persone e reti con cui connettersi",
-          "icon": "/img/home/why-network.png"
-        }
-      ]
-    },
-    "platform": {
-      "number": "03.",
-      "title": "Come funziona questa piattaforma?",
-      "steps": [
-        {
-          "key": "understand",
-          "title": "Per capire",
-          "body": "Esploro conoscenze utili per comprendere meglio le sfide e individuare possibili soluzioni.",
-          "cta": "COME CREARE UNA RICETTA",
-          "image": "/img/home/platform-understand.png",
-          "imageAlt": "Diagramma di conoscenza utile e ispirazione intorno all'HUB"
-        },
-        {
-          "key": "discover",
-          "title": "Per scoprire",
-          "body": "Trovo ciò che altri hanno già fatto, mi connetto con loro e accedo a risorse come finanziamenti o formazione.",
-          "cta": "COME CREARE UNA RICETTA",
-          "image": "/img/home/platform-discover.png",
-          "imageAlt": "Diagramma di connessione della conoscenza tra settori"
-        },
-        {
-          "key": "inspired",
-          "title": "Per ispirarsi",
-          "body": "Trasformo la conoscenza, la adatto al mio contesto e creo la mia rete di risorse.",
-          "cta": "COME CREARE UNA RICETTA",
-          "image": "/img/home/platform-inspired.png",
-          "imageAlt": "Diagramma di creazione di risorse proprie dall'ispirazione"
-        }
-      ]
-    },
-    "recipe": {
-      "number": "04.",
-      "title": "La ricetta",
-      "intro": "Ogni ricetta distilla un caso reale di adattamento climatico—problema, contesto, attori e soluzioni—in un formato pratico per ispirare, confrontare e adattare",
-      "image": "/img/home/recipe-screenshot.png",
-      "imageAlt": "Screenshot di una pagina ricetta nella piattaforma"
+    "wordmark": ["ADAP", "TA", "RI", "UM"],
+    "tagline": "TRANSFORMATION",
+    "taglineSecondary": "HUB",
+    "image": "/img/adaptarium/home-gema.jpg",
+    "imageAlt": "Colonna di vetri di mare colorati",
+    "intro": [
+      { "text": "Questa è una piattaforma dove troverai ispirazione, linee metodologiche e strumenti di intelligenza artificiale per sviluppare" },
+      { "text": "Soluzioni locali", "keyword": true },
+      { "text": "di adattamento al" },
+      { "text": "Cambiamento climatico", "keyword": true },
+      { "text": "seguendo" },
+      { "text": "Ricette", "keyword": true },
+      { "text": "composte da esperienze, linee guida e standard dell'" },
+      { "text": "Unione Europea", "keyword": true }
+    ],
+    "cta": {
+      "label": "Entra nelle soluzioni",
+      "to": "/explorer/",
+      "image": "/img/adaptarium/boton-9.png"
     }
+  },
+  "stats": {
+    "image": "/img/adaptarium/fundamar-oscuro.jpg",
+    "imageAlt": "Persone al lavoro in mare con ceste di frutti di mare",
+    "items": [
+      { "prefix": "Oltre", "value": "100", "label": "ricette di adattamento climatico" },
+      { "value": "41", "label": "paesi d'Europa" },
+      { "value": "7", "label": "bioregioni" }
+    ]
   }
 }
