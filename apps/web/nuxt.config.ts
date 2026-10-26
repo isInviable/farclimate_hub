@@ -44,6 +44,10 @@ export default defineNuxtConfig({
       pathPrefix: false
     },
     {
+      path: '~/components/how-to',
+      pathPrefix: false
+    },
+    {
       path: '~/components/skills',
       pathPrefix: false
     },

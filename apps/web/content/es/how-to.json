@@ -1,57 +1,63 @@
 {
-  "hero": {
-    "title": "Cómo usar las soluciones",
-    "intro": "Siete pasos para encontrar una receta de adaptación, entenderla y llevarla a tu territorio. Textos provisionales, pendientes del documento de textos del equipo de diseño."
+  "intro": {
+    "titleLines": ["¿Cómo", "usar las"],
+    "accent": "soluciones?",
+    "kickerLines": ["Esta", "base de datos"],
+    "before": "Esta base de datos analiza los proyectos de ",
+    "emphasis": "Climate Adapt",
+    "middle": " para descifrar sus componentes y presentarlos como una",
+    "recipe": "Receta",
+    "after": "que puedes utilizar para inspirarte y potenciar tu propuesta."
   },
   "steps": [
     {
       "key": "search",
       "title": "Busca",
-      "body": "Escribe lo que necesitas en el explorador: un riesgo, un sector o un territorio. Los filtros acotan los resultados.",
-      "image": "/img/home/explorer.jpg",
-      "imageAlt": "Pantalla de búsqueda del explorador de soluciones"
+      "body": "Usa los filtros del panel izquierdo para buscar por sector, impactos climáticos, enfoques de adaptación o región biogeográfica.",
+      "image": "/img/adaptarium/capturas/base-1.png",
+      "imageAlt": "Filtros del panel izquierdo del explorador de soluciones"
     },
     {
-      "key": "compare",
-      "title": "Compara",
-      "body": "Selecciona varias soluciones y míralas juntas para ver en qué se parecen y en qué se diferencian.",
-      "image": "/img/home/compare.jpg",
-      "imageAlt": "Vista de comparación de soluciones"
+      "key": "view",
+      "title": "Visualiza",
+      "body": "La barra superior amarilla ofrece cinco modos para visualizar los resultados filtrados: tarjetas, lista, analizar, mapa y biorregión.",
+      "image": "/img/adaptarium/capturas/base-2.png",
+      "imageAlt": "Barra de modos de visualización de los resultados"
     },
     {
-      "key": "bioregion",
-      "title": "Agrupa por bioregión",
-      "body": "Sitúa las soluciones en su bioregión para encontrar experiencias cercanas a tu contexto.",
-      "image": "/img/home/grouped.jpg",
-      "imageAlt": "Soluciones agrupadas por bioregión"
+      "key": "open",
+      "title": "Profundiza",
+      "body": "Haz click en los resultados de tu búsqueda para descubrir su receta.",
+      "image": "/img/adaptarium/capturas/base-3.png",
+      "imageAlt": "Barra de selección sobre los resultados de la búsqueda"
     },
     {
-      "key": "recipe",
-      "title": "Lee la receta",
-      "body": "Cada solución se presenta como una receta de 15 componentes: contexto, cómo se hizo y qué se logró.",
-      "image": "/img/home/recipe-screenshot.png",
-      "imageAlt": "Ficha de una receta de adaptación"
+      "key": "analyze",
+      "title": "Analiza",
+      "body": "Haz click en los resultados de tu búsqueda para descubrir su receta.",
+      "image": "/img/adaptarium/capturas/base-4.png",
+      "imageAlt": "Lista de resultados de la búsqueda"
     },
     {
-      "key": "chat",
-      "title": "Conversa con los documentos",
-      "body": "Pregunta a los documentos de la solución lo que no encuentras en la ficha.",
-      "image": "/img/home/chat.jpg",
-      "imageAlt": "Conversación con los documentos de una solución"
+      "key": "sign-in",
+      "title": "Inicia sesión",
+      "body": "Inicia sesión en la plataforma para habilitar tu mesa de proyectos y guardar los recursos que potencien tus ideas.",
+      "image": "/img/adaptarium/capturas/base-5.png",
+      "imageAlt": "Mesa de proyectos vacía tras iniciar sesión"
     },
     {
       "key": "board",
-      "title": "Guarda en un tablero",
-      "body": "Marca las soluciones que te interesan y reúnelas en un tablero para volver a ellas o compartirlas.",
-      "image": "/img/home/board.jpg",
-      "imageAlt": "Tablero con soluciones guardadas"
+      "title": "Mesa de proyectos",
+      "body": "Crea tu mesa de proyectos y guarda recursos.",
+      "image": "/img/adaptarium/capturas/base-6.png",
+      "imageAlt": "Mesa de proyectos con recursos guardados"
     },
     {
-      "key": "present",
-      "title": "Crea una presentación",
-      "body": "Genera una presentación a partir de tu tablero para explicarla a tu equipo o a tu comunidad.",
-      "image": "/img/home/presentacion.jpg",
-      "imageAlt": "Presentación generada a partir de un tablero"
+      "key": "generate",
+      "title": "Genera recursos",
+      "body": "Genera, con ayuda de la IA, presentaciones de Power Point o podcasts para exponer e inspirar con tus iniciativas.",
+      "image": "/img/adaptarium/capturas/base-7.png",
+      "imageAlt": "Generación de una presentación o un podcast"
     }
   ],
   "cta": {

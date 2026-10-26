@@ -221,9 +221,15 @@ export const homeSchema = z.object({
 })
 
 export const howToSchema = z.object({
-  hero: z.object({
-    title: z.string(),
-    intro: z.string(),
+  intro: z.object({
+    titleLines: z.array(z.string()),
+    accent: z.string(),
+    kickerLines: z.array(z.string()),
+    before: z.string(),
+    emphasis: z.string(),
+    middle: z.string(),
+    recipe: z.string(),
+    after: z.string(),
   }),
   steps: z.array(
     z.object({

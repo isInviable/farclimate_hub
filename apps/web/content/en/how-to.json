@@ -1,61 +1,67 @@
 {
-  "hero": {
-    "title": "How to use the solutions",
-    "intro": "Seven steps to find an adaptation recipe, understand it and take it to your territory. Provisional copy, pending the design team's texts."
+  "intro": {
+    "titleLines": ["How to", "use the"],
+    "accent": "solutions?",
+    "kickerLines": ["This", "database"],
+    "before": "This database analyses the ",
+    "emphasis": "Climate Adapt",
+    "middle": " projects to decode their components and present them as a",
+    "recipe": "Recipe",
+    "after": "you can use to inspire and strengthen your proposal."
   },
   "steps": [
     {
       "key": "search",
       "title": "Search",
-      "body": "Type what you need in the explorer: a risk, a sector or a territory. Filters narrow the results.",
-      "image": "/img/home/explorer.jpg",
-      "imageAlt": "Solutions explorer search screen"
+      "body": "Use the filters in the left panel to search by sector, climate impacts, adaptation approaches or biogeographical region.",
+      "image": "/img/adaptarium/capturas/base-1.png",
+      "imageAlt": "Filters in the left panel of the solutions explorer"
     },
     {
-      "key": "compare",
-      "title": "Compare",
-      "body": "Select several solutions and look at them together to see what they share and where they differ.",
-      "image": "/img/home/compare.jpg",
-      "imageAlt": "Solution comparison view"
+      "key": "view",
+      "title": "View",
+      "body": "The yellow bar at the top offers five ways to view the filtered results: cards, list, analyse, map and bioregion.",
+      "image": "/img/adaptarium/capturas/base-2.png",
+      "imageAlt": "Bar of ways to view the results"
     },
     {
-      "key": "bioregion",
-      "title": "Group by bioregion",
-      "body": "Place the solutions in their bioregion to find experiences close to your context.",
-      "image": "/img/home/grouped.jpg",
-      "imageAlt": "Solutions grouped by bioregion"
+      "key": "open",
+      "title": "Go deeper",
+      "body": "Click a search result to discover its recipe.",
+      "image": "/img/adaptarium/capturas/base-3.png",
+      "imageAlt": "Selection bar over the search results"
     },
     {
-      "key": "recipe",
-      "title": "Read the recipe",
-      "body": "Each solution is a recipe of 15 components: the context, how it was done and what it achieved.",
-      "image": "/img/home/recipe-screenshot.png",
-      "imageAlt": "An adaptation recipe sheet"
+      "key": "analyze",
+      "title": "Analyse",
+      "body": "Click a search result to discover its recipe.",
+      "image": "/img/adaptarium/capturas/base-4.png",
+      "imageAlt": "List of search results"
     },
     {
-      "key": "chat",
-      "title": "Talk to the documents",
-      "body": "Ask the solution's documents what you cannot find on the sheet.",
-      "image": "/img/home/chat.jpg",
-      "imageAlt": "Conversation with a solution's documents"
+      "key": "sign-in",
+      "title": "Sign in",
+      "body": "Sign in to the platform to enable your project board and save the resources that strengthen your ideas.",
+      "image": "/img/adaptarium/capturas/base-5.png",
+      "imageAlt": "Empty project board after signing in"
     },
     {
       "key": "board",
-      "title": "Save to a board",
-      "body": "Pin the solutions that matter and gather them on a board to revisit or share.",
-      "image": "/img/home/board.jpg",
-      "imageAlt": "Board with saved solutions"
+      "title": "Project board",
+      "body": "Create your project board and save resources.",
+      "image": "/img/adaptarium/capturas/base-6.png",
+      "imageAlt": "Project board with saved resources"
     },
     {
-      "key": "present",
-      "title": "Create a presentation",
-      "body": "Generate a presentation from your board to explain it to your team or your community.",
-      "image": "/img/home/presentacion.jpg",
-      "imageAlt": "Presentation generated from a board"
+      "key": "generate",
+      "title": "Generate resources",
+      "body": "With the help of AI, generate PowerPoint presentations or podcasts to present and inspire with your initiatives.",
+      "image": "/img/adaptarium/capturas/base-7.png",
+      "imageAlt": "Generating a presentation or a podcast"
     }
   ],
   "cta": {
-    "label": "Enter solutions",
+    "label": "Enter the solutions",
     "to": "/explorer/",
     "image": "/img/adaptarium/boton-9.png"
   }

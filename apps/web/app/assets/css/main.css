@@ -103,6 +103,9 @@
   --color-adapt-aqua: #85cec4;
   /* Measured background of the sea-glass photographs. */
   --color-adapt-paper: #f8e8d9;
+  /* How-to stage ground and the designer green that is not the aqua swatch. */
+  --color-adapt-sea: #37a797;
+  --color-adapt-foam: #92c8b7;
 }
 
 :root {

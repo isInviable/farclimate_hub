@@ -1,57 +1,63 @@
 {
-  "hero": {
-    "title": "Come usare le soluzioni",
-    "intro": "Sette passi per trovare una ricetta di adattamento, capirla e portarla nel tuo territorio. Testi provvisori, in attesa del documento del team di design."
+  "intro": {
+    "titleLines": ["Come", "usare le"],
+    "accent": "soluzioni?",
+    "kickerLines": ["Questo", "database"],
+    "before": "Questo database analizza i progetti di ",
+    "emphasis": "Climate Adapt",
+    "middle": " per decifrarne i componenti e presentarli come una",
+    "recipe": "Ricetta",
+    "after": "che puoi usare per ispirarti e potenziare la tua proposta."
   },
   "steps": [
     {
       "key": "search",
       "title": "Cerca",
-      "body": "Scrivi quello che ti serve nell'esploratore: un rischio, un settore o un territorio. I filtri restringono i risultati.",
-      "image": "/img/home/explorer.jpg",
-      "imageAlt": "Schermata di ricerca dell'esploratore di soluzioni"
+      "body": "Usa i filtri del pannello sinistro per cercare per settore, impatti climatici, approcci di adattamento o regione biogeografica.",
+      "image": "/img/adaptarium/capturas/base-1.png",
+      "imageAlt": "Filtri del pannello sinistro dell'esploratore di soluzioni"
     },
     {
-      "key": "compare",
-      "title": "Confronta",
-      "body": "Seleziona più soluzioni e guardale insieme per vedere cosa condividono e dove differiscono.",
-      "image": "/img/home/compare.jpg",
-      "imageAlt": "Vista di confronto delle soluzioni"
+      "key": "view",
+      "title": "Visualizza",
+      "body": "La barra gialla in alto offre cinque modi per visualizzare i risultati filtrati: schede, lista, analizza, mappa e bioregione.",
+      "image": "/img/adaptarium/capturas/base-2.png",
+      "imageAlt": "Barra dei modi di visualizzazione dei risultati"
     },
     {
-      "key": "bioregion",
-      "title": "Raggruppa per bioregione",
-      "body": "Colloca le soluzioni nella loro bioregione per trovare esperienze vicine al tuo contesto.",
-      "image": "/img/home/grouped.jpg",
-      "imageAlt": "Soluzioni raggruppate per bioregione"
+      "key": "open",
+      "title": "Approfondisci",
+      "body": "Fai clic sui risultati della ricerca per scoprire la loro ricetta.",
+      "image": "/img/adaptarium/capturas/base-3.png",
+      "imageAlt": "Barra di selezione sui risultati della ricerca"
     },
     {
-      "key": "recipe",
-      "title": "Leggi la ricetta",
-      "body": "Ogni soluzione è una ricetta di 15 componenti: il contesto, come è stata fatta e cosa ha ottenuto.",
-      "image": "/img/home/recipe-screenshot.png",
-      "imageAlt": "Scheda di una ricetta di adattamento"
+      "key": "analyze",
+      "title": "Analizza",
+      "body": "Fai clic sui risultati della ricerca per scoprire la loro ricetta.",
+      "image": "/img/adaptarium/capturas/base-4.png",
+      "imageAlt": "Elenco dei risultati della ricerca"
     },
     {
-      "key": "chat",
-      "title": "Dialoga con i documenti",
-      "body": "Chiedi ai documenti della soluzione quello che non trovi nella scheda.",
-      "image": "/img/home/chat.jpg",
-      "imageAlt": "Conversazione con i documenti di una soluzione"
+      "key": "sign-in",
+      "title": "Accedi",
+      "body": "Accedi alla piattaforma per abilitare il tuo tavolo dei progetti e salvare le risorse che potenziano le tue idee.",
+      "image": "/img/adaptarium/capturas/base-5.png",
+      "imageAlt": "Tavolo dei progetti vuoto dopo l'accesso"
     },
     {
       "key": "board",
-      "title": "Salva in una bacheca",
-      "body": "Segna le soluzioni che ti interessano e riuniscile in una bacheca per rivederle o condividerle.",
-      "image": "/img/home/board.jpg",
-      "imageAlt": "Bacheca con soluzioni salvate"
+      "title": "Tavolo dei progetti",
+      "body": "Crea il tuo tavolo dei progetti e salva le risorse.",
+      "image": "/img/adaptarium/capturas/base-6.png",
+      "imageAlt": "Tavolo dei progetti con risorse salvate"
     },
     {
-      "key": "present",
-      "title": "Crea una presentazione",
-      "body": "Genera una presentazione dalla tua bacheca per spiegarla al tuo team o alla tua comunità.",
-      "image": "/img/home/presentacion.jpg",
-      "imageAlt": "Presentazione generata da una bacheca"
+      "key": "generate",
+      "title": "Genera risorse",
+      "body": "Genera, con l'aiuto dell'IA, presentazioni PowerPoint o podcast per esporre e ispirare con le tue iniziative.",
+      "image": "/img/adaptarium/capturas/base-7.png",
+      "imageAlt": "Generazione di una presentazione o di un podcast"
     }
   ],
   "cta": {
