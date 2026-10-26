@@ -3,7 +3,7 @@
     "wordmark": ["ADAP", "TA", "RI", "UM"],
     "tagline": "TRANSFORMATION",
     "taglineSecondary": "HUB",
-    "image": "/img/adaptarium/home-gema.jpg",
+    "image": "/img/adaptarium/torre-soluciones.png",
     "imageAlt": "Column of coloured sea glass",
     "intro": [
       { "text": "This is a platform where you can find inspiration, methodological guidance and artificial intelligence tools to develop" },
@@ -29,5 +29,79 @@
       { "value": "41", "label": "European countries" },
       { "value": "7", "label": "bioregions" }
     ]
+  },
+  "recipe": {
+    "kicker": "Each",
+    "title": "RECIPE",
+    "lead": "presents",
+    "count": "15",
+    "body": "components that will help you shape a viable proposal with concrete impacts.",
+    "image": "/img/adaptarium/aqua-3.png",
+    "imageAlt": "Pile of coloured sea glass",
+    "groups": [
+      { "title": "Introduction", "items": ["Summary", "Location"] },
+      { "title": "1. Starting point", "items": ["Brief context", "Public policies", "Legal aspects", "Challenges"] },
+      { "title": "2. How it was done", "items": ["Objectives", "Who takes part", "Implementation phases", "Economic data"] },
+      { "title": "3. What was achieved", "items": ["Implemented solutions", "Benefits", "Lessons learned", "Success factors and limits", "Transferability"] }
+    ],
+    "cta": {
+      "label": "Enter solutions",
+      "to": "/explorer/",
+      "image": "/img/adaptarium/boton-9.png"
+    }
+  },
+  "inspire": {
+    "slides": [
+      {
+        "image": "/img/adaptarium/paisaje-1.jpg",
+        "imageAlt": "Waterside houses in orange and blue duotone",
+        "title": "A city that learned to live with floods through amphibious architecture.",
+        "card": {
+          "kicker": "Get inspired",
+          "body": "by the Maasbommel project, implemented in 2005. Led by developer Dura Vermeer and Factor Architecten in the Netherlands.",
+          "tone": "blue",
+          "image": "/img/adaptarium/boton-azul-ceramica-3.jpg",
+          "imageAlt": "Blue and white ceramic fragment"
+        }
+      },
+      {
+        "image": "/img/adaptarium/paisaje-2.jpg",
+        "imageAlt": "A crop field between trees in yellow and green duotone",
+        "title": "A city that plants walnut trees and wheat to move away from monoculture.",
+        "card": {
+          "kicker": "Get inspired",
+          "body": "by the SAFE project (Silvoarable Agroforestry for Europe), applied by INRA since 2014 in Montpellier, France.",
+          "tone": "yellow",
+          "image": "/img/adaptarium/boton-amarillo-vidrio-1.jpg",
+          "imageAlt": "Green glass on a yellow ground"
+        }
+      },
+      {
+        "image": "/img/adaptarium/paisaje-3.jpg",
+        "imageAlt": "A snowy canal in blue duotone",
+        "title": "A project that manages and distributes water for a future of possible scarcity.",
+        "card": {
+          "kicker": "Get inspired",
+          "body": "by a participatory strategy for saving water and artificially recharging aquifers in northern Italy, led by the Brenta Land Reclamation Board since 2011.",
+          "tone": "aqua",
+          "image": "/img/adaptarium/boton-aqua-ceramica-1.jpg",
+          "imageAlt": "Beige ceramic on an aqua ground"
+        }
+      }
+    ]
+  },
+  "stories": {
+    "image": "/img/adaptarium/historias-home-1.jpg",
+    "imageAlt": "Three women in aprons, in green duotone",
+    "lines": [
+      { "text": "Get to know" },
+      { "text": "the stories", "highlight": true },
+      { "text": "behind\nthese recipes" }
+    ],
+    "cta": {
+      "label": "Enter stories",
+      "to": "/stories",
+      "image": "/img/adaptarium/historias-boton.png"
+    }
   }
 }

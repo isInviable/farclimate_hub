@@ -3,7 +3,7 @@
     "wordmark": ["ADAP", "TA", "RI", "UM"],
     "tagline": "TRANSFORMATION",
     "taglineSecondary": "HUB",
-    "image": "/img/adaptarium/home-gema.jpg",
+    "image": "/img/adaptarium/torre-soluciones.png",
     "imageAlt": "Columna de vidrios marinos de colores",
     "intro": [
       { "text": "Esta es una plataforma donde podrás encontrar inspiración, pautas metodológicas y herramientas de inteligencia artificial para desarrollar" },
@@ -29,5 +29,79 @@
       { "value": "41", "label": "países de Europa" },
       { "value": "7", "label": "bioregiones" }
     ]
+  },
+  "recipe": {
+    "kicker": "Cada",
+    "title": "RECETA",
+    "lead": "presenta",
+    "count": "15",
+    "body": "componentes que te ayudarán a formular una propuesta viable y con impactos concretos.",
+    "image": "/img/adaptarium/aqua-3.png",
+    "imageAlt": "Pila de vidrios marinos de colores",
+    "groups": [
+      { "title": "Introducción", "items": ["Resumen", "Ubicación"] },
+      { "title": "1. Situación de partida", "items": ["Breve contexto", "Políticas públicas", "Aspectos legales", "Retos"] },
+      { "title": "2. Cómo se hizo", "items": ["Objetivos", "Quién participa", "Fases de implementación", "Datos económicos"] },
+      { "title": "3. Qué se logró", "items": ["Soluciones implementadas", "Beneficios", "Lecciones aprendidas", "Factores de éxito y limitantes", "Transferibilidad"] }
+    ],
+    "cta": {
+      "label": "Entrar a soluciones",
+      "to": "/explorer/",
+      "image": "/img/adaptarium/boton-9.png"
+    }
+  },
+  "inspire": {
+    "slides": [
+      {
+        "image": "/img/adaptarium/paisaje-1.jpg",
+        "imageAlt": "Casas sobre el agua en duotono naranja y azul",
+        "title": "Una ciudad que aprendió a convivir con las inundaciones mediante arquitectura anfibia.",
+        "card": {
+          "kicker": "Inspírate",
+          "body": "en el proyecto Maasbommel, implementado en 2005. Liderado por el desarrollador Dura Vermeer y Factor Architecten en Países Bajos.",
+          "tone": "blue",
+          "image": "/img/adaptarium/boton-azul-ceramica-3.jpg",
+          "imageAlt": "Fragmento de cerámica azul y blanca"
+        }
+      },
+      {
+        "image": "/img/adaptarium/paisaje-2.jpg",
+        "imageAlt": "Campo de cultivo entre árboles en duotono amarillo y verde",
+        "title": "Una ciudad que siembra nogales y trigo para alejarse del monocultivo.",
+        "card": {
+          "kicker": "Inspírate",
+          "body": "en el proyecto SAFE (Silvoarable Agroforestry for Europe) aplicado por el INRA desde el 2014 en Montpellier, Francia.",
+          "tone": "yellow",
+          "image": "/img/adaptarium/boton-amarillo-vidrio-1.jpg",
+          "imageAlt": "Vidrio verde sobre fondo amarillo"
+        }
+      },
+      {
+        "image": "/img/adaptarium/paisaje-3.jpg",
+        "imageAlt": "Acequia nevada en duotono azul",
+        "title": "Un proyecto que gestiona y distribuye el agua de manera óptima ante un futuro de posible escasez.",
+        "card": {
+          "kicker": "Inspírate",
+          "body": "en una estrategia participativa de ahorro de agua y recarga artificial de acuíferos en el norte de Italia liderado por la Junta de Recuperación de Tierras de Brenta desde el 2011.",
+          "tone": "aqua",
+          "image": "/img/adaptarium/boton-aqua-ceramica-1.jpg",
+          "imageAlt": "Cerámica beige sobre fondo aguamarina"
+        }
+      }
+    ]
+  },
+  "stories": {
+    "image": "/img/adaptarium/historias-home-1.jpg",
+    "imageAlt": "Tres mujeres con delantal, en duotono verde",
+    "lines": [
+      { "text": "Conoce" },
+      { "text": "las historias", "highlight": true },
+      { "text": "que hay detrás\nde estas recetas" }
+    ],
+    "cta": {
+      "label": "Entrar a historias",
+      "to": "/stories",
+      "image": "/img/adaptarium/historias-boton.png"
+    }
   }
 }

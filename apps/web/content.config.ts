@@ -148,6 +148,17 @@ const introSegmentSchema = z.object({
   keyword: z.boolean().optional(),
 })
 
+const homeCtaSchema = z.object({
+  label: z.string(),
+  to: z.string(),
+  image: z.string(),
+})
+
+const homeGroupSchema = z.object({
+  title: z.string(),
+  items: z.array(z.string()),
+})
+
 export const homeSchema = z.object({
   hero: z.object({
     wordmark: z.array(z.string()),
@@ -156,11 +167,7 @@ export const homeSchema = z.object({
     image: z.string(),
     imageAlt: z.string(),
     intro: z.array(introSegmentSchema),
-    cta: z.object({
-      label: z.string(),
-      to: z.string(),
-      image: z.string(),
-    }),
+    cta: homeCtaSchema,
   }),
   stats: z.object({
     image: z.string(),
@@ -172,6 +179,44 @@ export const homeSchema = z.object({
         label: z.string(),
       })
     ),
+  }),
+  recipe: z.object({
+    kicker: z.string(),
+    title: z.string(),
+    lead: z.string(),
+    count: z.string(),
+    body: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+    groups: z.array(homeGroupSchema),
+    cta: homeCtaSchema,
+  }),
+  inspire: z.object({
+    slides: z.array(
+      z.object({
+        image: z.string(),
+        imageAlt: z.string(),
+        title: z.string(),
+        card: z.object({
+          kicker: z.string(),
+          body: z.string(),
+          tone: z.enum(['blue', 'yellow', 'aqua']),
+          image: z.string(),
+          imageAlt: z.string(),
+        }),
+      })
+    ),
+  }),
+  stories: z.object({
+    image: z.string(),
+    imageAlt: z.string(),
+    lines: z.array(
+      z.object({
+        text: z.string(),
+        highlight: z.boolean().optional(),
+      })
+    ),
+    cta: homeCtaSchema,
   }),
 })
 
