@@ -13,7 +13,7 @@
         class="h-[400px] w-full flex flex-col items-center justify-center space-y-4 bg-gray-50 rounded-lg"
       >
         <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"
         ></div>
         <p class="text-gray-600">Generating content...</p>
       </div>
@@ -33,7 +33,7 @@
         </div>
         <button
           v-if="!embedded"
-          class="mt-6 px-6 py-2 rounded-full bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+          class="mt-6 px-6 py-2 rounded-full bg-primary text-white font-medium hover:bg-primary-700 transition-colors flex items-center gap-2"
         >
           <Icon name="lucide:download" size="1.25rem" />
           Download Video

@@ -20,7 +20,7 @@
     <ClientOnly v-else>
       <div
         ref="el"
-        class="relative w-full h-[60vh] min-h-[400px] rounded-lg border border-gray-200 bg-neutral-lightest overflow-hidden"
+        class="relative w-full h-[60vh] min-h-[400px] border border-neutral-darkest bg-neutral-lightest overflow-hidden"
       >
         <!-- Continent legend -->
         <div
@@ -131,7 +131,7 @@
               :opacity="opacityForDoc(d)"
               data-umap-hit="1"
               class="cursor-pointer transition-all duration-200 pointer-events-auto"
-              :fill="dotFill(d)"
+              :style="{ fill: dotFill(d) }"
               :stroke="dotStroke(d)"
               :stroke-width="isBioregionBridge(d.regions) ? 3 : 2"
               @mouseenter="(e) => showDocTip(e, d)"
@@ -304,7 +304,7 @@ function dotRadius(d: DocLayout) {
 }
 
 function dotFill(d: DocLayout) {
-  if (isBioregionBridge(d.regions)) return '#fffbf8'
+  if (isBioregionBridge(d.regions)) return 'var(--color-neutral-lightest)'
   return bioregionColor(primaryBioregion(d.regions))
 }
 

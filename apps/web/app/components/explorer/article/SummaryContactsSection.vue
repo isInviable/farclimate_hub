@@ -22,7 +22,7 @@
           class="mt-3.5 border-t border-neutral-darkest pt-3.5"
         >
           <div
-            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-trust-blue-darkest prose-strong:text-neutral-darkest"
+            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-primary prose-strong:text-neutral-darkest"
             v-html="md.render(contactText)"
           />
         </div>
@@ -58,7 +58,7 @@
               :href="url"
               target="_blank"
               rel="noopener noreferrer"
-              class="break-all text-sm text-trust-blue-darkest underline-offset-2 hover:underline"
+              class="break-all text-sm text-primary underline-offset-2 hover:underline"
             >
               {{ url }}
             </a>
@@ -95,7 +95,7 @@
           class="mt-3.5 border-t border-neutral-darkest pt-3.5"
         >
           <div
-            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-trust-blue-darkest prose-ol:mt-0 prose-ul:mt-0 prose-li:my-0 prose-li:border-b prose-li:border-neutral-lighter prose-li:py-3 prose-li:marker:font-mono prose-li:marker:text-xs prose-li:marker:text-neutral-dark prose-li:last:border-b-0"
+            class="prose prose-sm max-w-none text-neutral-darkest prose-headings:mb-2 prose-headings:font-display prose-headings:text-xl prose-headings:font-semibold prose-headings:text-neutral-darkest prose-p:my-2 prose-p:font-sans prose-p:text-base prose-a:text-primary prose-ol:mt-0 prose-ul:mt-0 prose-li:my-0 prose-li:border-b prose-li:border-neutral-lighter prose-li:py-3 prose-li:marker:font-mono prose-li:marker:text-xs prose-li:marker:text-neutral-dark prose-li:last:border-b-0"
             v-html="md.render(referencesText)"
           />
         </div>

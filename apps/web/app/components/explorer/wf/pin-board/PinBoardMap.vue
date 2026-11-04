@@ -134,7 +134,7 @@ function renderPopupHtml(group: PinMapGroup): string {
     ? `data-pb-open-article="${escapeHtml(group.documentUid)}"`
     : "disabled aria-disabled=\"true\"";
   const btnClasses = hasUid
-    ? "mt-3 w-full inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded px-3 py-1.5 cursor-pointer"
+    ? "mt-3 w-full inline-flex items-center justify-center gap-1 text-xs font-medium text-white bg-primary hover:bg-primary-700 px-3 py-1.5 cursor-pointer"
     : "mt-3 w-full inline-flex items-center justify-center gap-1 text-xs font-medium text-neutral-400 bg-neutral-100 rounded px-3 py-1.5 cursor-not-allowed";
 
   return `

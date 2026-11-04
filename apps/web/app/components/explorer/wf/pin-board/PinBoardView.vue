@@ -16,7 +16,7 @@
       />
     </aside>
 
-    <main class="col-span-9 min-w-0 bg-warm-neutral-300">
+    <main class="col-span-9 min-w-0 bg-neutral-300">
       <header class="px-8 py-9">
         <EditorialEyebrow color="muted" class="tracking-[0.2em]">
           {{ $t("pins.boardEyebrow", "03 · Pinboard") }}

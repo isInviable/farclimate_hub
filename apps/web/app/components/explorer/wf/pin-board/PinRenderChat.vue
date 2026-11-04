@@ -16,7 +16,7 @@
           {{ senderLabel(m) }}
         </div>
         <div
-          class="prose prose-sm max-w-none text-neutral-800 [&_p]:my-0.5 [&_a]:text-trust-blue-darkest line-clamp-3 overflow-hidden"
+          class="prose prose-sm max-w-none text-neutral-800 [&_p]:my-0.5 [&_a]:text-primary line-clamp-3 overflow-hidden"
           v-html="renderMarkdown(textOf(m))"
         />
       </div>
@@ -41,7 +41,7 @@
           {{ senderLabel(m) }}
         </div>
         <div
-          class="prose prose-sm max-w-none text-neutral-900 [&_p]:my-1 [&_a]:text-trust-blue-darkest [&_code]:rounded-none"
+          class="prose prose-sm max-w-none text-neutral-900 [&_p]:my-1 [&_a]:text-primary [&_code]:rounded-none"
           v-html="renderMarkdown(textOf(m))"
         />
         <ul
@@ -184,7 +184,7 @@ function senderLabel(m: RawMsg): string {
 function bubbleClass(m: RawMsg): string {
   const r = (m.role || "").toLowerCase();
   if (r === "assistant" || r === "model")
-    return "bg-sky-50 border-sky-100 ml-0 mr-4";
+    return "bg-primary-50 border-primary-100 ml-0 mr-4";
   if (r === "user" || r === "human")
     return "bg-neutral-50 border-neutral-200 ml-4 mr-0";
   return "bg-white border-neutral-100";

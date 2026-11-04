@@ -118,7 +118,21 @@
   --color-adapt-connected-mint: #8dc7b8;
   --color-adapt-connected-figure: #005ae6;
   --color-adapt-connected-paper: #f8e9d9;
+  /* ADAPTARIUM blue scale for Nuxt UI primary; 600 is the brand blue. */
+  --color-adapt-blue-50: #f3f6fc;
+  --color-adapt-blue-100: #e5ecf9;
+  --color-adapt-blue-200: #c8d7f1;
+  --color-adapt-blue-300: #9fb9e7;
+  --color-adapt-blue-400: #6a92da;
+  --color-adapt-blue-500: #386dce;
+  --color-adapt-blue-600: #0f4fc4;
+  --color-adapt-blue-700: #0d44a9;
+  --color-adapt-blue-800: #0b378b;
+  --color-adapt-blue-900: #092b6e;
+  --color-adapt-blue-950: #082155;
 }
+
+@custom-variant explorer-adapt (&:where(.theme-explorer-adapt, .theme-explorer-adapt *));
 
 :root {
   /* COLLECTION 1 */
@@ -137,6 +151,97 @@
   html,
   body {
     @apply font-sans text-base text-neutral-900;
+  }
+
+  /*
+   * ADAPTARIUM explorer theme. The solutions layout puts this class on <body>,
+   * so portalled modals and panels are inside it. Inside the theme:
+   *   neutral-lightest = sand, neutral-darkest = ink, neutral/gray/slate ramps =
+   *   warm ink tints on sand, primary = ADAPTARIUM blue.
+   * primary-N and numeric neutral-N utilities compile to var(--ui-color-*-N)
+   * (Nuxt UI @theme inline); named neutrals, gray and slate read --color-*.
+   * --ui-text/bg/border are resolved on :root, so they are redefined here too.
+   */
+  .theme-explorer-adapt {
+    --color-neutral-white: #ffffff;
+    --color-neutral-lightest: #eeeadf;
+    --color-neutral-lighter: #dedbd1;
+    --color-neutral-light: #cfccc2;
+    --color-neutral: #9d9a94;
+    --color-neutral-dark: #5f5e5a;
+    --color-neutral-darker: #403f3d;
+    --color-neutral-darkest: #2c2c2c;
+
+    /* Same relative lightness as the warm-neutral scale it replaces. */
+    --ui-color-neutral-50: #f7f4ee;
+    --ui-color-neutral-100: #f2efe6;
+    --ui-color-neutral-200: #eeeadf;
+    --ui-color-neutral-300: #e5e0d3;
+    --ui-color-neutral-400: #dad5c8;
+    --ui-color-neutral-500: #b8b5ad;
+    --ui-color-neutral-600: #9d9a94;
+    --ui-color-neutral-700: #6a6965;
+    --ui-color-neutral-800: #454543;
+    --ui-color-neutral-900: #2c2c2c;
+    --ui-color-neutral-950: #1f1f1f;
+
+    --color-gray-50: #f4f1ea;
+    --color-gray-100: #eeeadf;
+    --color-gray-200: #dedbd1;
+    --color-gray-300: #cfccc2;
+    --color-gray-400: #9d9a94;
+    --color-gray-500: #6a6965;
+    --color-gray-600: #575653;
+    --color-gray-700: #454543;
+    --color-gray-800: #383737;
+    --color-gray-900: #2c2c2c;
+    --color-gray-950: #1f1f1f;
+
+    --color-slate-50: #f4f1ea;
+    --color-slate-100: #eeeadf;
+    --color-slate-200: #dedbd1;
+    --color-slate-300: #cfccc2;
+    --color-slate-400: #9d9a94;
+    --color-slate-500: #6a6965;
+    --color-slate-600: #575653;
+    --color-slate-700: #454543;
+    --color-slate-800: #383737;
+    --color-slate-900: #2c2c2c;
+    --color-slate-950: #1f1f1f;
+
+    --ui-color-primary-50: var(--color-adapt-blue-50);
+    --ui-color-primary-100: var(--color-adapt-blue-100);
+    --ui-color-primary-200: var(--color-adapt-blue-200);
+    --ui-color-primary-300: var(--color-adapt-blue-300);
+    --ui-color-primary-400: var(--color-adapt-blue-400);
+    --ui-color-primary-500: var(--color-adapt-blue-500);
+    --ui-color-primary-600: var(--color-adapt-blue-600);
+    --ui-color-primary-700: var(--color-adapt-blue-700);
+    --ui-color-primary-800: var(--color-adapt-blue-800);
+    --ui-color-primary-900: var(--color-adapt-blue-900);
+    --ui-color-primary-950: var(--color-adapt-blue-950);
+    --ui-primary: var(--color-adapt-blue-600);
+    --ui-secondary: var(--color-adapt-teal);
+    --ui-error: var(--color-adapt-orange);
+    --ui-warning: var(--color-adapt-yellow);
+
+    --ui-text-dimmed: #6a6965;
+    --ui-text-muted: #5f5e5a;
+    --ui-text-toned: #454543;
+    --ui-text: #2c2c2c;
+    --ui-text-highlighted: #2c2c2c;
+    --ui-text-inverted: #ffffff;
+    --ui-bg: #eeeadf;
+    --ui-bg-muted: #e8e4da;
+    --ui-bg-elevated: #dedbd1;
+    --ui-bg-accented: #cfccc2;
+    --ui-bg-inverted: #2c2c2c;
+    --ui-border: #cfccc2;
+    --ui-border-muted: #dedbd1;
+    --ui-border-accented: #b8b5ad;
+    --ui-border-inverted: #2c2c2c;
+
+    background-color: var(--color-neutral-lightest);
   }
 }
 

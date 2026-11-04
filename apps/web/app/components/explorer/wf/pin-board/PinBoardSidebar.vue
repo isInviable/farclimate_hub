@@ -18,12 +18,13 @@
         <EditorialEyebrow
           class="flex-1 truncate"
           :weight="isKindSelected(cat.value) ? 'bold' : 'medium'"
+          :color="isKindSelected(cat.value) ? 'paper' : 'default'"
         >
           {{ cat.label }}
         </EditorialEyebrow>
         <span
           class="font-mono text-xs tabular-nums shrink-0"
-          :class="isKindSelected(cat.value) ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+          :class="isKindSelected(cat.value) ? 'text-neutral-lightest font-bold' : 'text-neutral-dark'"
         >
           {{ cat.count }}
         </span>
@@ -45,16 +46,21 @@
         :title="!mapEntryEnabled ? $t('pins.map.emptyTooltip') : undefined"
         @click="$emit('select-map')"
       >
-        <Icon name="mdi:map-outline" class="shrink-0 mr-3 text-neutral-dark" />
+        <Icon
+          name="mdi:map-outline"
+          class="shrink-0 mr-3"
+          :class="selectedView === 'map' ? 'text-neutral-lightest' : 'text-neutral-dark'"
+        />
         <EditorialEyebrow
           class="flex-1 truncate"
           :weight="selectedView === 'map' ? 'bold' : 'medium'"
+          :color="selectedView === 'map' ? 'paper' : 'default'"
         >
           {{ $t("pins.map.label") }}
         </EditorialEyebrow>
         <span
           class="font-mono text-xs tabular-nums shrink-0"
-          :class="selectedView === 'map' ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+          :class="selectedView === 'map' ? 'text-neutral-lightest font-bold' : 'text-neutral-dark'"
         >
           {{ mapArticleCount }}
         </span>
@@ -66,16 +72,21 @@
         :class="selectedView === 'artifacts' && 'sidebar-row-active'"
         @click="$emit('select-artifacts')"
       >
-        <Icon name="i-heroicons-archive-box" class="shrink-0 mr-3 text-neutral-dark" />
+        <Icon
+          name="i-heroicons-archive-box"
+          class="shrink-0 mr-3"
+          :class="selectedView === 'artifacts' ? 'text-neutral-lightest' : 'text-neutral-dark'"
+        />
         <EditorialEyebrow
           class="flex-1 truncate"
           :weight="selectedView === 'artifacts' ? 'bold' : 'medium'"
+          :color="selectedView === 'artifacts' ? 'paper' : 'default'"
         >
           {{ $t("podcast.artifacts.title") }}
         </EditorialEyebrow>
         <span
           class="font-mono text-xs tabular-nums shrink-0"
-          :class="selectedView === 'artifacts' ? 'text-neutral-darkest font-bold' : 'text-neutral-dark'"
+          :class="selectedView === 'artifacts' ? 'text-neutral-lightest font-bold' : 'text-neutral-dark'"
         >
           {{ artifactCount }}
         </span>

@@ -50,8 +50,11 @@
       :placeholder="$t('boardActions.moreActions')"
       class="min-w-48"
       :ui="{
-        base: 'rounded-none bg-transparent border-0 text-neutral-lightest font-mono text-2xs uppercase tracking-[0.14em] hover:bg-neutral-lightest/10 focus:ring-0 h-11',
+        base: 'rounded-none bg-transparent border-0 text-neutral-lightest font-mono text-2xs md:text-2xs font-bold uppercase tracking-[0.14em] hover:bg-neutral-lightest/10 focus:ring-0 h-11',
+        placeholder: 'text-neutral-lightest',
+        trailingIcon: 'text-neutral-lightest/80',
       }"
+      variant="none"
       size="sm"
       arrow
     />

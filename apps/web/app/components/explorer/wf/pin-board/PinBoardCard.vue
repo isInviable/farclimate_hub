@@ -228,7 +228,7 @@
         :class="[
           'space-y-3',
           pin.source_document_uid || markmapBodyClickable || chatBodyClickable
-            ? 'cursor-pointer hover:bg-warm-neutral-100 -mx-2 px-2 py-1 transition-colors'
+            ? 'cursor-pointer hover:bg-neutral-100 -mx-2 px-2 py-1 transition-colors'
             : '',
         ]"
         :role="

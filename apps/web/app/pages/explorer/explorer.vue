@@ -4,7 +4,7 @@
     <DeliverableHeader />
     <div class="grid grid-cols-12 relative">
       <!-- Left Sidebar - Filters (20%) -->
-      <aside class="col-span-3 bg-transparent  overflow-y-auto sticky top-0 h-screen scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-white">
+      <aside class="col-span-3 bg-transparent  overflow-y-auto sticky top-14 h-[calc(100dvh-3.5rem)] scrollbar scrollbar-thumb-neutral-darkest scrollbar-track-neutral-lightest">
         <div class="">
           <!-- Filter Manager -->
           <FilterManager
@@ -22,7 +22,7 @@
       <main class="col-span-9">
         <!-- View Switcher (editorial tabs) -->
         <div
-          class="flex items-center border-b border-neutral-darkest bg-neutral-lightest h-12"
+          class="flex items-center border-b border-neutral-darkest bg-adapt-yellow h-12 pr-4"
           role="tablist"
           :aria-label="$t('viewModes.tabsAria')"
         >
@@ -37,7 +37,7 @@
                 'group flex items-center gap-2 h-full px-4 border-b-2 -mb-px transition-colors',
                 viewMode === tab.id
                   ? 'border-neutral-darkest text-neutral-darkest'
-                  : 'border-transparent text-neutral-dark hover:text-neutral-darkest hover:border-neutral-darkest/30',
+                  : 'border-transparent text-neutral-darkest/75 hover:text-neutral-darkest hover:border-neutral-darkest/30',
               ]"
               @click="setViewMode(tab.id)"
             >
@@ -53,7 +53,7 @@
             </button>
           </div>
           <div class="flex-1" />
-          <span class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-dark">
+          <span class="font-mono uppercase text-2xs tracking-[0.14em] text-neutral-darkest/80">
             Showing {{ currentResultCount }} of {{ explorerResultTotal }} case studies
           </span>
         </div>
@@ -120,9 +120,9 @@
           <div v-else-if="viewMode === 'gantt'" class="p-6">
             <h3 class="text-lg font-semibold mb-4">Gantt Chart View</h3>
             <div
-              class="bg-gray-100 h-96 rounded-lg flex items-center justify-center"
+              class="bg-neutral-lighter h-96 flex items-center justify-center"
             >
-              <p class="text-gray-500">
+              <p class="text-neutral-dark">
                 Gantt chart visualization will be displayed here
               </p>
             </div>
@@ -211,9 +211,9 @@
             <UButton size="sm" variant="outline" @click="isMindmapOpen = false">{{ $t('common.close') }}</UButton>
           </div>
         </div>
-        <div class="bg-white rounded-md border border-gray-200 h-[70vh] p-0 overflow-hidden">
+        <div class="bg-white border border-neutral-darkest h-[70vh] p-0 overflow-hidden">
           <div v-if="isMindmapLoading" class="w-full h-full flex items-center justify-center">
-            <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin h-8 w-8 text-gray-500" />
+            <UIcon name="i-heroicons-arrow-path-20-solid" class="animate-spin h-8 w-8 text-neutral-dark" />
           </div>
           <div v-else class="w-full h-full">
             <div class="w-full h-full min-h-[400px]">
@@ -267,7 +267,7 @@ const pinsApi = usePinsSupabase();
 
 // Page metadata
 definePageMeta({
-  layout: 'explorer'
+  layout: 'solutions'
 });
 
 // SEO head
