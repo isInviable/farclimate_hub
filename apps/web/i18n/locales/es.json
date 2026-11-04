@@ -823,18 +823,23 @@
   "skills": {
     "readTime": "{minutes} min. de lectura",
     "index": {
-      "heroTitle": "Aprende las habilidades para adaptarte y prosperar en un clima cambiante",
-      "heroSubtitle": "Aquí puedes explorar habilidades prácticas para afrontar los retos climáticos. Filtra lo que te interese en el menú de la izquierda y descubre a la derecha herramientas, cursos y casos reales listos para inspirar tus próximos pasos",
-      "sortMoreViews": "Más vistas",
-      "sortRelevance": "Relevancia"
-    },
-    "sidebar": {
-      "allTrainings": "Todas las formaciones",
-      "filterBy": "Filtrar por"
+      "kicker": "FORMACIÓN",
+      "title": "CURSOS EN LÍNEA",
+      "lede": "Acércate a conocimiento relevante a través de cursos en línea que te ayuden a afrontar los retos climáticos y potenciar tu proyecto.",
+      "topicsHeading": "CURSOS Y RECURSOS DE DIFERENTES TEMAS COMO:",
+      "topics": [
+        "Agricultura",
+        "Análisis de ciclo de vida",
+        "Biodiversidad",
+        "Pesca",
+        "Silvicultura",
+        "Taxonomía de la UE"
+      ],
+      "learnMore": "Saber más"
     },
     "empty": {
       "title": "No se encontraron habilidades",
-      "description": "Prueba a ajustar los filtros o vuelve más tarde."
+      "description": "Vuelve más tarde para ver nuevos cursos."
     },
     "detail": {
       "back": "Volver a habilidades",

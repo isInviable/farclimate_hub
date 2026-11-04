@@ -825,18 +825,23 @@
   "skills": {
     "readTime": "{minutes} min. read",
     "index": {
-      "heroTitle": "Learn the skills to adapt and thrive in a changing climate",
-      "heroSubtitle": "Here you can explore practical skills to face climate challenges. Filter what interests you from the menu on the left, and discover on the right a collection of tools, courses, and real cases ready to inspire your next steps",
-      "sortMoreViews": "More views",
-      "sortRelevance": "Relevance"
-    },
-    "sidebar": {
-      "allTrainings": "All trainings",
-      "filterBy": "Filter by"
+      "kicker": "Training",
+      "title": "Online courses",
+      "lede": "Reach relevant knowledge through online courses that help you face climate challenges and strengthen your project.",
+      "topicsHeading": "Courses and resources on topics such as:",
+      "topics": [
+        "Agriculture",
+        "Life-cycle assessment",
+        "Biodiversity",
+        "Fisheries",
+        "Forestry",
+        "EU taxonomy"
+      ],
+      "learnMore": "Learn more"
     },
     "empty": {
       "title": "No skills found",
-      "description": "Try adjusting your filters or check back later."
+      "description": "Check back later for new courses."
     },
     "detail": {
       "back": "Back to skills",

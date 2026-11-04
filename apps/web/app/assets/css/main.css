@@ -106,6 +106,13 @@
   /* How-to stage ground and the designer green that is not the aqua swatch. */
   --color-adapt-sea: #37a797;
   --color-adapt-foam: #92c8b7;
+  /* Skills index. Near the main palette on purpose; fold these back in a later cleanup. */
+  --color-adapt-skills-pine: #04625d;
+  --color-adapt-skills-lagoon: #27958a;
+  --color-adapt-skills-sea: #37a697;
+  --color-adapt-skills-paper: #f8e9d9;
+  --color-adapt-skills-card: #f7e9d9;
+  --color-adapt-skills-rule: #fdbe0d;
 }
 
 :root {

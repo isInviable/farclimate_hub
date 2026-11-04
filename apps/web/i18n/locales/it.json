@@ -823,18 +823,23 @@
   "skills": {
     "readTime": "{minutes} min. di lettura",
     "index": {
-      "heroTitle": "Impara le competenze per adattarti e prosperare in un clima che cambia",
-      "heroSubtitle": "Qui puoi esplorare competenze pratiche per affrontare le sfide climatiche. Filtra ciò che ti interessa dal menu a sinistra e scopri a destra strumenti, corsi e casi reali pronti a ispirare i tuoi prossimi passi",
-      "sortMoreViews": "Più visualizzazioni",
-      "sortRelevance": "Rilevanza"
-    },
-    "sidebar": {
-      "allTrainings": "Tutte le formazioni",
-      "filterBy": "Filtra per"
+      "kicker": "Formazione",
+      "title": "Corsi online",
+      "lede": "Avvicinati a conoscenze rilevanti con corsi online che ti aiutino ad affrontare le sfide climatiche e a rafforzare il tuo progetto.",
+      "topicsHeading": "Corsi e risorse su temi come:",
+      "topics": [
+        "Agricoltura",
+        "Analisi del ciclo di vita",
+        "Biodiversità",
+        "Pesca",
+        "Selvicoltura",
+        "Tassonomia dell'UE"
+      ],
+      "learnMore": "Scopri di più"
     },
     "empty": {
       "title": "Nessuna competenza trovata",
-      "description": "Prova a modificare i filtri o torna più tardi."
+      "description": "Torna più tardi per i nuovi corsi."
     },
     "detail": {
       "back": "Torna alle competenze",
