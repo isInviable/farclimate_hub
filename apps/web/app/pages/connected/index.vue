@@ -1,73 +1,94 @@
 <template>
-  <div class="bg-neutral-lightest">
-    <!-- hero -->
-    <div class="border-b border-neutral-darkest bg-neutral-400">
-      <div class="mx-auto max-w-7xl px-7 pb-11 pt-14">
-        <span class="font-mono text-sm font-bold tracking-[0.2em] text-trust-blue-darkest uppercase">
-          {{ $t("connected.index.eyebrow") }}
-        </span>
-        <h1 class="mt-4 max-w-4xl font-display text-6xl font-bold leading-[1.04] tracking-tight">
-          {{ $t("connected.index.heroTitle") }}
-        </h1>
-        <p class="mt-4 max-w-2xl font-sans text-lg leading-relaxed text-neutral-darker">
-          {{ $t("connected.index.heroIntro") }}
-        </p>
+  <div>
+    <section class="relative flex min-h-48 items-center overflow-hidden bg-adapt-connected-hero lg:min-h-[46rem]">
+      <img
+        src="/img/adaptarium/connected-action.jpg"
+        alt=""
+        class="pointer-events-none absolute inset-0 h-full w-full object-contain object-center"
+      >
+      <div class="relative z-10 grid w-full lg:grid-cols-2">
+        <div class="hidden lg:block" />
+        <div class="px-6 py-6 lg:px-10">
+          <p class="font-adapt-heavy text-[1.5625rem] leading-[0.9] tracking-[1px] text-white lg:text-[2.875rem]">
+            <span v-for="line in lockup" :key="line" class="block">{{ line }}</span>
+          </p>
+          <p class="font-adapt-title text-[1.75rem] leading-none text-white lg:text-[2.625rem]">
+            ACTION
+          </p>
+        </div>
+      </div>
+    </section>
 
-        <!-- stat strip -->
-        <div class="mt-9 flex w-fit border border-neutral-darkest bg-neutral-lightest">
-          <div
-            v-for="(s, i) in stats"
-            :key="s.key"
-            class="px-7 py-4"
-            :class="i ? 'border-l border-neutral-darkest' : ''"
+    <section class="bg-adapt-connected-mint px-6 py-10 text-black lg:px-10 lg:py-16">
+      <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-3 lg:items-start">
+        <div class="text-right">
+          <p class="font-adapt-keyword text-[1.6875rem] leading-none tracking-[2px] uppercase">
+            <span v-for="line in kickerLines" :key="line" class="block">{{ line }}</span>
+          </p>
+          <h1 class="mt-2 font-adapt-heavy text-[1.75rem] leading-[1.1] tracking-[1px] text-white lg:text-[2.625rem]">
+            <span v-for="line in titleLines" :key="line" class="block">{{ line }}</span>
+          </h1>
+        </div>
+        <div>
+          <p class="font-adapt-body text-base leading-snug">
+            {{ t("connected.index.heroIntro") }}
+          </p>
+          <img
+            src="/img/adaptarium/gemas-connected.png"
+            alt="Two pieces of sea glass"
+            class="mt-6 w-full max-w-sm"
           >
-            <span class="block font-display text-4xl font-bold">{{ s.value }}</span>
-            <span class="font-mono text-2xs font-semibold tracking-[0.16em] text-neutral-dark uppercase">
-              {{ s.label }}
-            </span>
+        </div>
+        <div>
+          <div v-for="stat in stats" :key="stat.key">
+            <p class="font-adapt-heavy text-[2.625rem] leading-none tracking-[1px] text-adapt-connected-figure">
+              {{ stat.value }}
+            </p>
+            <p class="mb-2 font-adapt-keyword text-[1.6875rem] leading-none tracking-[2px] text-white uppercase">
+              {{ stat.label }}
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- cards -->
-    <div class="mx-auto max-w-7xl px-7 pb-20 pt-10">
-      <div class="mb-4 flex items-baseline gap-3">
-        <span class="font-mono text-sm font-bold tracking-[0.2em] text-neutral-dark uppercase">
-          {{ $t("connected.index.cardsHeading") }}
-        </span>
-        <span class="h-px flex-1 bg-neutral-darkest opacity-25" />
-        <CaHelp :title="$t('connected.index.helpTitle')" :w="300">
-          {{ $t("connected.index.helpBody") }}
-        </CaHelp>
-      </div>
+    <section class="bg-adapt-connected-paper px-6 py-10 lg:px-10 lg:pb-20 lg:pt-12">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-8 flex items-end gap-4 lg:grid lg:grid-cols-4 lg:items-center">
+          <p class="font-adapt-heavy text-[5.1875rem] leading-none tracking-[1px] text-adapt-connected-figure lg:text-right">
+            {{ cards.length }}
+          </p>
+          <p class="font-adapt-keyword text-[1.6875rem] leading-none tracking-[2px] text-black uppercase lg:col-span-3">
+            <span v-for="line in waysLines" :key="line" class="block">{{ line }}</span>
+          </p>
+        </div>
 
-      <div class="grid grid-cols-1 border-l border-t border-neutral-darkest border-r md:grid-cols-2">
-        <div
-          v-for="card in cards"
-          :key="card.id"
-        >
-          <CaExploreCard
-            :id="card.id"
-            :n="card.n"
-            :glyph="card.glyph"
-            :accent="card.accent"
-            :title="card.title"
-            :lede="card.lede"
-            :body="card.body"
-            :shows="card.shows"
-            :to="card.to"
-          />
+        <div class="grid grid-cols-1 border-t border-r border-l border-neutral-darkest md:grid-cols-2">
+          <div v-for="card in cards" :key="card.id">
+            <CaExploreCard
+              :id="card.id"
+              :n="card.n"
+              :glyph="card.glyph"
+              :accent="card.accent"
+              :title="card.title"
+              :lede="card.lede"
+              :body="card.body"
+              :shows="card.shows"
+              :to="card.to"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { CA_CAT } from "~/utils/connectedColors";
 
-definePageMeta({ layout: "connected" });
+definePageMeta({ layout: "site" });
+
+const lockup = ["CO", "NNEC", "TED"] as const;
 
 const { t, tm, rt } = useI18n();
 const localePath = useLocalePath();
@@ -83,7 +104,7 @@ const { data: totals } = await useAsyncData("connected-overview-totals", async (
 
   const countries = new Set(
     (countryRows.data ?? [])
-      .map((r: any) => r.address_country)
+      .map((r: { address_country: string | null }) => r.address_country)
       .filter((c: string | null) => !!c),
   ).size;
 
@@ -142,6 +163,10 @@ function resolveMessageList(key: string): string[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((item) => (typeof item === "string" ? item : String(rt(item))));
 }
+
+const kickerLines = computed(() => resolveMessageList("connected.index.kicker"));
+const titleLines = computed(() => resolveMessageList("connected.index.title"));
+const waysLines = computed(() => resolveMessageList("connected.index.ways"));
 
 const cards = computed(() =>
   cardDefs.map((card) => ({

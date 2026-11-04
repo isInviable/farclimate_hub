@@ -97,8 +97,8 @@
     "index": {
       "metaTitle": "Acción Conectada",
       "metaDescription": "Explora la red de proyectos y organizaciones de la Misión de Adaptación Climática de la UE en cuatro vistas interactivas.",
-      "eyebrow": "Acción Conectada",
-      "heroTitle": "Explora el ecosistema de la Misión de Adaptación Climática de la UE",
+      "kicker": ["Explora", "el ecosistema de la"],
+      "title": ["Misión de Adaptación Climática", "de la UE"],
       "heroIntro": "Navega por la red de proyectos y organizaciones que impulsan la adaptación climática en Europa. Cuatro perspectivas muestran cómo se conectan las iniciativas financiadas por la Misión en temas, lugares y alianzas.",
       "stats": {
         "projects": "proyectos",
@@ -106,9 +106,7 @@
         "countries": "países",
         "themes": "temas"
       },
-      "cardsHeading": "Cuatro formas de explorar",
-      "helpTitle": "Cómo usar esta sección",
-      "helpBody": "Cada tarjeta abre una visualización en vivo. Usa la barra de pestañas superior para cambiar entre ellas en cualquier momento; cada vista incluye una breve explicación y consejos de ayuda.",
+      "ways": ["formas", "a explorar"],
       "cards": {
         "dashboard": {
           "title": "Panel",

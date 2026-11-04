@@ -113,6 +113,11 @@
   --color-adapt-skills-paper: #f8e9d9;
   --color-adapt-skills-card: #f7e9d9;
   --color-adapt-skills-rule: #fdbe0d;
+  /* Connected landing. Near the main palette on purpose; fold these back in a later cleanup. */
+  --color-adapt-connected-hero: #1d418f;
+  --color-adapt-connected-mint: #8dc7b8;
+  --color-adapt-connected-figure: #005ae6;
+  --color-adapt-connected-paper: #f8e9d9;
 }
 
 :root {

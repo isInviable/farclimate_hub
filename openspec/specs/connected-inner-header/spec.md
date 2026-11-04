@@ -1,4 +1,10 @@
-## ADDED Requirements
+# connected-inner-header Specification
+
+## Purpose
+
+Defines the Connected inner header and the layout that places it above Connected page content.
+
+## Requirements
 
 ### Requirement: Connected inner header component
 The system SHALL provide a `ConnectedHeader` UI component that renders:
@@ -22,19 +28,18 @@ route to determine which item is active.
   the Nuxt router, and the header SHALL update its active state accordingly
 
 ### Requirement: Connected layout uses inner header
-The system SHALL introduce a Nuxt layout (e.g. `layouts/connected.vue`) that:
-- Wraps the main content of all Connected pages.
-- Renders the `ConnectedHeader` at the top of the content area.
+The connected layout SHALL wrap the visualization pages. It SHALL render the public-site top bar first and the inner header directly beneath it.
 
-Connected pages under `app/pages/connected/` SHALL opt into this layout via
-`definePageMeta({ layout: 'connected' })` or equivalent configuration.
+The dashboard, entities map, project–entity network, and projects UMAP SHALL use this layout. The connected index SHALL NOT use this layout.
 
 #### Scenario: Existing Connected pages adopt the layout
 - **WHEN** a user visits any of the following routes:
   - `/connected/dashboard`
-  - `/connected/entities-map` (or equivalent path)
-  - `/connected/project-entity-connected`
-  - `/connected/projects-umap-new`
-- **THEN** the page content SHALL render under the Connected layout and the
-  inner header SHALL be visible above the main content
+  - `/connected/EntitiesMap`
+  - `/connected/PrjEntConnected`
+  - `/connected/ProjectsUmapNew`
+- **THEN** the page shows the public-site top bar, then the inner header, then the page content
 
+#### Scenario: Index uses the public site layout
+- **WHEN** a user visits `/connected`
+- **THEN** the page uses the same top bar, overlay, and footer as the how-to page and does not show the inner header
