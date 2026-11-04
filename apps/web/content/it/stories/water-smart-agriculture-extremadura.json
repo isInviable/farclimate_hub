@@ -1,18 +1,3 @@
 {
-  "slug": "water-smart-agriculture-extremadura",
-  "hero": {
-    "backLabel": "Back to Stories",
-    "tags": ["Agriculture"],
-    "title": "Cultivating resilience in the heart of Turin",
-    "subtitle": "Through urban agriculture and community-led initiatives, Gabriella Esposito is helping citizens reconnect with nature and reimagine greener, more resilient neighbourhoods.",
-    "date": "5 Sep. 2025",
-    "readTime": "5 min. read",
-    "author": {
-      "name": "Gabriella Esposito",
-      "organization": "FARCLIMATE",
-      "avatar": "/img/stories/avatar.png"
-    },
-    "backgroundImage": "/img/stories/card-3.png"
-  },
-  "comingSoon": "Through urban agriculture and community-led initiatives, Gabriella Esposito is helping citizens reconnect with nature and reimagine greener, more resilient neighbourhoods."
+  "slug": "water-smart-agriculture-extremadura"
 }

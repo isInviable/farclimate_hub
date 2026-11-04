@@ -27,7 +27,7 @@
 
 ## 5. Home page
 
-- [x] 5.1 Place design images in `apps/web/public/img/adaptarium/` (`home-gema.jpg`, `boton-9.png`, `fundamar-oscuro.jpg` delivered by the user; any further image is referenced by its intended path and copied when it 404s)
+- [x] 5.1 Place design images in `apps/web/public/img/adaptarium/` (`torre-soluciones.png`, `boton-9.png`, `fundamar-oscuro.jpg` delivered by the user; any further image is referenced by its intended path and copied when it 404s)
 - [x] 5.2 Replace `homeSchema` in `content.config.ts` with the hero + stats schema from design.md and rewrite `content/{en,es,it}/home.json` (Spanish from the prototype, English and Italian translated); verify `pnpm build` succeeds with no content validation errors
 - [x] 5.3 Create `HomeHero` (wordmark, tagline, sea-glass image on `bg-adapt-paper`, `KeywordText`, `StoneCta` to the explorer, `SiteNavVertical` at lg+) and `HomeStats` (`fundamar-oscuro.jpg` + overlapping blue block with yellow figures); verify against prototype screenshots at 1280px and 390px with no horizontal scroll
 - [x] 5.4 Rewrite `pages/index.vue` with `layout: 'home'` rendering `HomeHero` and `HomeStats` only; verify the page shows hero, stats and footer in en/es/it

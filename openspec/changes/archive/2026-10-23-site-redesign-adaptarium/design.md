@@ -99,8 +99,8 @@ No CSS duotone component: the design team delivers photos already processed with
 
 ### 7. Assets
 - All design images live in `public/img/adaptarium/` and are referenced only from content files (never hard-coded in components, except the overlay/top-bar wordmark which is typographic).
-- Available: `home-gema.jpg` (451×1254, beige background), `boton-9.png` (329×260, transparent, teal glow), `fundamar-oscuro.jpg` (1080×490, processed).
-- Images not yet delivered are referenced by their intended path (e.g. a transparent `home-gema.png` later); a 404 in development tells the user which file to copy. When a transparent version arrives, only the content path changes.
+- Available: `torre-soluciones.png` (451×1254, beige background), `boton-9.png` (329×260, transparent, teal glow), `fundamar-oscuro.jpg` (1080×490, processed).
+- Images not yet delivered are referenced by their intended path (e.g. a transparent `torre-soluciones.png` later); a 404 in development tells the user which file to copy. When a transparent version arrives, only the content path changes.
 - Wordmark set in type until the SVG logo arrives.
 
 ## Risks / Trade-offs

@@ -37,6 +37,6 @@ Image convention: all design images live in `apps/web/public/img/adaptarium/` an
 - **Code**: `apps/web/app/assets/css/main.css` (new tokens only), `apps/web/nuxt.config.ts` (fonts, prerender for `/how-to`), new layouts `home` and `site`, new components under `app/components/site/`, `app/pages/index.vue` rewritten, new `app/pages/how-to.vue`, `content.config.ts` (home schema replaced, how-to collections added), `useHomeContent` composable, i18n locale files (new `siteNav` keys).
 - **Content**: `content/{en,es,it}/home.json` rewritten; new `content/{en,es,it}/how-to.json`.
 - **Removed**: `HomeSectionHeading`, `HomeWhyMattersGrid`, `HomePlatformStep`, `HomeRecipeSection` (only used by the home). `HomeCard` stays because `explorer/index.vue` uses it.
-- **Assets**: `public/img/adaptarium/` already holds `home-gema.jpg` (hero sea-glass column), `boton-9.png` (transparent CTA stone) and `fundamar-oscuro.jpg` (processed stats photo); existing `public/img/home/*.jpg` screenshots reused for how-to.
+- **Assets**: `public/img/adaptarium/` already holds `torre-soluciones.png` (hero sea-glass column), `boton-9.png` (transparent CTA stone) and `fundamar-oscuro.jpg` (processed stats photo); existing `public/img/home/*.jpg` screenshots reused for how-to.
 - **Unaffected**: explorer, connected, admin, article layouts and `SiteHeader`; `about`, `stories`, `skills` keep the `default` layout for now.
 - **Dependencies**: none new (Google Fonts via the existing `@nuxtjs/google-fonts`; overlay via Nuxt UI `UModal`).

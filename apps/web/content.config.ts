@@ -1,146 +1,9 @@
 import { defineCollection, defineContentConfig, z } from '@nuxt/content'
 
-const storyAuthorSchema = z.object({
-  name: z.string(),
-  organization: z.string(),
-  avatar: z.string(),
-})
-
-const storyCardSchema = z.object({
+const storyIndexCardSchema = z.object({
   slug: z.string(),
-  tag: z.string(),
-  title: z.string(),
-  date: z.string(),
-  readTime: z.string(),
-  author: storyAuthorSchema,
-  excerpt: z.string(),
-  image: z.string(),
-  readLabel: z.string(),
-})
-
-const storyDetailHeroSchema = z.object({
-  backLabel: z.string(),
-  tags: z.array(z.string()),
-  title: z.string(),
-  subtitle: z.string(),
-  date: z.string(),
-  readTime: z.string(),
-  author: storyAuthorSchema,
-  backgroundImage: z.string(),
-})
-
-const storyMetaBarSchema = z.object({
-  shareLabel: z.string(),
-  items: z.array(
-    z.object({
-      icon: z.string(),
-      label: z.string(),
-    })
-  ),
-})
-
-const storyShowcaseSectionSchema = z.object({
-  id: z.string(),
-  number: z.string(),
-  title: z.string(),
-  overview: z
-    .object({
-      period: z.object({ label: z.string(), value: z.string() }),
-      status: z.object({ label: z.string(), value: z.string() }),
-      participants: z.object({
-        label: z.string(),
-        logos: z.array(z.string()),
-      }),
-      mapImage: z.string(),
-      mapAlt: z.string(),
-      paragraphs: z.array(z.string()),
-    })
-    .optional(),
-  gallery: z
-    .object({
-      images: z.array(
-        z.object({
-          src: z.string(),
-          alt: z.string(),
-        })
-      ),
-    })
-    .optional(),
-  stats: z
-    .object({
-      stats: z.array(
-        z.object({
-          value: z.string(),
-          label: z.string(),
-          description: z.string(),
-          accentClass: z.string().optional(),
-        })
-      ),
-    })
-    .optional(),
-  dataTable: z
-    .object({
-      headers: z.array(z.string()),
-      rows: z.array(z.array(z.string())),
-    })
-    .optional(),
-  quote: z
-    .object({
-      quote: z.string(),
-      attribution: z.string(),
-    })
-    .optional(),
-  linkList: z
-    .object({
-      links: z.array(
-        z.object({
-          label: z.string(),
-          href: z.string().optional(),
-        })
-      ),
-      columns: z.union([z.literal(1), z.literal(2)]).optional(),
-    })
-    .optional(),
-  team: z
-    .object({
-      members: z.array(
-        z.object({
-          name: z.string(),
-          role: z.string(),
-          avatar: z.string(),
-        })
-      ),
-      stats: z.array(
-        z.object({
-          value: z.string(),
-          label: z.string(),
-          description: z.string(),
-        })
-      ),
-    })
-    .optional(),
-  donuts: z
-    .object({
-      donuts: z.array(
-        z.object({
-          value: z.number(),
-          label: z.string(),
-        })
-      ),
-    })
-    .optional(),
-  timeline: z
-    .object({
-      years: z.array(z.string()),
-      activeYear: z.string(),
-      mapImage: z.string().optional(),
-    })
-    .optional(),
-})
-
-const storyShowcaseSchema = z.object({
-  metaBar: storyMetaBarSchema,
-  sections: z.array(storyShowcaseSectionSchema),
+  name: z.string(),
+  line: z.string(),
 })
 
 const introSegmentSchema = z.object({
@@ -279,18 +142,60 @@ export const footerSchema = z.object({
 
 export const storiesIndexSchema = z.object({
   hero: z.object({
-    title: z.string(),
+    wordmark: z.array(z.string()),
     subtitle: z.string(),
-    backgroundImage: z.string(),
+    paragraphs: z.array(z.string()),
+    image: z.string(),
   }),
-  cards: z.array(storyCardSchema),
+  cards: z.array(storyIndexCardSchema),
+})
+
+const storyArticleChapterSchema = z.object({
+  kicker: z.string().optional(),
+  label: z.string(),
+  question: z.string(),
+  paragraphs: z.array(z.string()),
+  audio: z
+    .object({
+      title: z.string(),
+      src: z.string(),
+    })
+    .optional(),
+  closing: z.array(z.string()).optional(),
+})
+
+export const storyArticleSchema = z.object({
+  hero: z.object({
+    wordmark: z.array(z.string()),
+    subtitle: z.string(),
+    name: z.string(),
+    line: z.string(),
+    portrait: z.string(),
+    scene: z.string(),
+  }),
+  identity: z.object({
+    theme: z.string(),
+    name: z.string(),
+    role: z.string(),
+    place: z.string(),
+  }),
+  lead: z.object({
+    question: z.string(),
+    paragraphs: z.array(z.string()),
+    quote: z.string(),
+    afterQuote: z.array(z.string()),
+    question2: z.string(),
+    paragraphs2: z.array(z.string()),
+  }),
+  banner: z.object({
+    image: z.string(),
+    quote: z.string(),
+  }),
+  chapters: z.array(storyArticleChapterSchema),
 })
 
 export const storySchema = z.object({
   slug: z.string(),
-  hero: storyDetailHeroSchema,
-  comingSoon: z.string().optional(),
-  showcase: storyShowcaseSchema.optional(),
 })
 
 function homeCollection(locale: string) {
@@ -337,6 +242,17 @@ function storiesIndexCollection(locale: string) {
   })
 }
 
+function storyArticleCollection(locale: string) {
+  return defineCollection({
+    type: 'data',
+    source: {
+      include: `${locale}/story-article.json`,
+      cwd: 'content',
+    },
+    schema: storyArticleSchema,
+  })
+}
+
 function storyCollection(locale: string) {
   return defineCollection({
     type: 'data',
@@ -378,6 +294,9 @@ export default defineContentConfig({
     stories_index_en: storiesIndexCollection('en'),
     stories_index_es: storiesIndexCollection('es'),
     stories_index_it: storiesIndexCollection('it'),
+    story_article_en: storyArticleCollection('en'),
+    story_article_es: storyArticleCollection('es'),
+    story_article_it: storyArticleCollection('it'),
     story_en: storyCollection('en'),
     story_es: storyCollection('es'),
     story_it: storyCollection('it'),

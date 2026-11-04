@@ -145,7 +145,7 @@ onUnmounted(() => {
 
 <template>
   <section class="relative min-h-[calc(100dvh-3.5rem)] bg-adapt-sea text-adapt-ink">
-    <div class="grid items-center gap-8 px-6 pt-10 pb-6 lg:grid-cols-[minmax(16rem,22rem)_minmax(0,1fr)] lg:px-10 lg:pt-14 lg:pr-52 lg:pb-32">
+    <div class="grid items-center gap-8 px-6 pt-10 pb-6 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)_11rem] lg:gap-10 lg:px-10 lg:pt-16 lg:pb-36">
       <div>
         <h1>
           <span
@@ -175,21 +175,19 @@ onUnmounted(() => {
       <img
         :src="displaySrc"
         :alt="displayAlt"
-        class="w-full object-contain"
+        class="min-w-0 w-full object-contain"
         :class="[
           reduceMotion ? '' : 'transition-opacity duration-[250ms]',
           faded ? 'opacity-0' : 'opacity-100',
         ]"
       >
-    </div>
-
-    <div class="px-6 pb-8 lg:absolute lg:top-8 lg:right-6 lg:px-0 lg:pb-0">
       <StoneCta
         :label="cta.label"
         :to="cta.to"
         :image="cta.image"
         appearance="light"
         layout="stack"
+        class="w-full max-w-44 justify-self-start lg:max-w-none lg:justify-self-end"
       />
     </div>
 

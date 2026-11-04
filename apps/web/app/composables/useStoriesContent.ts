@@ -1,7 +1,6 @@
-import type { Collections } from '@nuxt/content'
-
 type StoriesIndexCollection = 'stories_index_en' | 'stories_index_es' | 'stories_index_it'
 type StoryCollection = 'story_en' | 'story_es' | 'story_it'
+type StoryArticleCollection = 'story_article_en' | 'story_article_es' | 'story_article_it'
 
 function storiesIndexCollectionFor(locale: string): StoriesIndexCollection {
   if (locale === 'es') return 'stories_index_es'
@@ -15,12 +14,18 @@ function storyCollectionFor(locale: string): StoryCollection {
   return 'story_en'
 }
 
+function storyArticleCollectionFor(locale: string): StoryArticleCollection {
+  if (locale === 'es') return 'story_article_es'
+  if (locale === 'it') return 'story_article_it'
+  return 'story_article_en'
+}
+
 function storyStemFor(locale: string, slug: string) {
   const prefix = locale === 'en' ? 'en' : locale
   return `${prefix}/stories/${slug}`
 }
 
-async function fetchStoryBySlug(collection: keyof Collections, locale: string, slug: string) {
+async function fetchStoryBySlug(collection: StoryCollection, locale: string, slug: string) {
   let doc = await queryCollection(collection).where('slug', '=', slug).first()
   if (!doc) {
     doc = await queryCollection(collection).where('stem', '=', storyStemFor(locale, slug)).first()
@@ -44,7 +49,7 @@ export async function useStoriesIndexContent() {
   const { data: storiesIndex } = await useAsyncData(
     () => `stories-index-${locale.value}`,
     async () => {
-      const collection = storiesIndexCollectionFor(locale.value) as keyof Collections
+      const collection = storiesIndexCollectionFor(locale.value)
       let doc = await queryCollection(collection).first()
       if (!doc && locale.value !== 'en') {
         doc = await queryCollection('stories_index_en').first()
@@ -57,6 +62,25 @@ export async function useStoriesIndexContent() {
   return { storiesIndex }
 }
 
+export async function useStoryArticleContent() {
+  const { locale } = useI18n()
+
+  const { data: article } = await useAsyncData(
+    () => `story-article-${locale.value}`,
+    async () => {
+      const collection = storyArticleCollectionFor(locale.value)
+      let doc = await queryCollection(collection).first()
+      if (!doc && locale.value !== 'en') {
+        doc = await queryCollection('story_article_en').first()
+      }
+      return doc
+    },
+    { watch: [locale] }
+  )
+
+  return { article }
+}
+
 export async function useStoryContent(slug: MaybeRefOrGetter<string>) {
   const { locale } = useI18n()
   const slugRef = computed(() => toValue(slug))
@@ -64,7 +88,7 @@ export async function useStoryContent(slug: MaybeRefOrGetter<string>) {
   const { data: story } = await useAsyncData(
     () => `story-${locale.value}-${slugRef.value}`,
     async () => {
-      const collection = storyCollectionFor(locale.value) as keyof Collections
+      const collection = storyCollectionFor(locale.value)
       let doc = await fetchStoryBySlug(collection, locale.value, slugRef.value)
       if (!doc && locale.value !== 'en') {
         doc = await fetchStoryBySlug('story_en', 'en', slugRef.value)
