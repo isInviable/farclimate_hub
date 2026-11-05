@@ -35,12 +35,12 @@
       <!-- Shared 5-col body shell: aside (chapter nav, recipe only) + content area -->
       <div class="mt-2 grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-6 overflow-hidden lg:grid-cols-5">
         <aside
-          class="hidden min-w-0 lg:col-span-1 lg:block"
+          class="hidden min-h-0 min-w-0 overflow-y-auto lg:col-span-1 lg:block"
           :aria-hidden="activePrimaryId !== 'recipe' ? 'true' : undefined"
         >
           <ArticleSectionNav
             v-if="showSecondaryNav"
-            :slides="recipeNavSlides"
+            :chapters="recipeNavChapters"
             :active-index="activeRecipeSegmentIndex"
             @update:active-index="onRecipeSegmentNavClick"
           />
@@ -121,12 +121,28 @@
                 </div>
               </section>
 
-              <!-- Markdown sections (per-section imagery: RECIPE_SECTION_IMAGES) -->
+              <!-- Map -->
+              <section
+                data-testid="article-recipe-segment-map"
+                :data-recipe-segment-index="mapSegmentIndex"
+                class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 lg:py-20"
+              >
+                <RecipeSegmentHeading
+                  :number="segmentNumber(mapSegmentIndex)"
+                  :label="t('recipe.nav.map')"
+                  class="mb-6"
+                />
+                <div class="min-h-0 min-w-0">
+                  <SummaryMapSection :document="document" />
+                </div>
+              </section>
+
+              <!-- Markdown sections -->
               <section
                 v-for="(section, idx) in recipeSections"
                 :key="section.key"
                 :data-testid="`article-recipe-segment-${section.key}`"
-                :data-recipe-segment-index="1 + idx"
+                :data-recipe-segment-index="2 + idx"
                 :data-section-decoration="recipeSectionImage(section)?.placement ?? undefined"
                 class="mb-32 flex min-w-0 flex-col border-b border-neutral-lighter pt-0 pb-16 last:border-b-0"
               >
@@ -140,7 +156,7 @@
                       : 'max-w-4xl'
                   " -->
                   <RecipeSegmentHeading
-                    :number="segmentNumber(1 + idx)"
+                    :number="segmentNumber(2 + idx)"
                     :label="section.title"
                   />
                   <!-- <div
@@ -186,22 +202,6 @@
                   :src="sectionGalleryStripSrc(idx)"
                   :object-position-y="sectionGalleryStripFocusY(idx)"
                 />
-              </section>
-
-              <!-- Map -->
-              <section
-                data-testid="article-recipe-segment-map"
-                :data-recipe-segment-index="mapSegmentIndex"
-                class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 lg:py-20"
-              >
-                <RecipeSegmentHeading
-                  :number="segmentNumber(mapSegmentIndex)"
-                  :label="t('recipe.nav.map')"
-                  class="mb-6"
-                />
-                <div class="min-h-0 min-w-0">
-                  <SummaryMapSection :document="document" />
-                </div>
               </section>
             </div>
           </div>
@@ -261,7 +261,6 @@ import { PinArticleContextKey } from "./pinContext";
 import ArticlePrimaryNav from "./article/ArticlePrimaryNav.vue";
 import type { ArticlePrimaryNavItem } from "./article/ArticlePrimaryNav.vue";
 import ArticleSectionNav from "./article/ArticleSectionNav.vue";
-import type { ArticleNavItem } from "./article/ArticleSectionNav.vue";
 import SummaryMainLeftColumn from "./article/SummaryMainLeftColumn.vue";
 import SummaryMainContent from "./article/SummaryMainContent.vue";
 import SummaryMainGallery from "./article/SummaryMainGallery.vue";
@@ -277,6 +276,7 @@ import {
   type RecipeSection,
   type RecipeSectionKey,
 } from "@/composables/useArticleRecipe";
+import { buildRecipeChapters } from "@/composables/recipeChapters";
 import type { HumanPinRow } from "~/types/pins";
 
 type PrimaryId = "recipe" | "chat" | "contacts" | "pins";
@@ -366,20 +366,27 @@ const {
   loadRecipe,
 } = useArticleRecipe(documentIdRef, recipeIngredientsRef);
 
-const mapSegmentIndex = computed(
-  () => 1 + recipeSections.value.length,
-);
+const mapSegmentIndex = computed(() => 1);
 
-const recipeNavSlides = computed<ArticleNavItem[]>(() => {
-  const slides: ArticleNavItem[] = [
+const recipeNavSlides = computed(() => {
+  const slides = [
     { id: "summary-plus", label: t("recipe.nav.summaryPlus") },
+    { id: "map", label: t("recipe.nav.map") },
   ];
   for (const section of recipeSections.value) {
     slides.push({ id: section.key, label: section.title });
   }
-  slides.push({ id: "map", label: t("recipe.nav.map") });
   return slides;
 });
+
+const recipeNavChapters = computed(() =>
+  buildRecipeChapters(recipeNavSlides.value, {
+    introduction: t("recipe.nav.chapters.introduction"),
+    startingPoint: t("recipe.nav.chapters.startingPoint"),
+    howItWasDone: t("recipe.nav.chapters.howItWasDone"),
+    whatWasAchieved: t("recipe.nav.chapters.whatWasAchieved"),
+  }),
+);
 
 watch(
   () => recipeNavSlides.value.length,

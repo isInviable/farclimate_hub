@@ -670,8 +670,14 @@
   },
   "recipe": {
     "nav": {
-      "summaryPlus": "Resumen+",
-      "map": "Ubicación"
+      "summaryPlus": "Resumen",
+      "map": "Ubicación",
+      "chapters": {
+        "introduction": "Introducción",
+        "startingPoint": "Situación de partida",
+        "howItWasDone": "Cómo se hizo",
+        "whatWasAchieved": "Qué se logró"
+      }
     },
     "emptyTitle": "Sin contenido de receta",
     "emptyDescription": "No hay una receta estructurada en la base de datos para este caso de estudio en el idioma actual. Si esperabas datos, aplica el SQL actualizado de get_documents_by_ids (recipe_ingredients) y asegúrate de que el pipeline haya cargado filas en knowledge.recipe.",
@@ -679,15 +685,15 @@
     "loadErrorDescription": "Falló la petición de datos de receta. Revisa la pestaña Red del navegador para /api/document-recipe y las credenciales de Supabase.",
     "retry": "Reintentar",
     "sections": {
-      "context_summary": "Resumen del contexto",
+      "context_summary": "Breve contexto",
       "challenges": "Retos",
-      "policy_context": "Contexto de políticas",
+      "policy_context": "Políticas públicas",
       "legal_aspects": "Aspectos legales",
       "who_is_involved": "Quién participa",
       "economic_data": "Datos económicos",
       "objectives": "Objetivos",
-      "solutions_implemented": "Solución(es) implementada(s)",
-      "implementation_phases": "Fases de implementación y calendario",
+      "solutions_implemented": "Soluciones implementadas",
+      "implementation_phases": "Fases de implementación",
       "success_and_limiting": "Factores de éxito y limitantes",
       "benefits": "Beneficios",
       "lessons_learnt": "Lecciones aprendidas",

@@ -656,8 +656,14 @@
   },
   "recipe": {
     "nav": {
-      "summaryPlus": "Sintesi+",
-      "map": "Località"
+      "summaryPlus": "Sintesi",
+      "map": "Località",
+      "chapters": {
+        "introduction": "Introduzione",
+        "startingPoint": "Situazione di partenza",
+        "howItWasDone": "Come è stato fatto",
+        "whatWasAchieved": "Cosa si è ottenuto"
+      }
     },
     "emptyTitle": "Nessun contenuto ricetta",
     "emptyDescription": "Non è presente una ricetta strutturata nel database per questo caso studio nella lingua corrente. Se ti aspetti dati qui, applica l’ultima SQL per get_documents_by_ids (recipe_ingredients) e verifica che la pipeline abbia inviato le righe knowledge.recipe.",
@@ -665,15 +671,15 @@
     "loadErrorDescription": "La richiesta di caricamento dei dati ricetta non è riuscita. Controlla la scheda rete del browser per /api/document-recipe e verifica le credenziali Supabase.",
     "retry": "Riprova",
     "sections": {
-      "context_summary": "Sintesi del contesto",
+      "context_summary": "Breve contesto",
       "challenges": "Sfide",
-      "policy_context": "Contesto politico",
+      "policy_context": "Politiche pubbliche",
       "legal_aspects": "Aspetti legali",
-      "who_is_involved": "Chi è coinvolto",
+      "who_is_involved": "Chi partecipa",
       "economic_data": "Dati economici",
       "objectives": "Obiettivi",
-      "solutions_implemented": "Soluzione/i attuate",
-      "implementation_phases": "Fasi di attuazione e cronologia",
+      "solutions_implemented": "Soluzioni attuate",
+      "implementation_phases": "Fasi di attuazione",
       "success_and_limiting": "Fattori di successo e limitanti",
       "benefits": "Benefici",
       "lessons_learnt": "Lezioni apprese",

@@ -658,8 +658,14 @@
   },
   "recipe": {
     "nav": {
-      "summaryPlus": "Summary+",
-      "map": "Location"
+      "summaryPlus": "Summary",
+      "map": "Location",
+      "chapters": {
+        "introduction": "Introduction",
+        "startingPoint": "Starting point",
+        "howItWasDone": "How it was done",
+        "whatWasAchieved": "What was achieved"
+      }
     },
     "emptyTitle": "No recipe content",
     "emptyDescription": "There is no structured recipe in the database for this case study in the current language. If you expect data here, apply the latest SQL for get_documents_by_ids (recipe_ingredients) and ensure the pipeline has pushed knowledge.recipe rows.",
@@ -667,15 +673,15 @@
     "loadErrorDescription": "The request to load recipe data failed. Check the browser network tab for /api/document-recipe and verify Supabase credentials.",
     "retry": "Retry",
     "sections": {
-      "context_summary": "Context summary",
+      "context_summary": "Brief context",
       "challenges": "Challenges",
-      "policy_context": "Policy context",
+      "policy_context": "Public policies",
       "legal_aspects": "Legal aspects",
       "who_is_involved": "Who is involved",
       "economic_data": "Economic data",
       "objectives": "Objectives",
-      "solutions_implemented": "Solution(s) implemented",
-      "implementation_phases": "Implementation phases and timeline",
+      "solutions_implemented": "Solutions implemented",
+      "implementation_phases": "Implementation phases",
       "success_and_limiting": "Success and limiting factors",
       "benefits": "Benefits",
       "lessons_learnt": "Lessons learnt",
