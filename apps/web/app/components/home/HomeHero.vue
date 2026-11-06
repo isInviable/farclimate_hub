@@ -28,11 +28,19 @@ defineProps<{
         <img
           :src="hero.image"
           :alt="hero.imageAlt"
-          class="mx-auto h-full w-auto object-contain object-top lg:absolute lg:top-[-1.5rem] lg:left-1/2 lg:h-[calc(100%+1.5rem)] lg:w-auto lg:max-w-full lg:-translate-x-1/2"
+          class="mx-auto h-full w-auto object-contain object-top lg:absolute lg:top-6 lg:left-1/2 lg:h-[calc(100%+1.5rem)] lg:w-auto lg:max-w-full lg:-translate-x-1/2"
         />
       </div>
       <div class="flex max-w-xs flex-col gap-8">
-        <KeywordText :segments="hero.intro" />
+        <p class="font-adapt-body text-base leading-snug text-adapt-ink-light">
+          <template v-for="segment in hero.intro" :key="segment.text">
+            <span
+              v-if="segment.keyword"
+              class="mt-2 block font-adapt-keyword text-2xl tracking-wide text-adapt-ink uppercase ml-2"
+            >{{ segment.text }}</span>
+            <span v-else class="block">{{ segment.text }}</span>
+          </template>
+        </p>
         <StoneCta :label="hero.cta.label" :to="hero.cta.to" :image="hero.cta.image" />
       </div>
     </div>
