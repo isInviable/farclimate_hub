@@ -25,7 +25,7 @@
     "image": "/img/adaptarium/fundamar-oscuro.jpg",
     "imageAlt": "Persone al lavoro in mare con ceste di frutti di mare",
     "items": [
-      { "prefix": "Oltre", "value": "100", "label": "ricette di adattamento climatico" },
+      { "prefix": "Oltre", "value": "100", "label": "ricette di adattamento climatico", "highlight": true },
       { "value": "41", "label": "paesi d'Europa" },
       { "value": "7", "label": "bioregioni" }
     ]
@@ -46,8 +46,8 @@
     ],
     "cta": {
       "label": "Entra nelle soluzioni",
-      "to": "/explorer/",
-      "image": "/img/adaptarium/boton-9.png"
+      "to": "/explorer/explorer",
+      "image": "/img/adaptarium/boton-c.png"
     }
   },
   "inspire": {

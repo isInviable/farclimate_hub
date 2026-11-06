@@ -25,7 +25,7 @@
     "image": "/img/adaptarium/fundamar-oscuro.jpg",
     "imageAlt": "People working at sea with seafood baskets",
     "items": [
-      { "prefix": "More than", "value": "100", "label": "climate adaptation recipes" },
+      { "prefix": "More than", "value": "100", "label": "climate adaptation recipes", "highlight": true },
       { "value": "41", "label": "European countries" },
       { "value": "7", "label": "bioregions" }
     ]
@@ -46,8 +46,8 @@
     ],
     "cta": {
       "label": "Enter solutions",
-      "to": "/explorer/",
-      "image": "/img/adaptarium/boton-9.png"
+      "to": "/explorer/explorer",
+      "image": "/img/adaptarium/boton-c.png"
     }
   },
   "inspire": {

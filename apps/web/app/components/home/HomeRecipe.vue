@@ -88,26 +88,26 @@ function mobileListStyle({ side, line, pad, pt, pb }: MobileSlot['list']) {
 
 <template>
   <section class="overflow-hidden bg-adapt-aqua pt-9 pb-10 text-adapt-ink lg:pb-6">
-    <div class="mx-auto w-4/5 lg:w-full lg:max-w-[67.5rem] lg:px-5">
+    <div class="mx-auto w-4/5 lg:w-full lg:max-w-270 lg:px-5">
       <p class="pl-8 font-adapt-body text-base">{{ recipe.kicker }}</p>
       <h2 class="pt-1 font-adapt-heavy text-[2.9375rem] leading-[0.8] tracking-[1px] text-adapt-sand uppercase">
         {{ recipe.title }}
       </h2>
       <div class="mt-4 flex flex-col lg:flex-row lg:items-start">
-        <div class="w-48 lg:w-[22.25rem]">
-          <p class="w-[5.75rem] text-right font-adapt-body text-base lg:w-[19.625rem]">{{ recipe.lead }}</p>
+        <div class="w-48 lg:w-89">
+          <p class="w-23 text-right font-adapt-body text-base lg:w-78.5">{{ recipe.lead }}</p>
           <p class="-mt-0.5 pt-2.5 pr-2 text-right font-adapt-heavy text-[5.3125rem] leading-[0.8] tracking-[1px] text-adapt-orange">
             {{ recipe.count }}
           </p>
         </div>
-        <p class="mt-8 max-w-[17rem] font-adapt-body text-base leading-[1.3] lg:mt-6 lg:ml-4 lg:max-w-[19.625rem]">
+        <p class="mt-8 max-w-68 font-adapt-body text-base leading-[1.3] lg:mt-6 lg:ml-4 lg:max-w-78.5">
           {{ recipe.body }}
         </p>
       </div>
     </div>
 
     <div class="mx-auto mt-2 hidden w-[90%] grid-cols-[minmax(0,73.6%)_minmax(0,1fr)] lg:grid">
-      <div class="recipe-canvas @container relative aspect-[1024/701]">
+      <div class="recipe-canvas @container relative aspect-1024/701">
         <div
           class="absolute overflow-hidden"
           :style="{ left: u(345), top: u(128), width: u(350), height: u(240) }"
@@ -150,6 +150,7 @@ function mobileListStyle({ side, line, pad, pt, pb }: MobileSlot['list']) {
         :to="recipe.cta.to"
         :image="recipe.cta.image"
       />
+  
     </div>
 
     <div class="recipe-canvas recipe-canvas--mobile @container mx-auto mt-10 w-4/5 max-w-[30rem] lg:hidden">

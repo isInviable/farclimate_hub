@@ -40,6 +40,7 @@ export const homeSchema = z.object({
         prefix: z.string().optional(),
         value: z.string(),
         label: z.string(),
+        highlight: z.boolean().optional(),
       })
     ),
   }),
