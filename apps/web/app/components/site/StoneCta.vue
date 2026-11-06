@@ -45,6 +45,7 @@ const linkClass = computed(() => {
     :to="to"
     class="group inline-flex"
     :class="linkClass"
+  
   >
     <img
       :src="image"
@@ -57,6 +58,7 @@ const linkClass = computed(() => {
     />
     <span
       :class="[labelClass, imageSide === 'end' ? 'order-1' : 'order-2']"
+    class="group-hover:underline"
     >
       {{ label }}
     </span>

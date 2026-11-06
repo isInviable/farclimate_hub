@@ -10,7 +10,7 @@ const topics = computed(() => {
 
 <template>
   <section class="bg-adapt-skills-paper lg:grid lg:grid-cols-3">
-    <div class="flex flex-col bg-adapt-yellow lg:col-span-2">
+    <div class="flex flex-col bg-[#F3AC01] lg:col-span-2">
       <img
         src="/img/adaptarium/skills/habilidades.png"
         alt=""

@@ -11,7 +11,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div v-if="home">
+  <div v-if="home" >
     <HomeHero :hero="home.hero" />
     <HomeStats :stats="home.stats" />
     <HomeRecipe :recipe="home.recipe" />

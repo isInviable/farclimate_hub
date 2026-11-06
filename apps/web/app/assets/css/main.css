@@ -6,6 +6,13 @@
 }
 
 @theme static {
+  /* 1920px. Sits after the default 2xl (1536px). */
+  --breakpoint-3xl: 120rem;
+
+  /* Width scale continues past max-w-7xl (80rem). */
+  --container-8xl: 96rem; /* 1536px */
+  --container-9xl: 120rem; /* 1920px */
+
   --color-green-50: #effdf5;
   --color-green-100: #d9fbe8;
   --color-green-200: #b3f5d1;

@@ -10,14 +10,14 @@ defineProps<{
 </script>
 
 <template>
-  <section class="relative overflow-hidden">
+  <section class="relative overflow-hidden ">
     <img
       :src="stories.image"
       :alt="stories.imageAlt"
       class="absolute inset-0 h-full w-full object-cover"
     />
-    <div class="relative pt-[68px] pb-[219px] pl-[4.5rem] md:pl-[100px] lg:pl-[18.7vw]">
-      <h2 class="flex flex-col gap-[11px] font-adapt-keyword text-[1.8125rem] leading-none tracking-[2px] uppercase lg:text-[3.1875rem]">
+    <div class="relative pt-17 pb-54.75 pl-18 md:pl-25 lg:pl-[18.7vw]">
+      <h2 class="flex flex-col gap-2.75 font-adapt-keyword text-[1.8125rem] leading-none tracking-[2px] uppercase lg:text-[3.1875rem]">
         <span
           v-for="line in stories.lines"
           :key="line.text"
@@ -27,14 +27,14 @@ defineProps<{
       </h2>
       <NuxtLinkLocale
         :to="stories.cta.to"
-        class="group relative mt-1 -ml-10 block w-[200px] md:ml-[-50px] md:w-[300px] lg:ml-16 lg:w-[340px]"
+        class="group relative mt-1 -ml-10 w-50 md:-ml-12.5 md:w-75 lg:ml-16 lg:w-85 flex items-center justify-center "
       >
         <img
           :src="stories.cta.image"
           alt=""
-          class="w-full transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:rotate-[-3deg]"
+          class=" transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:-rotate-3"
         />
-        <span class="absolute top-[71%] left-[44%] max-w-[50%] font-adapt-heavy text-[0.6875rem] leading-[1.1] tracking-[0.06em] text-white uppercase md:text-base lg:text-lg">
+        <span class="font-adapt-heavy text-[0.6875rem] leading-[1.1] tracking-[0.06em] group-hover:text-black uppercase md:text-base lg:text-lg text-white/80">
           {{ stories.cta.label }}
         </span>
       </NuxtLinkLocale>

@@ -202,10 +202,7 @@ export const storySchema = z.object({
 function homeCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/home.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/home.json`,
     schema: homeSchema,
   })
 }
@@ -213,10 +210,7 @@ function homeCollection(locale: string) {
 function howToCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/how-to.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/how-to.json`,
     schema: howToSchema,
   })
 }
@@ -224,10 +218,7 @@ function howToCollection(locale: string) {
 function footerCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/footer.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/footer.json`,
     schema: footerSchema,
   })
 }
@@ -235,10 +226,7 @@ function footerCollection(locale: string) {
 function storiesIndexCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/stories-index.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/stories-index.json`,
     schema: storiesIndexSchema,
   })
 }
@@ -246,10 +234,7 @@ function storiesIndexCollection(locale: string) {
 function storyArticleCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/story-article.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/story-article.json`,
     schema: storyArticleSchema,
   })
 }
@@ -257,10 +242,7 @@ function storyArticleCollection(locale: string) {
 function storyCollection(locale: string) {
   return defineCollection({
     type: 'data',
-    source: {
-      include: `${locale}/stories/*.json`,
-      cwd: 'content',
-    },
+    source: `${locale}/stories/*.json`,
     schema: storySchema,
   })
 }
@@ -273,10 +255,7 @@ const aboutPageSchema = z.object({
 function aboutCollection(locale: string) {
   return defineCollection({
     type: 'page',
-    source: {
-      include: `${locale}/about.md`,
-      cwd: 'content',
-    },
+    source: `${locale}/about.md`,
     schema: aboutPageSchema,
   })
 }

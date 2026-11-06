@@ -35,16 +35,12 @@ const portraits = [
 
 <template>
   <div class="bg-adapt-paper">
-    <section class="relative bg-adapt-blue flex flex-col items-center">
-      <div class="grid grid-cols-6 max-w-7xl">
-        <div class="col-span-4">
-        <img
-          :src="image"
-          alt=""
-          class=" inset-0 h-full w-full object-cover"
-        />
+    <section class="relative bg-[#0040C6] flex flex-col items-center">
+      <div class="grid grid-cols-6 container  mx-auto bg-no-repeat" :style="`background-image: url(${image}); background-size:contain; background-position: top-left;`">
+        <div class="col-span-3">
+        
         </div>
-        <div class="relative col-span-2 flex items-center">
+        <div class="relative col-span-2 flex items-center py-10">
           
           <div
             class="flex flex-col justify-center gap-6 px-8 text-white"
@@ -98,3 +94,7 @@ const portraits = [
     </section>
   </div>
 </template>
+
+<style scoped>
+
+</style>
