@@ -41,13 +41,13 @@ const desktopSlots: DesktopSlot[] = [
     list: {
       side: "end",
       line: 350,
-      y: 136,
+      y: 167,
       minH: 116,
       w: 260,
       pad: 27,
       pt: 22,
     },
-    links: [[350, 183, 405, 183]],
+    links: [[350, 214, 405, 214]],
   },
   {
     box: { x: 588, y: 38, w: 237 },
@@ -67,15 +67,15 @@ const desktopSlots: DesktopSlot[] = [
     list: {
       side: "end",
       line: 348,
-      y: 424,
+      y: 455,
       minH: 159,
       w: 300,
       pad: 15,
       pt: 21,
     },
     links: [
-      [348, 472, 440, 472],
-      [440, 387, 440, 472],
+      [348, 503, 440, 503],
+      [440, 387, 440, 503],
     ],
   },
   {
@@ -83,16 +83,16 @@ const desktopSlots: DesktopSlot[] = [
     list: {
       side: "start",
       line: 628,
-      y: 420,
+      y: 451,
       minH: 235,
       w: 330,
       pad: 22,
       pt: 38,
     },
     links: [
-      [628, 420, 700, 420],
-      [558, 525, 628, 525],
-      [558, 398, 558, 525],
+      [628, 451, 700, 451],
+      [558, 556, 628, 556],
+      [558, 398, 558, 556],
     ],
   },
 ];
@@ -321,8 +321,13 @@ function mobileListStyle({ side, line, pad, pt, pb }: MobileSlot["list"]) {
 }
 
 .recipe-box {
+  --pad-y: calc(var(--u) * 9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(2.2em + 2 * var(--pad-y) + 2 * var(--line));
   border: var(--line) solid #fff;
-  padding: calc(var(--u) * 9) calc(var(--u) * 12);
+  padding: var(--pad-y) calc(var(--u) * 12);
   font-family: var(--font-adapt-keyword);
   font-size: calc(var(--u) * 28);
   line-height: 1.1;
@@ -359,7 +364,8 @@ function mobileListStyle({ side, line, pad, pt, pb }: MobileSlot["list"]) {
 }
 
 .recipe-canvas--mobile .recipe-box {
-  padding: calc(var(--u) * 8) calc(var(--u) * 10);
+  --pad-y: calc(var(--u) * 8);
+  padding: var(--pad-y) calc(var(--u) * 10);
   font-size: calc(var(--u) * 18.5);
 }
 
