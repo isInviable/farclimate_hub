@@ -1,15 +1,15 @@
 {
   "hero": {
     "wordmark": [
-      "HIS",
-      "TO",
-      "RIAS"
+      "STO",
+      "RI",
+      "ES"
     ],
-    "subtitle": "detrás de las recetas",
+    "subtitle": "Behind the recipes",
     "paragraphs": [
-      "El cambio climático tiene impactos profundos en las comunidades y sus territorios.",
-      "Hacer frente a los desafíos que esto supone requieren esfuerzos colectivos para una transformación sustentable.",
-      "Descubre estas experiencias en la voz de sus protagonistas."
+      "Climate change has profound impacts on communities and their territories.",
+      "Facing the challenges this brings requires collective efforts towards a sustainable transformation.",
+      "Discover these experiences in the voices of the people who lived them."
     ],
     "image": "/img/adaptarium/stories/historias-portada.jpg"
   },
