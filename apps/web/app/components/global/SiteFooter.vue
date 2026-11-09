@@ -3,8 +3,8 @@
     <div class="container mx-auto max-w-7xl px-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
         <div>
-          <NuxtLinkLocale to="/" class="inline-block">
-            <img src="/img/logo.svg" alt="Transformation HUB" class="h-9 brightness-0 invert" />
+          <NuxtLinkLocale to="/" class="inline-block" aria-label="Adaptarium Transformation HUB">
+            <SiteWordmark size="sm" tone="light" />
           </NuxtLinkLocale>
         </div>
         <div>
