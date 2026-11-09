@@ -10,7 +10,7 @@ export type SiteNavItem = {
 export const siteNavItems: SiteNavItem[] = [
   {
     key: 'solutions',
-    to: '/explorer/',
+    to: '/explorer/explorer',
     labelKey: 'siteNav.solutions',
     bgClass: 'bg-adapt-orange',
     textClass: 'text-adapt-ink',

@@ -1,14 +1,11 @@
 <script setup lang="ts">
 const route = useRoute()
 const { items, homeItem, isActive, open, close } = useSiteNav()
-
-watch(() => route.fullPath, () => {
-  close()
-})
 </script>
 
 <template>
   <UModal
+    :key="route.fullPath"
     v-model:open="open"
     :title="$t('siteNav.open')"
     :close="false"
