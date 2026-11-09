@@ -1,6 +1,6 @@
 <template>
   <div
-    class="article-view relative isolate flex h-full min-h-0 w-full min-w-0 flex-col"
+    class="article-view relative isolate flex h-full min-h-0 w-full min-w-0 flex-col bg-white"
     :class="chrome === 'page' ? 'mx-auto container min-h-0 flex-1 overflow-hidden' : 'overflow-hidden p-6 pt-4'"
   >
     <ArticleTextSelectionCapture
@@ -8,7 +8,7 @@
       class="relative z-10 flex min-h-0 flex-1 flex-col"
     >
       <header
-        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-center gap-4 border-b border-default/10 bg-neutral-lightest pb-3"
+        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-center gap-4 border-b border-default/10 pb-3"
       >
         <div class="col-span-1 min-w-0">
           <p

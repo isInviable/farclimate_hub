@@ -1,0 +1,42 @@
+{
+  "title": "About the project",
+  "description": "It is a digital platform that connects institutions, organisations, and professionals across Europe with practical climate-adaptation knowledge, solutions processed and presented as recipes, and artificial intelligence tools, to inspire, learn, and act in the continent's bioregions.",
+  "hero": {
+    "kickerLines": ["ABOUT", "THE PROJECT"],
+    "wordLines": ["TRANS", "FOR", "MA", "TION"],
+    "hub": "HUB",
+    "image": "/img/adaptarium/about/gemas-aqua.png",
+    "imageAlt": "Sea glass on an aqua ground"
+  },
+  "answers": [
+    {
+      "key": "is",
+      "heading": "WHAT IS IT?",
+      "body": "It is a digital platform that connects institutions, organisations, and professionals across Europe with practical climate-adaptation knowledge, solutions processed and presented as recipes, and artificial intelligence tools, to inspire, learn, and act in the continent's bioregions."
+    },
+    {
+      "key": "is-not",
+      "heading": "WHAT IT IS NOT?",
+      "body": "It is not a tool for generating new solutions or formulating projects automatically. It is not meant to replace on-the-ground discussions while specific solutions are being designed."
+    },
+    {
+      "key": "want",
+      "heading": "WHAT WE want?",
+      "body": "To inform, to inspire, and to serve as a support tool for researching and analysing what has been done in other contexts in relation to climate adaptation, so that the learning and experience of other territories and communities can be recognised."
+    }
+  ],
+  "audience": {
+    "heading": "WHO IS THIS PAGE FOR?",
+    "body": "People with responsibility, at local and regional level, in public institutions, community organisations, and civil society, who lead processes in their territory. They have some technical knowledge but little access to scientific literature, and they face language barriers when searching for information on climate change.",
+    "image": "/img/adaptarium/about/gemas-h.png",
+    "imageAlt": "Cluster of sea glass"
+  },
+  "metaphor": {
+    "solution": "ONE SOLUTION",
+    "recipe": "ONE RECIPE",
+    "nameLines": ["SEA", "GLASS"],
+    "body": "Sea glass, or mermaid's tears, is human waste transformed by the ocean into smooth, opaque gems. We give these tide-polished remains a new meaning, joining old and new materials to turn waste into active matter that becomes SOLUTIONS in the face of climate change and adaptation.",
+    "image": "/img/adaptarium/about/quienes-somos-metafora.png",
+    "imageAlt": "Sea glass on a yellow ground"
+  }
+}

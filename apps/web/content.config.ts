@@ -247,16 +247,44 @@ function storyCollection(locale: string) {
   })
 }
 
-const aboutPageSchema = z.object({
-  heroImage: z.string().optional(),
-  heroImageAlt: z.string().optional(),
+const aboutAnswerSchema = z.object({
+  key: z.string(),
+  heading: z.string(),
+  body: z.string(),
+})
+
+export const aboutSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  hero: z.object({
+    kickerLines: z.array(z.string()).length(2),
+    wordLines: z.array(z.string()).length(4),
+    hub: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+  }),
+  answers: z.array(aboutAnswerSchema).length(3),
+  audience: z.object({
+    heading: z.string(),
+    body: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+  }),
+  metaphor: z.object({
+    solution: z.string(),
+    recipe: z.string(),
+    nameLines: z.array(z.string()).length(2),
+    body: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
+  }),
 })
 
 function aboutCollection(locale: string) {
   return defineCollection({
-    type: 'page',
-    source: `${locale}/about.md`,
-    schema: aboutPageSchema,
+    type: 'data',
+    source: `${locale}/about.json`,
+    schema: aboutSchema,
   })
 }
 

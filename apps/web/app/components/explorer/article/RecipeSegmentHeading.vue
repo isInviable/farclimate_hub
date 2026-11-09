@@ -1,6 +1,6 @@
 <template>
   <div
-    class="recipe-segment-heading sticky top-0 z-20 border-b border-default/15 bg-neutral-lightest/90 pb-3 backdrop-blur supports-backdrop-filter:bg-neutral-lightest/75 mb-8"
+    class="recipe-segment-heading sticky top-0 z-20 border-b border-default/15  pb-3 backdrop-blur  mb-8"
   >
     <h2 class="flex min-w-0 items-baseline gap-2 leading-tight">
       <span

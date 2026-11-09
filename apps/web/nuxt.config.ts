@@ -48,6 +48,10 @@ export default defineNuxtConfig({
       pathPrefix: false
     },
     {
+      path: '~/components/about',
+      pathPrefix: false
+    },
+    {
       path: '~/components/skills',
       pathPrefix: false
     },
@@ -89,6 +93,9 @@ export default defineNuxtConfig({
     '/how-to': { prerender: true },
     '/es/how-to': { prerender: true },
     '/it/how-to': { prerender: true },
+    '/about': { prerender: true },
+    '/es/about': { prerender: true },
+    '/it/about': { prerender: true },
     // i18n strategy is prefix_except_default: unprefixed rules do not
     // apply to /es/* or /it/*, so those locale paths would still SSR.
     '/connected/**': { ssr: false },

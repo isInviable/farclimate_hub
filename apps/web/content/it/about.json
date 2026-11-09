@@ -1,0 +1,42 @@
+{
+  "title": "Sul progetto",
+  "description": "È una piattaforma digitale che collega istituzioni, organizzazioni e professionisti in Europa a conoscenze pratiche di adattamento al cambiamento climatico, soluzioni elaborate e presentate sotto forma di ricette, e strumenti di intelligenza artificiale, per ispirare, imparare e agire nelle biorregioni del continente.",
+  "hero": {
+    "kickerLines": ["SUL", "PROGETTO"],
+    "wordLines": ["TRANS", "FOR", "MA", "TION"],
+    "hub": "HUB",
+    "image": "/img/adaptarium/about/gemas-aqua.png",
+    "imageAlt": "Vetri marini su fondo aqua"
+  },
+  "answers": [
+    {
+      "key": "is",
+      "heading": "COS'È?",
+      "body": "È una piattaforma digitale che collega istituzioni, organizzazioni e professionisti in Europa a conoscenze pratiche di adattamento al cambiamento climatico, soluzioni elaborate e presentate sotto forma di ricette, e strumenti di intelligenza artificiale, per ispirare, imparare e agire nelle biorregioni del continente."
+    },
+    {
+      "key": "is-not",
+      "heading": "COSA NON È?",
+      "body": "Non è uno strumento per generare nuove soluzioni o formulare progetti in modo automatizzato. Non è pensata per sostituire le discussioni sul territorio durante la progettazione di soluzioni specifiche."
+    },
+    {
+      "key": "want",
+      "heading": "COSA vogliamo?",
+      "body": "Informare, ispirare e servire da strumento di supporto per ricercare e analizzare ciò che è stato fatto in altri contesti riguardo all'adattamento al cambiamento climatico, per mettere in valore gli apprendimenti e le esperienze di altri territori e collettività."
+    }
+  ],
+  "audience": {
+    "heading": "A CHI È RIVOLTA QUESTA PAGINA?",
+    "body": "Persone responsabili, a livello locale e regionale, di istituzioni pubbliche, organizzazioni comunitarie e della società civile, che guidano processi sul territorio. Hanno un certo grado di conoscenza tecnica ma poco accesso alla bibliografia scientifica, e incontrano barriere linguistiche quando cercano informazioni sul cambiamento climatico.",
+    "image": "/img/adaptarium/about/gemas-h.png",
+    "imageAlt": "Gruppo di vetri marini"
+  },
+  "metaphor": {
+    "solution": "UNA SOLUZIONE",
+    "recipe": "UNA RICETTA",
+    "nameLines": ["VETRI", "MARINI"],
+    "body": "Il vetro marino, o lacrime di sirena, sono rifiuti umani trasformati dall'oceano in gemme lisce e opache. Reinterpretiamo questi resti levigati dalla marea, unendo materiali antichi e moderni per trasformare i rifiuti in materia attiva che diventa SOLUZIONI di fronte al cambiamento climatico e all'adattamento.",
+    "image": "/img/adaptarium/about/quienes-somos-metafora.png",
+    "imageAlt": "Vetri marini su fondo giallo"
+  }
+}

@@ -40,7 +40,7 @@ Adding the ADAPTARIUM tokens SHALL NOT change the global values of existing toke
 - **THEN** its colors, fonts, buttons, and inputs look the same as before the change
 
 #### Scenario: Explorer appearance preserved
-- **WHEN** a user opens a page outside the ADAPTARIUM explorer theme that still uses the existing tokens, such as the about page
+- **WHEN** a user opens a page outside the ADAPTARIUM explorer theme that still uses the existing tokens, such as a page that remains on the default layout
 - **THEN** its colors, fonts, buttons, and inputs look the same as before the change
 
 #### Scenario: Themed explorer page re-maps

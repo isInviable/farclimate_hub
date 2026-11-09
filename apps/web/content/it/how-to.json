@@ -62,7 +62,7 @@
   ],
   "cta": {
     "label": "Entra nelle soluzioni",
-    "to": "/explorer/",
+    "to": "/explorer/explorer",
     "image": "/img/adaptarium/boton-b.png"
   }
 }
