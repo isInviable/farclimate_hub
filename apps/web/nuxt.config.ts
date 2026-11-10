@@ -103,7 +103,11 @@ export default defineNuxtConfig({
     '/it/connected/**': { ssr: false },
     '/explorer/**': { ssr: false },
     '/es/explorer/**': { ssr: false },
-    '/it/explorer/**': { ssr: false }
+    '/it/explorer/**': { ssr: false },
+    // Auth session lives in localStorage, so SSR always sees a logged-out user.
+    '/admin/**': { ssr: false },
+    '/es/admin/**': { ssr: false },
+    '/it/admin/**': { ssr: false }
   },
   compatibilityDate: '2025-01-15',
   vite: {

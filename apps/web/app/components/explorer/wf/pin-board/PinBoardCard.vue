@@ -274,9 +274,12 @@ import { pinBodyKindBadgeColor } from "~/utils/pinBodyKindBadge";
 import { pinToSelectionItem } from "~/utils/pinSelection";
 import PinBodyRenderer from "./PinBodyRenderer.vue";
 import PinRenderChat from "./PinRenderChat.vue";
-import MarkmapViewer from "~/components/explorer/MarkmapViewer.client.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { usePinnedSelectionStore } from "@/stores/selection";
+
+const MarkmapViewer = defineAsyncComponent(
+  () => import("~/components/explorer/MarkmapViewer.client.vue"),
+);
 
 const props = defineProps<{
   pin: HumanPinRow
