@@ -3,11 +3,13 @@ useExplorerTheme()
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col overflow-hidden bg-neutral-lightest">
+  <div class="flex min-h-dvh flex-col bg-neutral-lightest">
     <SiteTopBar mode="bar" class="shrink-0" />
-    <main class="flex min-h-0 flex-1 flex-col">
+    <main class="flex flex-1 flex-col">
       <slot />
     </main>
+    <SiteFooter />
+
     <SiteNavOverlay />
     <AuthRequiredModal />
   </div>

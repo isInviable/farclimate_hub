@@ -59,7 +59,10 @@ function updateObjectPositionFromScroll(): void {
   }
 
   const elRect = el.getBoundingClientRect();
-  const rootRect = root.getBoundingClientRect();
+  const rootRect =
+    root instanceof Window
+      ? { top: 0, height: window.innerHeight }
+      : root.getBoundingClientRect();
   if (rootRect.height <= 0) return;
 
   const centerY = (elRect.top + elRect.bottom) / 2;
@@ -88,7 +91,7 @@ function onScroll(): void {
   scheduleScrollUpdate();
 }
 
-let scrollRootEl: HTMLElement | null = null;
+let scrollRootEl: HTMLElement | Window | null = null;
 
 function bindScrollRoot(): void {
   unbindScrollRoot();

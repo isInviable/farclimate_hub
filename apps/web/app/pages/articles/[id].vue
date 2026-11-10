@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-0 flex-1 flex-col">
+  <div class="flex min-h-0 flex-1 flex-col bg-white">
     <div v-if="pending" class="container mx-auto px-4 py-8 space-y-4">
       <USkeleton class="h-10 w-2/3 max-w-xl" />
       <USkeleton class="h-48 w-full max-w-4xl" />
@@ -9,7 +9,7 @@
       v-else-if="article"
       :document="article"
       chrome="page"
-      class="min-h-0 flex-1"
+      class="min-h-0 flex-1 py-8"
     />
   </div>
 </template>

@@ -1,4 +1,5 @@
 import type { InjectionKey, Ref } from "vue";
 
-export const RecipeScrollRootKey: InjectionKey<Ref<HTMLElement | null>> =
-  Symbol("recipeScrollRoot");
+export const RecipeScrollRootKey: InjectionKey<
+  Readonly<Ref<HTMLElement | Window | null>>
+> = Symbol("recipeScrollRoot");
