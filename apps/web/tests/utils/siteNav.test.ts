@@ -15,8 +15,8 @@ describe('siteNav', () => {
       '/explorer/',
       '/how-to',
       '/stories',
-      '/skills',
-      '/connected',
+      'https://adaptarium-skills.pages.dev/skills/',
+      'https://connected-action-v2.pages.dev/connected/',
       '/about',
     ])
     expect(siteNavItems.map(item => item.bgClass)).toEqual([
