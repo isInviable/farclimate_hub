@@ -8,17 +8,17 @@ import { knowledgeApiLang } from "@/utils/knowledgeApiLang";
  */
 export const RECIPE_SECTION_KEYS = [
   "context_summary",
-  "challenges",
   "policy_context",
   "legal_aspects",
-  "who_is_involved",
-  "economic_data",
+  "challenges",
   "objectives",
-  "solutions_implemented",
+  "who_is_involved",
   "implementation_phases",
-  "success_and_limiting",
+  "economic_data",
+  "solutions_implemented",
   "benefits",
   "lessons_learnt",
+  "success_and_limiting",
   "transferability",
 ] as const;
 

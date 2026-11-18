@@ -2,7 +2,7 @@
 import type { TabsItem } from "@nuxt/ui";
 
 definePageMeta({
-  layout: false,
+  layout: "solutions",
 });
 
 const { signIn, sendOtp, verifyOtp } = useAuth();
@@ -207,16 +207,16 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"
+    class="flex flex-1 items-center justify-center bg-neutral-lightest py-16"
   >
     <div class="max-w-md w-full space-y-8 p-8">
       <div class="text-center">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="font-display text-3xl font-bold text-neutral-darkest">
           <template v-if="step === 'otp'">{{ $t('auth.headings.checkEmail') }}</template>
           <template v-else-if="authMode === 'password'">{{ $t('auth.headings.signIn') }}</template>
           <template v-else>{{ $t('auth.headings.welcome') }}</template>
         </h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-2 text-sm text-neutral-dark">
           <template v-if="step === 'otp'">
             {{ $t('auth.subtitle.otpSent', { email }) }}
           </template>
@@ -244,7 +244,7 @@ onUnmounted(() => {
               @complete="handleVerifyOtp"
             />
 
-            <p v-if="isSubmitting" class="text-sm text-gray-500">
+            <p v-if="isSubmitting" class="text-sm text-neutral-dark">
               {{ $t('auth.otp.verifying') }}
             </p>
           </div>
@@ -420,7 +420,7 @@ onUnmounted(() => {
       <div class="text-center">
         <NuxtLinkLocale
           to="/"
-          class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          class="text-sm text-neutral-dark hover:text-neutral-darkest"
         >
           {{ $t('auth.backToHome') }}
         </NuxtLinkLocale>

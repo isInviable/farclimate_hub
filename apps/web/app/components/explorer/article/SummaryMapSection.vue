@@ -1,11 +1,16 @@
 <template>
   <div>
     <div v-if="mapPoints.length > 0" class="h-[min(70vh,480px)] min-h-[320px] w-full">
-      <MapBase
-        :points="mapPoints"
-        :fit-to-bounds="false"
-        class="h-full w-full rounded-md overflow-hidden border border-default"
-      />
+      <ClientOnly>
+        <MapBase
+          :points="mapPoints"
+          :fit-to-bounds="false"
+          class="h-full w-full rounded-md overflow-hidden border border-default"
+        />
+        <template #fallback>
+          <div class="h-full w-full rounded-md border border-default bg-elevated/40" />
+        </template>
+      </ClientOnly>
     </div>
     <div
       v-else
@@ -24,9 +29,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useI18n } from "vue-i18n";
-import MapBase from "../MapBase.vue";
+
+// mapbox-gl is browser-only; keep it out of the SSR bundle.
+const MapBase = defineAsyncComponent(() => import("../MapBase.vue"));
 import { parseDocumentLatLon } from "@/utils/explorerBioregions";
 
 interface MapPoint {

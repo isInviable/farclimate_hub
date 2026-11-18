@@ -52,7 +52,7 @@
               color="neutral"
               variant="solid"
               size="xl"
-              class="bg-grounded-green-dark text-neutral-50"
+              class="bg-adapt-orange text-white"
               :to="sectorExplorerLink('all')"
               :aria-label="$t('explorer.index.viewAll')"
             >
@@ -132,7 +132,7 @@ const localePath = useLocalePath();
 const landingSearch = ref("");
 
 definePageMeta({
-  layout: "default",
+  layout: "solutions",
 });
 
 const mainFeatures = computed(() => [
@@ -185,21 +185,21 @@ const sectorCards = computed(() => [
     title: t("explorer.index.sectorForestry"),
     description: t("explorer.index.sectorForestryDescription"),
     image: "/img/forestry@2x.png",
-    titleClass: "text-community-pink-darkest",
+    titleClass: "text-adapt-orange",
   },
   {
     sector: "fishery",
     title: t("explorer.index.sectorFishery"),
     description: t("explorer.index.sectorFisheryDescription"),
     image: "/img/fisheries@2x.png",
-    titleClass: "text-trust-blue-darkest",
+    titleClass: "text-adapt-blue",
   },
   {
     sector: "agriculture",
     title: t("explorer.index.sectorAgriculture"),
     description: t("explorer.index.sectorAgricultureDescription"),
     image: "/img/agriculture@2x.png",
-    titleClass: "text-grounded-green-dark",
+    titleClass: "text-adapt-teal",
   },
 ]);
 

@@ -1,0 +1,42 @@
+{
+  "title": "Sobre el proyecto",
+  "description": "Es una plataforma digital que permite conectar a instituciones, organizaciones y profesionales de Europa con conocimientos prácticos de adaptación al cambio climático, soluciones procesadas y presentadas a manera de recetas, y herramientas de inteligencia artificial, para inspirar, aprender y actuar en las diversas biorregiones del continente.",
+  "hero": {
+    "kickerLines": ["SOBRE", "EL PROYECTO"],
+    "wordLines": ["TRANS", "FOR", "MA", "TION"],
+    "hub": "HUB",
+    "image": "/img/adaptarium/about/gemas-aqua.png",
+    "imageAlt": "Vidrios marinos sobre fondo aqua"
+  },
+  "answers": [
+    {
+      "key": "is",
+      "heading": "¿QUÉ ES?",
+      "body": "Es una plataforma digital que permite conectar a instituciones, organizaciones y profesionales de Europa con conocimientos prácticos de adaptación al cambio climático, soluciones procesadas y presentadas a manera de recetas, y herramientas de inteligencia artificial, para inspirar, aprender y actuar en las diversas biorregiones del continente."
+    },
+    {
+      "key": "is-not",
+      "heading": "¿QUÉ NO ES?",
+      "body": "No es una herramienta para generar nuevas soluciones o formular proyectos de forma automatizada. No está pensada para reemplazar las discusiones en territorio durante el diseño de soluciones específicas."
+    },
+    {
+      "key": "want",
+      "heading": "¿QUÉ queremos?",
+      "body": "Informar, inspirar, servir de herramienta de apoyo para investigar y analizar qué se ha hecho en otros contextos con relación a la adaptación al cambio climático, para poner en valor los aprendizajes y experiencias de otros territorios y colectividades."
+    }
+  ],
+  "audience": {
+    "heading": "¿PARA QUIÉN ES ESTA PÁGINA?",
+    "body": "Personas responsables, a nivel local y regional, de instituciones públicas, organizaciones comunitarias, y representantes de la sociedad civil, que tienen un rol de incidencia para liderar procesos en territorio con cierto grado de conocimiento técnico, pero con poco acceso a bibliografía científica, que se enfrentan a barreras idiomáticas a la hora de buscar información sobre cambio climático.",
+    "image": "/img/adaptarium/about/gemas-h.png",
+    "imageAlt": "Grupo de vidrios marinos"
+  },
+  "metaphor": {
+    "solution": "UNA SOLUCIÓN",
+    "recipe": "UNA RECETA",
+    "nameLines": ["VIDRIOS", "MARINOS"],
+    "body": "El vidrio marino, o lágrimas de sirena, son desechos humanos transformados por el océano en gemas suaves y opacas. Resignificamos estos restos pulidos por la marea, uniendo materiales antiguos y modernos para convertir la basura en materia activa que se transforma en SOLUCIONES frente al cambio climático y la adaptación.",
+    "image": "/img/adaptarium/about/quienes-somos-metafora.png",
+    "imageAlt": "Vidrios marinos sobre fondo amarillo"
+  }
+}

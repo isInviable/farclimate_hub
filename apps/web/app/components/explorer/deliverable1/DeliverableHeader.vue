@@ -5,7 +5,7 @@
       <UDropdownMenu :items="projectMenuItems" :ui="{ content: 'w-64' }">
         <button
           type="button"
-          class="inline-flex items-center justify-center w-7 h-7 border border-neutral-darkest text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors"
+          class="inline-flex items-center justify-center w-7 h-7 border border-neutral-darkest text-neutral-darkest hover:bg-neutral-darkest hover:text-neutral-lightest transition-colors explorer-adapt:border-adapt-orange explorer-adapt:bg-adapt-orange explorer-adapt:text-white explorer-adapt:hover:border-neutral-darkest"
           :aria-label="$t('projects.header.projectMenu')"
         >
           <UIcon name="material-symbols-light:menu" class="w-4 h-4" />
@@ -49,7 +49,7 @@
       </div>
 
       <!-- Meta line (edited, indexed) -->
-      <span class="hidden md:inline-block w-px h-5 bg-neutral-darkest/20 ml-2" aria-hidden="true" />
+      <span class="hidden md:inline-block w-px h-5 bg-neutral-darkest/20 ml-2 explorer-adapt:w-0.5 explorer-adapt:bg-adapt-orange" aria-hidden="true" />
       <span class="hidden md:inline font-mono text-2xs text-neutral-dark tracking-[0.04em]">
         {{ projectMetaLine }}
       </span>

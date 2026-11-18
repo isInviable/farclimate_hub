@@ -113,6 +113,7 @@
 </template>
 
 <script lang="ts" setup>
+import { demoConnectedUrl, demoSkillsUrl } from "~/constants/siteNav";
 import { useAccess } from "~/composables/useAccess";
 const localePath = useLocalePath()
 
@@ -131,8 +132,8 @@ const router = useRouter();
 
 const navLinks = [
   { to: "/stories", label: "header.stories" },
-  { to: "/skills", label: "header.skills" },
-  { to: "/connected", label: "header.connectedAction" },
+  { to: demoSkillsUrl, label: "header.skills" },
+  { to: demoConnectedUrl, label: "header.connectedAction" },
   { to: "/about", label: "header.about" },
 ];
 

@@ -13,12 +13,12 @@
         class="editorial-cell flex items-center gap-4 p-6"
       >
         <div
-          class="flex size-12 shrink-0 items-center justify-center bg-trust-blue-lightest"
+          class="flex size-12 shrink-0 items-center justify-center bg-adapt-blue-100"
           aria-hidden="true"
         >
           <UIcon
             name="i-heroicons-folder"
-            class="size-7 text-trust-blue-darkest"
+            class="size-7 text-adapt-blue"
           />
         </div>
         <div class="min-w-0 text-left">
@@ -34,10 +34,10 @@
         class="editorial-cell flex items-center gap-4 p-6"
       >
         <div
-          class="flex size-12 shrink-0 items-center justify-center bg-grounded-green-lightest"
+          class="flex size-12 shrink-0 items-center justify-center bg-adapt-aqua/40"
           aria-hidden="true"
         >
-          <UIcon name="mdi:pin" class="size-7 text-grounded-green-darkest" />
+          <UIcon name="mdi:pin" class="size-7 text-adapt-teal" />
         </div>
         <div class="min-w-0 text-left">
           <p class="font-mono text-2xs font-bold uppercase tracking-[0.14em] text-neutral-dark">
@@ -52,12 +52,12 @@
         class="editorial-cell flex items-center gap-4 p-6"
       >
         <div
-          class="flex size-12 shrink-0 items-center justify-center bg-resilient-yellow-lightest"
+          class="flex size-12 shrink-0 items-center justify-center bg-adapt-yellow/30"
           aria-hidden="true"
         >
           <UIcon
             name="i-heroicons-star"
-            class="size-7 text-resilient-yellow-darkest"
+            class="size-7 text-adapt-ink"
           />
         </div>
         <div class="min-w-0 text-left">

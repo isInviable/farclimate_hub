@@ -23,6 +23,10 @@ Both pipelines write to the same hosted Supabase project. Explorer data lives in
 
 These are the items that will bite you if you forget them.
 
+### Skills and Connected nav point at demo prototypes
+
+The Skills and Connected Action items in the public nav open external prototypes. The in-app pages are unchanged. When those prototypes are integrated, follow [demo-external-prototypes.md](demo-external-prototypes.md) to point the nav back at `/skills` and `/connected`.
+
 ### Connected Action catalogue writes are too open
 
 Any **logged-in** user can currently `INSERT`/`UPDATE`/`DELETE` all 13 CORDIS tables through the Supabase API. Admin-only access is enforced only by Nuxt middleware on `/admin`.

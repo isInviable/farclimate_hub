@@ -133,7 +133,7 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 import type { Project } from "~/types/projects";
 
 definePageMeta({
-  layout: "explorer",
+  layout: "solutions",
 });
 
 const route = useRoute();

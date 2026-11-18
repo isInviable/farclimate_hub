@@ -1,31 +1,41 @@
 <template>
-  <ActionBarBase>
+  <ActionBarBase variant="accent">
     <template #left>
-      <div class="flex items-center gap-3">
-        <uButton
-          variant="outline"
-          color="primary"
-          size="sm"
-          class="rounded-full"
-          disabled
-        >
-          {{ $t('publicBoard.actions.viewOnly') }}
-        </uButton>
-      </div>
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em] text-neutral-lightest/80">
+        {{ $t('publicBoard.actions.viewOnly') }}
+      </span>
     </template>
 
-    <UButton variant="outline" @click="handleClone">
-      <Icon name="mdi:content-copy" class="mr-2 h-4 w-4" />
-      {{ $t('publicBoard.actions.cloneToProjects') }}
-    </UButton>
-    <UButton variant="outline" @click="$emit('open-comments')">
-      <Icon name="mdi:comment-plus-outline" class="mr-2 h-4 w-4" />
-      {{ $t('publicBoard.actions.addComment') }}
-    </UButton>
-    <UButton variant="outline" :disabled="true">
-      <Icon name="mdi:download" class="mr-2 h-4 w-4" />
-      {{ $t('publicBoard.actions.download') }}
-    </UButton>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="handleClone"
+    >
+      <Icon name="mdi:content-copy" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        {{ $t('publicBoard.actions.cloneToProjects') }}
+      </span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest hover:bg-neutral-lightest/10 transition-colors"
+      @click="$emit('open-comments')"
+    >
+      <Icon name="mdi:comment-plus-outline" class="h-4 w-4 text-primary-400" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        {{ $t('publicBoard.actions.addComment') }}
+      </span>
+    </button>
+    <button
+      type="button"
+      class="flex items-center gap-2 px-4 h-11 text-neutral-lightest/50 cursor-not-allowed"
+      disabled
+    >
+      <Icon name="mdi:download" class="h-4 w-4" />
+      <span class="font-mono text-2xs font-bold uppercase tracking-[0.14em]">
+        {{ $t('publicBoard.actions.download') }}
+      </span>
+    </button>
   </ActionBarBase>
 </template>
 

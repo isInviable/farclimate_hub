@@ -1,14 +1,14 @@
 <template>
   <div
-    class="article-view relative isolate flex h-full min-h-0 w-full min-w-0 flex-col"
-    :class="chrome === 'page' ? 'mx-auto container min-h-0 flex-1 overflow-hidden' : 'overflow-hidden p-6 pt-4'"
+    class="article-view relative isolate flex w-full min-w-0 flex-col bg-white"
+    :class="isPage ? 'mx-auto container flex-1' : 'h-full min-h-0 overflow-hidden p-6 pt-4'"
   >
     <ArticleTextSelectionCapture
       source-view="article"
       class="relative z-10 flex min-h-0 flex-1 flex-col"
     >
       <header
-        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-center gap-4 border-b border-default/10 bg-neutral-lightest pb-3"
+        class="relative z-20 grid min-w-0 shrink-0 grid-cols-5 items-center gap-4 border-b border-default/10 pb-3"
       >
         <div class="col-span-1 min-w-0">
           <p
@@ -33,26 +33,31 @@
       </header>
 
       <!-- Shared 5-col body shell: aside (chapter nav, recipe only) + content area -->
-      <div class="mt-2 grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-6 overflow-hidden lg:grid-cols-5">
+      <div
+        class="mt-2 grid min-w-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-5"
+        :class="isPage ? 'lg:items-start' : 'min-h-0 overflow-hidden'"
+      >
         <aside
-          class="hidden min-w-0 lg:col-span-1 lg:block"
+          class="hidden min-w-0 overflow-y-auto lg:col-span-1 lg:block"
+          :class="isPage ? 'lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)]' : 'min-h-0'"
           :aria-hidden="activePrimaryId !== 'recipe' ? 'true' : undefined"
         >
           <ArticleSectionNav
             v-if="showSecondaryNav"
-            :slides="recipeNavSlides"
+            :chapters="recipeNavChapters"
             :active-index="activeRecipeSegmentIndex"
             @update:active-index="onRecipeSegmentNavClick"
           />
         </aside>
 
-        <div class="flex min-h-0 min-w-0 flex-col lg:col-span-4">
+        <div class="flex min-w-0 flex-col lg:col-span-4" :class="{ 'min-h-0': !isPage }">
           <!-- Recipe: scroll stack (Summary+ → sections → map); submenu scroll-spy in script -->
           <div
             v-show="activePrimaryId === 'recipe'"
             id="article-primary-recipe"
             role="tabpanel"
-            class="flex h-full min-h-0 min-w-0 flex-col"
+            class="flex min-w-0 flex-col"
+            :class="{ 'h-full min-h-0': !isPage }"
           >
             <div
               v-if="recipeLoadError"
@@ -86,7 +91,10 @@
             <div
               v-else
               ref="recipeScrollRoot"
-              class="recipe-scroll-stack scrollbar-thin scrollbar-thumb-neutral-400 scrollbar-track-transparent min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto scroll-smooth pb-8"
+              class="recipe-scroll-stack min-w-0 overflow-x-hidden pb-8"
+              :class="{
+                'scrollbar-thin scrollbar-thumb-neutral-400 scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto scroll-smooth': !isPage,
+              }"
               @scroll.passive="onRecipeScrollAreaScroll"
             >
               <!-- Summary+ -->
@@ -121,12 +129,28 @@
                 </div>
               </section>
 
-              <!-- Markdown sections (per-section imagery: RECIPE_SECTION_IMAGES) -->
+              <!-- Map -->
+              <section
+                data-testid="article-recipe-segment-map"
+                :data-recipe-segment-index="mapSegmentIndex"
+                class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 lg:py-20"
+              >
+                <RecipeSegmentHeading
+                  :number="segmentNumber(mapSegmentIndex)"
+                  :label="t('recipe.nav.map')"
+                  class="mb-6"
+                />
+                <div class="min-h-0 min-w-0">
+                  <SummaryMapSection :document="document" />
+                </div>
+              </section>
+
+              <!-- Markdown sections -->
               <section
                 v-for="(section, idx) in recipeSections"
                 :key="section.key"
                 :data-testid="`article-recipe-segment-${section.key}`"
-                :data-recipe-segment-index="1 + idx"
+                :data-recipe-segment-index="2 + idx"
                 :data-section-decoration="recipeSectionImage(section)?.placement ?? undefined"
                 class="mb-32 flex min-w-0 flex-col border-b border-neutral-lighter pt-0 pb-16 last:border-b-0"
               >
@@ -140,7 +164,7 @@
                       : 'max-w-4xl'
                   " -->
                   <RecipeSegmentHeading
-                    :number="segmentNumber(1 + idx)"
+                    :number="segmentNumber(2 + idx)"
                     :label="section.title"
                   />
                   <!-- <div
@@ -187,22 +211,6 @@
                   :object-position-y="sectionGalleryStripFocusY(idx)"
                 />
               </section>
-
-              <!-- Map -->
-              <section
-                data-testid="article-recipe-segment-map"
-                :data-recipe-segment-index="mapSegmentIndex"
-                class="min-w-0 scroll-mt-24 border-b border-default/15 py-16 lg:py-20"
-              >
-                <RecipeSegmentHeading
-                  :number="segmentNumber(mapSegmentIndex)"
-                  :label="t('recipe.nav.map')"
-                  class="mb-6"
-                />
-                <div class="min-h-0 min-w-0">
-                  <SummaryMapSection :document="document" />
-                </div>
-              </section>
             </div>
           </div>
 
@@ -211,7 +219,8 @@
             v-show="activePrimaryId === 'chat'"
             id="article-primary-chat"
             role="tabpanel"
-            class="flex h-full min-h-0 min-w-0 flex-col overflow-hidden"
+            class="flex min-h-0 min-w-0 flex-col overflow-hidden"
+            :class="isPage ? 'h-[calc(100dvh-8rem)]' : 'h-full'"
           >
             <ViewModeChat :document="document" />
           </div>
@@ -221,7 +230,8 @@
             v-show="activePrimaryId === 'contacts'"
             id="article-primary-contacts"
             role="tabpanel"
-            class="relative h-full min-h-0 min-w-0 overflow-y-auto"
+            class="relative min-w-0"
+            :class="{ 'h-full min-h-0 overflow-y-auto': !isPage }"
           >
             <SummaryContactsSection :document="document" />
           </div>
@@ -231,7 +241,8 @@
             v-show="activePrimaryId === 'pins'"
             id="article-primary-pins"
             role="tabpanel"
-            class="relative h-full min-h-0 min-w-0 overflow-y-auto"
+            class="relative min-w-0"
+            :class="{ 'h-full min-h-0 overflow-y-auto': !isPage }"
           >
             <ArticlePinsSection :pins="articlePins" />
           </div>
@@ -253,7 +264,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, provide, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ArticleTextSelectionCapture from "./ArticleTextSelectionCapture.vue";
 import PinCaptureDialog from "./PinCaptureDialog.vue";
@@ -261,7 +272,6 @@ import { PinArticleContextKey } from "./pinContext";
 import ArticlePrimaryNav from "./article/ArticlePrimaryNav.vue";
 import type { ArticlePrimaryNavItem } from "./article/ArticlePrimaryNav.vue";
 import ArticleSectionNav from "./article/ArticleSectionNav.vue";
-import type { ArticleNavItem } from "./article/ArticleSectionNav.vue";
 import SummaryMainLeftColumn from "./article/SummaryMainLeftColumn.vue";
 import SummaryMainContent from "./article/SummaryMainContent.vue";
 import SummaryMainGallery from "./article/SummaryMainGallery.vue";
@@ -277,6 +287,7 @@ import {
   type RecipeSection,
   type RecipeSectionKey,
 } from "@/composables/useArticleRecipe";
+import { buildRecipeChapters } from "@/composables/recipeChapters";
 import type { HumanPinRow } from "~/types/pins";
 
 type PrimaryId = "recipe" | "chat" | "contacts" | "pins";
@@ -334,8 +345,15 @@ function onPrimaryChange(id: string): void {
   }
 }
 
+const isPage = computed(() => props.chrome === "page");
+
 const recipeScrollRoot = ref<HTMLElement | null>(null);
-provide(RecipeScrollRootKey, recipeScrollRoot);
+/** In `page` chrome the window scrolls; in `modal` chrome the recipe stack scrolls itself. */
+const recipeScrollContainer = computed<HTMLElement | Window | null>(() => {
+  if (!isPage.value) return recipeScrollRoot.value;
+  return import.meta.client ? window : null;
+});
+provide(RecipeScrollRootKey, recipeScrollContainer);
 const activeRecipeSegmentIndex = ref(0);
 let recipeScrollRaf = 0;
 
@@ -366,20 +384,27 @@ const {
   loadRecipe,
 } = useArticleRecipe(documentIdRef, recipeIngredientsRef);
 
-const mapSegmentIndex = computed(
-  () => 1 + recipeSections.value.length,
-);
+const mapSegmentIndex = computed(() => 1);
 
-const recipeNavSlides = computed<ArticleNavItem[]>(() => {
-  const slides: ArticleNavItem[] = [
+const recipeNavSlides = computed(() => {
+  const slides = [
     { id: "summary-plus", label: t("recipe.nav.summaryPlus") },
+    { id: "map", label: t("recipe.nav.map") },
   ];
   for (const section of recipeSections.value) {
     slides.push({ id: section.key, label: section.title });
   }
-  slides.push({ id: "map", label: t("recipe.nav.map") });
   return slides;
 });
+
+const recipeNavChapters = computed(() =>
+  buildRecipeChapters(recipeNavSlides.value, {
+    introduction: t("recipe.nav.chapters.introduction"),
+    startingPoint: t("recipe.nav.chapters.startingPoint"),
+    howItWasDone: t("recipe.nav.chapters.howItWasDone"),
+    whatWasAchieved: t("recipe.nav.chapters.whatWasAchieved"),
+  }),
+);
 
 watch(
   () => recipeNavSlides.value.length,
@@ -461,8 +486,7 @@ function onRecipeScrollAreaScroll(): void {
 function syncActiveSegmentFromScroll(): void {
   const root = recipeScrollRoot.value;
   if (!root || recipeNavSlides.value.length === 0) return;
-  const rootRect = root.getBoundingClientRect();
-  const line = rootRect.top + 96;
+  const line = (isPage.value ? 0 : root.getBoundingClientRect().top) + 96;
   let chosen = 0;
   for (let i = 0; i < recipeNavSlides.value.length; i++) {
     const el = root.querySelector(
@@ -476,7 +500,14 @@ function syncActiveSegmentFromScroll(): void {
   }
 }
 
+onMounted(() => {
+  if (isPage.value) {
+    window.addEventListener("scroll", onRecipeScrollAreaScroll, { passive: true });
+  }
+});
+
 onUnmounted(() => {
+  window.removeEventListener("scroll", onRecipeScrollAreaScroll);
   if (recipeScrollRaf) cancelAnimationFrame(recipeScrollRaf);
 });
 

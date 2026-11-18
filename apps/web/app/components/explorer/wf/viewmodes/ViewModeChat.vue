@@ -88,7 +88,7 @@
                 :chrome="false"
               >
                 <div
-                  class="prose prose-sm max-w-none text-neutral-darkest [&_a]:text-trust-blue-darkest [&_p]:my-1 [&_code]:rounded-none"
+                  class="prose prose-sm max-w-none text-neutral-darkest [&_a]:text-primary [&_p]:my-1 [&_code]:rounded-none"
                   v-html="md.render(part.text)"
                 />
               </CapturableBlock>

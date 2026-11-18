@@ -1,14 +1,11 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <SiteHeader :mode="false" />
-    <!-- Push content below the absolute-positioned SiteHeader (h-16 mobile / h-20 md+) -->
-    <div class="">
-      <ConnectedHeader />
-      <main class="flex-1 flex flex-col min-h-0">
-        <slot />
-      </main>
-        <SiteFooter />
-
-    </div>
+  <div class="flex min-h-screen flex-col">
+    <SiteTopBar mode="bar" />
+    <ConnectedHeader />
+    <main class="flex min-h-0 flex-1 flex-col">
+      <slot />
+    </main>
+    <SiteFooter />
+    <SiteNavOverlay />
   </div>
 </template>

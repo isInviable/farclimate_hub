@@ -3,8 +3,8 @@
     <div class="container mx-auto max-w-7xl px-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
         <div>
-          <NuxtLinkLocale to="/" class="inline-block">
-            <img src="/img/logo.svg" alt="Transformation HUB" class="h-9 brightness-0 invert" />
+          <NuxtLinkLocale to="/" class="inline-block" aria-label="Adaptarium Transformation HUB">
+            <SiteWordmark size="sm" tone="light" />
           </NuxtLinkLocale>
         </div>
         <div>
@@ -37,6 +37,28 @@
           </ul>
         </div>
       </div>
+      <div class="mt-10 w-full border-t border-neutral-50/20 pt-6">
+        <div class="grid w-full grid-cols-1 items-center gap-8 md:grid-cols-3">
+          <img
+            :src="fundingLogos.farclimate"
+            alt="FARCLIMATE"
+            class="h-auto w-full object-contain object-left"
+          >
+          <img
+            :src="fundingLogos.europeanUnion"
+            alt="Funded by the European Union"
+            class="h-auto w-full object-contain object-left"
+          >
+          <img
+            :src="fundingLogos.swiss"
+            alt="Swiss State Secretariat for Education, Research and Innovation"
+            class="h-auto w-full object-contain object-left"
+          >
+        </div>
+        <p class="mt-6 w-full font-mono text-xs leading-relaxed text-neutral-200">
+          Funded by the European Union under Horizon Europe (FARCLIMATE, grant agreement No 101112860) and co-funded by the Swiss State Secretariat for Education, Research and Innovation (SERI). Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the granting authority. Neither the European Union nor the granting authority can be held responsible for them.
+        </p>
+      </div>
       <div
         class="mt-10 border-t border-neutral-50/20 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-sm"
       >
@@ -67,4 +89,10 @@
 
 <script lang="ts" setup>
 const { footer } = await useFooterContent()
+
+const fundingLogos = {
+  farclimate: '/img/logos/logo farclimate blanco.svg',
+  europeanUnion: '/img/logos/EN_FundedbytheEU_RGB_WHITE Outline.png',
+  swiss: '/img/logos/WBF_SBFI_EU_Frameworkprogramme_E_RGB_neg_quer.svg',
+}
 </script>

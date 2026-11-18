@@ -3,7 +3,7 @@
     <EditorialEyebrow color="muted">
       {{ $t("pins.fallbackKind", { kind: bodyKind }) }}
     </EditorialEyebrow>
-    <div class="bg-warm-neutral-100 border border-neutral-darkest p-3 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
+    <div class="bg-neutral-100 border border-neutral-darkest p-3 text-xs font-mono overflow-x-auto max-h-48 overflow-y-auto">
       <pre class="whitespace-pre-wrap break-words">{{ preview }}</pre>
     </div>
   </div>

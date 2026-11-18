@@ -9,7 +9,7 @@
       class="mt-8 flex flex-col items-center justify-center space-y-4"
     >
       <div
-        class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 explorer-adapt:border-primary"
       ></div>
       <p class="text-gray-600">Generating AI summaries...</p>
     </div>

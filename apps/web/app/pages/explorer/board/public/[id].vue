@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white px-8">
+  <div class="min-h-screen bg-neutral-lightest">
     <PublicBoardHeader :project-name="publicProjectName" />
 
     <PinBoardView
@@ -22,6 +22,10 @@
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import PinBoardView from '~/components/explorer/wf/pin-board/PinBoardView.vue'
+
+definePageMeta({
+  layout: 'solutions',
+})
 
 const route = useRoute()
 const router = useRouter()

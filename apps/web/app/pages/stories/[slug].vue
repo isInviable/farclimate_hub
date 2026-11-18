@@ -1,43 +1,30 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
+  layout: 'stories',
 })
 
 const route = useRoute()
 const slug = computed(() => {
   const param = route.params.slug
-  return Array.isArray(param) ? param[0] : String(param)
+  const value = Array.isArray(param) ? param[0] : param
+  return value ?? ''
 })
 
 const { story } = await useStoryContent(slug)
+const { article } = await useStoryArticleContent()
 
 if (!story.value) {
   throw createError({ statusCode: 404, statusMessage: 'Story not found' })
 }
-
-const isKitchenSink = computed(
-  () => slug.value === 'kitchen-sink' || Boolean(story.value?.showcase)
-)
 </script>
 
 <template>
-  <div v-if="story" class="bg-neutral-white">
-    <StoryDetailHero v-bind="story.hero" />
-
-    <StoryKitchenSinkPage
-      v-if="isKitchenSink && story.showcase"
-      v-bind="story.showcase"
-    />
-
-    <section
-      v-else
-      class="bg-neutral-lightest py-20 px-6 md:px-20"
-    >
-      <UContainer class="max-w-3xl px-0">
-        <p class="font-mono text-base text-neutral-darkest text-center">
-          {{ story.comingSoon ?? 'Content coming soon.' }}
-        </p>
-      </UContainer>
-    </section>
-  </div>
+  <StoryArticle
+    v-if="story && article"
+    :hero="article.hero"
+    :identity="article.identity"
+    :lead="article.lead"
+    :banner="article.banner"
+    :chapters="article.chapters"
+  />
 </template>

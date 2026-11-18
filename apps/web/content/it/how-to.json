@@ -1,0 +1,68 @@
+{
+  "intro": {
+    "titleLines": ["Come", "usare le"],
+    "accent": "soluzioni?",
+    "kickerLines": ["Questo", "database"],
+    "before": "Questo database analizza i progetti di ",
+    "emphasis": "Climate Adapt",
+    "middle": " per decifrarne i componenti e presentarli come una",
+    "recipe": "Ricetta",
+    "after": "che puoi usare per ispirarti e potenziare la tua proposta."
+  },
+  "steps": [
+    {
+      "key": "search",
+      "title": "Cerca",
+      "body": "Usa i filtri del pannello sinistro per cercare per settore, impatti climatici, approcci di adattamento o regione biogeografica.",
+      "image": "/img/adaptarium/capturas/base-1.png",
+      "imageAlt": "Filtri del pannello sinistro dell'esploratore di soluzioni"
+    },
+    {
+      "key": "view",
+      "title": "Visualizza",
+      "body": "La barra gialla in alto offre cinque modi per visualizzare i risultati filtrati: schede, lista, analizza, mappa e bioregione.",
+      "image": "/img/adaptarium/capturas/base-2.png",
+      "imageAlt": "Barra dei modi di visualizzazione dei risultati"
+    },
+    {
+      "key": "open",
+      "title": "Approfondisci",
+      "body": "Fai clic sui risultati della ricerca per scoprire la loro ricetta.",
+      "image": "/img/adaptarium/capturas/base-3.png",
+      "imageAlt": "Barra di selezione sui risultati della ricerca"
+    },
+    {
+      "key": "analyze",
+      "title": "Analizza",
+      "body": "Fai clic sui risultati della ricerca per scoprire la loro ricetta.",
+      "image": "/img/adaptarium/capturas/base-4.png",
+      "imageAlt": "Elenco dei risultati della ricerca"
+    },
+    {
+      "key": "sign-in",
+      "title": "Accedi",
+      "body": "Accedi alla piattaforma per abilitare il tuo tavolo dei progetti e salvare le risorse che potenziano le tue idee.",
+      "image": "/img/adaptarium/capturas/base-5.png",
+      "imageAlt": "Tavolo dei progetti vuoto dopo l'accesso"
+    },
+    {
+      "key": "board",
+      "title": "Tavolo dei progetti",
+      "body": "Crea il tuo tavolo dei progetti e salva le risorse.",
+      "image": "/img/adaptarium/capturas/base-6.png",
+      "imageAlt": "Tavolo dei progetti con risorse salvate"
+    },
+    {
+      "key": "generate",
+      "title": "Genera risorse",
+      "body": "Genera, con l'aiuto dell'IA, presentazioni PowerPoint o podcast per esporre e ispirare con le tue iniziative.",
+      "image": "/img/adaptarium/capturas/base-7.png",
+      "imageAlt": "Generazione di una presentazione o di un podcast"
+    }
+  ],
+  "cta": {
+    "label": "Entra nelle soluzioni",
+    "to": "/explorer/explorer",
+    "image": "/img/adaptarium/boton-b.png"
+  }
+}

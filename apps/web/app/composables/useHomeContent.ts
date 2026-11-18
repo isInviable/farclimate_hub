@@ -1,6 +1,7 @@
 import type { Collections } from '@nuxt/content'
 
 type HomeCollection = 'home_en' | 'home_es' | 'home_it'
+type HomeDocument = Collections[HomeCollection]
 type FooterCollection = 'footer_en' | 'footer_es' | 'footer_it'
 
 function homeCollectionFor(locale: string): HomeCollection {
@@ -20,8 +21,8 @@ export async function useHomeContent() {
 
   const { data: home } = await useAsyncData(
     () => `home-content-${locale.value}`,
-    async () => {
-      const collection = homeCollectionFor(locale.value) as keyof Collections
+    async (): Promise<HomeDocument | null> => {
+      const collection = homeCollectionFor(locale.value)
       let doc = await queryCollection(collection).first()
       if (!doc && locale.value !== 'en') {
         doc = await queryCollection('home_en').first()

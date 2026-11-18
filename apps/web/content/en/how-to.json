@@ -1,0 +1,68 @@
+{
+  "intro": {
+    "titleLines": ["How to", "use the"],
+    "accent": "solutions?",
+    "kickerLines": ["This", "database"],
+    "before": "This database analyses the ",
+    "emphasis": "Climate Adapt",
+    "middle": " projects to decode their components and present them as a",
+    "recipe": "Recipe",
+    "after": "you can use to inspire and strengthen your proposal."
+  },
+  "steps": [
+    {
+      "key": "search",
+      "title": "Search",
+      "body": "Use the filters in the left panel to search by sector, climate impacts, adaptation approaches or biogeographical region.",
+      "image": "/img/adaptarium/capturas/base-1.png",
+      "imageAlt": "Filters in the left panel of the solutions explorer"
+    },
+    {
+      "key": "view",
+      "title": "View",
+      "body": "The yellow bar at the top offers five ways to view the filtered results: cards, list, analyse, map and bioregion.",
+      "image": "/img/adaptarium/capturas/base-2.png",
+      "imageAlt": "Bar of ways to view the results"
+    },
+    {
+      "key": "open",
+      "title": "Go deeper",
+      "body": "Click a search result to discover its recipe.",
+      "image": "/img/adaptarium/capturas/base-3.png",
+      "imageAlt": "Selection bar over the search results"
+    },
+    {
+      "key": "analyze",
+      "title": "Analyse",
+      "body": "Click a search result to discover its recipe.",
+      "image": "/img/adaptarium/capturas/base-4.png",
+      "imageAlt": "List of search results"
+    },
+    {
+      "key": "sign-in",
+      "title": "Sign in",
+      "body": "Sign in to the platform to enable your project board and save the resources that strengthen your ideas.",
+      "image": "/img/adaptarium/capturas/base-5.png",
+      "imageAlt": "Empty project board after signing in"
+    },
+    {
+      "key": "board",
+      "title": "Project board",
+      "body": "Create your project board and save resources.",
+      "image": "/img/adaptarium/capturas/base-6.png",
+      "imageAlt": "Project board with saved resources"
+    },
+    {
+      "key": "generate",
+      "title": "Generate resources",
+      "body": "With the help of AI, generate PowerPoint presentations or podcasts to present and inspire with your initiatives.",
+      "image": "/img/adaptarium/capturas/base-7.png",
+      "imageAlt": "Generating a presentation or a podcast"
+    }
+  ],
+  "cta": {
+    "label": "Enter the solutions",
+    "to": "/explorer/explorer",
+    "image": "/img/adaptarium/boton-b.png"
+  }
+}

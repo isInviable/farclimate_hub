@@ -118,12 +118,12 @@ export default defineAppConfig({
         {
           variant: "solid",
           color: "warning",
-          class: "text-black",
+          class: "text-black explorer-adapt:text-adapt-ink",
         },
         {
           variant: "solid",
           color: "error",
-          class: "text-white",
+          class: "text-white explorer-adapt:text-adapt-ink",
         },
         {
           variant: "solid",

@@ -44,11 +44,23 @@ export default defineNuxtConfig({
       pathPrefix: false
     },
     {
+      path: '~/components/how-to',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/about',
+      pathPrefix: false
+    },
+    {
       path: '~/components/skills',
       pathPrefix: false
     },
     {
       path: '~/components/stories',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/site',
       pathPrefix: false
     }
   ],
@@ -78,6 +90,12 @@ export default defineNuxtConfig({
     '/': { prerender: true },
     '/es': { prerender: true },
     '/it': { prerender: true },
+    '/how-to': { prerender: true },
+    '/es/how-to': { prerender: true },
+    '/it/how-to': { prerender: true },
+    '/about': { prerender: true },
+    '/es/about': { prerender: true },
+    '/it/about': { prerender: true },
     // i18n strategy is prefix_except_default: unprefixed rules do not
     // apply to /es/* or /it/*, so those locale paths would still SSR.
     '/connected/**': { ssr: false },
@@ -85,7 +103,11 @@ export default defineNuxtConfig({
     '/it/connected/**': { ssr: false },
     '/explorer/**': { ssr: false },
     '/es/explorer/**': { ssr: false },
-    '/it/explorer/**': { ssr: false }
+    '/it/explorer/**': { ssr: false },
+    // Auth session lives in localStorage, so SSR always sees a logged-out user.
+    '/admin/**': { ssr: false },
+    '/es/admin/**': { ssr: false },
+    '/it/admin/**': { ssr: false }
   },
   compatibilityDate: '2025-01-15',
   vite: {
@@ -133,7 +155,11 @@ export default defineNuxtConfig({
     families: {
       Inter: [400, 500, 600, 700],
       'Martian Mono': [300, 400, 500, 600, 700],
-      Outfit: [400, 500, 600, 700, 800, 900]
+      Outfit: [400, 500, 600, 700, 800, 900],
+      'Julius Sans One': [400],
+      'Archivo Black': [400],
+      'Bebas Neue': [400],
+      Actor: [400]
     }
   }
 })

@@ -97,8 +97,8 @@
     "index": {
       "metaTitle": "Azione Connessa",
       "metaDescription": "Esplora la rete di progetti e organizzazioni della Missione UE per l’adattamento climatico in quattro viste interattive.",
-      "eyebrow": "Azione Connessa",
-      "heroTitle": "Esplora l’ecosistema della Missione UE per l’adattamento climatico",
+      "kicker": ["Esplora", "l’ecosistema della"],
+      "title": ["Missione UE per", "l’adattamento climatico"],
       "heroIntro": "Naviga nella rete di progetti e organizzazioni che guidano l’adattamento climatico in Europa. Quattro prospettive mostrano come le iniziative finanziate dalla Missione si collegano tra temi, luoghi e partnership.",
       "stats": {
         "projects": "progetti",
@@ -106,9 +106,7 @@
         "countries": "paesi",
         "themes": "temi"
       },
-      "cardsHeading": "Quattro modi per esplorare",
-      "helpTitle": "Come usare questa sezione",
-      "helpBody": "Ogni scheda apre una visualizzazione live. Usa la barra delle schede in alto per passare da una all’altra in qualsiasi momento; ogni vista ha una breve spiegazione e suggerimenti di aiuto.",
+      "ways": ["modi", "per esplorare"],
       "cards": {
         "dashboard": {
           "title": "Dashboard",
@@ -462,6 +460,17 @@
     "brandTitleLine2": "Transformation Hub",
     "connectedAction": "Connected Action"
   },
+  "siteNav": {
+    "solutions": "Soluzioni",
+    "howTo": "Come usare le soluzioni",
+    "stories": "Storie",
+    "training": "Competenze",
+    "network": "Connected Action",
+    "about": "Chi siamo",
+    "home": "Torna all'inizio",
+    "open": "Apri menu",
+    "close": "Chiudi menu"
+  },
   "listActions": {
     "default": "Predefinito",
     "topInsights": "Approfondimenti principali",
@@ -647,8 +656,14 @@
   },
   "recipe": {
     "nav": {
-      "summaryPlus": "Sintesi+",
-      "map": "Località"
+      "summaryPlus": "Sintesi",
+      "map": "Località",
+      "chapters": {
+        "introduction": "Introduzione",
+        "startingPoint": "Situazione di partenza",
+        "howItWasDone": "Come è stato fatto",
+        "whatWasAchieved": "Cosa si è ottenuto"
+      }
     },
     "emptyTitle": "Nessun contenuto ricetta",
     "emptyDescription": "Non è presente una ricetta strutturata nel database per questo caso studio nella lingua corrente. Se ti aspetti dati qui, applica l’ultima SQL per get_documents_by_ids (recipe_ingredients) e verifica che la pipeline abbia inviato le righe knowledge.recipe.",
@@ -656,15 +671,15 @@
     "loadErrorDescription": "La richiesta di caricamento dei dati ricetta non è riuscita. Controlla la scheda rete del browser per /api/document-recipe e verifica le credenziali Supabase.",
     "retry": "Riprova",
     "sections": {
-      "context_summary": "Sintesi del contesto",
+      "context_summary": "Breve contesto",
       "challenges": "Sfide",
-      "policy_context": "Contesto politico",
+      "policy_context": "Politiche pubbliche",
       "legal_aspects": "Aspetti legali",
-      "who_is_involved": "Chi è coinvolto",
+      "who_is_involved": "Chi partecipa",
       "economic_data": "Dati economici",
       "objectives": "Obiettivi",
-      "solutions_implemented": "Soluzione/i attuate",
-      "implementation_phases": "Fasi di attuazione e cronologia",
+      "solutions_implemented": "Soluzioni attuate",
+      "implementation_phases": "Fasi di attuazione",
       "success_and_limiting": "Fattori di successo e limitanti",
       "benefits": "Benefici",
       "lessons_learnt": "Lezioni apprese",
@@ -812,18 +827,23 @@
   "skills": {
     "readTime": "{minutes} min. di lettura",
     "index": {
-      "heroTitle": "Impara le competenze per adattarti e prosperare in un clima che cambia",
-      "heroSubtitle": "Qui puoi esplorare competenze pratiche per affrontare le sfide climatiche. Filtra ciò che ti interessa dal menu a sinistra e scopri a destra strumenti, corsi e casi reali pronti a ispirare i tuoi prossimi passi",
-      "sortMoreViews": "Più visualizzazioni",
-      "sortRelevance": "Rilevanza"
-    },
-    "sidebar": {
-      "allTrainings": "Tutte le formazioni",
-      "filterBy": "Filtra per"
+      "kicker": "Formazione",
+      "title": "Corsi online",
+      "lede": "Avvicinati a conoscenze rilevanti con corsi online che ti aiutino ad affrontare le sfide climatiche e a rafforzare il tuo progetto.",
+      "topicsHeading": "Corsi e risorse su temi come:",
+      "topics": [
+        "Agricoltura",
+        "Analisi del ciclo di vita",
+        "Biodiversità",
+        "Pesca",
+        "Selvicoltura",
+        "Tassonomia dell'UE"
+      ],
+      "learnMore": "Scopri di più"
     },
     "empty": {
       "title": "Nessuna competenza trovata",
-      "description": "Prova a modificare i filtri o torna più tardi."
+      "description": "Torna più tardi per i nuovi corsi."
     },
     "detail": {
       "back": "Torna alle competenze",

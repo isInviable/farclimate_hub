@@ -3,12 +3,12 @@ import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
 
 definePageMeta({
-  layout: "default",
+  layout: "site",
 });
 
 const route = useRoute();
 const localePath = useLocalePath();
-const { t } = useI18n();
+const { locale, t } = useI18n();
 const { fetchPublishedSkillBySlug } = useSkillsContent();
 
 const slug = computed(() => {
@@ -20,7 +20,7 @@ const { data: skill } = await useAsyncData(
   () => `published-skill-${slug.value}`,
   () => fetchPublishedSkillBySlug(slug.value),
   {
-    watch: [slug],
+    watch: [slug, locale],
   },
 );
 

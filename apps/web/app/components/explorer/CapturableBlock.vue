@@ -21,7 +21,7 @@
             <Icon
               v-if="showAiIcon"
               name="eos-icons:ai"
-              class="w-6 h-6 ml-1 text-sky-500 align-middle"
+              class="w-6 h-6 ml-1 text-sky-500 align-middle explorer-adapt:text-primary"
             />
           </div>
         </div>
@@ -32,7 +32,7 @@
           :href="String(value)"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-blue-600 underline text-sm break-all"
+          class="text-blue-600 underline text-sm break-all explorer-adapt:text-primary"
           @click.stop
         >
           {{ value }}

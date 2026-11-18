@@ -228,7 +228,7 @@
         :class="[
           'space-y-3',
           pin.source_document_uid || markmapBodyClickable || chatBodyClickable
-            ? 'cursor-pointer hover:bg-warm-neutral-100 -mx-2 px-2 py-1 transition-colors'
+            ? 'cursor-pointer hover:bg-neutral-100 -mx-2 px-2 py-1 transition-colors'
             : '',
         ]"
         :role="
@@ -274,9 +274,12 @@ import { pinBodyKindBadgeColor } from "~/utils/pinBodyKindBadge";
 import { pinToSelectionItem } from "~/utils/pinSelection";
 import PinBodyRenderer from "./PinBodyRenderer.vue";
 import PinRenderChat from "./PinRenderChat.vue";
-import MarkmapViewer from "~/components/explorer/MarkmapViewer.client.vue";
 import { DEFAULT_MARKMAP_YAML } from "~/constants/markmapDefaults";
 import { usePinnedSelectionStore } from "@/stores/selection";
+
+const MarkmapViewer = defineAsyncComponent(
+  () => import("~/components/explorer/MarkmapViewer.client.vue"),
+);
 
 const props = defineProps<{
   pin: HumanPinRow
